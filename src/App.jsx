@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   ArrowRight,
   Check,
@@ -300,12 +301,18 @@ function Modal({ open, onClose, title, text }) {
         <h3 className="max-w-lg text-3xl font-semibold leading-tight">{title}</h3>
         <p className="mt-5 text-lg leading-8 text-white/72">{text}</p>
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <button className="rounded-2xl bg-[var(--accent)] px-5 py-3.5 font-semibold text-[#081014]">
+          <Link
+            href="/login"
+            className="rounded-2xl bg-[var(--accent)] px-5 py-3.5 text-center font-semibold text-[#081014]"
+          >
             Trial + login web
-          </button>
-          <button className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 font-semibold text-white">
-            Download .apk
-          </button>
+          </Link>
+          <Link
+            href="/app"
+            className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3.5 text-center font-semibold text-white"
+          >
+            Ver dashboard demo
+          </Link>
         </div>
       </div>
     </div>
@@ -389,12 +396,12 @@ export default function App() {
               </button>
             </div>
 
-            <button
-              onClick={() => setModalOpen(true)}
+            <Link
+              href="/login"
               className="hidden rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[#081014] shadow-[0_12px_40px_rgba(110,231,183,0.28)] lg:inline-flex"
             >
               {t.navCta}
-            </button>
+            </Link>
 
             <button
               onClick={() => setMobileMenuOpen((current) => !current)}
@@ -419,15 +426,13 @@ export default function App() {
                   {item.label}
                 </a>
               ))}
-              <button
-                onClick={() => {
-                  setModalOpen(true);
-                  setMobileMenuOpen(false);
-                }}
-                className="rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[#081014]"
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-2xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-semibold text-[#081014]"
               >
                 {t.navCta}
-              </button>
+              </Link>
             </div>
           </div>
         )}
@@ -451,13 +456,13 @@ export default function App() {
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <button
-                onClick={() => setModalOpen(true)}
+              <Link
+                href="/login"
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[#081014] shadow-[0_18px_60px_rgba(110,231,183,0.28)]"
               >
                 {t.primaryCta}
                 <ArrowRight size={18} />
-              </button>
+              </Link>
               <a
                 href="#browser"
                 className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-base font-semibold text-white"
@@ -683,18 +688,18 @@ export default function App() {
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-white/70">{t.closingText}</p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <button
-                onClick={() => setModalOpen(true)}
+              <Link
+                href="/login"
                 className="rounded-2xl bg-[var(--accent)] px-6 py-4 font-semibold text-[#081014]"
               >
                 {t.closingPrimary}
-              </button>
-              <button
-                onClick={() => setModalOpen(true)}
+              </Link>
+              <Link
+                href="/app"
                 className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4 font-semibold text-white"
               >
                 {t.closingSecondary}
-              </button>
+              </Link>
             </div>
           </div>
         </section>
