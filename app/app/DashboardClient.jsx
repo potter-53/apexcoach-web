@@ -114,7 +114,7 @@ export default function DashboardClient() {
 
   if (!configured) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-5 text-white">
+      <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-5 text-[var(--text)]">
         <div className="max-w-xl rounded-[32px] border border-amber-400/20 bg-amber-400/10 p-8">
           <h1 className="text-2xl font-semibold">Supabase não configurado</h1>
           <p className="mt-4 leading-8 text-amber-100/85">
@@ -128,8 +128,8 @@ export default function DashboardClient() {
 
   if (checkingSession) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] text-white">
-        <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3">
+      <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] text-[var(--text)]">
+        <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]">
           <LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />
           A validar sessão do coach...
         </div>
@@ -138,27 +138,27 @@ export default function DashboardClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-white">
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(110,231,183,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.12),transparent_24%),linear-gradient(180deg,#071014_0%,#09161b_38%,#0c1015_100%)]" />
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
 
       <div className="mx-auto grid min-h-screen max-w-[1600px] gap-6 px-4 py-4 lg:grid-cols-[260px_minmax(0,1fr)] lg:px-6">
-        <aside className="rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-5">
+        <aside className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)]">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
-              <LayoutDashboard size={20} className="text-[var(--accent)]" />
+            <div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2">
+              <LayoutDashboard size={20} className="text-[var(--accent-strong)]" />
             </div>
             <div>
-              <p className="text-sm font-semibold tracking-[0.18em] text-white">APEX COACH</p>
-              <p className="text-xs uppercase tracking-[0.22em] text-white/38">browser companion</p>
+              <p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">APEX COACH</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">browser companion</p>
             </div>
           </div>
 
-          <div className="mt-8 rounded-[24px] border border-[var(--accent)]/20 bg-[var(--accent)]/10 p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent)]">Coach workspace</p>
-            <p className="mt-2 text-lg font-semibold text-white">
+          <div className="mt-8 rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-strong)]">Coach workspace</p>
+            <p className="mt-2 text-lg font-semibold text-[var(--text)]">
               {currentUser?.user_metadata?.full_name || currentUser?.email || "Coach"}
             </p>
-            <p className="mt-2 text-sm leading-7 text-white/65">
+            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
               Vista premium para gerir agenda, clientes, reports e follow-up num ecrã maior.
             </p>
           </div>
@@ -178,7 +178,7 @@ export default function DashboardClient() {
                 className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm transition ${
                   index === 0
                     ? "bg-[var(--accent)] text-[#081014]"
-                    : "border border-white/8 bg-white/[0.03] text-white/70 hover:bg-white/[0.06]"
+                    : "border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
                 }`}
               >
                 <span>{item}</span>
@@ -187,24 +187,24 @@ export default function DashboardClient() {
             ))}
           </nav>
 
-          <div className="mt-8 grid gap-3 rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
-            <p className="text-sm font-medium text-white">Quick jump</p>
+          <div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
+            <p className="text-sm font-medium text-[var(--text)]">Quick jump</p>
             <Link
               href="/login"
-              className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/72"
+              className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]"
             >
               Login screen
             </Link>
             <Link
               href="/"
-              className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/72"
+              className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]"
             >
               Back to landing
             </Link>
             <button
               onClick={handleSignOut}
               disabled={signingOut}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/72 disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)] disabled:opacity-60"
             >
               {signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}
               Sign out
@@ -213,24 +213,24 @@ export default function DashboardClient() {
         </aside>
 
         <section className="grid gap-6">
-          <header className="rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-5 sm:p-6">
+          <header className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)] sm:p-6">
             <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Browser overview</p>
-                <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                <h1 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--text)] sm:text-5xl">
                   O complemento web premium do coach.
                 </h1>
-                <p className="mt-4 max-w-3xl text-lg leading-8 text-white/68">
+                <p className="mt-4 max-w-3xl text-lg leading-8 text-[var(--text-muted)]">
                   Esta shell mostra a direção do browser: mais contexto, melhor organização e uma
                   sensação de comando total da operação.
                 </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <button className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 font-semibold text-white/78">
+                <button className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-semibold text-[var(--text)]">
                   Download .apk
                 </button>
-                <button className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[#081014]">
+                <button className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] shadow-[0_18px_40px_rgba(42,208,125,0.24)]">
                   Open session workspace
                   <ArrowRight size={18} />
                 </button>
@@ -242,25 +242,25 @@ export default function DashboardClient() {
             {metrics.map(({ label, value, icon: Icon }) => (
               <div
                 key={label}
-                className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.16)]"
+                className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)]"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/12">
                   <Icon size={22} className="text-[var(--accent)]" />
                 </div>
-                <p className="mt-6 text-sm uppercase tracking-[0.2em] text-white/45">{label}</p>
-                <p className="mt-2 text-4xl font-semibold text-white">{value}</p>
+                <p className="mt-6 text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">{label}</p>
+                <p className="mt-2 text-4xl font-semibold text-[var(--text)]">{value}</p>
               </div>
             ))}
           </div>
 
           <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-            <div className="rounded-[32px] border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+            <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.2em] text-white/45">Today</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-white">Upcoming sessions</h2>
+                  <p className="text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">Today</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">Upcoming sessions</h2>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-white/65">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2 text-sm text-[var(--text-muted)]">
                   <Search size={16} />
                   Search athlete or session
                 </div>
@@ -270,16 +270,16 @@ export default function DashboardClient() {
                 {upcomingSessions.map((session) => (
                   <div
                     key={`${session.time}-${session.athlete}`}
-                    className="grid gap-4 rounded-[24px] border border-white/8 bg-[#081014]/70 p-5 sm:grid-cols-[110px_1fr_auto]"
+                    className="grid gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5 sm:grid-cols-[110px_1fr_auto]"
                   >
                     <div>
-                      <p className="text-xs uppercase tracking-[0.2em] text-white/40">Time</p>
-                      <p className="mt-2 text-2xl font-semibold text-white">{session.time}</p>
+                      <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Time</p>
+                      <p className="mt-2 text-2xl font-semibold text-[var(--text)]">{session.time}</p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-[0.2em] text-white/40">Athlete</p>
-                      <p className="mt-2 text-lg font-semibold text-white">{session.athlete}</p>
-                      <p className="mt-1 text-white/60">{session.focus}</p>
+                      <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Athlete</p>
+                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{session.athlete}</p>
+                      <p className="mt-1 text-[var(--text-muted)]">{session.focus}</p>
                     </div>
                     <button className="rounded-2xl border border-[var(--accent)]/20 bg-[var(--accent)]/10 px-4 py-3 text-sm font-semibold text-[var(--accent)]">
                       Open session
@@ -290,11 +290,11 @@ export default function DashboardClient() {
             </div>
 
             <div className="grid gap-6">
-              <div className="rounded-[32px] border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+              <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm uppercase tracking-[0.2em] text-white/45">Focus queue</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-white">Clients needing action</h2>
+                    <p className="text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">Focus queue</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">Clients needing action</h2>
                   </div>
                   <Activity size={20} className="text-[var(--accent)]" />
                 </div>
@@ -303,13 +303,13 @@ export default function DashboardClient() {
                   {clients.map((client) => (
                     <div
                       key={client.name}
-                      className="flex items-center justify-between rounded-[24px] border border-white/8 bg-[#081014]/70 px-4 py-4"
+                      className="flex items-center justify-between rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-4"
                     >
                       <div className="flex items-center gap-3">
                         <span className={`h-3 w-3 rounded-full ${client.color}`} />
                         <div>
-                          <p className="font-medium text-white">{client.name}</p>
-                          <p className="text-sm text-white/55">{client.status}</p>
+                          <p className="font-medium text-[var(--text)]">{client.name}</p>
+                          <p className="text-sm text-[var(--text-muted)]">{client.status}</p>
                         </div>
                       </div>
                       <ChevronRight size={18} className="text-white/45" />
@@ -318,15 +318,15 @@ export default function DashboardClient() {
                 </div>
               </div>
 
-              <div className="rounded-[32px] border border-[var(--accent)]/20 bg-[linear-gradient(180deg,rgba(110,231,183,0.14),rgba(110,231,183,0.05))] p-5 sm:p-6">
+              <div className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5 shadow-[var(--shadow-soft)] sm:p-6">
                 <div className="flex items-center gap-3">
                   <CreditCard size={20} className="text-[var(--accent)]" />
                   <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Premium browser angle</p>
                 </div>
-                <h2 className="mt-4 text-2xl font-semibold text-white">
+                <h2 className="mt-4 text-2xl font-semibold text-[var(--text)]">
                   Gestão, leitura e follow-up com mais autoridade.
                 </h2>
-                <p className="mt-4 leading-8 text-white/72">
+                <p className="mt-4 leading-8 text-[var(--text-muted)]">
                   Esta vista ajuda a vender o web como o espaço onde o coach organiza a operação,
                   acompanha decisões e trabalha com uma perceção de produto mais premium.
                 </p>
