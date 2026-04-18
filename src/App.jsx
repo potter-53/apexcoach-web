@@ -330,8 +330,13 @@ export default function App() {
   const signupLabel = lang === "pt" ? "Criar conta" : "Sign up";
 
   useEffect(() => {
-    const storedLocale =
-      typeof window !== "undefined" ? window.localStorage.getItem("apexcoach-locale") : null;
+    let storedLocale = null;
+    try {
+      storedLocale =
+        typeof window !== "undefined" ? window.localStorage.getItem("apexcoach-locale") : null;
+    } catch {
+      storedLocale = null;
+    }
 
     if (storedLocale === "pt" || storedLocale === "es" || storedLocale === "fr" || storedLocale === "en") {
       setLang(storedLocale);

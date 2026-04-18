@@ -19,13 +19,17 @@ export function getCoachLocaleFromUser(user) {
 export function applyCoachLocale(locale) {
   const normalized = normalizeCoachLocale(locale);
 
-  if (typeof document !== "undefined") {
-    document.documentElement.lang = normalized;
-  }
+  try {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = normalized;
+    }
+  } catch {}
 
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem("apexcoach-locale", normalized);
-  }
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("apexcoach-locale", normalized);
+    }
+  } catch {}
 
   return normalized;
 }

@@ -72,11 +72,13 @@ export default function LoginClient() {
       if (error) throw error;
       applyCoachLocale(getCoachLocaleFromUser(data?.user));
 
-      if (!rememberMe) {
-        window.sessionStorage.setItem("apexcoach-session-mode", "session");
-      } else {
-        window.localStorage.setItem("apexcoach-session-mode", "remember");
-      }
+      try {
+        if (!rememberMe) {
+          window.sessionStorage.setItem("apexcoach-session-mode", "session");
+        } else {
+          window.localStorage.setItem("apexcoach-session-mode", "remember");
+        }
+      } catch {}
 
       router.push("/app");
       router.refresh();
