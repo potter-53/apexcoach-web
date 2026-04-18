@@ -1,0 +1,432 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock3, GripVertical, LoaderCircle, PencilLine, Plus } from "lucide-react";
+
+import { getSupabaseBrowserClient } from "../../src/lib/supabase-browser";
+
+function startOfWeek(date) {
+  const value = new Date(date);
+  const day = (value.getDay() + 6) % 7;
+  value.setHours(0, 0, 0, 0);
+  value.setDate(value.getDate() - day);
+  return value;
+}
+
+function startOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function endOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 1);
+}
+
+function formatDate(value, options) {
+  return new Date(value).toLocaleDateString("en-GB", options);
+}
+
+function formatTime(value) {
+  return new Date(value).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+}
+
+function withSameTime(baseDate, sourceDate) {
+  const updated = new Date(baseDate);
+  const source = new Date(sourceDate);
+  updated.setHours(source.getHours(), source.getMinutes(), 0, 0);
+  return updated;
+}
+
+function normalizeAgendaRows(rows) {
+  return rows.map((row) => ({
+    ...row,
+    scheduledAt: new Date(row.scheduled_at),
+    studentName: row.students?.full_name || "Client",
+    clientColor: row.students?.client_color_hex || "#2ad07d",
+    bookingName: row.booking_types?.name || row.item_type || "Agenda item",
+  }));
+}
+
+function statusLabel(value) {
+  return (value || "scheduled").replace(/_/g, " ");
+}
+
+export default function AgendaWorkspace({ currentUser, compact = false, onOpenCreateBooking }) {
+  const [mode, setMode] = useState("week");
+  const [anchorDate, setAnchorDate] = useState(new Date());
+  const [items, setItems] = useState([]);
+  const [nextItems, setNextItems] = useState([]);
+  const [pastItems, setPastItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [editingItem, setEditingItem] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const range = useMemo(() => {
+    if (mode === "month") {
+      const start = startOfMonth(anchorDate);
+      const end = endOfMonth(anchorDate);
+      return { start, end };
+    }
+
+    const start = startOfWeek(anchorDate);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 7);
+    return { start, end };
+  }, [anchorDate, mode]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const supabase = getSupabaseBrowserClient();
+    let mounted = true;
+
+    async function loadAgenda() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const [rangeResponse, nextResponse, pastResponse] = await Promise.all([
+          supabase
+            .from("agenda_items")
+            .select("id, item_type, notes, scheduled_at, status, students(full_name, client_color_hex), booking_types(name)")
+            .eq("coach_id", currentUser.id)
+            .gte("scheduled_at", range.start.toISOString())
+            .lt("scheduled_at", range.end.toISOString())
+            .order("scheduled_at", { ascending: true }),
+          supabase
+            .from("agenda_items")
+            .select("id, item_type, notes, scheduled_at, status, students(full_name, client_color_hex), booking_types(name)")
+            .eq("coach_id", currentUser.id)
+            .gte("scheduled_at", new Date().toISOString())
+            .order("scheduled_at", { ascending: true })
+            .limit(5),
+          supabase
+            .from("agenda_items")
+            .select("id, item_type, notes, scheduled_at, status, students(full_name, client_color_hex), booking_types(name)")
+            .eq("coach_id", currentUser.id)
+            .lt("scheduled_at", new Date().toISOString())
+            .order("scheduled_at", { ascending: false })
+            .limit(5),
+        ]);
+
+        const failed = [rangeResponse, nextResponse, pastResponse].find((item) => item.error);
+        if (failed?.error) throw failed.error;
+
+        if (!mounted) return;
+        setItems(normalizeAgendaRows(rangeResponse.data ?? []));
+        setNextItems(normalizeAgendaRows(nextResponse.data ?? []));
+        setPastItems(normalizeAgendaRows((pastResponse.data ?? []).slice().reverse()));
+      } catch (loadError) {
+        if (!mounted) return;
+        setError(loadError?.message || "Could not load agenda.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    loadAgenda();
+    return () => {
+      mounted = false;
+    };
+  }, [currentUser, range]);
+
+  const weekDays = useMemo(() => {
+    if (mode !== "week") return [];
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(range.start);
+      date.setDate(date.getDate() + index);
+      return date;
+    });
+  }, [mode, range]);
+
+  const monthDays = useMemo(() => {
+    if (mode !== "month") return [];
+    const start = startOfWeek(startOfMonth(anchorDate));
+    const days = [];
+    for (let index = 0; index < 35; index += 1) {
+      const date = new Date(start);
+      date.setDate(date.getDate() + index);
+      days.push(date);
+    }
+    return days;
+  }, [anchorDate, mode]);
+
+  function moveRange(direction) {
+    const updated = new Date(anchorDate);
+    if (mode === "month") {
+      updated.setMonth(updated.getMonth() + direction);
+    } else {
+      updated.setDate(updated.getDate() + direction * 7);
+    }
+    setAnchorDate(updated);
+  }
+
+  async function rescheduleItem(item, targetDate) {
+    const supabase = getSupabaseBrowserClient();
+    const updatedDate = withSameTime(targetDate, item.scheduled_at || item.scheduledAt);
+    const response = await supabase
+      .from("agenda_items")
+      .update({
+        scheduled_at: updatedDate.toISOString(),
+        scheduled_timezone_offset_minutes: updatedDate.getTimezoneOffset() * -1,
+      })
+      .eq("id", item.id)
+      .eq("coach_id", currentUser.id);
+
+    if (response.error) throw response.error;
+
+    setItems((current) =>
+      current.map((entry) => (entry.id === item.id ? { ...entry, scheduledAt: updatedDate, scheduled_at: updatedDate.toISOString() } : entry)),
+    );
+    setNextItems((current) =>
+      current.map((entry) => (entry.id === item.id ? { ...entry, scheduledAt: updatedDate, scheduled_at: updatedDate.toISOString() } : entry)),
+    );
+  }
+
+  async function saveEdit(event) {
+    event.preventDefault();
+    if (!editingItem) return;
+    setSavingEdit(true);
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const updatedDate = new Date(`${editingItem.date}T${editingItem.time}`);
+      const response = await supabase
+        .from("agenda_items")
+        .update({
+          scheduled_at: updatedDate.toISOString(),
+          scheduled_timezone_offset_minutes: updatedDate.getTimezoneOffset() * -1,
+          notes: editingItem.notes,
+        })
+        .eq("id", editingItem.id)
+        .eq("coach_id", currentUser.id);
+
+      if (response.error) throw response.error;
+
+      setItems((current) =>
+        current.map((entry) =>
+          entry.id === editingItem.id
+            ? { ...entry, notes: editingItem.notes, scheduledAt: updatedDate, scheduled_at: updatedDate.toISOString() }
+            : entry,
+        ),
+      );
+      setNextItems((current) =>
+        current.map((entry) =>
+          entry.id === editingItem.id
+            ? { ...entry, notes: editingItem.notes, scheduledAt: updatedDate, scheduled_at: updatedDate.toISOString() }
+            : entry,
+        ),
+      );
+      setEditingItem(null);
+    } catch (saveError) {
+      setError(saveError?.message || "Could not save agenda item.");
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
+  function renderCard(item, draggable = false) {
+    return (
+      <button
+        key={item.id}
+        draggable={draggable}
+        onDragStart={(event) => event.dataTransfer.setData("text/plain", item.id)}
+        onClick={() =>
+          setEditingItem({
+            id: item.id,
+            date: item.scheduledAt.toISOString().slice(0, 10),
+            time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`,
+            notes: item.notes || "",
+          })
+        }
+        className="w-full rounded-[22px] border border-[var(--border)] bg-white p-4 text-left shadow-[var(--shadow-soft)]"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {draggable ? <GripVertical size={16} className="text-[var(--text-muted)]" /> : null}
+            <span className="h-3 w-3 rounded-full" style={{ background: item.clientColor }} />
+            <span className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{statusLabel(item.status)}</span>
+          </div>
+          <PencilLine size={16} className="text-[var(--text-muted)]" />
+        </div>
+        <p className="mt-4 text-lg font-semibold text-[var(--text)]">{item.studentName}</p>
+        <p className="mt-2 text-sm uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.bookingName}</p>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">{formatTime(item.scheduledAt)}</p>
+        {item.notes ? <p className="mt-3 line-clamp-2 text-sm text-[var(--text-muted)]">{item.notes}</p> : null}
+      </button>
+    );
+  }
+
+  return (
+    <>
+      {editingItem ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]">
+            <h3 className="text-2xl font-semibold text-[var(--text)]">Edit booking</h3>
+            <form onSubmit={saveEdit} className="mt-6 grid gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="grid gap-2">
+                  <span className="text-sm text-[var(--text-muted)]">Date</span>
+                  <input
+                    type="date"
+                    value={editingItem.date}
+                    onChange={(event) => setEditingItem((current) => ({ ...current, date: event.target.value }))}
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3"
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-sm text-[var(--text-muted)]">Time</span>
+                  <input
+                    type="time"
+                    value={editingItem.time}
+                    onChange={(event) => setEditingItem((current) => ({ ...current, time: event.target.value }))}
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3"
+                  />
+                </label>
+              </div>
+              <label className="grid gap-2">
+                <span className="text-sm text-[var(--text-muted)]">Notes</span>
+                <textarea
+                  rows={4}
+                  value={editingItem.notes}
+                  onChange={(event) => setEditingItem((current) => ({ ...current, notes: event.target.value }))}
+                  className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3"
+                />
+              </label>
+              <div className="flex justify-end gap-3">
+                <button type="button" onClick={() => setEditingItem(null)} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-medium text-[var(--text-muted)]">
+                  Cancel
+                </button>
+                <button type="submit" disabled={savingEdit} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)]">
+                  {savingEdit ? <LoaderCircle size={16} className="animate-spin" /> : <PencilLine size={16} />}
+                  Save changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="grid gap-6">
+        <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Agenda</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">
+                {compact ? "Weekly and monthly control" : "Calendar with live scheduling"}
+              </h2>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <div className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1">
+                {["week", "month"].map((value) => (
+                  <button
+                    key={value}
+                    onClick={() => setMode(value)}
+                    className={`rounded-full px-4 py-2 text-sm font-medium ${mode === value ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}
+                  >
+                    {value === "week" ? "Week" : "Month"}
+                  </button>
+                ))}
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2">
+                <button onClick={() => moveRange(-1)} className="rounded-full p-2 text-[var(--text-muted)]">
+                  <ChevronLeft size={16} />
+                </button>
+                <span className="text-sm font-medium text-[var(--text)]">
+                  {mode === "month"
+                    ? formatDate(range.start, { month: "long", year: "numeric" })
+                    : `${formatDate(range.start, { day: "2-digit", month: "short" })} - ${formatDate(new Date(range.end.getTime() - 86400000), { day: "2-digit", month: "short" })}`}
+                </span>
+                <button onClick={() => moveRange(1)} className="rounded-full p-2 text-[var(--text-muted)]">
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+              <button onClick={onOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
+                <Plus size={16} />
+                New booking
+              </button>
+            </div>
+          </div>
+
+          {error ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+          {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />Loading agenda...</div> : null}
+
+          {mode === "week" ? (
+            <div className="mt-6 grid gap-4 xl:grid-cols-7">
+              {weekDays.map((day) => {
+                const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
+                return (
+                  <div
+                    key={day.toISOString()}
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={async (event) => {
+                      const id = event.dataTransfer.getData("text/plain");
+                      const item = items.find((entry) => entry.id === id);
+                      if (!item) return;
+                      try {
+                        await rescheduleItem(item, day);
+                      } catch (moveError) {
+                        setError(moveError?.message || "Could not move booking.");
+                      }
+                    }}
+                    className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4"
+                  >
+                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, { weekday: "short" })}</p>
+                    <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatDate(day, { day: "2-digit", month: "short" })}</p>
+                    <div className="mt-4 grid gap-3">
+                      {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">Drop or create a booking here.</p>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              {monthDays.map((day) => {
+                const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
+                const inMonth = day.getMonth() === anchorDate.getMonth();
+
+                return (
+                  <div key={day.toISOString()} className={`rounded-[22px] border p-4 ${inMonth ? "border-[var(--border)] bg-white" : "border-[var(--border)] bg-[var(--surface-muted)] opacity-60"}`}>
+                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, { weekday: "short" })}</p>
+                    <p className="mt-2 text-lg font-semibold text-[var(--text)]">{day.getDate()}</p>
+                    <div className="mt-3 grid gap-2">
+                      {dayItems.slice(0, 3).map((item) => (
+                        <button key={item.id} onClick={() => setEditingItem({ id: item.id, date: item.scheduledAt.toISOString().slice(0, 10), time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`, notes: item.notes || "" })} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-left text-sm text-[var(--text-muted)]">
+                          {formatTime(item.scheduledAt)} · {item.studentName}
+                        </button>
+                      ))}
+                      {dayItems.length === 0 ? <p className="text-sm text-[var(--text-muted)]">No bookings</p> : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <div className={`grid gap-6 ${compact ? "xl:grid-cols-2" : "xl:grid-cols-[1fr_1fr]"}`}>
+          <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+            <div className="flex items-center gap-3">
+              <CalendarDays size={18} className="text-[var(--accent)]" />
+              <h3 className="text-xl font-semibold text-[var(--text)]">Last 5 bookings</h3>
+            </div>
+            <div className="mt-5 grid gap-3">
+              {pastItems.length > 0 ? pastItems.map((item) => renderCard(item, false)) : <EmptyState title="No past bookings" text="Completed or previous bookings will appear here." />}
+            </div>
+          </section>
+
+          <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+            <div className="flex items-center gap-3">
+              <Clock3 size={18} className="text-[var(--accent)]" />
+              <h3 className="text-xl font-semibold text-[var(--text)]">Next 5 bookings</h3>
+            </div>
+            <div className="mt-5 grid gap-3">
+              {nextItems.length > 0 ? nextItems.map((item) => renderCard(item, false)) : <EmptyState title="No upcoming bookings" text="Future bookings will appear here as soon as they are scheduled." />}
+            </div>
+          </section>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -13,30 +13,31 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { applyCoachLocale, getCoachLocaleFromUser } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
 const highlights = [
-  "Continuidade direta com a lógica da app mobile",
-  "Mais contexto para gerir clientes, agenda e reports",
-  "Experiência premium pensada para o coach em desktop",
+  "Direct continuity with the mobile app logic",
+  "More context for managing clients, agenda, and reports",
+  "Premium desktop experience built for the coach",
 ];
 
 function describeAuthError(error) {
   const raw = String(error?.message ?? error ?? "").trim();
 
   if (raw.toLowerCase().includes("invalid login credentials")) {
-    return "Email ou password incorretos.";
+    return "Incorrect email or password.";
   }
 
   if (raw.toLowerCase().includes("email not confirmed")) {
-    return "Confirma o teu email antes de entrares no browser.";
+    return "Confirm your email before entering the browser workspace.";
   }
 
   if (raw.toLowerCase().includes("supabase env vars are missing")) {
-    return "Faltam as variáveis de ambiente do Supabase no projeto web.";
+    return "Supabase environment variables are missing in the web project.";
   }
 
-  return raw || "Não foi possível entrar no browser. Tenta novamente.";
+  return raw || "Could not sign into the browser workspace. Try again.";
 }
 
 export default function LoginClient() {
@@ -52,7 +53,7 @@ export default function LoginClient() {
     event.preventDefault();
 
     if (!configured) {
-      setErrorMessage("Faltam as variáveis de ambiente do Supabase no projeto web.");
+      setErrorMessage("Supabase environment variables are missing in the web project.");
       return;
     }
 
@@ -63,12 +64,13 @@ export default function LoginClient() {
       const supabase = getSupabaseBrowserClient();
       const normalizedEmail = email.trim().toLowerCase();
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: normalizedEmail,
         password,
       });
 
       if (error) throw error;
+      applyCoachLocale(getCoachLocaleFromUser(data?.user));
 
       if (!rememberMe) {
         window.sessionStorage.setItem("apexcoach-session-mode", "session");
@@ -96,14 +98,14 @@ export default function LoginClient() {
             className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm text-[var(--text-muted)] transition hover:bg-white hover:text-[var(--text)]"
           >
             <ArrowLeft size={16} />
-            Voltar à landing
+            Back to landing
           </Link>
 
           <Link
             href="/app"
             className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
           >
-            Ver demo do browser
+            View browser demo
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -115,12 +117,12 @@ export default function LoginClient() {
             </div>
 
             <h1 className="mt-8 text-5xl font-semibold leading-[1.02] text-[var(--text)] sm:text-6xl">
-              Entra no browser da APEX COACH.
+              Enter the APEX COACH browser workspace.
             </h1>
 
             <p className="mt-6 text-lg leading-8 text-[var(--text-muted)]">
-              O web entra como complemento premium da app: mais espaço para pensar, mais
-              informação visível e uma experiência mais forte para gerir o dia a dia do coach.
+              The web is the premium companion to the app: more space to think,
+              more visible information, and a stronger workflow for the coach day to day.
             </p>
 
             <div className="mt-10 grid gap-4">
@@ -141,7 +143,7 @@ export default function LoginClient() {
               <div className="mb-8 flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm uppercase tracking-[0.22em] text-[var(--text-muted)]">Coach login</p>
-                  <h2 className="mt-3 text-3xl font-semibold text-[var(--text)]">Bem-vindo de volta</h2>
+                  <h2 className="mt-3 text-3xl font-semibold text-[var(--text)]">Welcome back</h2>
                 </div>
                 <div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.1))] p-3 text-[var(--electric)]">
                   <LockKeyhole size={22} />
@@ -152,8 +154,8 @@ export default function LoginClient() {
                 <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-4 text-amber-100">
                   <AlertCircle size={18} className="mt-0.5 shrink-0" />
                   <p className="text-sm leading-7">
-                    Falta configurar `NEXT_PUBLIC_SUPABASE_URL` e
-                    `NEXT_PUBLIC_SUPABASE_ANON_KEY` no projeto e na Vercel.
+                    `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+                    still need to be configured in the project and on Vercel.
                   </p>
                 </div>
               )}
@@ -200,10 +202,10 @@ export default function LoginClient() {
                       onChange={(event) => setRememberMe(event.target.checked)}
                       className="h-4 w-4 rounded border-white/20 bg-transparent"
                     />
-                    Manter sessão iniciada
+                    Keep me signed in
                   </label>
                   <button type="button" className="text-[var(--accent-strong)]">
-                    Recuperar acesso
+                    Recover access
                   </button>
                 </div>
 
@@ -215,11 +217,11 @@ export default function LoginClient() {
                   {submitting ? (
                     <>
                       <LoaderCircle size={18} className="animate-spin" />
-                      A entrar...
+                      Signing in...
                     </>
                   ) : (
                     <>
-                      Entrar no browser
+                      Enter browser workspace
                       <ArrowRight size={18} />
                     </>
                   )}
@@ -229,7 +231,7 @@ export default function LoginClient() {
                   href="/signup"
                   className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-5 py-4 text-center font-semibold text-[var(--text)]"
                 >
-                  Criar conta de coach
+                  Create coach account
                 </Link>
               </form>
 
@@ -239,8 +241,7 @@ export default function LoginClient() {
                   <p className="font-medium text-[var(--text)]">Single coach identity</p>
                 </div>
                 <p className="text-sm leading-7 text-[var(--text-muted)]">
-                  A mesma identidade serve para a app no terreno e para o browser premium no
-                  desktop.
+                  The same identity works for the field app and the premium browser workspace.
                 </p>
               </div>
             </div>

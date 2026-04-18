@@ -320,7 +320,7 @@ function Modal({ open, onClose, title, text }) {
 }
 
 export default function App() {
-  const [lang, setLang] = useState("pt");
+  const [lang, setLang] = useState("en");
   const [activeShot, setActiveShot] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -330,6 +330,13 @@ export default function App() {
   const signupLabel = lang === "pt" ? "Criar conta" : "Sign up";
 
   useEffect(() => {
+    const storedLocale =
+      typeof window !== "undefined" ? window.localStorage.getItem("apexcoach-locale") : null;
+
+    if (storedLocale === "pt" || storedLocale === "es" || storedLocale === "fr" || storedLocale === "en") {
+      setLang(storedLocale);
+    }
+
     const interval = window.setInterval(() => {
       setActiveShot((current) => (current + 1) % screenshots.length);
     }, 3200);
