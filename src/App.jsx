@@ -326,6 +326,8 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const t = copy[lang];
+  const loginLabel = "Login";
+  const signupLabel = lang === "pt" ? "Criar conta" : "Sign up";
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -396,12 +398,20 @@ export default function App() {
               </button>
             </div>
 
-            <Link
-              href="/login"
-              className="hidden rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)] lg:inline-flex"
-            >
-              {t.navCta}
-            </Link>
+            <div className="hidden items-center gap-3 lg:flex">
+              <Link
+                href="/login"
+                className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 text-sm font-semibold text-[var(--text)]"
+              >
+                {loginLabel}
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]"
+              >
+                {signupLabel}
+              </Link>
+            </div>
 
             <button
               onClick={() => setMobileMenuOpen((current) => !current)}
@@ -429,9 +439,16 @@ export default function App() {
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-center text-sm font-semibold text-[var(--text)]"
+              >
+                {loginLabel}
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setMobileMenuOpen(false)}
                 className="rounded-2xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-semibold text-[var(--accent-foreground)]"
               >
-                {t.navCta}
+                {signupLabel}
               </Link>
             </div>
           </div>
@@ -457,15 +474,21 @@ export default function App() {
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/login"
+                href="/signup"
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.24)]"
               >
-                {t.primaryCta}
+                {signupLabel}
                 <ArrowRight size={18} />
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-6 py-4 text-base font-semibold text-[var(--text)]"
+              >
+                {loginLabel}
               </Link>
               <a
                 href="#browser"
-                className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-6 py-4 text-base font-semibold text-[var(--text)]"
+                className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-6 py-4 text-base font-semibold text-[var(--text)]"
               >
                 {t.secondaryCta}
               </a>
