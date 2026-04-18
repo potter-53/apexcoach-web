@@ -1,21 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  CalendarDays,
-  ClipboardList,
-  CreditCard,
-  Dumbbell,
-  LayoutDashboard,
-  LoaderCircle,
-  LogOut,
-  ShieldCheck,
-  Sparkles,
-  Users,
-} from "lucide-react";
-
+import { CalendarDays, ClipboardList, CreditCard, Dumbbell, LayoutDashboard, LoaderCircle, LogOut, Plus, ShieldCheck, Sparkles, Users, X } from "lucide-react";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
 const APP_TABS = [
@@ -27,25 +15,22 @@ const APP_TABS = [
   { id: "coach", label: "Coach", icon: ShieldCheck },
 ];
 
-const EMPTY_WORKSPACE = {
-  profile: null,
-  subscription: null,
-  metrics: { clients: 0, agendaToday: 0, assessments: 0, trainings: 0 },
-  students: [],
-  upcomingAgenda: [],
-  recentAssessments: [],
-  recentTrainings: [],
-};
+const DEFAULT_BOOKING_TYPES = [
+  { name: "Treino 30min", category: "pt_session", duration_minutes: 30, price_eur: 0 },
+  { name: "Treino 45min", category: "pt_session", duration_minutes: 45, price_eur: 0 },
+  { name: "Treino 60min", category: "pt_session", duration_minutes: 60, price_eur: 0 },
+  { name: "Avaliacao fisica", category: "physical_assessment", duration_minutes: 60, price_eur: 0 },
+];
+
+const EMPTY_CORE = { profile: null, subscription: null, metrics: { clients: 0, agendaToday: 0, assessments: 0, trainings: 0 }, upcomingAgenda: [] };
+const EMPTY_LISTS = { students: [], recentAssessments: [], recentTrainings: [] };
+const EMPTY_FORM = { studentId: "", bookingTypeId: "", scheduledDate: "", scheduledTime: "", notes: "" };
 
 function formatDate(value, withYear = false) {
   if (!value) return "Sem data";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Sem data";
-  return date.toLocaleDateString("pt-PT", {
-    day: "2-digit",
-    month: "short",
-    ...(withYear ? { year: "numeric" } : {}),
-  });
+  return date.toLocaleDateString("pt-PT", { day: "2-digit", month: "short", ...(withYear ? { year: "numeric" } : {}) });
 }
 
 function formatTime(value) {
@@ -57,185 +42,120 @@ function formatTime(value) {
 
 function prettifyStatus(value) {
   const normalized = (value ?? "").toString().toLowerCase();
-  if (!normalized) return "Unknown";
-  return normalized.replace(/_/g, " ");
+  return normalized ? normalized.replace(/_/g, " ") : "unknown";
 }
 
 function colorDot(colorHex) {
   return colorHex || "linear-gradient(135deg, #2ad07d 0%, #7c4dff 100%)";
 }
 
-function isMissingColumn(error, columnName) {
+function missingColumn(error) {
   const message = error?.message?.toLowerCase?.() ?? error?.toString?.().toLowerCase?.() ?? "";
-  return message.includes(columnName.toLowerCase()) && (message.includes("42703") || message.includes("column"));
+  return message.includes("client_color_hex") && (message.includes("42703") || message.includes("column"));
 }
 
-async function withColorFallback(builder) {
+async function colorFallback(builder) {
   try {
     return await builder(true);
   } catch (error) {
-    if (!isMissingColumn(error, "client_color_hex")) throw error;
+    if (!missingColumn(error)) throw error;
     return builder(false);
   }
 }
 
-async function loadWorkspace(supabase, user) {
+function todayBounds() {
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-  const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
-  const nowIso = new Date().toISOString();
-
-  const [
-    profile,
-    subscription,
-    clientsCount,
-    agendaTodayCount,
-    assessmentsCount,
-    trainingsCount,
-    students,
-    upcomingAgenda,
-    recentAssessments,
-    recentTrainings,
-  ] = await Promise.all([
-    supabase.from("profiles").select("id, role, full_name").eq("id", user.id).maybeSingle(),
-    supabase
-      .from("subscriptions")
-      .select("status, plan, trial_ends_at, current_period_ends_at, subscription_category, payment_method_last4")
-      .eq("coach_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabase.from("students").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
-    supabase
-      .from("agenda_items")
-      .select("id", { count: "exact", head: true })
-      .eq("coach_id", user.id)
-      .gte("scheduled_at", todayStart)
-      .lt("scheduled_at", todayEnd),
-    supabase.from("assessments").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
-    supabase.from("training_sessions").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
-    withColorFallback((includeColor) =>
-      supabase
-        .from("students")
-        .select(
-          includeColor
-            ? "id, full_name, email, main_goal, created_at, tags, client_color_hex"
-            : "id, full_name, email, main_goal, created_at, tags",
-        )
-        .eq("coach_id", user.id)
-        .order("full_name", { ascending: true })
-        .limit(8),
-    ),
-    withColorFallback((includeColor) =>
-      supabase
-        .from("agenda_items")
-        .select(
-          includeColor
-            ? "id, item_type, notes, scheduled_at, status, students(full_name, client_color_hex), booking_types(name)"
-            : "id, item_type, notes, scheduled_at, status, students(full_name), booking_types(name)",
-        )
-        .eq("coach_id", user.id)
-        .gte("scheduled_at", nowIso)
-        .order("scheduled_at", { ascending: true })
-        .limit(6),
-    ),
-    withColorFallback((includeColor) =>
-      supabase
-        .from("assessments")
-        .select(includeColor ? "id, assessment_date, fields, students(full_name, client_color_hex)" : "id, assessment_date, fields, students(full_name)")
-        .eq("coach_id", user.id)
-        .order("assessment_date", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(6),
-    ),
-    withColorFallback((includeColor) =>
-      supabase
-        .from("training_sessions")
-        .select(includeColor ? "id, name, status, session_date, students(full_name, client_color_hex)" : "id, name, status, session_date, students(full_name)")
-        .eq("coach_id", user.id)
-        .order("session_date", { ascending: false })
-        .limit(6),
-    ),
-  ]);
-
-  const responses = [
-    profile,
-    subscription,
-    clientsCount,
-    agendaTodayCount,
-    assessmentsCount,
-    trainingsCount,
-    students,
-    upcomingAgenda,
-    recentAssessments,
-    recentTrainings,
-  ];
-
-  const failed = responses.find((item) => item.error);
-  if (failed?.error) throw failed.error;
-
   return {
-    profile: profile.data,
-    subscription: subscription.data,
-    metrics: {
-      clients: clientsCount.count ?? 0,
-      agendaToday: agendaTodayCount.count ?? 0,
-      assessments: assessmentsCount.count ?? 0,
-      trainings: trainingsCount.count ?? 0,
-    },
-    students: students.data ?? [],
-    upcomingAgenda: upcomingAgenda.data ?? [],
-    recentAssessments: recentAssessments.data ?? [],
-    recentTrainings: recentTrainings.data ?? [],
+    start: new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString(),
+    end: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString(),
   };
 }
 
-function SectionCard({ eyebrow, title, description, children }) {
-  return (
-    <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
-      <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{eyebrow}</p>
-      <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{title}</h2>
-      {description ? <p className="mt-3 max-w-3xl leading-7 text-[var(--text-muted)]">{description}</p> : null}
-      <div className="mt-6">{children}</div>
-    </section>
-  );
+function defaultDate() {
+  const date = new Date();
+  return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, "0")}-${`${date.getDate()}`.padStart(2, "0")}`;
+}
+
+function defaultTime() {
+  const date = new Date();
+  return `${`${date.getHours()}`.padStart(2, "0")}:${`${date.getMinutes()}`.padStart(2, "0")}`;
+}
+
+function combineDateTime(dateValue, timeValue) {
+  const [year, month, day] = dateValue.split("-").map(Number);
+  const [hours, minutes] = timeValue.split(":").map(Number);
+  return new Date(year, month - 1, day, hours, minutes, 0, 0);
+}
+
+async function loadCore(supabase, user) {
+  const { start, end } = todayBounds();
+  const nowIso = new Date().toISOString();
+  const responses = await Promise.all([
+    supabase.from("profiles").select("id, role, full_name").eq("id", user.id).maybeSingle(),
+    supabase.from("subscriptions").select("status, plan, trial_ends_at, current_period_ends_at, subscription_category, payment_method_last4").eq("coach_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("students").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
+    supabase.from("agenda_items").select("id", { count: "exact", head: true }).eq("coach_id", user.id).gte("scheduled_at", start).lt("scheduled_at", end),
+    supabase.from("assessments").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
+    supabase.from("training_sessions").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
+    colorFallback((includeColor) => supabase.from("agenda_items").select(includeColor ? "id, item_type, notes, scheduled_at, status, students(full_name, client_color_hex), booking_types(name)" : "id, item_type, notes, scheduled_at, status, students(full_name), booking_types(name)").eq("coach_id", user.id).gte("scheduled_at", nowIso).order("scheduled_at", { ascending: true }).limit(8)),
+  ]);
+  const failed = responses.find((item) => item.error);
+  if (failed?.error) throw failed.error;
+  return {
+    profile: responses[0].data,
+    subscription: responses[1].data,
+    metrics: { clients: responses[2].count ?? 0, agendaToday: responses[3].count ?? 0, assessments: responses[4].count ?? 0, trainings: responses[5].count ?? 0 },
+    upcomingAgenda: responses[6].data ?? [],
+  };
+}
+
+async function loadStudents(supabase, user) {
+  const response = await colorFallback((includeColor) => supabase.from("students").select(includeColor ? "id, full_name, email, main_goal, created_at, client_color_hex" : "id, full_name, email, main_goal, created_at").eq("coach_id", user.id).order("full_name", { ascending: true }));
+  if (response.error) throw response.error;
+  return response.data ?? [];
+}
+
+async function loadAssessments(supabase, user) {
+  const response = await colorFallback((includeColor) => supabase.from("assessments").select(includeColor ? "id, assessment_date, fields, students(full_name, client_color_hex)" : "id, assessment_date, fields, students(full_name)").eq("coach_id", user.id).order("assessment_date", { ascending: false }).order("created_at", { ascending: false }).limit(12));
+  if (response.error) throw response.error;
+  return response.data ?? [];
+}
+
+async function loadTrainings(supabase, user) {
+  const response = await colorFallback((includeColor) => supabase.from("training_sessions").select(includeColor ? "id, name, status, session_date, students(full_name, client_color_hex)" : "id, name, status, session_date, students(full_name)").eq("coach_id", user.id).order("session_date", { ascending: false }).limit(12));
+  if (response.error) throw response.error;
+  return response.data ?? [];
+}
+
+async function ensureBookingTypes(supabase, user) {
+  const initial = await supabase.from("booking_types").select("id, name, category, duration_minutes, price_eur, is_active").eq("coach_id", user.id).eq("is_active", true).order("duration_minutes", { ascending: true }).order("name", { ascending: true });
+  if (initial.error) throw initial.error;
+  if ((initial.data ?? []).length > 0) return initial.data;
+  const inserted = await supabase.from("booking_types").insert(DEFAULT_BOOKING_TYPES.map((item) => ({ coach_id: user.id, ...item, is_active: true })));
+  if (inserted.error) throw inserted.error;
+  const finalRead = await supabase.from("booking_types").select("id, name, category, duration_minutes, price_eur, is_active").eq("coach_id", user.id).eq("is_active", true).order("duration_minutes", { ascending: true }).order("name", { ascending: true });
+  if (finalRead.error) throw finalRead.error;
+  return finalRead.data ?? [];
+}
+
+function SectionCard({ eyebrow, title, description, action, children }) {
+  return <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{eyebrow}</p><h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{title}</h2>{description ? <p className="mt-3 max-w-3xl leading-7 text-[var(--text-muted)]">{description}</p> : null}</div>{action}</div><div className="mt-6">{children}</div></section>;
 }
 
 function EmptyState({ title, text }) {
-  return (
-    <div className="rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-5 py-8 text-center">
-      <p className="text-lg font-semibold text-[var(--text)]">{title}</p>
-      <p className="mt-3 leading-7 text-[var(--text-muted)]">{text}</p>
-    </div>
-  );
+  return <div className="rounded-[24px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-5 py-8 text-center"><p className="text-lg font-semibold text-[var(--text)]">{title}</p><p className="mt-3 leading-7 text-[var(--text-muted)]">{text}</p></div>;
 }
 
 function MetricCard({ label, value, Icon, hint }) {
-  return (
-    <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)]">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/12">
-        <Icon size={22} className="text-[var(--accent)]" />
-      </div>
-      <p className="mt-6 text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">{label}</p>
-      <p className="mt-2 text-4xl font-semibold text-[var(--text)]">{value}</p>
-      <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">{hint}</p>
-    </div>
-  );
+  return <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)]"><div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={22} className="text-[var(--accent)]" /></div><p className="mt-6 text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">{label}</p><p className="mt-2 text-4xl font-semibold text-[var(--text)]">{value}</p><p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">{hint}</p></div>;
 }
 
 function PersonRow({ name, detail, meta, colorHex }) {
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-4">
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: colorDot(colorHex) }} />
-        <div className="min-w-0">
-          <p className="truncate font-medium text-[var(--text)]">{name || "Cliente"}</p>
-          <p className="truncate text-sm text-[var(--text-muted)]">{detail || "Sem detalhe"}</p>
-        </div>
-      </div>
-      {meta ? <p className="shrink-0 text-sm text-[var(--text-muted)]">{meta}</p> : null}
-    </div>
-  );
+  return <div className="flex items-center justify-between gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-4"><div className="flex min-w-0 items-center gap-3"><span className="h-3 w-3 shrink-0 rounded-full" style={{ background: colorDot(colorHex) }} /><div className="min-w-0"><p className="truncate font-medium text-[var(--text)]">{name || "Cliente"}</p><p className="truncate text-sm text-[var(--text-muted)]">{detail || "Sem detalhe"}</p></div></div>{meta ? <p className="shrink-0 text-sm text-[var(--text-muted)]">{meta}</p> : null}</div>;
+}
+
+function AgendaCards({ items, onCreate }) {
+  return <SectionCard eyebrow="Agenda spotlight" title="Agenda do coach em destaque" description="A agenda ganha protagonismo real e já permite novas marcações." action={<button onClick={onCreate} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />Nova marcação</button>}>{items.length > 0 ? <div className="grid gap-4 xl:grid-cols-2">{items.map((item) => <div key={item.id} className="rounded-[26px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,248,247,0.96))] p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{formatDate(item.scheduled_at, true)}</p><p className="mt-2 text-3xl font-semibold text-[var(--text)]">{formatTime(item.scheduled_at)}</p></div><span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{prettifyStatus(item.status)}</span></div><div className="mt-6 flex items-center gap-3"><span className="h-3 w-3 rounded-full" style={{ background: colorDot(item.students?.client_color_hex) }} /><p className="font-semibold text-[var(--text)]">{item.students?.full_name || "Cliente"}</p></div><p className="mt-3 text-sm uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.booking_types?.name || item.item_type || "Agenda item"}</p><p className="mt-3 leading-7 text-[var(--text-muted)]">{item.notes || "Sem notas adicionais para esta marcação."}</p></div>)}</div> : <EmptyState title="Sem marcações futuras" text="Cria a primeira marcação diretamente aqui no browser." />}</SectionCard>;
 }
 
 export default function DashboardClient() {
@@ -243,10 +163,18 @@ export default function DashboardClient() {
   const configured = useMemo(() => isSupabaseConfigured(), []);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [checkingSession, setCheckingSession] = useState(true);
-  const [loadingWorkspace, setLoadingWorkspace] = useState(false);
+  const [loadingCore, setLoadingCore] = useState(false);
+  const [loadingTabs, setLoadingTabs] = useState({ clients: false, assessments: false, trainings: false });
   const [workspaceError, setWorkspaceError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
-  const [workspace, setWorkspace] = useState(EMPTY_WORKSPACE);
+  const [core, setCore] = useState(EMPTY_CORE);
+  const [lists, setLists] = useState(EMPTY_LISTS);
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingForm, setBookingForm] = useState({ ...EMPTY_FORM, scheduledDate: defaultDate(), scheduledTime: defaultTime() });
+  const [bookingResources, setBookingResources] = useState({ students: [], bookingTypes: [] });
+  const [loadingBookingResources, setLoadingBookingResources] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [creatingBooking, setCreatingBooking] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
@@ -254,54 +182,45 @@ export default function DashboardClient() {
       setCheckingSession(false);
       return;
     }
-
     const supabase = getSupabaseBrowserClient();
     let mounted = true;
 
-    async function hydrate(user) {
-      setLoadingWorkspace(true);
+    async function refreshCore(user) {
+      setLoadingCore(true);
       setWorkspaceError("");
-
       try {
-        const data = await loadWorkspace(supabase, user);
-        if (mounted) setWorkspace(data);
+        const data = await loadCore(supabase, user);
+        if (mounted) setCore(data);
       } catch (error) {
-        if (mounted) setWorkspaceError(error?.message || "Não foi possível carregar os dados do coach.");
+        if (mounted) setWorkspaceError(error?.message || "Não foi possível carregar o núcleo do coach.");
       } finally {
-        if (mounted) setLoadingWorkspace(false);
+        if (mounted) setLoadingCore(false);
       }
     }
 
     async function boot() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
+      const { data: { session } } = await supabase.auth.getSession();
       if (!mounted) return;
       if (!session?.user) {
         router.replace("/login");
         return;
       }
-
       setCurrentUser(session.user);
       setCheckingSession(false);
-      await hydrate(session.user);
+      refreshCore(session.user);
     }
 
     boot();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       if (!session?.user) {
         router.replace("/login");
         return;
       }
-
       setCurrentUser(session.user);
       setCheckingSession(false);
-      await hydrate(session.user);
+      refreshCore(session.user);
     });
 
     return () => {
@@ -310,12 +229,53 @@ export default function DashboardClient() {
     };
   }, [configured, router]);
 
+  useEffect(() => {
+    if (!currentUser || !configured) return;
+    const supabase = getSupabaseBrowserClient();
+
+    async function loadTab(kind) {
+      if (kind === "clients") {
+        if (lists.students.length > 0 || loadingTabs.clients) return;
+        setLoadingTabs((current) => ({ ...current, clients: true }));
+        try {
+          const students = await loadStudents(supabase, currentUser);
+          setLists((current) => ({ ...current, students }));
+        } finally {
+          setLoadingTabs((current) => ({ ...current, clients: false }));
+        }
+      }
+      if (kind === "assessments") {
+        if (lists.recentAssessments.length > 0 || loadingTabs.assessments) return;
+        setLoadingTabs((current) => ({ ...current, assessments: true }));
+        try {
+          const recentAssessments = await loadAssessments(supabase, currentUser);
+          setLists((current) => ({ ...current, recentAssessments }));
+        } finally {
+          setLoadingTabs((current) => ({ ...current, assessments: false }));
+        }
+      }
+      if (kind === "trainings") {
+        if (lists.recentTrainings.length > 0 || loadingTabs.trainings) return;
+        setLoadingTabs((current) => ({ ...current, trainings: true }));
+        try {
+          const recentTrainings = await loadTrainings(supabase, currentUser);
+          setLists((current) => ({ ...current, recentTrainings }));
+        } finally {
+          setLoadingTabs((current) => ({ ...current, trainings: false }));
+        }
+      }
+    }
+
+    if (activeTab === "clients" || bookingOpen) loadTab("clients");
+    if (activeTab === "assessments") loadTab("assessments");
+    if (activeTab === "trainings") loadTab("trainings");
+  }, [activeTab, bookingOpen, configured, currentUser, lists.recentAssessments.length, lists.recentTrainings.length, lists.students.length, loadingTabs.assessments, loadingTabs.clients, loadingTabs.trainings]);
+
   async function handleSignOut() {
     if (!configured) {
       router.replace("/login");
       return;
     }
-
     setSigningOut(true);
     try {
       const supabase = getSupabaseBrowserClient();
@@ -327,349 +287,117 @@ export default function DashboardClient() {
     }
   }
 
+  async function openBookingModal() {
+    setBookingOpen(true);
+    setBookingError("");
+    if (!currentUser || loadingBookingResources) return;
+    if (bookingResources.students.length > 0 && bookingResources.bookingTypes.length > 0) return;
+    setLoadingBookingResources(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const [students, bookingTypes] = await Promise.all([
+        lists.students.length > 0 ? Promise.resolve(lists.students) : loadStudents(supabase, currentUser),
+        ensureBookingTypes(supabase, currentUser),
+      ]);
+      if (lists.students.length === 0) setLists((current) => ({ ...current, students }));
+      setBookingResources({ students, bookingTypes });
+      setBookingForm((current) => ({
+        ...current,
+        studentId: current.studentId || students[0]?.id || "",
+        bookingTypeId: current.bookingTypeId || bookingTypes[0]?.id || "",
+      }));
+    } catch (error) {
+      setBookingError(error?.message || "Não foi possível preparar a marcação.");
+    } finally {
+      setLoadingBookingResources(false);
+    }
+  }
+
+  function closeBookingModal() {
+    setBookingOpen(false);
+    setBookingError("");
+  }
+
+  function updateBookingField(field, value) {
+    setBookingForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleCreateBooking(event) {
+    event.preventDefault();
+    setBookingError("");
+    if (!currentUser) return;
+    if (!bookingForm.studentId || !bookingForm.bookingTypeId || !bookingForm.scheduledDate || !bookingForm.scheduledTime) {
+      setBookingError("Preenche cliente, tipo de marcação, data e hora.");
+      return;
+    }
+    const bookingType = bookingResources.bookingTypes.find((item) => item.id === bookingForm.bookingTypeId);
+    if (!bookingType) {
+      setBookingError("Tipo de marcação inválido.");
+      return;
+    }
+    setCreatingBooking(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const scheduledAt = combineDateTime(bookingForm.scheduledDate, bookingForm.scheduledTime);
+      const response = await supabase.from("agenda_items").insert({
+        coach_id: currentUser.id,
+        student_id: bookingForm.studentId,
+        booking_type_id: bookingType.id,
+        item_type: bookingType.category,
+        notes: bookingForm.notes.trim(),
+        scheduled_at: scheduledAt.toISOString(),
+        scheduled_timezone_offset_minutes: scheduledAt.getTimezoneOffset() * -1,
+        status: "scheduled",
+        approval_status: "approved",
+        requested_by_role: "coach",
+      });
+      if (response.error) throw response.error;
+      const refreshedCore = await loadCore(supabase, currentUser);
+      setCore(refreshedCore);
+      setBookingForm({ ...EMPTY_FORM, studentId: bookingForm.studentId, bookingTypeId: bookingForm.bookingTypeId, scheduledDate: defaultDate(), scheduledTime: defaultTime() });
+      setBookingOpen(false);
+      startTransition(() => setActiveTab("agenda"));
+    } catch (error) {
+      setBookingError(error?.message || "Não foi possível criar a marcação.");
+    } finally {
+      setCreatingBooking(false);
+    }
+  }
+
   if (!configured) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-5 text-[var(--text)]">
-        <div className="max-w-xl rounded-[32px] border border-amber-300 bg-amber-50 p-8 shadow-[var(--shadow-soft)]">
-          <h1 className="text-2xl font-semibold">Supabase não configurado</h1>
-          <p className="mt-4 leading-8 text-[var(--text-muted)]">
-            Adiciona as variáveis públicas do Supabase para usar o browser com dados reais.
-          </p>
-        </div>
-      </main>
-    );
+    return <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-5 text-[var(--text)]"><div className="max-w-xl rounded-[32px] border border-amber-300 bg-amber-50 p-8 shadow-[var(--shadow-soft)]"><h1 className="text-2xl font-semibold">Supabase não configurado</h1><p className="mt-4 leading-8 text-[var(--text-muted)]">Adiciona as variáveis públicas do Supabase para usar o browser com dados reais.</p></div></main>;
   }
 
   if (checkingSession) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] text-[var(--text)]">
-        <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]">
-          <LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />
-          A validar sessão do coach...
-        </div>
-      </main>
-    );
+    return <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] text-[var(--text)]"><div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />A validar sessão do coach...</div></main>;
   }
 
-  const coachName =
-    workspace.profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.email || "Coach";
-
+  const coachName = core.profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.email || "Coach";
   const metrics = [
-    { label: "Active clients", value: workspace.metrics.clients, Icon: Users, hint: "Clientes reais associados ao coach." },
-    { label: "Agenda today", value: workspace.metrics.agendaToday, Icon: CalendarDays, hint: "Marcações calendarizadas para hoje." },
-    { label: "Assessments", value: workspace.metrics.assessments, Icon: ClipboardList, hint: "Avaliações já guardadas." },
-    { label: "Trainings", value: workspace.metrics.trainings, Icon: Dumbbell, hint: "Sessões de treino no histórico." },
+    { label: "Active clients", value: core.metrics.clients, Icon: Users, hint: "Clientes reais associados ao coach." },
+    { label: "Agenda today", value: core.metrics.agendaToday, Icon: CalendarDays, hint: "Marcações calendarizadas para hoje." },
+    { label: "Assessments", value: core.metrics.assessments, Icon: ClipboardList, hint: "Avaliações já guardadas." },
+    { label: "Trainings", value: core.metrics.trainings, Icon: Dumbbell, hint: "Sessões de treino no histórico." },
   ];
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
+    <>
+      {bookingOpen ? <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">Nova marcação</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">Agendar sessão no browser</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">Marca diretamente para um cliente com o mesmo modelo de agenda da APK.</p></div><button onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-[var(--text-muted)]"><X size={18} /></button></div>{loadingBookingResources ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />A carregar clientes e tipos de marcação...</div> : <form onSubmit={handleCreateBooking} className="mt-6 grid gap-4"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Cliente</span><select value={bookingForm.studentId} onChange={(event) => updateBookingField("studentId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">Selecionar cliente</option>{bookingResources.students.map((student) => <option key={student.id} value={student.id}>{student.full_name}</option>)}</select></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Tipo de marcação</span><select value={bookingForm.bookingTypeId} onChange={(event) => updateBookingField("bookingTypeId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">Selecionar tipo</option>{bookingResources.bookingTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Data</span><input type="date" value={bookingForm.scheduledDate} onChange={(event) => updateBookingField("scheduledDate", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Hora</span><input type="time" value={bookingForm.scheduledTime} onChange={(event) => updateBookingField("scheduledTime", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label></div><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Notas</span><textarea value={bookingForm.notes} onChange={(event) => updateBookingField("notes", event.target.value)} rows={4} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" placeholder="Detalhes da sessão, foco do trabalho, contexto..." /></label>{bookingError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{bookingError}</div> : null}<div className="flex flex-col gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-medium text-[var(--text-muted)]">Cancelar</button><button type="submit" disabled={creatingBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{creatingBooking ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}Criar marcação</button></div></form>}</div></div> : null}
 
-      <div className="mx-auto grid min-h-screen max-w-[1600px] gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
-        <aside className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)]">
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2">
-              <LayoutDashboard size={20} className="text-[var(--accent-strong)]" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">APEX COACH</p>
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">web workspace</p>
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-strong)]">Coach account</p>
-            <p className="mt-2 text-lg font-semibold text-[var(--text)]">{coachName}</p>
-            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
-              Os mesmos separadores da APK, com um dashboard principal para juntar tudo de forma clean.
-            </p>
-          </div>
-
-          <nav className="mt-8 grid gap-2">
-            {APP_TABS.map(({ id, label, icon: Icon }) => {
-              const active = activeTab === id;
-              return (
-                <button
-                  key={id}
-                  onClick={() => setActiveTab(id)}
-                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition ${
-                    active
-                      ? "bg-[var(--accent)] text-[#081014] shadow-[0_18px_35px_rgba(42,208,125,0.2)]"
-                      : "border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
-                  }`}
-                >
-                  <Icon size={17} />
-                  {label}
-                </button>
-              );
-            })}
-          </nav>
-
-          <div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
-            <Link href="/" className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
-              Back to landing
-            </Link>
-            <button
-              onClick={handleSignOut}
-              disabled={signingOut}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)] disabled:opacity-60"
-            >
-              {signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}
-              Sign out
-            </button>
-          </div>
-        </aside>
-
-        <section className="grid gap-6">
-          <header className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)] sm:p-6">
-            <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Coach browser workspace</p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--text)] sm:text-5xl">
-              Dashboard first. A mesma estrutura da APK, com mais visão.
-            </h1>
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-[var(--text-muted)]">
-              Clientes, assessments, agenda, trainings e coach hub passam a viver no web com a mesma lógica do mobile.
-            </p>
-          </header>
-
-          {workspaceError ? (
-            <div className="rounded-[28px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">
-              {workspaceError}
-            </div>
-          ) : null}
-
-          {loadingWorkspace ? (
-            <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]">
-              <LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />
-              A carregar dados reais do coach...
-            </div>
-          ) : null}
-
-          <div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">
-            {APP_TABS.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${
-                  activeTab === id
-                    ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]"
-                    : "border-[var(--border)] bg-white text-[var(--text-muted)]"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {activeTab === "dashboard" ? (
-            <>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {metrics.map((metric) => (
-                  <MetricCard key={metric.label} {...metric} />
-                ))}
-              </div>
-
-              <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-                <SectionCard
-                  eyebrow="Agenda pulse"
-                  title="Próximas marcações"
-                  description="A agenda real do coach aparece logo no dashboard principal."
-                >
-                  {workspace.upcomingAgenda.length > 0 ? (
-                    <div className="grid gap-4">
-                      {workspace.upcomingAgenda.slice(0, 4).map((item) => (
-                        <PersonRow
-                          key={item.id}
-                          name={item.students?.full_name}
-                          detail={item.notes || item.booking_types?.name || item.item_type}
-                          meta={formatTime(item.scheduled_at)}
-                          colorHex={item.students?.client_color_hex}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyState title="Sem próximas marcações" text="Quando houver sessões futuras, elas aparecem aqui." />
-                  )}
-                </SectionCard>
-
-                <SectionCard
-                  eyebrow="Coach pulse"
-                  title="Resumo rápido"
-                  description="O browser fica com cara de cockpit, mas sem fugir ao ecossistema da app."
-                >
-                  <div className="grid gap-4">
-                    <div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-                      <div className="flex items-center gap-3">
-                        <Sparkles size={18} className="text-[var(--accent)]" />
-                        <div>
-                          <p className="font-medium text-[var(--text)]">Coach name</p>
-                          <p className="text-sm text-[var(--text-muted)]">{coachName}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-                      <div className="flex items-center gap-3">
-                        <CreditCard size={18} className="text-[var(--accent)]" />
-                        <div>
-                          <p className="font-medium text-[var(--text)]">Subscription</p>
-                          <p className="text-sm text-[var(--text-muted)]">
-                            {prettifyStatus(workspace.subscription?.status || "trialing")}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </SectionCard>
-              </div>
-            </>
-          ) : null}
-
-          {activeTab === "clients" ? (
-            <SectionCard
-              eyebrow="Clients"
-              title="Base real de clientes"
-              description="Os clientes usados na app aparecem aqui com detalhe rápido."
-            >
-              {workspace.students.length > 0 ? (
-                <div className="grid gap-4">
-                  {workspace.students.map((student) => (
-                    <PersonRow
-                      key={student.id}
-                      name={student.full_name}
-                      detail={student.main_goal || student.email}
-                      meta={formatDate(student.created_at)}
-                      colorHex={student.client_color_hex}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="Ainda sem clientes" text="Quando existirem clientes, este separador fica logo ativo." />
-              )}
-            </SectionCard>
-          ) : null}
-
-          {activeTab === "assessments" ? (
-            <SectionCard
-              eyebrow="Assessments"
-              title="Avaliações recentes"
-              description="Primeira leitura web das avaliações guardadas pelo coach."
-            >
-              {workspace.recentAssessments.length > 0 ? (
-                <div className="grid gap-4">
-                  {workspace.recentAssessments.map((item) => (
-                    <PersonRow
-                      key={item.id}
-                      name={item.students?.full_name}
-                      detail={`${Object.keys(item.fields || {}).length} métricas guardadas`}
-                      meta={formatDate(item.assessment_date, true)}
-                      colorHex={item.students?.client_color_hex}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="Sem avaliações" text="Ainda não existem avaliações no histórico desta conta." />
-              )}
-            </SectionCard>
-          ) : null}
-
-          {activeTab === "agenda" ? (
-            <SectionCard
-              eyebrow="Agenda"
-              title="Sessões futuras"
-              description="Separador dedicado à agenda real do coach."
-            >
-              {workspace.upcomingAgenda.length > 0 ? (
-                <div className="grid gap-4">
-                  {workspace.upcomingAgenda.map((item) => (
-                    <PersonRow
-                      key={item.id}
-                      name={item.students?.full_name}
-                      detail={`${item.booking_types?.name || item.item_type || "Agenda item"} · ${prettifyStatus(item.status)}`}
-                      meta={formatTime(item.scheduled_at)}
-                      colorHex={item.students?.client_color_hex}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="Agenda limpa" text="Não encontrámos marcações futuras neste momento." />
-              )}
-            </SectionCard>
-          ) : null}
-
-          {activeTab === "trainings" ? (
-            <SectionCard
-              eyebrow="Trainings"
-              title="Sessões de treino"
-              description="O histórico recente de treinos num formato limpo para web."
-            >
-              {workspace.recentTrainings.length > 0 ? (
-                <div className="grid gap-4">
-                  {workspace.recentTrainings.map((item) => (
-                    <PersonRow
-                      key={item.id}
-                      name={item.name || "Sessão sem título"}
-                      detail={item.students?.full_name || "Sem cliente associado"}
-                      meta={formatDate(item.session_date, true)}
-                      colorHex={item.students?.client_color_hex}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState title="Sem treinos" text="Ainda não há sessões de treino registadas para esta conta." />
-              )}
-            </SectionCard>
-          ) : null}
-
-          {activeTab === "coach" ? (
-            <div className="grid gap-6 xl:grid-cols-2">
-              <SectionCard
-                eyebrow="Coach hub"
-                title="Conta do coach"
-                description="A mesma ideia da zona Coach da APK, trazida para o browser."
-              >
-                <div className="grid gap-4">
-                  <div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Name</p>
-                    <p className="mt-2 font-semibold text-[var(--text)]">{coachName}</p>
-                  </div>
-                  <div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Email</p>
-                    <p className="mt-2 font-semibold text-[var(--text)]">{currentUser?.email || "Sem email"}</p>
-                  </div>
-                </div>
-              </SectionCard>
-
-              <SectionCard
-                eyebrow="Subscription"
-                title="Estado da conta"
-                description="Primeira versão do lado premium da conta dentro do web."
-              >
-                <div className="grid gap-4">
-                  <div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5">
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">Plan status</p>
-                    <p className="mt-2 text-2xl font-semibold text-[var(--text)]">
-                      {prettifyStatus(workspace.subscription?.status || "trialing")}
-                    </p>
-                    <p className="mt-2 leading-7 text-[var(--text-muted)]">
-                      {(workspace.subscription?.subscription_category || "apex_coach").toString().replace(/_/g, " ")}
-                      {workspace.subscription?.payment_method_last4
-                        ? ` · •••• ${workspace.subscription.payment_method_last4}`
-                        : ""}
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleSignOut}
-                    disabled={signingOut}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-semibold text-[var(--text)] disabled:opacity-60"
-                  >
-                    {signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}
-                    Terminar sessão
-                  </button>
-                </div>
-              </SectionCard>
-            </div>
-          ) : null}
-        </section>
-      </div>
-    </main>
+      <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+        <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
+        <div className="mx-auto grid min-h-screen max-w-[1600px] gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
+          <aside className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)]"><div className="flex items-center gap-3"><div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2"><LayoutDashboard size={20} className="text-[var(--accent-strong)]" /></div><div><p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">APEX COACH</p><p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">web workspace</p></div></div><div className="mt-8 rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-4"><p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-strong)]">Coach account</p><p className="mt-2 text-lg font-semibold text-[var(--text)]">{coachName}</p><p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">Carregamento mais rápido no arranque e agenda pronta para ação.</p></div><nav className="mt-8 grid gap-2">{APP_TABS.map(({ id, label, icon: Icon }) => { const active = activeTab === id; return <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition ${active ? "bg-[var(--accent)] text-[#081014] shadow-[0_18px_35px_rgba(42,208,125,0.2)]" : "border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}><Icon size={17} />{label}</button>; })}</nav><div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4"><button onClick={openBookingModal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />Nova marcação</button><Link href="/" className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">Back to landing</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}Sign out</button></div></aside>
+          <section className="grid gap-6"><header className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)] sm:p-6"><p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Coach browser workspace</p><h1 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--text)] sm:text-5xl">Agenda first. Mais rápida, mais visível, mais prática.</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-[var(--text-muted)]">O núcleo do coach entra primeiro e o resto dos separadores carrega quando precisas deles.</p></header>{workspaceError ? <div className="rounded-[28px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />A carregar núcleo rápido do coach...</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{APP_TABS.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
+          {activeTab === "dashboard" ? <><AgendaCards items={core.upcomingAgenda.slice(0, 6)} onCreate={openBookingModal} /><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}</div><div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]"><SectionCard eyebrow="Coach pulse" title="Resumo rápido" description="O essencial do coach, sem esperar pelos separadores mais pesados."><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><Sparkles size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">Coach name</p><p className="text-sm text-[var(--text-muted)]">{coachName}</p></div></div></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><CreditCard size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">Subscription</p><p className="text-sm text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p></div></div></div></div></SectionCard><SectionCard eyebrow="Quick action" title="Marcar mais depressa" description="Abre a criação de marcação e salta logo para a agenda atualizada." action={<button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />Criar agora</button>}><p className="leading-7 text-[var(--text-muted)]">O objetivo aqui é reduzir cliques: abrir, escolher cliente, selecionar tipo e marcar.</p></SectionCard></div></> : null}
+          {activeTab === "clients" ? <SectionCard eyebrow="Clients" title="Base real de clientes" description="Carregamento sob pedido para manter o arranque do app mais rápido.">{loadingTabs.clients ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />A carregar clientes...</div> : lists.students.length > 0 ? <div className="grid gap-4">{lists.students.map((student) => <PersonRow key={student.id} name={student.full_name} detail={student.main_goal || student.email} meta={formatDate(student.created_at)} colorHex={student.client_color_hex} />)}</div> : <EmptyState title="Ainda sem clientes" text="Quando existirem clientes, este separador fica logo ativo." />}</SectionCard> : null}
+          {activeTab === "assessments" ? <SectionCard eyebrow="Assessments" title="Avaliações recentes" description="Separador carregado apenas quando realmente entras nele.">{loadingTabs.assessments ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />A carregar avaliações...</div> : lists.recentAssessments.length > 0 ? <div className="grid gap-4">{lists.recentAssessments.map((item) => <PersonRow key={item.id} name={item.students?.full_name} detail={`${Object.keys(item.fields || {}).length} métricas guardadas`} meta={formatDate(item.assessment_date, true)} colorHex={item.students?.client_color_hex} />)}</div> : <EmptyState title="Sem avaliações" text="Ainda não existem avaliações no histórico desta conta." />}</SectionCard> : null}
+          {activeTab === "agenda" ? <AgendaCards items={core.upcomingAgenda} onCreate={openBookingModal} /> : null}
+          {activeTab === "trainings" ? <SectionCard eyebrow="Trainings" title="Sessões de treino" description="O histórico de treinos entra só quando abres este separador.">{loadingTabs.trainings ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />A carregar treinos...</div> : lists.recentTrainings.length > 0 ? <div className="grid gap-4">{lists.recentTrainings.map((item) => <PersonRow key={item.id} name={item.name || "Sessão sem título"} detail={item.students?.full_name || "Sem cliente associado"} meta={formatDate(item.session_date, true)} colorHex={item.students?.client_color_hex} />)}</div> : <EmptyState title="Sem treinos" text="Ainda não há sessões de treino registadas para esta conta." />}</SectionCard> : null}
+          {activeTab === "coach" ? <div className="grid gap-6 xl:grid-cols-2"><SectionCard eyebrow="Coach hub" title="Conta do coach" description="O núcleo da conta continua acessível, mas sem atrasar o arranque do dashboard."><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Name</p><p className="mt-2 font-semibold text-[var(--text)]">{coachName}</p></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Email</p><p className="mt-2 font-semibold text-[var(--text)]">{currentUser?.email || "Sem email"}</p></div></div></SectionCard><SectionCard eyebrow="Subscription" title="Estado da conta" description="Leitura rápida do plano e acesso do coach."><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">Plan status</p><p className="mt-2 text-2xl font-semibold text-[var(--text)]">{prettifyStatus(core.subscription?.status || "trialing")}</p><p className="mt-2 leading-7 text-[var(--text-muted)]">{(core.subscription?.subscription_category || "apex_coach").toString().replace(/_/g, " ")}{core.subscription?.payment_method_last4 ? ` · •••• ${core.subscription.payment_method_last4}` : ""}</p></div><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-semibold text-[var(--text)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}Terminar sessão</button></div></SectionCard></div> : null}
+          </section>
+        </div>
+      </main>
+    </>
   );
 }
