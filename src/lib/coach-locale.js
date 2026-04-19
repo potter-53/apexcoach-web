@@ -1,3 +1,10 @@
+export const COACH_LANGUAGE_OPTIONS = [
+  { value: "en", label: "English", short: "EN", flag: "\uD83C\uDDEC\uD83C\uDDE7" },
+  { value: "pt", label: "Português", short: "PT", flag: "\uD83C\uDDF5\uD83C\uDDF9" },
+  { value: "es", label: "Español", short: "ES", flag: "\uD83C\uDDEA\uD83C\uDDF8" },
+  { value: "fr", label: "Français", short: "FR", flag: "\uD83C\uDDEB\uD83C\uDDF7" },
+];
+
 export function normalizeCoachLocale(value) {
   const normalized = String(value ?? "").trim().toLowerCase();
 
@@ -40,6 +47,21 @@ export function guessCoachLocale() {
   } catch {}
 
   return "en";
+}
+
+export function getBrowserStoredLocale() {
+  try {
+    if (typeof window === "undefined") return null;
+    const stored = window.localStorage.getItem("apexcoach-locale");
+    if (!stored) return null;
+    return normalizeCoachLocale(stored);
+  } catch {
+    return null;
+  }
+}
+
+export function getInitialBrowserLocale() {
+  return getBrowserStoredLocale() || guessCoachLocale();
 }
 
 export function applyCoachLocale(locale) {

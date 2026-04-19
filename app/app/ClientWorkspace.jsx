@@ -5,6 +5,160 @@ import { CalendarPlus2, ClipboardPlus, History, LoaderCircle, PencilLine, Trash2
 
 import { getSupabaseBrowserClient } from "../../src/lib/supabase-browser";
 
+const COPY = {
+  en: {
+    noDate: "No date",
+    loadingClients: "Loading clients...",
+    clients: "Clients",
+    clientList: "Client list",
+    clientPage: "Client page",
+    age: "Age",
+    height: "Height",
+    id: "ID",
+    addSession: "Add session",
+    addAssessment: "Add assessment",
+    trainingHistory: "Training history",
+    fullName: "Full name",
+    email: "Email",
+    heightCm: "Height (cm)",
+    mainGoal: "Main goal",
+    clinicalHistory: "Clinical history",
+    saveClient: "Save client",
+    deleteClient: "Delete client",
+    studentHistory: "Student history",
+    noHistory: "No history yet for this client.",
+    selectClient: "Select a client to open a client page similar to the APK.",
+    noGoal: "No goal yet",
+    deletePrompt: "Delete",
+    clientFallback: "Client",
+    metricsSaved: "metrics saved",
+    trainingSession: "Training session",
+    booking: "Booking",
+    agendaLabel: "Agenda",
+    assessmentLabel: "Assessment",
+    trainingLabel: "Training",
+    loadClientsError: "Could not load clients.",
+    saveClientError: "Could not save client.",
+    deleteClientError: "Could not delete client.",
+  },
+  pt: {
+    noDate: "Sem data",
+    loadingClients: "A carregar clientes...",
+    clients: "Clientes",
+    clientList: "Lista de clientes",
+    clientPage: "Página do cliente",
+    age: "Idade",
+    height: "Altura",
+    id: "ID",
+    addSession: "Adicionar sessão",
+    addAssessment: "Adicionar avaliação",
+    trainingHistory: "Histórico de treino",
+    fullName: "Nome completo",
+    email: "Email",
+    heightCm: "Altura (cm)",
+    mainGoal: "Objetivo principal",
+    clinicalHistory: "Historial clínico",
+    saveClient: "Guardar cliente",
+    deleteClient: "Apagar cliente",
+    studentHistory: "Histórico do aluno",
+    noHistory: "Ainda não há histórico para este cliente.",
+    selectClient: "Seleciona um cliente para abrir uma página semelhante à APK.",
+    noGoal: "Sem objetivo ainda",
+    deletePrompt: "Apagar",
+    clientFallback: "Cliente",
+    metricsSaved: "métricas guardadas",
+    trainingSession: "Sessão de treino",
+    booking: "Marcação",
+    agendaLabel: "Agenda",
+    assessmentLabel: "Avaliação",
+    trainingLabel: "Treino",
+    loadClientsError: "Não foi possível carregar os clientes.",
+    saveClientError: "Não foi possível guardar o cliente.",
+    deleteClientError: "Não foi possível apagar o cliente.",
+  },
+  es: {
+    noDate: "Sin fecha",
+    loadingClients: "Cargando clientes...",
+    clients: "Clientes",
+    clientList: "Lista de clientes",
+    clientPage: "Página del cliente",
+    age: "Edad",
+    height: "Altura",
+    id: "ID",
+    addSession: "Añadir sesión",
+    addAssessment: "Añadir evaluación",
+    trainingHistory: "Historial de entrenamiento",
+    fullName: "Nombre completo",
+    email: "Email",
+    heightCm: "Altura (cm)",
+    mainGoal: "Objetivo principal",
+    clinicalHistory: "Historial clínico",
+    saveClient: "Guardar cliente",
+    deleteClient: "Eliminar cliente",
+    studentHistory: "Historial del alumno",
+    noHistory: "Todavía no hay historial para este cliente.",
+    selectClient: "Selecciona un cliente para abrir una página similar a la APK.",
+    noGoal: "Sin objetivo todavía",
+    deletePrompt: "Eliminar",
+    clientFallback: "Cliente",
+    metricsSaved: "métricas guardadas",
+    trainingSession: "Sesión de entrenamiento",
+    booking: "Reserva",
+    agendaLabel: "Agenda",
+    assessmentLabel: "Evaluación",
+    trainingLabel: "Entrenamiento",
+    loadClientsError: "No se pudieron cargar los clientes.",
+    saveClientError: "No se pudo guardar el cliente.",
+    deleteClientError: "No se pudo eliminar el cliente.",
+  },
+  fr: {
+    noDate: "Sans date",
+    loadingClients: "Chargement des clients...",
+    clients: "Clients",
+    clientList: "Liste des clients",
+    clientPage: "Page client",
+    age: "Âge",
+    height: "Taille",
+    id: "ID",
+    addSession: "Ajouter une séance",
+    addAssessment: "Ajouter une évaluation",
+    trainingHistory: "Historique d'entraînement",
+    fullName: "Nom complet",
+    email: "Email",
+    heightCm: "Taille (cm)",
+    mainGoal: "Objectif principal",
+    clinicalHistory: "Historique clinique",
+    saveClient: "Enregistrer le client",
+    deleteClient: "Supprimer le client",
+    studentHistory: "Historique de l'élève",
+    noHistory: "Aucun historique pour ce client pour le moment.",
+    selectClient: "Sélectionne un client pour ouvrir une page proche de l'APK.",
+    noGoal: "Aucun objectif pour le moment",
+    deletePrompt: "Supprimer",
+    clientFallback: "Client",
+    metricsSaved: "métriques enregistrées",
+    trainingSession: "Séance d'entraînement",
+    booking: "Rendez-vous",
+    agendaLabel: "Agenda",
+    assessmentLabel: "Évaluation",
+    trainingLabel: "Entraînement",
+    loadClientsError: "Impossible de charger les clients.",
+    saveClientError: "Impossible d'enregistrer le client.",
+    deleteClientError: "Impossible de supprimer le client.",
+  },
+};
+
+function getCopy(locale) {
+  return COPY[locale] || COPY.en;
+}
+
+function localeTag(locale) {
+  if (locale === "pt") return "pt-PT";
+  if (locale === "es") return "es-ES";
+  if (locale === "fr") return "fr-FR";
+  return "en-GB";
+}
+
 function calculateAge(value) {
   if (!value) return "-";
   const birth = new Date(value);
@@ -16,9 +170,9 @@ function calculateAge(value) {
   return age;
 }
 
-function formatDate(value) {
-  if (!value) return "No date";
-  return new Date(value).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+function formatDate(value, locale) {
+  if (!value) return getCopy(locale).noDate;
+  return new Date(value).toLocaleDateString(localeTag(locale), { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function normalizeStudents(rows) {
@@ -28,7 +182,7 @@ function normalizeStudents(rows) {
   }));
 }
 
-function normalizeHistory(items, type) {
+function normalizeHistory(items, type, copy) {
   return items.map((item) => {
     let occurredAt = item.assessment_date || item.session_date || item.scheduled_at || item.created_at;
     if (type === "assessment") occurredAt = item.assessment_date;
@@ -40,17 +194,18 @@ function normalizeHistory(items, type) {
       type,
       title:
         type === "assessment"
-          ? `${Object.keys(item.fields || {}).length} metrics saved`
+          ? `${Object.keys(item.fields || {}).length} ${copy.metricsSaved}`
           : type === "training"
-            ? item.name || "Training session"
-            : item.booking_types?.name || item.item_type || "Booking",
+            ? item.name || copy.trainingSession
+            : item.booking_types?.name || item.item_type || copy.booking,
       detail: item.notes || item.status || "",
       occurredAt,
     };
   });
 }
 
-export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOpenAssessments, onOpenTrainings }) {
+export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOpenAssessments, onOpenTrainings, locale = "en" }) {
+  const copy = getCopy(locale);
   const [students, setStudents] = useState([]);
   const [selectedId, setSelectedId] = useState("");
   const [history, setHistory] = useState([]);
@@ -88,7 +243,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
         setSelectedId((current) => current || nextStudents[0]?.id || "");
       } catch (loadError) {
         if (!mounted) return;
-        setError(loadError?.message || "Could not load clients.");
+        setError(loadError?.message || copy.loadClientsError);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -143,9 +298,9 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
         if (failed?.error) throw failed.error;
 
         const timeline = [
-          ...normalizeHistory(agendaResponse.data ?? [], "agenda"),
-          ...normalizeHistory(assessmentsResponse.data ?? [], "assessment"),
-          ...normalizeHistory(trainingsResponse.data ?? [], "training"),
+          ...normalizeHistory(agendaResponse.data ?? [], "agenda", copy),
+          ...normalizeHistory(assessmentsResponse.data ?? [], "assessment", copy),
+          ...normalizeHistory(trainingsResponse.data ?? [], "training", copy),
         ].sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime());
 
         if (!mounted) return;
@@ -160,7 +315,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
     return () => {
       mounted = false;
     };
-  }, [currentUser, selectedStudent]);
+  }, [copy, currentUser, selectedStudent]);
 
   async function saveClient() {
     if (!selectedStudent || !form) return;
@@ -198,14 +353,14 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
         ),
       );
     } catch (saveError) {
-      setError(saveError?.message || "Could not save client.");
+      setError(saveError?.message || copy.saveClientError);
     } finally {
       setSaving(false);
     }
   }
 
   async function deleteClient() {
-    if (!selectedStudent || !window.confirm(`Delete ${selectedStudent.full_name}?`)) return;
+    if (!selectedStudent || !window.confirm(`${copy.deletePrompt} ${selectedStudent.full_name}?`)) return;
     setSaving(true);
     setError("");
 
@@ -218,7 +373,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
       setSelectedId("");
       setHistory([]);
     } catch (deleteError) {
-      setError(deleteError?.message || "Could not delete client.");
+      setError(deleteError?.message || copy.deleteClientError);
     } finally {
       setSaving(false);
     }
@@ -227,10 +382,10 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
   return (
     <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
       <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
-        <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Clients</p>
-        <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">Client list</h2>
+        <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.clients}</p>
+        <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.clientList}</h2>
 
-        {loading ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />Loading clients...</div> : null}
+        {loading ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingClients}</div> : null}
         {error ? <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
 
         <div className="mt-6 grid gap-3">
@@ -243,8 +398,8 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
               <div className="flex items-center gap-3">
                 <span className="h-3 w-3 rounded-full" style={{ background: student.clientColor }} />
                 <div>
-                  <p className="font-medium text-[var(--text)]">{student.full_name || "Client"}</p>
-                  <p className="text-sm text-[var(--text-muted)]">{student.main_goal || student.email || "No goal yet"}</p>
+                  <p className="font-medium text-[var(--text)]">{student.full_name || copy.clientFallback}</p>
+                  <p className="text-sm text-[var(--text-muted)]">{student.main_goal || student.email || copy.noGoal}</p>
                 </div>
               </div>
             </button>
@@ -257,27 +412,27 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
           <>
             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Client page</p>
+                <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.clientPage}</p>
                 <h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">{selectedStudent.full_name}</h2>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">Age: {calculateAge(selectedStudent.birth_date)}</span>
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">Height: {selectedStudent.height_cm || "-"} cm</span>
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">ID: {selectedStudent.legacy_id_pessoa || selectedStudent.id}</span>
+                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">{copy.age}: {calculateAge(selectedStudent.birth_date)}</span>
+                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">{copy.height}: {selectedStudent.height_cm || "-"} cm</span>
+                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">{copy.id}: {selectedStudent.legacy_id_pessoa || selectedStudent.id}</span>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => onOpenCreateBooking(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
                   <CalendarPlus2 size={16} />
-                  Add session
+                  {copy.addSession}
                 </button>
                 <button onClick={() => onOpenAssessments(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)]">
                   <ClipboardPlus size={16} />
-                  Add assessment
+                  {copy.addAssessment}
                 </button>
                 <button onClick={() => onOpenTrainings(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)]">
                   <UserRound size={16} />
-                  Training history
+                  {copy.trainingHistory}
                 </button>
               </div>
             </div>
@@ -285,36 +440,36 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
             <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
               <div className="grid gap-4">
                 <label className="grid gap-2">
-                  <span className="text-sm text-[var(--text-muted)]">Full name</span>
+                  <span className="text-sm text-[var(--text-muted)]">{copy.fullName}</span>
                   <input value={form.full_name} onChange={(event) => setForm((current) => ({ ...current, full_name: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3" />
                 </label>
                 <label className="grid gap-2">
-                  <span className="text-sm text-[var(--text-muted)]">Email</span>
+                  <span className="text-sm text-[var(--text-muted)]">{copy.email}</span>
                   <input value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3" />
                 </label>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2">
-                    <span className="text-sm text-[var(--text-muted)]">Height (cm)</span>
+                    <span className="text-sm text-[var(--text-muted)]">{copy.heightCm}</span>
                     <input value={form.height_cm} onChange={(event) => setForm((current) => ({ ...current, height_cm: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3" />
                   </label>
                   <label className="grid gap-2">
-                    <span className="text-sm text-[var(--text-muted)]">Main goal</span>
+                    <span className="text-sm text-[var(--text-muted)]">{copy.mainGoal}</span>
                     <input value={form.main_goal} onChange={(event) => setForm((current) => ({ ...current, main_goal: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3" />
                   </label>
                 </div>
                 <label className="grid gap-2">
-                  <span className="text-sm text-[var(--text-muted)]">Clinical history</span>
+                  <span className="text-sm text-[var(--text-muted)]">{copy.clinicalHistory}</span>
                   <textarea rows={5} value={form.clinical_history} onChange={(event) => setForm((current) => ({ ...current, clinical_history: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3" />
                 </label>
 
                 <div className="flex flex-wrap gap-3">
                   <button onClick={saveClient} disabled={saving} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)]">
                     {saving ? <LoaderCircle size={16} className="animate-spin" /> : <PencilLine size={16} />}
-                    Save client
+                    {copy.saveClient}
                   </button>
                   <button onClick={deleteClient} disabled={saving} className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-3 font-semibold text-rose-700">
                     <Trash2 size={16} />
-                    Delete client
+                    {copy.deleteClient}
                   </button>
                 </div>
               </div>
@@ -322,21 +477,21 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
               <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
                 <div className="flex items-center gap-3">
                   <History size={18} className="text-[var(--accent)]" />
-                  <h3 className="text-xl font-semibold text-[var(--text)]">Student history</h3>
+                  <h3 className="text-xl font-semibold text-[var(--text)]">{copy.studentHistory}</h3>
                 </div>
                 <div className="mt-5 grid gap-3">
                   {history.length > 0 ? (
                     history.map((item) => (
                       <div key={item.id} className="rounded-2xl border border-[var(--border)] bg-white px-4 py-4">
-                        <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.type}</p>
+                        <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.type === "agenda" ? copy.agendaLabel : item.type === "assessment" ? copy.assessmentLabel : copy.trainingLabel}</p>
                         <p className="mt-2 font-semibold text-[var(--text)]">{item.title}</p>
                         {item.detail ? <p className="mt-2 text-sm text-[var(--text-muted)]">{item.detail}</p> : null}
-                        <p className="mt-3 text-sm text-[var(--text-muted)]">{formatDate(item.occurredAt)}</p>
+                        <p className="mt-3 text-sm text-[var(--text-muted)]">{formatDate(item.occurredAt, locale)}</p>
                       </div>
                     ))
                   ) : (
                     <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white px-4 py-8 text-center text-[var(--text-muted)]">
-                      No history yet for this client.
+                      {copy.noHistory}
                     </div>
                   )}
                 </div>
@@ -345,7 +500,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
           </>
         ) : (
           <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-8 text-center text-[var(--text-muted)]">
-            Select a client to open a client page similar to the APK.
+            {copy.selectClient}
           </div>
         )}
       </section>

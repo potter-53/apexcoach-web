@@ -12,6 +12,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
 
 const screenshots = [
   "/screenshot_1.jpeg",
@@ -103,6 +104,18 @@ const copy = {
     modalTitle: "Próximo passo recomendado",
     modalText:
       "Fechar a homepage de apexcoach.pt primeiro, depois ligar os CTAs ao trial, login web e download da app para criar uma entrada única e clara no produto.",
+    workspaceLabel: "Workspace",
+    boardTitle: "Painel de coaching de hoje",
+    clientsMetric: "Clientes",
+    sessionsMetric: "Sessões",
+    browserMockText: "Layout browser focado em planeamento, visibilidade e trabalho administrativo mais rápido.",
+    closeLabel: "Fechar",
+    trialLogin: "Trial + login web",
+    demoLabel: "Ver dashboard demo",
+    sessionMode: "Modo sessão",
+    sessionModeText: "Mudanças rápidas, zero fricção",
+    desktopView: "Vista desktop",
+    desktopViewText: "Planeamento com visibilidade total",
   },
   en: {
     navPlatform: "Platform",
@@ -187,6 +200,210 @@ const copy = {
     modalTitle: "Recommended next step",
     modalText:
       "Lock the apexcoach.pt homepage first, then connect CTAs to the trial, web login, and app download so the product has one clear front door.",
+    workspaceLabel: "Workspace",
+    boardTitle: "Today's coaching board",
+    clientsMetric: "Clients",
+    sessionsMetric: "Sessions",
+    browserMockText: "Browser layout focused on planning, visibility, and faster admin work.",
+    closeLabel: "Close",
+    trialLogin: "Trial + login web",
+    demoLabel: "View dashboard demo",
+    sessionMode: "Session mode",
+    sessionModeText: "Fast changes, zero friction",
+    desktopView: "Desktop view",
+    desktopViewText: "Planning with full visibility",
+  },
+  es: {
+    navPlatform: "Plataforma",
+    navFlow: "Flujo",
+    navBrowser: "Browser",
+    navPlans: "Posicionamiento",
+    navCta: "Solicitar acceso",
+    badge: "Mobile-first en el terreno. Complemento web premium para el coach.",
+    titleA: "La app nació para el terreno.",
+    titleB: "Ahora gana",
+    titleC: "un complemento web premium.",
+    subtitle:
+      "APEX COACH sigue centrada en la rapidez dentro de la .apk durante el trabajo en el terreno. El browser entra ahora como una extensión premium para organizar mejor la operación, ver más información y trabajar con más comodidad en una pantalla grande.",
+    primaryCta: "Lanzar apexcoach.pt",
+    secondaryCta: "Ver experiencia",
+    trust1: "Misma cuenta",
+    trust2: "Mismo flujo",
+    trust3: "App + complemento web",
+    heroMobileTag: "En el móvil",
+    heroMobileTitle: "Listo para orientar en segundos",
+    heroMobileText:
+      "Abrir la sesión, ajustar cargas, registrar notas y pasar al siguiente atleta sin perder ritmo.",
+    heroBrowserTag: "En browser",
+    heroBrowserTitle: "Más espacio para decidir mejor",
+    heroBrowserText:
+      "Agenda, planificación, evaluaciones, informes y gestión de clientes lado a lado para trabajar con más claridad.",
+    sectionPlatform: "Por qué funciona",
+    platformTitle: "La app sigue siendo el núcleo. El browser eleva la experiencia.",
+    platformText:
+      "El producto empezó mobile-first para responder al contexto real de la sesión. El complemento web añade profundidad, organización y una percepción más premium al trabajo del coach.",
+    phoneCardTitle: "APK para acción inmediata",
+    phoneCardText:
+      "Ideal para sesiones presenciales, cambios rápidos, consulta de historial y registro en directo.",
+    browserCardTitle: "Browser para más profundidad",
+    browserCardText:
+      "Ideal para bloques de entrenamiento, análisis de progreso, organización semanal y gestión con más información visible.",
+    flowTag: "Flujo del coach",
+    flowTitle: "Una experiencia pensada para el día real.",
+    flowCards: [
+      {
+        title: "Antes de la sesión",
+        text: "En el browser, el coach organiza la semana, revisa la agenda, prepara el entrenamiento y confirma prioridades.",
+      },
+      {
+        title: "Durante la sesión",
+        text: "En la .apk, el coach va directo a lo esencial: sesión, notas, cargas, RPE y decisiones rápidas en el momento.",
+      },
+      {
+        title: "Después de la sesión",
+        text: "En el formato que resulte más práctico, cierra registros, revisa el progreso y mantiene el seguimiento sin fricción.",
+      },
+    ],
+    browserTag: "Modo browser",
+    browserTitle: "La web no sustituye la app. La potencia.",
+    browserText:
+      "La homepage de apexcoach.pt debe mostrar que el browser es el complemento premium de la experiencia móvil. La app resuelve el momento de la sesión. La web resuelve planificación, gestión y una visión más amplia de la operación.",
+    browserPoints: [
+      "Más información visible por cliente",
+      "Planificación y análisis lado a lado",
+      "Mejor experiencia en pantallas grandes",
+      "Continuidad total con la cuenta de la app",
+    ],
+    featureTag: "Lo que gana el coach",
+    featureTitle: "Rapidez en el terreno. Más estatus y control fuera de él.",
+    features: [
+      "Abrir y trabajar en la app durante la sesión",
+      "Continuar en el browser sin reaprender nada",
+      "Centralizar clientes, evaluaciones, entrenamiento e informes",
+      "Reducir trabajo manual y seguimiento disperso",
+      "Escalar la operación sin perder simplicidad",
+      "Transmitir una experiencia más premium y más profesional",
+    ],
+    plansTag: "Posicionamiento",
+    plansTitle: "El mensaje correcto para apexcoach.pt",
+    plansText:
+      "La promesa debe ser simple: la app sigue siendo la herramienta rápida del terreno, y el browser es la mejora premium para gestionar mejor, ver más y trabajar con más claridad.",
+    closingTitle: "Sí, podemos hacerlo.",
+    closingText:
+      "Y tiene todo el sentido. El siguiente paso es posicionar la app como núcleo del producto y presentar la web como el complemento premium que eleva la experiencia del coach.",
+    closingPrimary: "Seguir construyendo",
+    closingSecondary: "Ajustar copy y oferta",
+    modalTitle: "Siguiente paso recomendado",
+    modalText:
+      "Primero cierra la homepage de apexcoach.pt y después conecta los CTAs al trial, al login web y a la descarga de la app para crear una entrada única y clara al producto.",
+    workspaceLabel: "Workspace",
+    boardTitle: "Panel de coaching de hoy",
+    clientsMetric: "Clientes",
+    sessionsMetric: "Sesiones",
+    browserMockText: "Layout browser centrado en planificación, visibilidad y trabajo administrativo más rápido.",
+    closeLabel: "Cerrar",
+    trialLogin: "Trial + login web",
+    demoLabel: "Ver dashboard demo",
+    sessionMode: "Modo sesión",
+    sessionModeText: "Cambios rápidos, cero fricción",
+    desktopView: "Vista desktop",
+    desktopViewText: "Planificación con visibilidad total",
+  },
+  fr: {
+    navPlatform: "Plateforme",
+    navFlow: "Flux",
+    navBrowser: "Navigateur",
+    navPlans: "Positionnement",
+    navCta: "Demander l'accès",
+    badge: "Mobile-first sur le terrain. Complément web premium pour le coach.",
+    titleA: "L'app est née pour le terrain.",
+    titleB: "Elle gagne maintenant",
+    titleC: "un complément web premium.",
+    subtitle:
+      "APEX COACH reste centrée sur la rapidité dans la .apk pendant le travail sur le terrain. Le navigateur arrive comme une extension premium pour mieux organiser l'opération, voir plus d'informations et travailler plus confortablement sur un grand écran.",
+    primaryCta: "Lancer apexcoach.pt",
+    secondaryCta: "Voir l'expérience",
+    trust1: "Même compte",
+    trust2: "Même workflow",
+    trust3: "App + complément web",
+    heroMobileTag: "Sur mobile",
+    heroMobileTitle: "Prêt à coacher en quelques secondes",
+    heroMobileText:
+      "Ouvrir la séance, ajuster la charge, enregistrer des notes et passer à l'athlète suivant sans perdre le rythme.",
+    heroBrowserTag: "Dans le navigateur",
+    heroBrowserTitle: "Plus d'espace pour mieux décider",
+    heroBrowserText:
+      "Agenda, planification, évaluations, rapports et gestion des clients côte à côte pour travailler avec plus de clarté.",
+    sectionPlatform: "Pourquoi ça marche",
+    platformTitle: "L'app reste le cœur. Le navigateur élève l'expérience.",
+    platformText:
+      "Le produit a commencé mobile-first pour servir le contexte réel des séances. Le complément web ajoute profondeur, organisation et une perception plus premium au travail du coach.",
+    phoneCardTitle: "APK pour l'action immédiate",
+    phoneCardText:
+      "Parfait pour les séances en présentiel, les ajustements rapides, la consultation de l'historique et l'enregistrement en direct.",
+    browserCardTitle: "Navigateur pour aller plus loin",
+    browserCardText:
+      "Parfait pour les blocs d'entraînement, l'analyse de progression, l'organisation de la semaine et une gestion avec plus d'informations visibles.",
+    flowTag: "Flux du coach",
+    flowTitle: "Une expérience pensée pour la vraie journée de travail.",
+    flowCards: [
+      {
+        title: "Avant la séance",
+        text: "Dans le navigateur, le coach organise la semaine, revoit l'agenda, prépare l'entraînement et confirme les priorités.",
+      },
+      {
+        title: "Pendant la séance",
+        text: "Dans la .apk, le coach va directement à l'essentiel : séance, notes, charges, RPE et décisions rapides sur le moment.",
+      },
+      {
+        title: "Après la séance",
+        text: "Dans le format le plus pratique, il finalise les enregistrements, suit la progression et garde le suivi sans friction.",
+      },
+    ],
+    browserTag: "Mode navigateur",
+    browserTitle: "Le web ne remplace pas l'app. Il la valorise.",
+    browserText:
+      "La homepage de apexcoach.pt doit montrer que le navigateur est le complément premium de l'expérience mobile. L'app gère le moment de la séance. Le web gère la planification, la gestion et une lecture plus large de l'opération.",
+    browserPoints: [
+      "Plus d'informations visibles par client",
+      "Planification et analyse côte à côte",
+      "Meilleure expérience sur grand écran",
+      "Continuité totale avec le compte de l'app",
+    ],
+    featureTag: "Ce que gagne le coach",
+    featureTitle: "Vitesse sur le terrain. Plus de statut et de contrôle en dehors.",
+    features: [
+      "Ouvrir et travailler dans l'app pendant les séances",
+      "Continuer dans le navigateur sans rien réapprendre",
+      "Centraliser clients, évaluations, entraînement et rapports",
+      "Réduire le travail manuel et le suivi dispersé",
+      "Faire évoluer l'opération sans perdre en simplicité",
+      "Offrir une expérience plus premium et plus professionnelle",
+    ],
+    plansTag: "Positionnement",
+    plansTitle: "Le bon message pour apexcoach.pt",
+    plansText:
+      "La promesse doit être simple : l'app reste l'outil rapide du terrain et le navigateur devient l'upgrade premium pour mieux gérer, mieux voir et travailler avec plus de clarté.",
+    closingTitle: "Oui, on peut le faire.",
+    closingText:
+      "Et cela a beaucoup de sens. La prochaine étape consiste à positionner l'app comme le cœur du produit et à présenter le web comme le complément premium qui élève l'expérience du coach.",
+    closingPrimary: "Continuer la construction",
+    closingSecondary: "Ajuster le copy et l'offre",
+    modalTitle: "Prochaine étape recommandée",
+    modalText:
+      "Verrouille d'abord la homepage de apexcoach.pt, puis relie les CTAs à l'essai, au login web et au téléchargement de l'app pour créer une entrée unique et claire dans le produit.",
+    workspaceLabel: "Workspace",
+    boardTitle: "Tableau de coaching du jour",
+    clientsMetric: "Clients",
+    sessionsMetric: "Séances",
+    browserMockText: "Layout navigateur centré sur la planification, la visibilité et un travail administratif plus rapide.",
+    closeLabel: "Fermer",
+    trialLogin: "Essai + login web",
+    demoLabel: "Voir le dashboard démo",
+    sessionMode: "Mode séance",
+    sessionModeText: "Changements rapides, zéro friction",
+    desktopView: "Vue desktop",
+    desktopViewText: "Planification avec visibilité totale",
   },
 };
 
@@ -240,7 +457,7 @@ function PhoneMock({ src, alt }) {
   );
 }
 
-function BrowserMock({ src, title }) {
+function BrowserMock({ src, title, copy }) {
   return (
     <div className="overflow-hidden rounded-[30px] border border-[var(--border-strong)] bg-[var(--surface-solid)] shadow-[var(--shadow-panel)]">
       <div className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--surface-muted)] px-5 py-4">
@@ -258,22 +475,22 @@ function BrowserMock({ src, title }) {
         </div>
         <div className="flex flex-col gap-4 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,245,245,0.92))] p-5">
           <div className="rounded-2xl border border-[var(--border)] bg-white p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Workspace</p>
-            <p className="mt-2 text-lg font-semibold text-[var(--text)]">Today&apos;s coaching board</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">{copy.workspaceLabel}</p>
+            <p className="mt-2 text-lg font-semibold text-[var(--text)]">{copy.boardTitle}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-2xl border border-[var(--border)] bg-white p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Clients</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">{copy.clientsMetric}</p>
               <p className="mt-2 text-3xl font-semibold text-[var(--text)]">24</p>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-white p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Sessions</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">{copy.sessionsMetric}</p>
               <p className="mt-2 text-3xl font-semibold text-[var(--text)]">11</p>
             </div>
           </div>
           <div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-4">
             <p className="text-sm text-[var(--text-muted)]">
-              Browser layout focused on planning, visibility, and faster admin work.
+              {copy.browserMockText}
             </p>
           </div>
         </div>
@@ -282,7 +499,7 @@ function BrowserMock({ src, title }) {
   );
 }
 
-function Modal({ open, onClose, title, text }) {
+function Modal({ open, onClose, title, text, copy }) {
   if (!open) return null;
 
   return (
@@ -291,7 +508,7 @@ function Modal({ open, onClose, title, text }) {
         <button
           onClick={onClose}
           className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)] transition hover:bg-white hover:text-[var(--text)]"
-          aria-label="Close"
+          aria-label={copy.closeLabel}
         >
           <X size={18} />
         </button>
@@ -305,13 +522,13 @@ function Modal({ open, onClose, title, text }) {
             href="/login"
             className="rounded-2xl bg-[var(--accent)] px-5 py-3.5 text-center font-semibold text-[var(--accent-foreground)] shadow-[0_18px_40px_rgba(42,208,125,0.24)]"
           >
-            Trial + login web
+            {copy.trialLogin}
           </Link>
           <Link
             href="/app"
             className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-5 py-3.5 text-center font-semibold text-[var(--text)]"
           >
-            Ver dashboard demo
+            {copy.demoLabel}
           </Link>
         </div>
       </div>
@@ -326,21 +543,13 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const t = copy[lang];
-  const loginLabel = "Login";
-  const signupLabel = lang === "pt" ? "Criar conta" : "Sign up";
+  const loginLabel = lang === "pt" ? "Login" : lang === "es" ? "Entrar" : lang === "fr" ? "Connexion" : "Login";
+  const signupLabel = lang === "pt" ? "Criar conta" : lang === "es" ? "Crear cuenta" : lang === "fr" ? "Créer un compte" : "Sign up";
 
   useEffect(() => {
-    let storedLocale = null;
-    try {
-      storedLocale =
-        typeof window !== "undefined" ? window.localStorage.getItem("apexcoach-locale") : null;
-    } catch {
-      storedLocale = null;
-    }
-
-    if (storedLocale === "pt" || storedLocale === "es" || storedLocale === "fr" || storedLocale === "en") {
-      setLang(storedLocale);
-    }
+    const nextLocale = getInitialBrowserLocale();
+    setLang(nextLocale);
+    applyCoachLocale(nextLocale);
 
     const interval = window.setInterval(() => {
       setActiveShot((current) => (current + 1) % screenshots.length);
@@ -363,6 +572,7 @@ export default function App() {
         onClose={() => setModalOpen(false)}
         title={t.modalTitle}
         text={t.modalText}
+        copy={t}
       />
 
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_top_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
@@ -392,22 +602,20 @@ export default function App() {
 
           <div className="flex items-center gap-3">
             <div className="hidden rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1 sm:flex">
-              <button
-                onClick={() => setLang("pt")}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                  lang === "pt" ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"
-                }`}
-              >
-                PT
-              </button>
-              <button
-                onClick={() => setLang("en")}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                  lang === "en" ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"
-                }`}
-              >
-                EN
-              </button>
+              {COACH_LANGUAGE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => {
+                    setLang(option.value);
+                    applyCoachLocale(option.value);
+                  }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    lang === option.value ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"
+                  }`}
+                >
+                  {option.short}
+                </button>
+              ))}
             </div>
 
             <div className="hidden items-center gap-3 lg:flex">
@@ -542,8 +750,8 @@ export default function App() {
                 <div className="flex items-center gap-3">
                   <Clock3 size={16} className="text-[var(--accent-strong)]" />
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Session mode</p>
-                    <p className="text-sm font-medium text-[var(--text)]">Fast changes, zero friction</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">{t.sessionMode}</p>
+                    <p className="text-sm font-medium text-[var(--text)]">{t.sessionModeText}</p>
                   </div>
                 </div>
               </div>
@@ -552,8 +760,8 @@ export default function App() {
                 <div className="flex items-center gap-3">
                   <LayoutDashboard size={16} className="text-[var(--electric)]" />
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">Desktop view</p>
-                    <p className="text-sm font-medium text-[var(--text)]">Planning with full visibility</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">{t.desktopView}</p>
+                    <p className="text-sm font-medium text-[var(--text)]">{t.desktopViewText}</p>
                   </div>
                 </div>
               </div>
@@ -563,6 +771,7 @@ export default function App() {
                 <BrowserMock
                   src={screenshots[(activeShot + 1) % screenshots.length]}
                   title="apexcoach.pt/app"
+                  copy={t}
                 />
               </div>
 
@@ -652,6 +861,7 @@ export default function App() {
               <BrowserMock
                 src={screenshots[(activeShot + 2) % screenshots.length]}
                 title="coach workspace / browser"
+                copy={t}
               />
             </div>
           </div>

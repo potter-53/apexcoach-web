@@ -4,19 +4,10 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CalendarDays, Check, ClipboardList, CreditCard, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, Plus, ShieldCheck, Sparkles, Users, X } from "lucide-react";
-import { applyCoachLocale, getStoredCoachLocale, guessCoachLocale } from "../../src/lib/coach-locale";
+import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getStoredCoachLocale, guessCoachLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import AgendaWorkspace from "./AgendaWorkspace";
 import ClientWorkspace from "./ClientWorkspace";
-
-const APP_TABS = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "clients", label: "Clients", icon: Users },
-  { id: "assessments", label: "Assessments", icon: ClipboardList },
-  { id: "agenda", label: "Agenda", icon: CalendarDays },
-  { id: "trainings", label: "Trainings", icon: Dumbbell },
-  { id: "coach", label: "Coach", icon: ShieldCheck },
-];
 
 const DEFAULT_BOOKING_TYPES = [
   { name: "Treino 30min", category: "pt_session", duration_minutes: 30, price_eur: 0 },
@@ -28,25 +19,382 @@ const DEFAULT_BOOKING_TYPES = [
 const EMPTY_CORE = { profile: null, subscription: null, metrics: { clients: 0, agendaToday: 0, assessments: 0, trainings: 0 }, upcomingAgenda: [] };
 const EMPTY_LISTS = { students: [], recentAssessments: [], recentTrainings: [] };
 const EMPTY_FORM = { studentId: "", bookingTypeId: "", scheduledDate: "", scheduledTime: "", notes: "" };
-const LANGUAGE_OPTIONS = [
+/*
   { value: "en", label: "English", flag: "🇬🇧" },
   { value: "pt", label: "Português", flag: "🇵🇹" },
   { value: "es", label: "Español", flag: "🇪🇸" },
   { value: "fr", label: "Français", flag: "🇫🇷" },
 ];
 
-function formatDate(value, withYear = false) {
-  if (!value) return "Sem data";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Sem data";
-  return date.toLocaleDateString("pt-PT", { day: "2-digit", month: "short", ...(withYear ? { year: "numeric" } : {}) });
+*/
+const LANGUAGE_OPTIONS = COACH_LANGUAGE_OPTIONS;
+
+const DASHBOARD_COPY = {
+  en: {
+    tabs: { dashboard: "Dashboard", clients: "Clients", assessments: "Assessments", agenda: "Agenda", trainings: "Trainings", coach: "Coach" },
+    noDate: "No date",
+    noDetail: "No detail",
+    coachSession: "Validating coach session...",
+    configTitle: "Supabase not configured",
+    configText: "Add the public Supabase variables to use the browser with live data.",
+    activeClientsHint: "Real clients connected to this coach.",
+    agendaTodayHint: "Bookings scheduled for today.",
+    assessmentsHint: "Assessments already stored.",
+    trainingsHint: "Training sessions in history.",
+    languageSetup: "Language setup",
+    chooseLanguage: "Choose the language for your coach workspace",
+    chooseLanguageText: "We could not find a saved language from the app, so we pre-selected the most likely option based on your browser region. You can change it now and the choice will sync with your coach account.",
+    saveLanguage: "Save language",
+    bookingTitle: "New booking",
+    bookingHeading: "Schedule session in browser",
+    bookingText: "Create a booking directly for a client with the same agenda logic used in the APK.",
+    loadingBooking: "Loading clients and booking types...",
+    client: "Client",
+    selectClient: "Select client",
+    bookingType: "Booking type",
+    selectType: "Select type",
+    date: "Date",
+    time: "Time",
+    notes: "Notes",
+    notesPlaceholder: "Session details, coaching focus, context...",
+    cancel: "Cancel",
+    createBooking: "Create booking",
+    coachBrowserWorkspace: "Coach browser workspace",
+    agendaHeadline: "Agenda first. Faster, clearer, more practical.",
+    agendaSubhead: "The coach core loads first and the heavier tabs come in only when you need them.",
+    switchAccount: "Switch account",
+    signOut: "Sign out",
+    loadingCore: "Loading coach core...",
+    coachPulse: "Coach pulse",
+    agendaSpotlight: "Agenda spotlight",
+    quickSummary: "Quick summary",
+    summaryText: "The essentials for the coach without waiting for the heavier tabs.",
+    quickAction: "Quick action",
+    bookFaster: "Book faster",
+    bookFasterText: "Open the booking flow and jump straight into the refreshed agenda.",
+    createNow: "Create now",
+    createNowHint: "The goal is fewer clicks: open, choose a client, select the booking type, and lock it in.",
+    assessmentsTitle: "Recent assessments",
+    assessmentsText: "This tab only loads when you actually open it.",
+    loadingAssessments: "Loading assessments...",
+    noAssessments: "No assessments yet",
+    noAssessmentsText: "There are still no assessments in this account history.",
+    savedMetrics: "saved metrics",
+    trainingsTitle: "Training sessions",
+    trainingsText: "Training history only loads when you open this tab.",
+    loadingTrainings: "Loading trainings...",
+    noTrainings: "No training sessions yet",
+    noTrainingsText: "There are no recorded training sessions for this account yet.",
+    untitledSession: "Untitled session",
+    noLinkedClient: "No linked client",
+    coachHub: "Coach hub",
+    coachAccount: "Coach account",
+    coachAccountText: "The coach core stays accessible without slowing down the dashboard boot.",
+    noEmail: "No email",
+    subscriptionTitle: "Account status",
+    subscriptionText: "Quick read on the plan and coach access.",
+    languageSettings: "Language settings",
+    languageSettingsText: "Change the browser language for this coach account and keep every page aligned.",
+    activeLanguage: "Active language",
+    saveLanguageHint: "The browser updates immediately and this choice is saved to your coach settings.",
+    planStatus: "Plan status",
+    webWorkspace: "Web workspace",
+    coachNameLabel: "Coach name",
+    subscriptionLabel: "Subscription",
+    nameLabel: "Name",
+    emailLabel: "Email",
+    subscriptionEyebrow: "Subscription",
+    fastWorkspace: "Fast-loading workspace with the agenda ready to act on.",
+    newBooking: "New booking",
+    backToLanding: "Back to landing",
+    noUpcomingTitle: "No upcoming bookings",
+    noUpcomingText: "Create the first booking directly from the browser workspace.",
+    couldNotSaveLanguage: "Could not save the language preference.",
+    invalidBookingType: "Invalid booking type.",
+    prepareBookingError: "Could not prepare the booking.",
+    createBookingError: "Could not create the booking.",
+    selectRequired: "Select client, booking type, date, and time.",
+  },
+  pt: {
+    tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Avaliações", agenda: "Agenda", trainings: "Treinos", coach: "Coach" },
+    noDate: "Sem data",
+    noDetail: "Sem detalhe",
+    coachSession: "A validar sessão do coach...",
+    configTitle: "Supabase não configurado",
+    configText: "Adiciona as variáveis públicas do Supabase para usar o browser com dados reais.",
+    activeClientsHint: "Clientes reais associados a este coach.",
+    agendaTodayHint: "Marcações agendadas para hoje.",
+    assessmentsHint: "Avaliações já guardadas.",
+    trainingsHint: "Sessões de treino no histórico.",
+    languageSetup: "Definição de idioma",
+    chooseLanguage: "Escolhe o idioma do teu workspace de coach",
+    chooseLanguageText: "Não encontrámos um idioma guardado vindo da app, por isso pré-selecionámos a opção mais provável com base na região do teu browser. Podes alterar agora e a escolha ficará sincronizada com a tua conta.",
+    saveLanguage: "Guardar idioma",
+    bookingTitle: "Nova marcação",
+    bookingHeading: "Agendar sessão no browser",
+    bookingText: "Cria uma marcação diretamente para um cliente com a mesma lógica de agenda usada na APK.",
+    loadingBooking: "A carregar clientes e tipos de marcação...",
+    client: "Cliente",
+    selectClient: "Selecionar cliente",
+    bookingType: "Tipo de marcação",
+    selectType: "Selecionar tipo",
+    date: "Data",
+    time: "Hora",
+    notes: "Notas",
+    notesPlaceholder: "Detalhes da sessão, foco do treino, contexto...",
+    cancel: "Cancelar",
+    createBooking: "Criar marcação",
+    coachBrowserWorkspace: "Workspace web do coach",
+    agendaHeadline: "Agenda primeiro. Mais rápida, mais clara, mais prática.",
+    agendaSubhead: "O núcleo do coach carrega primeiro e os separadores mais pesados só entram quando precisas deles.",
+    switchAccount: "Trocar conta",
+    signOut: "Terminar sessão",
+    loadingCore: "A carregar núcleo do coach...",
+    coachPulse: "Pulso do coach",
+    agendaSpotlight: "Agenda em destaque",
+    quickSummary: "Resumo rápido",
+    summaryText: "O essencial do coach sem esperar pelos separadores mais pesados.",
+    quickAction: "Ação rápida",
+    bookFaster: "Marcar mais depressa",
+    bookFasterText: "Abre a criação de marcação e salta logo para a agenda atualizada.",
+    createNow: "Criar agora",
+    createNowHint: "O objetivo é reduzir cliques: abrir, escolher cliente, selecionar o tipo e marcar.",
+    assessmentsTitle: "Avaliações recentes",
+    assessmentsText: "Este separador carrega apenas quando o abres.",
+    loadingAssessments: "A carregar avaliações...",
+    noAssessments: "Ainda sem avaliações",
+    noAssessmentsText: "Ainda não existem avaliações no histórico desta conta.",
+    savedMetrics: "métricas guardadas",
+    trainingsTitle: "Sessões de treino",
+    trainingsText: "O histórico de treinos só carrega quando abres este separador.",
+    loadingTrainings: "A carregar treinos...",
+    noTrainings: "Ainda sem sessões de treino",
+    noTrainingsText: "Ainda não existem sessões de treino registadas para esta conta.",
+    untitledSession: "Sessão sem título",
+    noLinkedClient: "Sem cliente associado",
+    coachHub: "Coach hub",
+    coachAccount: "Conta do coach",
+    coachAccountText: "O núcleo da conta continua acessível sem atrasar o arranque do dashboard.",
+    noEmail: "Sem email",
+    subscriptionTitle: "Estado da conta",
+    subscriptionText: "Leitura rápida do plano e do acesso do coach.",
+    languageSettings: "Definições de idioma",
+    languageSettingsText: "Altera o idioma do browser para esta conta de coach e mantém todas as páginas alinhadas.",
+    activeLanguage: "Idioma ativo",
+    saveLanguageHint: "O browser atualiza logo e esta escolha fica guardada nas settings do coach.",
+    planStatus: "Estado do plano",
+    webWorkspace: "Workspace web",
+    coachNameLabel: "Nome do coach",
+    subscriptionLabel: "Subscrição",
+    nameLabel: "Nome",
+    emailLabel: "Email",
+    subscriptionEyebrow: "Subscrição",
+    fastWorkspace: "Workspace rápido com a agenda pronta a usar.",
+    newBooking: "Nova marcação",
+    backToLanding: "Voltar à landing",
+    noUpcomingTitle: "Sem marcações futuras",
+    noUpcomingText: "Cria a primeira marcação diretamente aqui no browser.",
+    couldNotSaveLanguage: "Não foi possível guardar a preferência de idioma.",
+    invalidBookingType: "Tipo de marcação inválido.",
+    prepareBookingError: "Não foi possível preparar a marcação.",
+    createBookingError: "Não foi possível criar a marcação.",
+    selectRequired: "Seleciona cliente, tipo de marcação, data e hora.",
+  },
+  es: {
+    tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Evaluaciones", agenda: "Agenda", trainings: "Entrenamientos", coach: "Coach" },
+    noDate: "Sin fecha",
+    noDetail: "Sin detalle",
+    coachSession: "Validando la sesión del coach...",
+    configTitle: "Supabase no configurado",
+    configText: "Añade las variables públicas de Supabase para usar el navegador con datos reales.",
+    activeClientsHint: "Clientes reales asociados a este coach.",
+    agendaTodayHint: "Reservas programadas para hoy.",
+    assessmentsHint: "Evaluaciones ya guardadas.",
+    trainingsHint: "Sesiones de entrenamiento en el historial.",
+    languageSetup: "Configuración de idioma",
+    chooseLanguage: "Elige el idioma de tu workspace de coach",
+    chooseLanguageText: "No encontramos un idioma guardado desde la app, así que preseleccionamos la opción más probable según la región de tu navegador. Puedes cambiarla ahora y la elección se sincronizará con tu cuenta.",
+    saveLanguage: "Guardar idioma",
+    bookingTitle: "Nueva reserva",
+    bookingHeading: "Programar sesión en el navegador",
+    bookingText: "Crea una reserva directamente para un cliente con la misma lógica de agenda usada en la APK.",
+    loadingBooking: "Cargando clientes y tipos de reserva...",
+    client: "Cliente",
+    selectClient: "Seleccionar cliente",
+    bookingType: "Tipo de reserva",
+    selectType: "Seleccionar tipo",
+    date: "Fecha",
+    time: "Hora",
+    notes: "Notas",
+    notesPlaceholder: "Detalles de la sesión, enfoque del trabajo, contexto...",
+    cancel: "Cancelar",
+    createBooking: "Crear reserva",
+    coachBrowserWorkspace: "Workspace web del coach",
+    agendaHeadline: "Agenda primero. Más rápida, más clara, más práctica.",
+    agendaSubhead: "El núcleo del coach carga primero y las pestañas más pesadas solo aparecen cuando las necesitas.",
+    switchAccount: "Cambiar cuenta",
+    signOut: "Cerrar sesión",
+    loadingCore: "Cargando núcleo del coach...",
+    coachPulse: "Pulso del coach",
+    agendaSpotlight: "Agenda destacada",
+    quickSummary: "Resumen rápido",
+    summaryText: "Lo esencial del coach sin esperar por las pestañas más pesadas.",
+    quickAction: "Acción rápida",
+    bookFaster: "Reservar más rápido",
+    bookFasterText: "Abre el flujo de reserva y salta directamente a la agenda actualizada.",
+    createNow: "Crear ahora",
+    createNowHint: "El objetivo es reducir clics: abrir, elegir cliente, seleccionar el tipo y reservar.",
+    assessmentsTitle: "Evaluaciones recientes",
+    assessmentsText: "Esta pestaña solo carga cuando realmente la abres.",
+    loadingAssessments: "Cargando evaluaciones...",
+    noAssessments: "Aún no hay evaluaciones",
+    noAssessmentsText: "Todavía no hay evaluaciones en el historial de esta cuenta.",
+    savedMetrics: "métricas guardadas",
+    trainingsTitle: "Sesiones de entrenamiento",
+    trainingsText: "El historial de entrenamientos solo carga cuando abres esta pestaña.",
+    loadingTrainings: "Cargando entrenamientos...",
+    noTrainings: "Aún no hay sesiones de entrenamiento",
+    noTrainingsText: "Todavía no hay sesiones registradas para esta cuenta.",
+    untitledSession: "Sesión sin título",
+    noLinkedClient: "Sin cliente asociado",
+    coachHub: "Coach hub",
+    coachAccount: "Cuenta del coach",
+    coachAccountText: "El núcleo de la cuenta sigue accesible sin ralentizar el dashboard.",
+    noEmail: "Sin email",
+    subscriptionTitle: "Estado de la cuenta",
+    subscriptionText: "Lectura rápida del plan y del acceso del coach.",
+    languageSettings: "Ajustes de idioma",
+    languageSettingsText: "Cambia el idioma del navegador para esta cuenta de coach y mantén todas las páginas alineadas.",
+    activeLanguage: "Idioma activo",
+    saveLanguageHint: "El navegador se actualiza al momento y esta elección queda guardada en la cuenta del coach.",
+    planStatus: "Estado del plan",
+    webWorkspace: "Workspace web",
+    coachNameLabel: "Nombre del coach",
+    subscriptionLabel: "Suscripción",
+    nameLabel: "Nombre",
+    emailLabel: "Email",
+    subscriptionEyebrow: "Suscripción",
+    fastWorkspace: "Workspace rápido con la agenda lista para actuar.",
+    newBooking: "Nueva reserva",
+    backToLanding: "Volver a la landing",
+    noUpcomingTitle: "Sin próximas reservas",
+    noUpcomingText: "Crea la primera reserva directamente desde el navegador.",
+    couldNotSaveLanguage: "No se pudo guardar la preferencia de idioma.",
+    invalidBookingType: "Tipo de reserva inválido.",
+    prepareBookingError: "No se pudo preparar la reserva.",
+    createBookingError: "No se pudo crear la reserva.",
+    selectRequired: "Selecciona cliente, tipo de reserva, fecha y hora.",
+  },
+  fr: {
+    tabs: { dashboard: "Dashboard", clients: "Clients", assessments: "Évaluations", agenda: "Agenda", trainings: "Entraînements", coach: "Coach" },
+    noDate: "Sans date",
+    noDetail: "Sans détail",
+    coachSession: "Validation de la session du coach...",
+    configTitle: "Supabase non configuré",
+    configText: "Ajoute les variables publiques Supabase pour utiliser le navigateur avec des données réelles.",
+    activeClientsHint: "Clients réels liés à ce coach.",
+    agendaTodayHint: "Réservations prévues pour aujourd'hui.",
+    assessmentsHint: "Évaluations déjà enregistrées.",
+    trainingsHint: "Séances d'entraînement dans l'historique.",
+    languageSetup: "Configuration de la langue",
+    chooseLanguage: "Choisis la langue de ton workspace coach",
+    chooseLanguageText: "Nous n'avons trouvé aucune langue enregistrée depuis l'app, donc nous avons présélectionné l'option la plus probable selon la région de ton navigateur. Tu peux la changer maintenant et ce choix sera synchronisé avec ton compte.",
+    saveLanguage: "Enregistrer la langue",
+    bookingTitle: "Nouveau rendez-vous",
+    bookingHeading: "Planifier une séance dans le navigateur",
+    bookingText: "Crée un rendez-vous directement pour un client avec la même logique d'agenda que l'APK.",
+    loadingBooking: "Chargement des clients et des types de rendez-vous...",
+    client: "Client",
+    selectClient: "Sélectionner un client",
+    bookingType: "Type de rendez-vous",
+    selectType: "Sélectionner un type",
+    date: "Date",
+    time: "Heure",
+    notes: "Notes",
+    notesPlaceholder: "Détails de la séance, focus, contexte...",
+    cancel: "Annuler",
+    createBooking: "Créer le rendez-vous",
+    coachBrowserWorkspace: "Workspace web du coach",
+    agendaHeadline: "Agenda d'abord. Plus rapide, plus clair, plus pratique.",
+    agendaSubhead: "Le noyau du coach charge d'abord et les onglets plus lourds n'arrivent qu'au moment nécessaire.",
+    switchAccount: "Changer de compte",
+    signOut: "Se déconnecter",
+    loadingCore: "Chargement du noyau du coach...",
+    coachPulse: "Pouls du coach",
+    agendaSpotlight: "Agenda en avant",
+    quickSummary: "Résumé rapide",
+    summaryText: "L'essentiel du coach sans attendre les onglets plus lourds.",
+    quickAction: "Action rapide",
+    bookFaster: "Réserver plus vite",
+    bookFasterText: "Ouvre le flux de réservation et passe directement à l'agenda mis à jour.",
+    createNow: "Créer maintenant",
+    createNowHint: "L'objectif est de réduire les clics : ouvrir, choisir le client, sélectionner le type et réserver.",
+    assessmentsTitle: "Évaluations récentes",
+    assessmentsText: "Cet onglet charge seulement quand tu l'ouvres.",
+    loadingAssessments: "Chargement des évaluations...",
+    noAssessments: "Pas encore d'évaluations",
+    noAssessmentsText: "Il n'y a pas encore d'évaluations dans l'historique de ce compte.",
+    savedMetrics: "métriques enregistrées",
+    trainingsTitle: "Séances d'entraînement",
+    trainingsText: "L'historique des entraînements ne charge que lorsque tu ouvres cet onglet.",
+    loadingTrainings: "Chargement des entraînements...",
+    noTrainings: "Pas encore de séances d'entraînement",
+    noTrainingsText: "Aucune séance d'entraînement n'est encore enregistrée pour ce compte.",
+    untitledSession: "Séance sans titre",
+    noLinkedClient: "Aucun client associé",
+    coachHub: "Coach hub",
+    coachAccount: "Compte du coach",
+    coachAccountText: "Le noyau du compte reste accessible sans ralentir le dashboard.",
+    noEmail: "Sans email",
+    subscriptionTitle: "État du compte",
+    subscriptionText: "Lecture rapide du plan et de l'accès du coach.",
+    languageSettings: "Réglages de langue",
+    languageSettingsText: "Change la langue du navigateur pour ce compte coach et garde toutes les pages alignées.",
+    activeLanguage: "Langue active",
+    saveLanguageHint: "Le navigateur se met à jour tout de suite et ce choix est enregistré dans les réglages du coach.",
+    planStatus: "État du plan",
+    webWorkspace: "Workspace web",
+    coachNameLabel: "Nom du coach",
+    subscriptionLabel: "Abonnement",
+    nameLabel: "Nom",
+    emailLabel: "Email",
+    subscriptionEyebrow: "Abonnement",
+    fastWorkspace: "Workspace rapide avec l'agenda prêt à l'action.",
+    newBooking: "Nouveau rendez-vous",
+    backToLanding: "Retour à la landing",
+    noUpcomingTitle: "Aucun rendez-vous à venir",
+    noUpcomingText: "Crée le premier rendez-vous directement dans le navigateur.",
+    couldNotSaveLanguage: "Impossible d'enregistrer la préférence de langue.",
+    invalidBookingType: "Type de rendez-vous invalide.",
+    prepareBookingError: "Impossible de préparer le rendez-vous.",
+    createBookingError: "Impossible de créer le rendez-vous.",
+    selectRequired: "Sélectionne le client, le type de rendez-vous, la date et l'heure.",
+  },
+};
+
+function getCopy(locale) {
+  return DASHBOARD_COPY[locale] || DASHBOARD_COPY.en;
 }
 
-function formatTime(value) {
+function localeTag(locale) {
+  if (locale === "pt") return "pt-PT";
+  if (locale === "es") return "es-ES";
+  if (locale === "fr") return "fr-FR";
+  return "en-GB";
+}
+
+function formatDate(value, withYear = false, locale = "en") {
+  if (!value) return getCopy(locale).noDate;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return getCopy(locale).noDate;
+  return date.toLocaleDateString(localeTag(locale), { day: "2-digit", month: "short", ...(withYear ? { year: "numeric" } : {}) });
+}
+
+function formatTime(value, locale = "en") {
   if (!value) return "--:--";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "--:--";
-  return date.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString(localeTag(locale), { hour: "2-digit", minute: "2-digit" });
 }
 
 function prettifyStatus(value) {
@@ -159,12 +507,14 @@ function MetricCard({ label, value, Icon, hint }) {
   return <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)]"><div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={22} className="text-[var(--accent)]" /></div><p className="mt-6 text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">{label}</p><p className="mt-2 text-4xl font-semibold text-[var(--text)]">{value}</p><p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">{hint}</p></div>;
 }
 
-function PersonRow({ name, detail, meta, colorHex }) {
-  return <div className="flex items-center justify-between gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-4"><div className="flex min-w-0 items-center gap-3"><span className="h-3 w-3 shrink-0 rounded-full" style={{ background: colorDot(colorHex) }} /><div className="min-w-0"><p className="truncate font-medium text-[var(--text)]">{name || "Cliente"}</p><p className="truncate text-sm text-[var(--text-muted)]">{detail || "Sem detalhe"}</p></div></div>{meta ? <p className="shrink-0 text-sm text-[var(--text-muted)]">{meta}</p> : null}</div>;
+function PersonRow({ name, detail, meta, colorHex, locale = "en" }) {
+  const copy = getCopy(locale);
+  return <div className="flex items-center justify-between gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-4"><div className="flex min-w-0 items-center gap-3"><span className="h-3 w-3 shrink-0 rounded-full" style={{ background: colorDot(colorHex) }} /><div className="min-w-0"><p className="truncate font-medium text-[var(--text)]">{name || copy.client}</p><p className="truncate text-sm text-[var(--text-muted)]">{detail || copy.noDetail}</p></div></div>{meta ? <p className="shrink-0 text-sm text-[var(--text-muted)]">{meta}</p> : null}</div>;
 }
 
-function AgendaCards({ items, onCreate }) {
-  return <SectionCard eyebrow="Agenda spotlight" title="Agenda do coach em destaque" description="A agenda ganha protagonismo real e já permite novas marcações." action={<button onClick={onCreate} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />Nova marcação</button>}>{items.length > 0 ? <div className="grid gap-4 xl:grid-cols-2">{items.map((item) => <div key={item.id} className="rounded-[26px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,248,247,0.96))] p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{formatDate(item.scheduled_at, true)}</p><p className="mt-2 text-3xl font-semibold text-[var(--text)]">{formatTime(item.scheduled_at)}</p></div><span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{prettifyStatus(item.status)}</span></div><div className="mt-6 flex items-center gap-3"><span className="h-3 w-3 rounded-full" style={{ background: colorDot(item.students?.client_color_hex) }} /><p className="font-semibold text-[var(--text)]">{item.students?.full_name || "Cliente"}</p></div><p className="mt-3 text-sm uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.booking_types?.name || item.item_type || "Agenda item"}</p><p className="mt-3 leading-7 text-[var(--text-muted)]">{item.notes || "Sem notas adicionais para esta marcação."}</p></div>)}</div> : <EmptyState title="Sem marcações futuras" text="Cria a primeira marcação diretamente aqui no browser." />}</SectionCard>;
+function AgendaCards({ items, onCreate, locale }) {
+  const copy = getCopy(locale);
+  return <SectionCard eyebrow={copy.agendaSpotlight} title={copy.agendaHeadline} description={copy.bookFasterText} action={<button onClick={onCreate} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />{copy.newBooking}</button>}>{items.length > 0 ? <div className="grid gap-4 xl:grid-cols-2">{items.map((item) => <div key={item.id} className="rounded-[26px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,248,247,0.96))] p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{formatDate(item.scheduled_at, true, locale)}</p><p className="mt-2 text-3xl font-semibold text-[var(--text)]">{formatTime(item.scheduled_at, locale)}</p></div><span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{prettifyStatus(item.status)}</span></div><div className="mt-6 flex items-center gap-3"><span className="h-3 w-3 rounded-full" style={{ background: colorDot(item.students?.client_color_hex) }} /><p className="font-semibold text-[var(--text)]">{item.students?.full_name || copy.client}</p></div><p className="mt-3 text-sm uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.booking_types?.name || item.item_type || copy.bookingType}</p><p className="mt-3 leading-7 text-[var(--text-muted)]">{item.notes || copy.notesPlaceholder}</p></div>)}</div> : <EmptyState title={copy.noUpcomingTitle} text={copy.noUpcomingText} />}</SectionCard>;
 }
 
 export default function DashboardClient() {
@@ -187,6 +537,7 @@ export default function DashboardClient() {
   const [signingOut, setSigningOut] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
   const [preferredLanguage, setPreferredLanguage] = useState("en");
+  const [activeLocale, setActiveLocale] = useState("en");
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [languageError, setLanguageError] = useState("");
 
@@ -288,6 +639,7 @@ export default function DashboardClient() {
     if (!currentUser) return;
     const storedLocale = getStoredCoachLocale(currentUser);
     if (storedLocale) {
+      setActiveLocale(storedLocale);
       applyCoachLocale(storedLocale);
       setLanguageOpen(false);
       setLanguageError("");
@@ -295,6 +647,7 @@ export default function DashboardClient() {
     }
 
     const suggestedLocale = guessCoachLocale();
+    setActiveLocale(suggestedLocale);
     applyCoachLocale(suggestedLocale);
     setPreferredLanguage(suggestedLocale);
     setLanguageOpen(true);
@@ -343,7 +696,7 @@ export default function DashboardClient() {
         bookingTypeId: current.bookingTypeId || bookingTypes[0]?.id || "",
       }));
     } catch (error) {
-      setBookingError(error?.message || "Could not prepare the booking.");
+      setBookingError(error?.message || getCopy(activeLocale).prepareBookingError);
     } finally {
       setLoadingBookingResources(false);
     }
@@ -366,8 +719,9 @@ export default function DashboardClient() {
     startTransition(() => setActiveTab("trainings"));
   }
 
-  async function handleSaveLanguage() {
+  async function handleSaveLanguage(targetLocale = preferredLanguage, options = {}) {
     if (!currentUser || !configured) return;
+    const normalizedLocale = targetLocale || preferredLanguage;
     setSavingLanguage(true);
     setLanguageError("");
 
@@ -375,8 +729,8 @@ export default function DashboardClient() {
       const supabase = getSupabaseBrowserClient();
       const metadata = {
         ...(currentUser.user_metadata || {}),
-        app_locale_code: preferredLanguage,
-        locale_code: preferredLanguage,
+        app_locale_code: normalizedLocale,
+        locale_code: normalizedLocale,
       };
 
       const { data, error } = await supabase.auth.updateUser({
@@ -391,10 +745,14 @@ export default function DashboardClient() {
       };
 
       setCurrentUser(nextUser);
-      applyCoachLocale(preferredLanguage);
-      setLanguageOpen(false);
+      setPreferredLanguage(normalizedLocale);
+      setActiveLocale(normalizedLocale);
+      applyCoachLocale(normalizedLocale);
+      if (options.closeModal !== false) {
+        setLanguageOpen(false);
+      }
     } catch (error) {
-      setLanguageError(error?.message || "Could not save the language preference.");
+      setLanguageError(error?.message || getCopy(normalizedLocale).couldNotSaveLanguage);
     } finally {
       setSavingLanguage(false);
     }
@@ -405,12 +763,12 @@ export default function DashboardClient() {
     setBookingError("");
     if (!currentUser) return;
     if (!bookingForm.studentId || !bookingForm.bookingTypeId || !bookingForm.scheduledDate || !bookingForm.scheduledTime) {
-      setBookingError("Select client, booking type, date, and time.");
+      setBookingError(getCopy(activeLocale).selectRequired);
       return;
     }
     const bookingType = bookingResources.bookingTypes.find((item) => item.id === bookingForm.bookingTypeId);
     if (!bookingType) {
-      setBookingError("Invalid booking type.");
+      setBookingError(getCopy(activeLocale).invalidBookingType);
       return;
     }
     setCreatingBooking(true);
@@ -436,44 +794,53 @@ export default function DashboardClient() {
       setBookingOpen(false);
       startTransition(() => setActiveTab("agenda"));
     } catch (error) {
-      setBookingError(error?.message || "Could not create the booking.");
+      setBookingError(error?.message || getCopy(activeLocale).createBookingError);
     } finally {
       setCreatingBooking(false);
     }
   }
 
   if (!configured) {
-    return <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-5 text-[var(--text)]"><div className="max-w-xl rounded-[32px] border border-amber-300 bg-amber-50 p-8 shadow-[var(--shadow-soft)]"><h1 className="text-2xl font-semibold">Supabase not configured</h1><p className="mt-4 leading-8 text-[var(--text-muted)]">Add the public Supabase variables to use the browser with live data.</p></div></main>;
+    return <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-5 text-[var(--text)]"><div className="max-w-xl rounded-[32px] border border-amber-300 bg-amber-50 p-8 shadow-[var(--shadow-soft)]"><h1 className="text-2xl font-semibold">{getCopy(activeLocale).configTitle}</h1><p className="mt-4 leading-8 text-[var(--text-muted)]">{getCopy(activeLocale).configText}</p></div></main>;
   }
 
   if (checkingSession) {
-    return <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] text-[var(--text)]"><div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />Validating coach session...</div></main>;
+    return <main className="flex min-h-screen items-center justify-center bg-[var(--bg)] text-[var(--text)]"><div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{getCopy(activeLocale).coachSession}</div></main>;
   }
 
   const coachName = core.profile?.full_name || currentUser?.user_metadata?.full_name || currentUser?.email || "Coach";
+  const copy = getCopy(activeLocale);
+  const appTabs = [
+    { id: "dashboard", label: copy.tabs.dashboard, icon: LayoutDashboard },
+    { id: "clients", label: copy.tabs.clients, icon: Users },
+    { id: "assessments", label: copy.tabs.assessments, icon: ClipboardList },
+    { id: "agenda", label: copy.tabs.agenda, icon: CalendarDays },
+    { id: "trainings", label: copy.tabs.trainings, icon: Dumbbell },
+    { id: "coach", label: copy.tabs.coach, icon: ShieldCheck },
+  ];
   const metrics = [
-    { label: "Active clients", value: core.metrics.clients, Icon: Users, hint: "Real clients connected to this coach." },
-    { label: "Agenda today", value: core.metrics.agendaToday, Icon: CalendarDays, hint: "Bookings scheduled for today." },
-    { label: "Assessments", value: core.metrics.assessments, Icon: ClipboardList, hint: "Assessments already stored." },
-    { label: "Trainings", value: core.metrics.trainings, Icon: Dumbbell, hint: "Training sessions in history." },
+    { label: copy.tabs.clients, value: core.metrics.clients, Icon: Users, hint: copy.activeClientsHint },
+    { label: copy.tabs.agenda, value: core.metrics.agendaToday, Icon: CalendarDays, hint: copy.agendaTodayHint },
+    { label: copy.tabs.assessments, value: core.metrics.assessments, Icon: ClipboardList, hint: copy.assessmentsHint },
+    { label: copy.tabs.trainings, value: core.metrics.trainings, Icon: Dumbbell, hint: copy.trainingsHint },
   ];
 
   return (
     <>
-      {languageOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)] sm:p-8"><div className="flex items-start gap-4"><div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]"><Globe2 size={22} /></div><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">Language setup</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">Choose the language for your coach workspace</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">We could not find a saved language from the app, so we pre-selected the most likely option based on your browser region. You can change it now and the choice will sync with your coach account.</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => setPreferredLanguage(option.value)} className={`flex items-center justify-between rounded-[24px] border px-4 py-4 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}><div className="flex items-center gap-3"><span className="text-2xl">{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p><p className="text-sm text-[var(--text-muted)]">{option.value.toUpperCase()}</p></div></div>{active ? <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]"><Check size={16} /></span> : null}</button>; })}</div>{languageError ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end"><button onClick={handleSaveLanguage} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}Save language</button></div></div></div> : null}
-      {bookingOpen ? <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">New booking</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">Schedule session in browser</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">Create a booking directly for a client with the same agenda logic used in the APK.</p></div><button onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-[var(--text-muted)]"><X size={18} /></button></div>{loadingBookingResources ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />Loading clients and booking types...</div> : <form onSubmit={handleCreateBooking} className="mt-6 grid gap-4"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Client</span><select value={bookingForm.studentId} onChange={(event) => updateBookingField("studentId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">Select client</option>{bookingResources.students.map((student) => <option key={student.id} value={student.id}>{student.full_name}</option>)}</select></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Booking type</span><select value={bookingForm.bookingTypeId} onChange={(event) => updateBookingField("bookingTypeId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">Select type</option>{bookingResources.bookingTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Date</span><input type="date" value={bookingForm.scheduledDate} onChange={(event) => updateBookingField("scheduledDate", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Time</span><input type="time" value={bookingForm.scheduledTime} onChange={(event) => updateBookingField("scheduledTime", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label></div><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Notes</span><textarea value={bookingForm.notes} onChange={(event) => updateBookingField("notes", event.target.value)} rows={4} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" placeholder="Session details, coaching focus, context..." /></label>{bookingError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{bookingError}</div> : null}<div className="flex flex-col gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-medium text-[var(--text-muted)]">Cancel</button><button type="submit" disabled={creatingBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{creatingBooking ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}Create booking</button></div></form>}</div></div> : null}
+      {languageOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)] sm:p-8"><div className="flex items-start gap-4"><div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]"><Globe2 size={22} /></div><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">{copy.languageSetup}</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">{copy.chooseLanguage}</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">{copy.chooseLanguageText}</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => { setPreferredLanguage(option.value); setActiveLocale(option.value); applyCoachLocale(option.value); }} className={`flex items-center justify-between rounded-[24px] border px-4 py-4 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}><div className="flex items-center gap-3"><span className="text-3xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p></div></div>{active ? <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]"><Check size={16} /></span> : null}</button>; })}</div>{languageError ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end"><button onClick={handleSaveLanguage} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}{copy.saveLanguage}</button></div></div></div> : null}
+      {bookingOpen ? <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">{copy.bookingTitle}</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">{copy.bookingHeading}</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">{copy.bookingText}</p></div><button onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-[var(--text-muted)]"><X size={18} /></button></div>{loadingBookingResources ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingBooking}</div> : <form onSubmit={handleCreateBooking} className="mt-6 grid gap-4"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.client}</span><select value={bookingForm.studentId} onChange={(event) => updateBookingField("studentId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">{copy.selectClient}</option>{bookingResources.students.map((student) => <option key={student.id} value={student.id}>{student.full_name}</option>)}</select></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.bookingType}</span><select value={bookingForm.bookingTypeId} onChange={(event) => updateBookingField("bookingTypeId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">{copy.selectType}</option>{bookingResources.bookingTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.date}</span><input type="date" value={bookingForm.scheduledDate} onChange={(event) => updateBookingField("scheduledDate", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.time}</span><input type="time" value={bookingForm.scheduledTime} onChange={(event) => updateBookingField("scheduledTime", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label></div><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.notes}</span><textarea value={bookingForm.notes} onChange={(event) => updateBookingField("notes", event.target.value)} rows={4} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" placeholder={copy.notesPlaceholder} /></label>{bookingError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{bookingError}</div> : null}<div className="flex flex-col gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-medium text-[var(--text-muted)]">{copy.cancel}</button><button type="submit" disabled={creatingBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{creatingBooking ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}{copy.createBooking}</button></div></form>}</div></div> : null}
 
       <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
         <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
         <div className="mx-auto grid min-h-screen max-w-[1600px] gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
-          <aside className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)]"><div className="flex items-center gap-3"><div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2"><LayoutDashboard size={20} className="text-[var(--accent-strong)]" /></div><div><p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">APEX COACH</p><p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">web workspace</p></div></div><div className="mt-8 rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-4"><p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-strong)]">Coach account</p><p className="mt-2 text-lg font-semibold text-[var(--text)]">{coachName}</p><p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">Fast-loading workspace with the agenda ready to act on.</p></div><nav className="mt-8 grid gap-2">{APP_TABS.map(({ id, label, icon: Icon }) => { const active = activeTab === id; return <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition ${active ? "bg-[var(--accent)] text-[#081014] shadow-[0_18px_35px_rgba(42,208,125,0.2)]" : "border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}><Icon size={17} />{label}</button>; })}</nav><div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4"><button onClick={openBookingModal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />New booking</button><Link href="/" className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">Back to landing</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}Sign out</button></div></aside>
-          <section className="grid gap-6"><header className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)] sm:p-6"><div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between"><div><p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Coach browser workspace</p><h1 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--text)] sm:text-5xl">Agenda first. Faster, clearer, more practical.</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-[var(--text-muted)]">The coach core loads first and the heavier tabs come in only when you need them.</p></div><div className="flex flex-col gap-3 sm:flex-row"><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--text)]">Switch account</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}Sign out</button></div></div></header>{workspaceError ? <div className="rounded-[28px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />Loading coach core...</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{APP_TABS.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
-          {activeTab === "dashboard" ? <><AgendaCards items={core.upcomingAgenda.slice(0, 6)} onCreate={openBookingModal} /><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}</div><div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]"><SectionCard eyebrow="Coach pulse" title="Quick summary" description="The essentials for the coach without waiting for the heavier tabs."><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><Sparkles size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">Coach name</p><p className="text-sm text-[var(--text-muted)]">{coachName}</p></div></div></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><CreditCard size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">Subscription</p><p className="text-sm text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p></div></div></div></div></SectionCard><SectionCard eyebrow="Quick action" title="Book faster" description="Open the booking flow and jump straight into the refreshed agenda." action={<button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />Create now</button>}><p className="leading-7 text-[var(--text-muted)]">The goal is fewer clicks: open, choose a client, select the booking type, and lock it in.</p></SectionCard></div></> : null}
-          {activeTab === "clients" ? <ClientWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} onOpenAssessments={openAssessmentsForStudent} onOpenTrainings={openTrainingsForStudent} /> : null}
-          {activeTab === "assessments" ? <SectionCard eyebrow="Assessments" title="Avaliações recentes" description="Separador carregado apenas quando realmente entras nele.">{loadingTabs.assessments ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />A carregar avaliações...</div> : lists.recentAssessments.length > 0 ? <div className="grid gap-4">{lists.recentAssessments.map((item) => <PersonRow key={item.id} name={item.students?.full_name} detail={`${Object.keys(item.fields || {}).length} métricas guardadas`} meta={formatDate(item.assessment_date, true)} colorHex={item.students?.client_color_hex} />)}</div> : <EmptyState title="Sem avaliações" text="Ainda não existem avaliações no histórico desta conta." />}</SectionCard> : null}
-          {activeTab === "agenda" ? <AgendaWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} /> : null}
-          {activeTab === "trainings" ? <SectionCard eyebrow="Trainings" title="Sessões de treino" description="O histórico de treinos entra só quando abres este separador.">{loadingTabs.trainings ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />A carregar treinos...</div> : lists.recentTrainings.length > 0 ? <div className="grid gap-4">{lists.recentTrainings.map((item) => <PersonRow key={item.id} name={item.name || "Sessão sem título"} detail={item.students?.full_name || "Sem cliente associado"} meta={formatDate(item.session_date, true)} colorHex={item.students?.client_color_hex} />)}</div> : <EmptyState title="Sem treinos" text="Ainda não há sessões de treino registadas para esta conta." />}</SectionCard> : null}
-          {activeTab === "coach" ? <div className="grid gap-6 xl:grid-cols-2"><SectionCard eyebrow="Coach hub" title="Conta do coach" description="O núcleo da conta continua acessível, mas sem atrasar o arranque do dashboard."><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Name</p><p className="mt-2 font-semibold text-[var(--text)]">{coachName}</p></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Email</p><p className="mt-2 font-semibold text-[var(--text)]">{currentUser?.email || "Sem email"}</p></div></div></SectionCard><SectionCard eyebrow="Subscription" title="Estado da conta" description="Leitura rápida do plano e acesso do coach."><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">Plan status</p><p className="mt-2 text-2xl font-semibold text-[var(--text)]">{prettifyStatus(core.subscription?.status || "trialing")}</p><p className="mt-2 leading-7 text-[var(--text-muted)]">{(core.subscription?.subscription_category || "apex_coach").toString().replace(/_/g, " ")}{core.subscription?.payment_method_last4 ? ` · •••• ${core.subscription.payment_method_last4}` : ""}</p></div><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-semibold text-[var(--text)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}Terminar sessão</button></div></SectionCard></div> : null}
+          <aside className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)]"><div className="flex items-center gap-3"><div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2"><LayoutDashboard size={20} className="text-[var(--accent-strong)]" /></div><div><p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">APEX COACH</p><p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">{copy.webWorkspace}</p></div></div><div className="mt-8 rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-4"><p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-strong)]">{copy.coachAccount}</p><p className="mt-2 text-lg font-semibold text-[var(--text)]">{coachName}</p><p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{copy.fastWorkspace}</p></div><nav className="mt-8 grid gap-2">{appTabs.map(({ id, label, icon: Icon }) => { const active = activeTab === id; return <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition ${active ? "bg-[var(--accent)] text-[#081014] shadow-[0_18px_35px_rgba(42,208,125,0.2)]" : "border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}><Icon size={17} />{label}</button>; })}</nav><div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4"><button onClick={openBookingModal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />{copy.newBooking}</button><Link href="/" className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">{copy.backToLanding}</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}{copy.signOut}</button></div></aside>
+          <section className="grid gap-6"><header className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)] sm:p-6"><div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between"><div><p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.coachBrowserWorkspace}</p><h1 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--text)] sm:text-5xl">{copy.agendaHeadline}</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-[var(--text-muted)]">{copy.agendaSubhead}</p></div><div className="flex flex-col gap-3 sm:flex-row"><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}{copy.signOut}</button></div></div></header>{workspaceError ? <div className="rounded-[28px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
+          {activeTab === "dashboard" ? <><AgendaCards items={core.upcomingAgenda.slice(0, 6)} onCreate={openBookingModal} locale={activeLocale} /><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}</div><div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]"><SectionCard eyebrow={copy.coachPulse} title={copy.quickSummary} description={copy.summaryText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><Sparkles size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">{copy.coachNameLabel}</p><p className="text-sm text-[var(--text-muted)]">{coachName}</p></div></div></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><CreditCard size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">{copy.subscriptionLabel}</p><p className="text-sm text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p></div></div></div></div></SectionCard><SectionCard eyebrow={copy.quickAction} title={copy.bookFaster} description={copy.bookFasterText} action={<button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />{copy.createNow}</button>}><p className="leading-7 text-[var(--text-muted)]">{copy.createNowHint}</p></SectionCard></div></> : null}
+          {activeTab === "clients" ? <ClientWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} onOpenAssessments={openAssessmentsForStudent} onOpenTrainings={openTrainingsForStudent} locale={activeLocale} /> : null}
+          {activeTab === "assessments" ? <SectionCard eyebrow={copy.tabs.assessments} title={copy.assessmentsTitle} description={copy.assessmentsText}>{loadingTabs.assessments ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAssessments}</div> : lists.recentAssessments.length > 0 ? <div className="grid gap-4">{lists.recentAssessments.map((item) => <PersonRow key={item.id} name={item.students?.full_name} detail={`${Object.keys(item.fields || {}).length} ${copy.savedMetrics}`} meta={formatDate(item.assessment_date, true, activeLocale)} colorHex={item.students?.client_color_hex} locale={activeLocale} />)}</div> : <EmptyState title={copy.noAssessments} text={copy.noAssessmentsText} />}</SectionCard> : null}
+          {activeTab === "agenda" ? <AgendaWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} locale={activeLocale} /> : null}
+          {activeTab === "trainings" ? <SectionCard eyebrow={copy.tabs.trainings} title={copy.trainingsTitle} description={copy.trainingsText}>{loadingTabs.trainings ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingTrainings}</div> : lists.recentTrainings.length > 0 ? <div className="grid gap-4">{lists.recentTrainings.map((item) => <PersonRow key={item.id} name={item.name || copy.untitledSession} detail={item.students?.full_name || copy.noLinkedClient} meta={formatDate(item.session_date, true, activeLocale)} colorHex={item.students?.client_color_hex} locale={activeLocale} />)}</div> : <EmptyState title={copy.noTrainings} text={copy.noTrainingsText} />}</SectionCard> : null}
+          {activeTab === "coach" ? <div className="grid gap-6 xl:grid-cols-3"><SectionCard eyebrow={copy.coachHub} title={copy.coachAccount} description={copy.coachAccountText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.nameLabel}</p><p className="mt-2 font-semibold text-[var(--text)]">{coachName}</p></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.emailLabel}</p><p className="mt-2 font-semibold text-[var(--text)]">{currentUser?.email || copy.noEmail}</p></div></div></SectionCard><SectionCard eyebrow={copy.subscriptionEyebrow} title={copy.subscriptionTitle} description={copy.subscriptionText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.planStatus}</p><p className="mt-2 text-2xl font-semibold text-[var(--text)]">{prettifyStatus(core.subscription?.status || "trialing")}</p><p className="mt-2 leading-7 text-[var(--text-muted)]">{(core.subscription?.subscription_category || "apex_coach").toString().replace(/_/g, " ")}{core.subscription?.payment_method_last4 ? ` · •••• ${core.subscription.payment_method_last4}` : ""}</p></div><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-semibold text-[var(--text)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}{copy.signOut}</button></div></SectionCard><SectionCard eyebrow={copy.languageSetup} title={copy.languageSettings} description={copy.languageSettingsText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.activeLanguage}</p><p className="mt-2 text-xl font-semibold text-[var(--text)]">{LANGUAGE_OPTIONS.find((option) => option.value === activeLocale)?.label || activeLocale.toUpperCase()}</p><p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{copy.saveLanguageHint}</p></div><div className="grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => { setPreferredLanguage(option.value); setActiveLocale(option.value); applyCoachLocale(option.value); }} className={`flex items-center justify-between rounded-[22px] border px-4 py-4 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-white hover:bg-[var(--surface-muted)]"}`}><div className="flex items-center gap-3"><span className="text-2xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p><p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{option.short}</p></div></div>{active ? <Check size={16} className="text-[var(--accent-strong)]" /> : null}</button>; })}</div>{languageError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<button onClick={() => handleSaveLanguage(preferredLanguage, { closeModal: false })} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}{copy.saveLanguage}</button></div></SectionCard></div> : null}
           </section>
         </div>
       </main>

@@ -5,6 +5,132 @@ import { CalendarDays, ChevronLeft, ChevronRight, Clock3, GripVertical, LoaderCi
 
 import { getSupabaseBrowserClient } from "../../src/lib/supabase-browser";
 
+const COPY = {
+  en: {
+    editBooking: "Edit booking",
+    date: "Date",
+    time: "Time",
+    notes: "Notes",
+    cancel: "Cancel",
+    saveChanges: "Save changes",
+    agenda: "Agenda",
+    weeklyMonthly: "Weekly and monthly control",
+    liveScheduling: "Calendar with live scheduling",
+    week: "Week",
+    month: "Month",
+    newBooking: "New booking",
+    loadingAgenda: "Loading agenda...",
+    dropHere: "Drop or create a booking here.",
+    noBookings: "No bookings",
+    lastFive: "Last 5 bookings",
+    nextFive: "Next 5 bookings",
+    noPast: "No past bookings",
+    noPastText: "Completed or previous bookings will appear here.",
+    noUpcoming: "No upcoming bookings",
+    noUpcomingText: "Future bookings will appear here as soon as they are scheduled.",
+    clientFallback: "Client",
+    bookingFallback: "Agenda item",
+    loadAgendaError: "Could not load agenda.",
+    saveAgendaError: "Could not save agenda item.",
+    moveBookingError: "Could not move booking.",
+  },
+  pt: {
+    editBooking: "Editar marcação",
+    date: "Data",
+    time: "Hora",
+    notes: "Notas",
+    cancel: "Cancelar",
+    saveChanges: "Guardar alterações",
+    agenda: "Agenda",
+    weeklyMonthly: "Controlo semanal e mensal",
+    liveScheduling: "Calendário com marcações em direto",
+    week: "Semana",
+    month: "Mês",
+    newBooking: "Nova marcação",
+    loadingAgenda: "A carregar agenda...",
+    dropHere: "Larga aqui ou cria uma marcação.",
+    noBookings: "Sem marcações",
+    lastFive: "Últimas 5 marcações",
+    nextFive: "Próximas 5 marcações",
+    noPast: "Sem marcações anteriores",
+    noPastText: "As marcações concluídas ou passadas aparecem aqui.",
+    noUpcoming: "Sem próximas marcações",
+    noUpcomingText: "As futuras marcações aparecem aqui assim que forem agendadas.",
+    clientFallback: "Cliente",
+    bookingFallback: "Item da agenda",
+    loadAgendaError: "Não foi possível carregar a agenda.",
+    saveAgendaError: "Não foi possível guardar a marcação.",
+    moveBookingError: "Não foi possível mover a marcação.",
+  },
+  es: {
+    editBooking: "Editar reserva",
+    date: "Fecha",
+    time: "Hora",
+    notes: "Notas",
+    cancel: "Cancelar",
+    saveChanges: "Guardar cambios",
+    agenda: "Agenda",
+    weeklyMonthly: "Control semanal y mensual",
+    liveScheduling: "Calendario con reservas en directo",
+    week: "Semana",
+    month: "Mes",
+    newBooking: "Nueva reserva",
+    loadingAgenda: "Cargando agenda...",
+    dropHere: "Suelta aquí o crea una reserva.",
+    noBookings: "Sin reservas",
+    lastFive: "Últimas 5 reservas",
+    nextFive: "Próximas 5 reservas",
+    noPast: "Sin reservas anteriores",
+    noPastText: "Las reservas completadas o pasadas aparecerán aquí.",
+    noUpcoming: "Sin próximas reservas",
+    noUpcomingText: "Las futuras reservas aparecerán aquí en cuanto se programen.",
+    clientFallback: "Cliente",
+    bookingFallback: "Elemento de agenda",
+    loadAgendaError: "No se pudo cargar la agenda.",
+    saveAgendaError: "No se pudo guardar la reserva.",
+    moveBookingError: "No se pudo mover la reserva.",
+  },
+  fr: {
+    editBooking: "Modifier le rendez-vous",
+    date: "Date",
+    time: "Heure",
+    notes: "Notes",
+    cancel: "Annuler",
+    saveChanges: "Enregistrer les modifications",
+    agenda: "Agenda",
+    weeklyMonthly: "Contrôle hebdomadaire et mensuel",
+    liveScheduling: "Calendrier avec planification en direct",
+    week: "Semaine",
+    month: "Mois",
+    newBooking: "Nouveau rendez-vous",
+    loadingAgenda: "Chargement de l'agenda...",
+    dropHere: "Dépose ici ou crée un rendez-vous.",
+    noBookings: "Aucun rendez-vous",
+    lastFive: "5 derniers rendez-vous",
+    nextFive: "5 prochains rendez-vous",
+    noPast: "Aucun rendez-vous passé",
+    noPastText: "Les rendez-vous passés ou terminés apparaîtront ici.",
+    noUpcoming: "Aucun rendez-vous à venir",
+    noUpcomingText: "Les futurs rendez-vous apparaîtront ici dès qu'ils seront planifiés.",
+    clientFallback: "Client",
+    bookingFallback: "Élément d'agenda",
+    loadAgendaError: "Impossible de charger l'agenda.",
+    saveAgendaError: "Impossible d'enregistrer le rendez-vous.",
+    moveBookingError: "Impossible de déplacer le rendez-vous.",
+  },
+};
+
+function getCopy(locale) {
+  return COPY[locale] || COPY.en;
+}
+
+function localeTag(locale) {
+  if (locale === "pt") return "pt-PT";
+  if (locale === "es") return "es-ES";
+  if (locale === "fr") return "fr-FR";
+  return "en-GB";
+}
+
 function startOfWeek(date) {
   const value = new Date(date);
   const day = (value.getDay() + 6) % 7;
@@ -21,12 +147,12 @@ function endOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 1);
 }
 
-function formatDate(value, options) {
-  return new Date(value).toLocaleDateString("en-GB", options);
+function formatDate(value, locale, options) {
+  return new Date(value).toLocaleDateString(localeTag(locale), options);
 }
 
-function formatTime(value) {
-  return new Date(value).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+function formatTime(value, locale) {
+  return new Date(value).toLocaleTimeString(localeTag(locale), { hour: "2-digit", minute: "2-digit" });
 }
 
 function withSameTime(baseDate, sourceDate) {
@@ -36,13 +162,13 @@ function withSameTime(baseDate, sourceDate) {
   return updated;
 }
 
-function normalizeAgendaRows(rows) {
+function normalizeAgendaRows(rows, copy) {
   return rows.map((row) => ({
     ...row,
     scheduledAt: new Date(row.scheduled_at),
-    studentName: row.students?.full_name || "Client",
+    studentName: row.students?.full_name || copy.clientFallback,
     clientColor: row.students?.client_color_hex || "#2ad07d",
-    bookingName: row.booking_types?.name || row.item_type || "Agenda item",
+    bookingName: row.booking_types?.name || row.item_type || copy.bookingFallback,
   }));
 }
 
@@ -50,7 +176,8 @@ function statusLabel(value) {
   return (value || "scheduled").replace(/_/g, " ");
 }
 
-export default function AgendaWorkspace({ currentUser, compact = false, onOpenCreateBooking }) {
+export default function AgendaWorkspace({ currentUser, compact = false, onOpenCreateBooking, locale = "en" }) {
+  const copy = getCopy(locale);
   const [mode, setMode] = useState("week");
   const [anchorDate, setAnchorDate] = useState(new Date());
   const [items, setItems] = useState([]);
@@ -112,12 +239,12 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
         if (failed?.error) throw failed.error;
 
         if (!mounted) return;
-        setItems(normalizeAgendaRows(rangeResponse.data ?? []));
-        setNextItems(normalizeAgendaRows(nextResponse.data ?? []));
-        setPastItems(normalizeAgendaRows((pastResponse.data ?? []).slice().reverse()));
+        setItems(normalizeAgendaRows(rangeResponse.data ?? [], copy));
+        setNextItems(normalizeAgendaRows(nextResponse.data ?? [], copy));
+        setPastItems(normalizeAgendaRows((pastResponse.data ?? []).slice().reverse(), copy));
       } catch (loadError) {
         if (!mounted) return;
-        setError(loadError?.message || "Could not load agenda.");
+        setError(loadError?.message || copy.loadAgendaError);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -127,7 +254,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
     return () => {
       mounted = false;
     };
-  }, [currentUser, range]);
+  }, [copy, currentUser, range]);
 
   const weekDays = useMemo(() => {
     if (mode !== "week") return [];
@@ -218,7 +345,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       );
       setEditingItem(null);
     } catch (saveError) {
-      setError(saveError?.message || "Could not save agenda item.");
+      setError(saveError?.message || copy.saveAgendaError);
     } finally {
       setSavingEdit(false);
     }
@@ -250,7 +377,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
         </div>
         <p className="mt-4 text-lg font-semibold text-[var(--text)]">{item.studentName}</p>
         <p className="mt-2 text-sm uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.bookingName}</p>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">{formatTime(item.scheduledAt)}</p>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">{formatTime(item.scheduledAt, locale)}</p>
         {item.notes ? <p className="mt-3 line-clamp-2 text-sm text-[var(--text-muted)]">{item.notes}</p> : null}
       </button>
     );
@@ -261,11 +388,11 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       {editingItem ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm">
           <div className="w-full max-w-xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]">
-            <h3 className="text-2xl font-semibold text-[var(--text)]">Edit booking</h3>
+            <h3 className="text-2xl font-semibold text-[var(--text)]">{copy.editBooking}</h3>
             <form onSubmit={saveEdit} className="mt-6 grid gap-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2">
-                  <span className="text-sm text-[var(--text-muted)]">Date</span>
+                  <span className="text-sm text-[var(--text-muted)]">{copy.date}</span>
                   <input
                     type="date"
                     value={editingItem.date}
@@ -274,7 +401,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                   />
                 </label>
                 <label className="grid gap-2">
-                  <span className="text-sm text-[var(--text-muted)]">Time</span>
+                  <span className="text-sm text-[var(--text-muted)]">{copy.time}</span>
                   <input
                     type="time"
                     value={editingItem.time}
@@ -284,7 +411,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                 </label>
               </div>
               <label className="grid gap-2">
-                <span className="text-sm text-[var(--text-muted)]">Notes</span>
+                <span className="text-sm text-[var(--text-muted)]">{copy.notes}</span>
                 <textarea
                   rows={4}
                   value={editingItem.notes}
@@ -294,11 +421,11 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
               </label>
               <div className="flex justify-end gap-3">
                 <button type="button" onClick={() => setEditingItem(null)} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-medium text-[var(--text-muted)]">
-                  Cancel
+                  {copy.cancel}
                 </button>
                 <button type="submit" disabled={savingEdit} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)]">
                   {savingEdit ? <LoaderCircle size={16} className="animate-spin" /> : <PencilLine size={16} />}
-                  Save changes
+                  {copy.saveChanges}
                 </button>
               </div>
             </form>
@@ -310,9 +437,9 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
         <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">Agenda</p>
+              <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.agenda}</p>
               <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">
-                {compact ? "Weekly and monthly control" : "Calendar with live scheduling"}
+                {compact ? copy.weeklyMonthly : copy.liveScheduling}
               </h2>
             </div>
 
@@ -324,7 +451,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                     onClick={() => setMode(value)}
                     className={`rounded-full px-4 py-2 text-sm font-medium ${mode === value ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}
                   >
-                    {value === "week" ? "Week" : "Month"}
+                    {value === "week" ? copy.week : copy.month}
                   </button>
                 ))}
               </div>
@@ -334,8 +461,8 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                 </button>
                 <span className="text-sm font-medium text-[var(--text)]">
                   {mode === "month"
-                    ? formatDate(range.start, { month: "long", year: "numeric" })
-                    : `${formatDate(range.start, { day: "2-digit", month: "short" })} - ${formatDate(new Date(range.end.getTime() - 86400000), { day: "2-digit", month: "short" })}`}
+                    ? formatDate(range.start, locale, { month: "long", year: "numeric" })
+                    : `${formatDate(range.start, locale, { day: "2-digit", month: "short" })} - ${formatDate(new Date(range.end.getTime() - 86400000), locale, { day: "2-digit", month: "short" })}`}
                 </span>
                 <button onClick={() => moveRange(1)} className="rounded-full p-2 text-[var(--text-muted)]">
                   <ChevronRight size={16} />
@@ -343,13 +470,13 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
               </div>
               <button onClick={onOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
                 <Plus size={16} />
-                New booking
+                {copy.newBooking}
               </button>
             </div>
           </div>
 
           {error ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-          {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />Loading agenda...</div> : null}
+          {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAgenda}</div> : null}
 
           {mode === "week" ? (
             <div className="mt-6 grid gap-4 xl:grid-cols-7">
@@ -366,15 +493,15 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                       try {
                         await rescheduleItem(item, day);
                       } catch (moveError) {
-                        setError(moveError?.message || "Could not move booking.");
+                        setError(moveError?.message || copy.moveBookingError);
                       }
                     }}
                     className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4"
                   >
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, { weekday: "short" })}</p>
-                    <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatDate(day, { day: "2-digit", month: "short" })}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                    <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
                     <div className="mt-4 grid gap-3">
-                      {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">Drop or create a booking here.</p>}
+                      {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">{copy.dropHere}</p>}
                     </div>
                   </div>
                 );
@@ -388,15 +515,15 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
 
                 return (
                   <div key={day.toISOString()} className={`rounded-[22px] border p-4 ${inMonth ? "border-[var(--border)] bg-white" : "border-[var(--border)] bg-[var(--surface-muted)] opacity-60"}`}>
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, { weekday: "short" })}</p>
+                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
                     <p className="mt-2 text-lg font-semibold text-[var(--text)]">{day.getDate()}</p>
                     <div className="mt-3 grid gap-2">
                       {dayItems.slice(0, 3).map((item) => (
                         <button key={item.id} onClick={() => setEditingItem({ id: item.id, date: item.scheduledAt.toISOString().slice(0, 10), time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`, notes: item.notes || "" })} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-left text-sm text-[var(--text-muted)]">
-                          {formatTime(item.scheduledAt)} · {item.studentName}
+                          {formatTime(item.scheduledAt, locale)} · {item.studentName}
                         </button>
                       ))}
-                      {dayItems.length === 0 ? <p className="text-sm text-[var(--text-muted)]">No bookings</p> : null}
+                      {dayItems.length === 0 ? <p className="text-sm text-[var(--text-muted)]">{copy.noBookings}</p> : null}
                     </div>
                   </div>
                 );
@@ -409,20 +536,20 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
             <div className="flex items-center gap-3">
               <CalendarDays size={18} className="text-[var(--accent)]" />
-              <h3 className="text-xl font-semibold text-[var(--text)]">Last 5 bookings</h3>
+              <h3 className="text-xl font-semibold text-[var(--text)]">{copy.lastFive}</h3>
             </div>
             <div className="mt-5 grid gap-3">
-              {pastItems.length > 0 ? pastItems.map((item) => renderCard(item, false)) : <EmptyState title="No past bookings" text="Completed or previous bookings will appear here." />}
+              {pastItems.length > 0 ? pastItems.map((item) => renderCard(item, false)) : <EmptyState title={copy.noPast} text={copy.noPastText} />}
             </div>
           </section>
 
           <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
             <div className="flex items-center gap-3">
               <Clock3 size={18} className="text-[var(--accent)]" />
-              <h3 className="text-xl font-semibold text-[var(--text)]">Next 5 bookings</h3>
+              <h3 className="text-xl font-semibold text-[var(--text)]">{copy.nextFive}</h3>
             </div>
             <div className="mt-5 grid gap-3">
-              {nextItems.length > 0 ? nextItems.map((item) => renderCard(item, false)) : <EmptyState title="No upcoming bookings" text="Future bookings will appear here as soon as they are scheduled." />}
+              {nextItems.length > 0 ? nextItems.map((item) => renderCard(item, false)) : <EmptyState title={copy.noUpcoming} text={copy.noUpcomingText} />}
             </div>
           </section>
         </div>
