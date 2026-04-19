@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, LoaderCircle, ShieldCheck, UserPlus } from "lucide-react";
 
-import { applyCoachLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
 const highlights = [
@@ -53,15 +52,12 @@ export default function SignupClient() {
           data: {
             full_name: fullName.trim(),
             role: "coach",
-            app_locale_code: "en",
-            locale_code: "en",
           },
         },
       });
 
       if (error) throw error;
 
-      applyCoachLocale("en");
       setSuccessMessage("Account created. If Supabase requires email confirmation, confirm your email before signing in.");
       window.setTimeout(() => {
         router.push("/login");

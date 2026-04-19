@@ -3,8 +3,8 @@
 import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarDays, ClipboardList, CreditCard, Dumbbell, LayoutDashboard, LoaderCircle, LogOut, Plus, ShieldCheck, Sparkles, Users, X } from "lucide-react";
-import { applyCoachLocale, getCoachLocaleFromUser } from "../../src/lib/coach-locale";
+import { CalendarDays, Check, ClipboardList, CreditCard, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, Plus, ShieldCheck, Sparkles, Users, X } from "lucide-react";
+import { applyCoachLocale, getStoredCoachLocale, guessCoachLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import AgendaWorkspace from "./AgendaWorkspace";
 import ClientWorkspace from "./ClientWorkspace";
@@ -28,6 +28,12 @@ const DEFAULT_BOOKING_TYPES = [
 const EMPTY_CORE = { profile: null, subscription: null, metrics: { clients: 0, agendaToday: 0, assessments: 0, trainings: 0 }, upcomingAgenda: [] };
 const EMPTY_LISTS = { students: [], recentAssessments: [], recentTrainings: [] };
 const EMPTY_FORM = { studentId: "", bookingTypeId: "", scheduledDate: "", scheduledTime: "", notes: "" };
+const LANGUAGE_OPTIONS = [
+  { value: "en", label: "English", flag: "🇬🇧" },
+  { value: "pt", label: "Português", flag: "🇵🇹" },
+  { value: "es", label: "Español", flag: "🇪🇸" },
+  { value: "fr", label: "Français", flag: "🇫🇷" },
+];
 
 function formatDate(value, withYear = false) {
   if (!value) return "Sem data";
@@ -179,6 +185,10 @@ export default function DashboardClient() {
   const [bookingError, setBookingError] = useState("");
   const [creatingBooking, setCreatingBooking] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [preferredLanguage, setPreferredLanguage] = useState("en");
+  const [savingLanguage, setSavingLanguage] = useState(false);
+  const [languageError, setLanguageError] = useState("");
 
   useEffect(() => {
     if (!configured) {
@@ -276,7 +286,18 @@ export default function DashboardClient() {
 
   useEffect(() => {
     if (!currentUser) return;
-    applyCoachLocale(getCoachLocaleFromUser(currentUser));
+    const storedLocale = getStoredCoachLocale(currentUser);
+    if (storedLocale) {
+      applyCoachLocale(storedLocale);
+      setLanguageOpen(false);
+      setLanguageError("");
+      return;
+    }
+
+    const suggestedLocale = guessCoachLocale();
+    applyCoachLocale(suggestedLocale);
+    setPreferredLanguage(suggestedLocale);
+    setLanguageOpen(true);
   }, [currentUser]);
 
   async function handleSignOut() {
@@ -345,6 +366,40 @@ export default function DashboardClient() {
     startTransition(() => setActiveTab("trainings"));
   }
 
+  async function handleSaveLanguage() {
+    if (!currentUser || !configured) return;
+    setSavingLanguage(true);
+    setLanguageError("");
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const metadata = {
+        ...(currentUser.user_metadata || {}),
+        app_locale_code: preferredLanguage,
+        locale_code: preferredLanguage,
+      };
+
+      const { data, error } = await supabase.auth.updateUser({
+        data: metadata,
+      });
+
+      if (error) throw error;
+
+      const nextUser = data?.user || {
+        ...currentUser,
+        user_metadata: metadata,
+      };
+
+      setCurrentUser(nextUser);
+      applyCoachLocale(preferredLanguage);
+      setLanguageOpen(false);
+    } catch (error) {
+      setLanguageError(error?.message || "Could not save the language preference.");
+    } finally {
+      setSavingLanguage(false);
+    }
+  }
+
   async function handleCreateBooking(event) {
     event.preventDefault();
     setBookingError("");
@@ -405,6 +460,7 @@ export default function DashboardClient() {
 
   return (
     <>
+      {languageOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)] sm:p-8"><div className="flex items-start gap-4"><div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]"><Globe2 size={22} /></div><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">Language setup</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">Choose the language for your coach workspace</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">We could not find a saved language from the app, so we pre-selected the most likely option based on your browser region. You can change it now and the choice will sync with your coach account.</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => setPreferredLanguage(option.value)} className={`flex items-center justify-between rounded-[24px] border px-4 py-4 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}><div className="flex items-center gap-3"><span className="text-2xl">{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p><p className="text-sm text-[var(--text-muted)]">{option.value.toUpperCase()}</p></div></div>{active ? <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]"><Check size={16} /></span> : null}</button>; })}</div>{languageError ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end"><button onClick={handleSaveLanguage} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}Save language</button></div></div></div> : null}
       {bookingOpen ? <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">New booking</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">Schedule session in browser</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">Create a booking directly for a client with the same agenda logic used in the APK.</p></div><button onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-[var(--text-muted)]"><X size={18} /></button></div>{loadingBookingResources ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />Loading clients and booking types...</div> : <form onSubmit={handleCreateBooking} className="mt-6 grid gap-4"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Client</span><select value={bookingForm.studentId} onChange={(event) => updateBookingField("studentId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">Select client</option>{bookingResources.students.map((student) => <option key={student.id} value={student.id}>{student.full_name}</option>)}</select></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Booking type</span><select value={bookingForm.bookingTypeId} onChange={(event) => updateBookingField("bookingTypeId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">Select type</option>{bookingResources.bookingTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Date</span><input type="date" value={bookingForm.scheduledDate} onChange={(event) => updateBookingField("scheduledDate", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Time</span><input type="time" value={bookingForm.scheduledTime} onChange={(event) => updateBookingField("scheduledTime", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label></div><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">Notes</span><textarea value={bookingForm.notes} onChange={(event) => updateBookingField("notes", event.target.value)} rows={4} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" placeholder="Session details, coaching focus, context..." /></label>{bookingError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{bookingError}</div> : null}<div className="flex flex-col gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-medium text-[var(--text-muted)]">Cancel</button><button type="submit" disabled={creatingBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{creatingBooking ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}Create booking</button></div></form>}</div></div> : null}
 
       <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
