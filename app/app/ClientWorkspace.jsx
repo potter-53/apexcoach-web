@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarPlus2, ClipboardPlus, History, LoaderCircle, PencilLine, Trash2, UserRound } from "lucide-react";
+import { CalendarPlus2, ChevronRight, ClipboardPlus, History, LoaderCircle, PencilLine, Search, Trash2, UserRound } from "lucide-react";
 
 import { getSupabaseBrowserClient } from "../../src/lib/supabase-browser";
 
@@ -40,6 +40,11 @@ const COPY = {
     loadClientsError: "Could not load clients.",
     saveClientError: "Could not save client.",
     deleteClientError: "Could not delete client.",
+    rosterTitle: "Client roster",
+    rosterSubtitle: "Manage clients and history",
+    searchClient: "Search client...",
+    totalClients: "total clients",
+    quickAccess: "Quick access",
   },
   pt: {
     noDate: "Sem data",
@@ -75,6 +80,11 @@ const COPY = {
     loadClientsError: "Não foi possível carregar os clientes.",
     saveClientError: "Não foi possível guardar o cliente.",
     deleteClientError: "Não foi possível apagar o cliente.",
+    rosterTitle: "Carteira de clientes",
+    rosterSubtitle: "Gerir clientes e histórico",
+    searchClient: "Pesquisar cliente...",
+    totalClients: "clientes totais",
+    quickAccess: "Acesso rápido",
   },
   es: {
     noDate: "Sin fecha",
@@ -110,6 +120,11 @@ const COPY = {
     loadClientsError: "No se pudieron cargar los clientes.",
     saveClientError: "No se pudo guardar el cliente.",
     deleteClientError: "No se pudo eliminar el cliente.",
+    rosterTitle: "Cartera de clientes",
+    rosterSubtitle: "Gestionar clientes e historial",
+    searchClient: "Buscar cliente...",
+    totalClients: "clientes totales",
+    quickAccess: "Acceso rápido",
   },
   fr: {
     noDate: "Sans date",
@@ -145,6 +160,11 @@ const COPY = {
     loadClientsError: "Impossible de charger les clients.",
     saveClientError: "Impossible d'enregistrer le client.",
     deleteClientError: "Impossible de supprimer le client.",
+    rosterTitle: "Portefeuille clients",
+    rosterSubtitle: "Gérer clients et historique",
+    searchClient: "Rechercher un client...",
+    totalClients: "clients au total",
+    quickAccess: "Accès rapide",
   },
 };
 
@@ -182,6 +202,21 @@ function normalizeStudents(rows) {
   }));
 }
 
+function initialsFromName(value, fallback = "C") {
+  const parts = String(value ?? "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return fallback;
+  if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+  return `${parts[0].slice(0, 1)}${parts[parts.length - 1].slice(0, 1)}`.toUpperCase();
+}
+
+function DetailChip({ label, value }) {
+  return (
+    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">
+      {label}: {value}
+    </span>
+  );
+}
+
 function normalizeHistory(items, type, copy) {
   return items.map((item) => {
     let occurredAt = item.assessment_date || item.session_date || item.scheduled_at || item.created_at;
@@ -213,11 +248,21 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState(null);
+  const [search, setSearch] = useState("");
 
   const selectedStudent = useMemo(
     () => students.find((student) => student.id === selectedId) || null,
     [selectedId, students],
   );
+  const filteredStudents = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return students;
+    return students.filter((student) =>
+      [student.full_name, student.email, student.main_goal, student.legacy_id_pessoa]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(query)),
+    );
+  }, [search, students]);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -383,23 +428,56 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
     <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
       <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
         <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.clients}</p>
-        <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.clientList}</h2>
+        <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.rosterTitle}</h2>
+        <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.rosterSubtitle}</p>
+
+        <div className="mt-5 flex items-center gap-3 rounded-[26px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+          <Search size={16} className="text-[var(--text-muted)]" />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder={copy.searchClient}
+            className="w-full bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
+          />
+          <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+            {students.length} {copy.totalClients}
+          </span>
+        </div>
 
         {loading ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingClients}</div> : null}
         {error ? <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
 
         <div className="mt-6 grid gap-3">
-          {students.map((student) => (
+          {filteredStudents.map((student) => (
             <button
               key={student.id}
               onClick={() => setSelectedId(student.id)}
-              className={`rounded-[24px] border px-4 py-4 text-left ${selectedId === student.id ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
+              className={`rounded-[26px] border px-4 py-4 text-left transition ${selectedId === student.id ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}
             >
-              <div className="flex items-center gap-3">
-                <span className="h-3 w-3 rounded-full" style={{ background: student.clientColor }} />
-                <div>
-                  <p className="font-medium text-[var(--text)]">{student.full_name || copy.clientFallback}</p>
-                  <p className="text-sm text-[var(--text-muted)]">{student.main_goal || student.email || copy.noGoal}</p>
+              <div className="flex items-center gap-4">
+                <div
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold text-[var(--text)]"
+                  style={{ background: `${student.clientColor}24`, border: `1px solid ${student.clientColor}44` }}
+                >
+                  {initialsFromName(student.full_name, copy.clientFallback.slice(0, 1))}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-[var(--text)]">{student.full_name || copy.clientFallback}</p>
+                      <p className="mt-1 truncate text-sm text-[var(--text-muted)]">{student.main_goal || student.email || copy.noGoal}</p>
+                    </div>
+                    <ChevronRight size={16} className="shrink-0 text-[var(--text-muted)]" />
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-[var(--text-muted)]">{calculateAge(student.birth_date)} y • {student.height_cm || "-"} cm •</span>
+                    <span
+                      className="rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                      style={{ background: `${student.clientColor}20`, color: student.clientColor, border: `1px solid ${student.clientColor}33` }}
+                    >
+                      #{String(student.legacy_id_pessoa || student.id).slice(0, 6)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </button>
@@ -414,10 +492,11 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.clientPage}</p>
                 <h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">{selectedStudent.full_name}</h2>
+                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.quickAccess}</p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">{copy.age}: {calculateAge(selectedStudent.birth_date)}</span>
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">{copy.height}: {selectedStudent.height_cm || "-"} cm</span>
-                  <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-sm text-[var(--text-muted)]">{copy.id}: {selectedStudent.legacy_id_pessoa || selectedStudent.id}</span>
+                  <DetailChip label={copy.age} value={calculateAge(selectedStudent.birth_date)} />
+                  <DetailChip label={copy.height} value={`${selectedStudent.height_cm || "-"} cm`} />
+                  <DetailChip label={copy.id} value={selectedStudent.legacy_id_pessoa || selectedStudent.id} />
                 </div>
               </div>
 
@@ -437,8 +516,27 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
               </div>
             </div>
 
-            <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
-              <div className="grid gap-4">
+            <div className="mt-8 grid gap-6">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="rounded-[26px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.fullName}</p>
+                  <p className="mt-2 text-xl font-semibold text-[var(--text)]">{selectedStudent.full_name || copy.clientFallback}</p>
+                  <p className="mt-2 text-sm text-[var(--text-muted)]">{selectedStudent.email || "-"}</p>
+                </div>
+                <div className="rounded-[26px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.mainGoal}</p>
+                  <p className="mt-2 text-lg font-semibold text-[var(--text)]">{selectedStudent.main_goal || copy.noGoal}</p>
+                  <p className="mt-2 text-sm text-[var(--text-muted)]">{copy.trainingHistory}</p>
+                </div>
+                <div className="rounded-[26px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.id}</p>
+                  <p className="mt-2 text-lg font-semibold text-[var(--text)]">{selectedStudent.legacy_id_pessoa || selectedStudent.id}</p>
+                  <p className="mt-2 text-sm text-[var(--text-muted)]">{formatDate(selectedStudent.created_at, locale)}</p>
+                </div>
+              </div>
+
+              <div className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
+                <div className="grid gap-4">
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{copy.fullName}</span>
                   <input value={form.full_name} onChange={(event) => setForm((current) => ({ ...current, full_name: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3" />
@@ -474,26 +572,27 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
                 </div>
               </div>
 
-              <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-                <div className="flex items-center gap-3">
-                  <History size={18} className="text-[var(--accent)]" />
-                  <h3 className="text-xl font-semibold text-[var(--text)]">{copy.studentHistory}</h3>
-                </div>
-                <div className="mt-5 grid gap-3">
-                  {history.length > 0 ? (
-                    history.map((item) => (
-                      <div key={item.id} className="rounded-2xl border border-[var(--border)] bg-white px-4 py-4">
-                        <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.type === "agenda" ? copy.agendaLabel : item.type === "assessment" ? copy.assessmentLabel : copy.trainingLabel}</p>
-                        <p className="mt-2 font-semibold text-[var(--text)]">{item.title}</p>
-                        {item.detail ? <p className="mt-2 text-sm text-[var(--text-muted)]">{item.detail}</p> : null}
-                        <p className="mt-3 text-sm text-[var(--text-muted)]">{formatDate(item.occurredAt, locale)}</p>
+                <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
+                  <div className="flex items-center gap-3">
+                    <History size={18} className="text-[var(--accent)]" />
+                    <h3 className="text-xl font-semibold text-[var(--text)]">{copy.studentHistory}</h3>
+                  </div>
+                  <div className="mt-5 grid gap-3">
+                    {history.length > 0 ? (
+                      history.map((item) => (
+                        <div key={item.id} className="rounded-2xl border border-[var(--border)] bg-white px-4 py-4">
+                          <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.type === "agenda" ? copy.agendaLabel : item.type === "assessment" ? copy.assessmentLabel : copy.trainingLabel}</p>
+                          <p className="mt-2 font-semibold text-[var(--text)]">{item.title}</p>
+                          {item.detail ? <p className="mt-2 text-sm text-[var(--text-muted)]">{item.detail}</p> : null}
+                          <p className="mt-3 text-sm text-[var(--text-muted)]">{formatDate(item.occurredAt, locale)}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white px-4 py-8 text-center text-[var(--text-muted)]">
+                        {copy.noHistory}
                       </div>
-                    ))
-                  ) : (
-                    <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white px-4 py-8 text-center text-[var(--text-muted)]">
-                      {copy.noHistory}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

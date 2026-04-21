@@ -33,6 +33,10 @@ const COPY = {
     loadAgendaError: "Could not load agenda.",
     saveAgendaError: "Could not save agenda item.",
     moveBookingError: "Could not move booking.",
+    weeklyCalendar: "Weekly calendar",
+    dailySubtitle: "Sessions and bookings",
+    today: "Today",
+    liveWeek: "Live week",
   },
   pt: {
     editBooking: "Editar marcação",
@@ -176,6 +180,13 @@ function statusLabel(value) {
   return (value || "scheduled").replace(/_/g, " ");
 }
 
+function groupWeekItems(items, locale) {
+  return items.slice(0, 4).map((item) => ({
+    ...item,
+    timeLabel: formatTime(item.scheduledAt, locale),
+  }));
+}
+
 export default function AgendaWorkspace({ currentUser, compact = false, onOpenCreateBooking, locale = "en" }) {
   const copy = getCopy(locale);
   const [mode, setMode] = useState("week");
@@ -277,6 +288,18 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
     return days;
   }, [anchorDate, mode]);
 
+  const weekOverview = useMemo(() => {
+    if (mode !== "week") return [];
+    return weekDays.map((day) => {
+      const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
+      return {
+        day,
+        count: dayItems.length,
+        items: groupWeekItems(dayItems, locale),
+      };
+    });
+  }, [items, locale, mode, weekDays]);
+
   function moveRange(direction) {
     const updated = new Date(anchorDate);
     if (mode === "month") {
@@ -285,6 +308,10 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       updated.setDate(updated.getDate() + direction * 7);
     }
     setAnchorDate(updated);
+  }
+
+  function jumpToToday() {
+    setAnchorDate(new Date());
   }
 
   async function rescheduleItem(item, targetDate) {
@@ -439,11 +466,16 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.agenda}</p>
               <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">
-                {compact ? copy.weeklyMonthly : copy.liveScheduling}
+                {compact ? copy.weeklyCalendar || copy.weeklyMonthly : copy.liveScheduling}
               </h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p>
             </div>
 
             <div className="flex flex-wrap gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />
+                <span className="text-sm font-medium text-[var(--text)]">{copy.liveWeek || copy.agenda}</span>
+              </div>
               <div className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1">
                 {["week", "month"].map((value) => (
                   <button
@@ -468,6 +500,10 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                   <ChevronRight size={16} />
                 </button>
               </div>
+              <button onClick={jumpToToday} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm font-medium text-[var(--text)]">
+                <CalendarDays size={16} />
+                {copy.today || "Today"}
+              </button>
               <button onClick={onOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
                 <Plus size={16} />
                 {copy.newBooking}
@@ -479,33 +515,87 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAgenda}</div> : null}
 
           {mode === "week" ? (
-            <div className="mt-6 grid gap-4 xl:grid-cols-7">
-              {weekDays.map((day) => {
-                const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
-                return (
-                  <div
-                    key={day.toISOString()}
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={async (event) => {
-                      const id = event.dataTransfer.getData("text/plain");
-                      const item = items.find((entry) => entry.id === id);
-                      if (!item) return;
-                      try {
-                        await rescheduleItem(item, day);
-                      } catch (moveError) {
-                        setError(moveError?.message || copy.moveBookingError);
-                      }
-                    }}
-                    className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4"
-                  >
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
-                    <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
-                    <div className="mt-4 grid gap-3">
-                      {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">{copy.dropHere}</p>}
+            <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_360px]">
+              <div className="grid gap-4 xl:grid-cols-7">
+                {weekDays.map((day) => {
+                  const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
+                  return (
+                    <div
+                      key={day.toISOString()}
+                      onDragOver={(event) => event.preventDefault()}
+                      onDrop={async (event) => {
+                        const id = event.dataTransfer.getData("text/plain");
+                        const item = items.find((entry) => entry.id === id);
+                        if (!item) return;
+                        try {
+                          await rescheduleItem(item, day);
+                        } catch (moveError) {
+                          setError(moveError?.message || copy.moveBookingError);
+                        }
+                      }}
+                      className={`rounded-[24px] border p-4 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-[linear-gradient(180deg,rgba(233,251,241,0.95),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
+                    >
+                      <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
+                      <div className="mt-4 grid gap-3">
+                        {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">{copy.dropHere}</p>}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+
+              <aside className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(250,252,251,0.96),rgba(241,245,243,0.98))] p-5">
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.liveWeek || copy.agenda}</p>
+                <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.week}</h3>
+                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p>
+
+                <div className="mt-5 grid gap-3">
+                  {weekOverview.map(({ day, count, items: dayItems }) => (
+                    <div
+                      key={day.toISOString()}
+                      className={`rounded-[24px] border px-4 py-4 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                          <p className="mt-1 text-base font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
+                        </div>
+                        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-xs font-semibold text-[var(--text-muted)]">
+                          {count}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid gap-2">
+                        {dayItems.length > 0 ? (
+                          dayItems.map((item) => (
+                            <button
+                              key={item.id}
+                              onClick={() =>
+                                setEditingItem({
+                                  id: item.id,
+                                  date: item.scheduledAt.toISOString().slice(0, 10),
+                                  time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`,
+                                  notes: item.notes || "",
+                                })
+                              }
+                              className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-3 text-left"
+                            >
+                              <p className="text-xs uppercase tracking-[0.16em] text-[var(--accent)]">{item.timeLabel}</p>
+                              <p className="mt-1 font-medium text-[var(--text)]">{item.studentName}</p>
+                              <p className="mt-1 text-sm text-[var(--text-muted)]">{item.bookingName}</p>
+                            </button>
+                          ))
+                        ) : (
+                          <p className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-3 py-4 text-sm text-[var(--text-muted)]">
+                            {copy.noBookings}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </aside>
             </div>
           ) : (
             <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -520,7 +610,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                     <div className="mt-3 grid gap-2">
                       {dayItems.slice(0, 3).map((item) => (
                         <button key={item.id} onClick={() => setEditingItem({ id: item.id, date: item.scheduledAt.toISOString().slice(0, 10), time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`, notes: item.notes || "" })} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-left text-sm text-[var(--text-muted)]">
-                          {formatTime(item.scheduledAt, locale)} · {item.studentName}
+                          {formatTime(item.scheduledAt, locale)} - {item.studentName}
                         </button>
                       ))}
                       {dayItems.length === 0 ? <p className="text-sm text-[var(--text-muted)]">{copy.noBookings}</p> : null}
