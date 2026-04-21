@@ -45,6 +45,7 @@ const DASHBOARD_COPY = {
     chooseLanguage: "Choose the language for your coach workspace",
     chooseLanguageText: "We could not find a saved language from the app, so we pre-selected the most likely option based on your browser region. You can change it now and the choice will sync with your coach account.",
     saveLanguage: "Save language",
+    saveChanges: "Save changes",
     bookingTitle: "New booking",
     bookingHeading: "Schedule session in browser",
     bookingText: "Create a booking directly for a client with the same agenda logic used in the APK.",
@@ -130,6 +131,7 @@ const DASHBOARD_COPY = {
     chooseLanguage: "Escolhe o idioma do teu workspace de coach",
     chooseLanguageText: "Não encontrámos um idioma guardado vindo da app, por isso pré-selecionámos a opção mais provável com base na região do teu browser. Podes alterar agora e a escolha ficará sincronizada com a tua conta.",
     saveLanguage: "Guardar idioma",
+    saveChanges: "Guardar alterações",
     bookingTitle: "Nova marcação",
     bookingHeading: "Agendar sessão no browser",
     bookingText: "Cria uma marcação diretamente para um cliente com a mesma lógica de agenda usada na APK.",
@@ -215,6 +217,7 @@ const DASHBOARD_COPY = {
     chooseLanguage: "Elige el idioma de tu workspace de coach",
     chooseLanguageText: "No encontramos un idioma guardado desde la app, así que preseleccionamos la opción más probable según la región de tu navegador. Puedes cambiarla ahora y la elección se sincronizará con tu cuenta.",
     saveLanguage: "Guardar idioma",
+    saveChanges: "Guardar cambios",
     bookingTitle: "Nueva reserva",
     bookingHeading: "Programar sesión en el navegador",
     bookingText: "Crea una reserva directamente para un cliente con la misma lógica de agenda usada en la APK.",
@@ -300,6 +303,7 @@ const DASHBOARD_COPY = {
     chooseLanguage: "Choisis la langue de ton workspace coach",
     chooseLanguageText: "Nous n'avons trouvé aucune langue enregistrée depuis l'app, donc nous avons présélectionné l'option la plus probable selon la région de ton navigateur. Tu peux la changer maintenant et ce choix sera synchronisé avec ton compte.",
     saveLanguage: "Enregistrer la langue",
+    saveChanges: "Enregistrer les modifications",
     bookingTitle: "Nouveau rendez-vous",
     bookingHeading: "Planifier une séance dans le navigateur",
     bookingText: "Crée un rendez-vous directement pour un client avec la même logique d'agenda que l'APK.",
@@ -479,7 +483,7 @@ async function loadAssessments(supabase, user) {
 }
 
 async function loadTrainings(supabase, user) {
-  const response = await colorFallback((includeColor) => supabase.from("training_sessions").select(includeColor ? "id, name, status, session_date, students(full_name, client_color_hex)" : "id, name, status, session_date, students(full_name)").eq("coach_id", user.id).order("session_date", { ascending: false }).limit(12));
+  const response = await colorFallback((includeColor) => supabase.from("training_sessions").select(includeColor ? "id, name, notes, status, session_date, students(full_name, client_color_hex)" : "id, name, notes, status, session_date, students(full_name)").eq("coach_id", user.id).order("session_date", { ascending: false }).limit(12));
   if (response.error) throw response.error;
   return response.data ?? [];
 }
@@ -496,7 +500,7 @@ async function ensureBookingTypes(supabase, user) {
 }
 
 function SectionCard({ eyebrow, title, description, action, children }) {
-  return <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{eyebrow}</p><h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{title}</h2>{description ? <p className="mt-3 max-w-3xl leading-7 text-[var(--text-muted)]">{description}</p> : null}</div>{action}</div><div className="mt-6">{children}</div></section>;
+  return <section className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{eyebrow}</p><h2 className="mt-2 text-xl font-semibold text-[var(--text)]">{title}</h2>{description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">{description}</p> : null}</div>{action}</div><div className="mt-5">{children}</div></section>;
 }
 
 function EmptyState({ title, text }) {
@@ -504,12 +508,238 @@ function EmptyState({ title, text }) {
 }
 
 function MetricCard({ label, value, Icon, hint }) {
-  return <div className="rounded-[30px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-5 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-4"><div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={22} className="text-[var(--accent)]" /></div><span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">{label}</span></div><p className="mt-6 text-4xl font-semibold text-[var(--text)]">{value}</p><p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">{hint}</p></div>;
+  return <div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-4 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={18} className="text-[var(--accent)]" /></div><span className="rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">{label}</span></div><p className="mt-4 text-3xl font-semibold text-[var(--text)]">{value}</p><p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{hint}</p></div>;
 }
 
 function PersonRow({ name, detail, meta, colorHex, locale = "en" }) {
   const copy = getCopy(locale);
   return <div className="flex items-center justify-between gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-4"><div className="flex min-w-0 items-center gap-3"><span className="h-3 w-3 shrink-0 rounded-full" style={{ background: colorDot(colorHex) }} /><div className="min-w-0"><p className="truncate font-medium text-[var(--text)]">{name || copy.client}</p><p className="truncate text-sm text-[var(--text-muted)]">{detail || copy.noDetail}</p></div></div>{meta ? <p className="shrink-0 text-sm text-[var(--text-muted)]">{meta}</p> : null}</div>;
+}
+
+function formatMetricValue(value) {
+  if (value === null || value === undefined || value === "") return "-";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function getAssessmentEntries(fields) {
+  return Object.entries(fields || {})
+    .filter(([, value]) => value !== null && value !== undefined && value !== "")
+    .slice(0, 12);
+}
+
+function CompactWorkspaceShell({ eyebrow, title, description, list, detail }) {
+  return (
+    <section className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)]">
+      <div className="flex flex-col gap-2">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{eyebrow}</p>
+        <h2 className="text-2xl font-semibold text-[var(--text)]">{title}</h2>
+        <p className="max-w-3xl text-sm leading-7 text-[var(--text-muted)]">{description}</p>
+      </div>
+      <div className="mt-5 grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">{list}</div>
+        <div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-4">{detail}</div>
+      </div>
+    </section>
+  );
+}
+
+function AssessmentWorkspace({ items, loading, copy, locale }) {
+  const [selectedId, setSelectedId] = useState("");
+  const selectedItem = useMemo(() => items.find((item) => item.id === selectedId) || items[0] || null, [items, selectedId]);
+  const entries = useMemo(() => getAssessmentEntries(selectedItem?.fields), [selectedItem]);
+
+  useEffect(() => {
+    if (!items.length) {
+      setSelectedId("");
+      return;
+    }
+    setSelectedId((current) => (items.some((item) => item.id === current) ? current : items[0].id));
+  }, [items]);
+
+  return (
+    <CompactWorkspaceShell
+      eyebrow={copy.tabs.assessments}
+      title={copy.assessmentsTitle}
+      description={copy.assessmentsText}
+      list={
+        loading ? (
+          <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAssessments}</div>
+        ) : items.length > 0 ? (
+          <div className="grid gap-2">
+            {items.map((item) => {
+              const active = selectedItem?.id === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedId(item.id)}
+                  className={`rounded-[18px] border px-3 py-3 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/70"}`}
+                >
+                  <p className="font-medium text-[var(--text)]">{item.students?.full_name || copy.client}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(item.assessment_date, true, locale)}</p>
+                  <p className="mt-2 text-sm text-[var(--text-muted)]">{`${Object.keys(item.fields || {}).length} ${copy.savedMetrics}`}</p>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <EmptyState title={copy.noAssessments} text={copy.noAssessmentsText} />
+        )
+      }
+      detail={
+        selectedItem ? (
+          <div className="grid gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.client}</p>
+                <h3 className="mt-1 text-xl font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.client}</h3>
+              </div>
+              <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                {formatDate(selectedItem.assessment_date, true, locale)}
+              </span>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              {entries.length > 0 ? entries.map(([key, value]) => (
+                <div key={key} className="rounded-[18px] border border-[var(--border)] bg-white px-4 py-3">
+                  <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{String(key).replace(/_/g, " ")}</p>
+                  <p className="mt-1 text-sm font-medium text-[var(--text)]">{formatMetricValue(value)}</p>
+                </div>
+              )) : <EmptyState title={copy.noAssessments} text={copy.noAssessmentsText} />}
+            </div>
+          </div>
+        ) : (
+          <EmptyState title={copy.noAssessments} text={copy.noAssessmentsText} />
+        )
+      }
+    />
+  );
+}
+
+function TrainingWorkspace({ items, loading, copy, locale, currentUser, onItemsChange }) {
+  const [selectedId, setSelectedId] = useState("");
+  const [draft, setDraft] = useState({ name: "", notes: "" });
+  const [saving, setSaving] = useState(false);
+  const selectedItem = useMemo(() => items.find((item) => item.id === selectedId) || items[0] || null, [items, selectedId]);
+
+  useEffect(() => {
+    if (!items.length) {
+      setSelectedId("");
+      setDraft({ name: "", notes: "" });
+      return;
+    }
+    const nextSelected = items.some((item) => item.id === selectedId) ? items.find((item) => item.id === selectedId) : items[0];
+    setSelectedId(nextSelected.id);
+    setDraft({ name: nextSelected.name || "", notes: nextSelected.notes || "" });
+  }, [items, selectedId]);
+
+  async function saveTraining() {
+    if (!selectedItem || !currentUser) return;
+    setSaving(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const response = await supabase
+        .from("training_sessions")
+        .update({
+          name: draft.name.trim(),
+          notes: draft.notes.trim(),
+        })
+        .eq("id", selectedItem.id)
+        .eq("coach_id", currentUser.id);
+
+      if (response.error) throw response.error;
+
+      onItemsChange((current) =>
+        current.map((item) =>
+          item.id === selectedItem.id
+            ? { ...item, name: draft.name.trim(), notes: draft.notes.trim() }
+            : item,
+        ),
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <CompactWorkspaceShell
+      eyebrow={copy.tabs.trainings}
+      title={copy.trainingsTitle}
+      description={copy.trainingsText}
+      list={
+        loading ? (
+          <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingTrainings}</div>
+        ) : items.length > 0 ? (
+          <div className="grid gap-2">
+            {items.map((item) => {
+              const active = selectedItem?.id === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setSelectedId(item.id);
+                    setDraft({ name: item.name || "", notes: item.notes || "" });
+                  }}
+                  className={`rounded-[18px] border px-3 py-3 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/70"}`}
+                >
+                  <p className="font-medium text-[var(--text)]">{item.name || copy.untitledSession}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(item.session_date, true, locale)}</p>
+                  <p className="mt-2 truncate text-sm text-[var(--text-muted)]">{item.students?.full_name || copy.noLinkedClient}</p>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <EmptyState title={copy.noTrainings} text={copy.noTrainingsText} />
+        )
+      }
+      detail={
+        selectedItem ? (
+          <div className="grid gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.client}</p>
+                <h3 className="mt-1 text-xl font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.noLinkedClient}</h3>
+              </div>
+              <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                {formatDate(selectedItem.session_date, true, locale)}
+              </span>
+            </div>
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-[var(--text)]">{copy.trainingLabel}</span>
+              <input
+                value={draft.name}
+                onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))}
+                className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text)] outline-none"
+              />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-[var(--text)]">{copy.notes}</span>
+              <textarea
+                rows={10}
+                value={draft.notes}
+                onChange={(event) => setDraft((current) => ({ ...current, notes: event.target.value }))}
+                className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm leading-7 text-[var(--text)] outline-none"
+                placeholder={copy.notesPlaceholder}
+              />
+            </label>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                {prettifyStatus(selectedItem.status)}
+              </span>
+              <button onClick={saveTraining} disabled={saving} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">
+                {saving ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}
+                {copy.saveChanges}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <EmptyState title={copy.noTrainings} text={copy.noTrainingsText} />
+        )
+      }
+    />
+  );
 }
 
 function AgendaCards({ items, onCreate, locale }) {
@@ -827,19 +1057,19 @@ export default function DashboardClient() {
 
   return (
     <>
-      {languageOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)] sm:p-8"><div className="flex items-start gap-4"><div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]"><Globe2 size={22} /></div><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">{copy.languageSetup}</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">{copy.chooseLanguage}</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">{copy.chooseLanguageText}</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => { setPreferredLanguage(option.value); setActiveLocale(option.value); applyCoachLocale(option.value); }} className={`flex items-center justify-between rounded-[24px] border px-4 py-4 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}><div className="flex items-center gap-3"><span className="text-3xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p></div></div>{active ? <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]"><Check size={16} /></span> : null}</button>; })}</div>{languageError ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end"><button onClick={handleSaveLanguage} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}{copy.saveLanguage}</button></div></div></div> : null}
-      {bookingOpen ? <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[32px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.18em] text-[var(--accent)]">{copy.bookingTitle}</p><h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">{copy.bookingHeading}</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">{copy.bookingText}</p></div><button onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-[var(--text-muted)]"><X size={18} /></button></div>{loadingBookingResources ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingBooking}</div> : <form onSubmit={handleCreateBooking} className="mt-6 grid gap-4"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.client}</span><select value={bookingForm.studentId} onChange={(event) => updateBookingField("studentId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">{copy.selectClient}</option>{bookingResources.students.map((student) => <option key={student.id} value={student.id}>{student.full_name}</option>)}</select></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.bookingType}</span><select value={bookingForm.bookingTypeId} onChange={(event) => updateBookingField("bookingTypeId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none"><option value="">{copy.selectType}</option>{bookingResources.bookingTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.date}</span><input type="date" value={bookingForm.scheduledDate} onChange={(event) => updateBookingField("scheduledDate", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.time}</span><input type="time" value={bookingForm.scheduledTime} onChange={(event) => updateBookingField("scheduledTime", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" /></label></div><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.notes}</span><textarea value={bookingForm.notes} onChange={(event) => updateBookingField("notes", event.target.value)} rows={4} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none" placeholder={copy.notesPlaceholder} /></label>{bookingError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{bookingError}</div> : null}<div className="flex flex-col gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-medium text-[var(--text-muted)]">{copy.cancel}</button><button type="submit" disabled={creatingBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{creatingBooking ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}{copy.createBooking}</button></div></form>}</div></div> : null}
+      {languageOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[28px] border border-[var(--border-strong)] bg-white p-5 shadow-[var(--shadow-panel)] sm:p-6"><div className="flex items-start gap-4"><div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]"><Globe2 size={20} /></div><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.languageSetup}</p><h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.chooseLanguage}</h2><p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.chooseLanguageText}</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => { setPreferredLanguage(option.value); setActiveLocale(option.value); applyCoachLocale(option.value); }} className={`flex items-center justify-between rounded-[20px] border px-4 py-3 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}><div className="flex items-center gap-3"><span className="text-2xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p></div></div>{active ? <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]"><Check size={15} /></span> : null}</button>; })}</div>{languageError ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end"><button onClick={handleSaveLanguage} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}{copy.saveLanguage}</button></div></div></div> : null}
+      {bookingOpen ? <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[28px] border border-[var(--border-strong)] bg-white p-5 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.bookingTitle}</p><h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.bookingHeading}</h2><p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.bookingText}</p></div><button onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-[var(--text-muted)]"><X size={18} /></button></div>{loadingBookingResources ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingBooking}</div> : <form onSubmit={handleCreateBooking} className="mt-6 grid gap-4"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.client}</span><select value={bookingForm.studentId} onChange={(event) => updateBookingField("studentId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none"><option value="">{copy.selectClient}</option>{bookingResources.students.map((student) => <option key={student.id} value={student.id}>{student.full_name}</option>)}</select></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.bookingType}</span><select value={bookingForm.bookingTypeId} onChange={(event) => updateBookingField("bookingTypeId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none"><option value="">{copy.selectType}</option>{bookingResources.bookingTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.date}</span><input type="date" value={bookingForm.scheduledDate} onChange={(event) => updateBookingField("scheduledDate", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none" /></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.time}</span><input type="time" value={bookingForm.scheduledTime} onChange={(event) => updateBookingField("scheduledTime", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none" /></label></div><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.notes}</span><textarea value={bookingForm.notes} onChange={(event) => updateBookingField("notes", event.target.value)} rows={4} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none" placeholder={copy.notesPlaceholder} /></label>{bookingError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{bookingError}</div> : null}<div className="flex flex-col gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 text-sm font-medium text-[var(--text-muted)]">{copy.cancel}</button><button type="submit" disabled={creatingBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{creatingBooking ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}{copy.createBooking}</button></div></form>}</div></div> : null}
 
       <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
         <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
         <div className="mx-auto grid min-h-screen max-w-[1600px] gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
           <aside className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)]"><div className="flex items-center gap-3"><div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2"><LayoutDashboard size={20} className="text-[var(--accent-strong)]" /></div><div><p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">APEX COACH</p><p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">{copy.webWorkspace}</p></div></div><div className="mt-8 rounded-[28px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-4"><p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-strong)]">{copy.coachAccount}</p><p className="mt-2 text-lg font-semibold text-[var(--text)]">{coachName}</p><p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{copy.fastWorkspace}</p><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-[20px] border border-[var(--border)] bg-white px-3 py-3"><p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">{copy.tabs.agenda}</p><p className="mt-1 text-xl font-semibold text-[var(--text)]">{core.metrics.agendaToday}</p></div><div className="rounded-[20px] border border-[var(--border)] bg-white px-3 py-3"><p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">{copy.tabs.clients}</p><p className="mt-1 text-xl font-semibold text-[var(--text)]">{core.metrics.clients}</p></div></div></div><nav className="mt-8 grid gap-2">{appTabs.map(({ id, label, icon: Icon }) => { const active = activeTab === id; const emphasized = id === "agenda"; return <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`flex items-center gap-3 rounded-[22px] border px-4 py-3 text-left text-sm transition ${active ? "border-[var(--accent)] bg-[var(--accent)] text-[#081014] shadow-[0_18px_35px_rgba(42,208,125,0.2)]" : emphasized ? "border-[var(--accent)]/25 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))] text-[var(--text)]" : "border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}><span className={`flex h-9 w-9 items-center justify-center rounded-2xl ${active ? "bg-white/22" : "bg-white"}`}><Icon size={17} /></span><span className="font-medium">{label}</span></button>; })}</nav><div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4"><button onClick={openBookingModal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />{copy.newBooking}</button><Link href="/" className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">{copy.backToLanding}</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}{copy.signOut}</button></div></aside>
-          <section className="grid gap-6"><header className="rounded-[32px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-5 shadow-[var(--shadow-panel)] sm:p-6"><div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between"><div><p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.coachBrowserWorkspace}</p><h1 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--text)] sm:text-5xl">{copy.agendaHeadline}</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-[var(--text-muted)]">{copy.agendaSubhead}</p><div className="mt-5 flex flex-wrap gap-3"><span className="rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm text-[var(--text-muted)]">{coachName}</span><span className="rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm text-[var(--text-muted)]">{currentUser?.email || copy.noEmail}</span><span className="rounded-full border border-[var(--accent)]/25 bg-[var(--accent-soft)] px-4 py-2 text-sm font-medium text-[var(--accent-strong)]">{prettifyStatus(core.subscription?.status || "trialing")}</span></div></div><div className="flex flex-col gap-3 sm:flex-row"><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}{copy.signOut}</button></div></div></header>{workspaceError ? <div className="rounded-[28px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
+          <section className="grid gap-5"><header className="rounded-[28px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-4 shadow-[var(--shadow-panel)] sm:p-5"><div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between"><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.coachBrowserWorkspace}</p><h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)] sm:text-4xl">{copy.agendaHeadline}</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">{copy.agendaSubhead}</p><div className="mt-4 flex flex-wrap gap-2.5"><span className="rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-sm text-[var(--text-muted)]">{coachName}</span><span className="rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-sm text-[var(--text-muted)]">{currentUser?.email || copy.noEmail}</span><span className="rounded-full border border-[var(--accent)]/25 bg-[var(--accent-soft)] px-3 py-1.5 text-sm font-medium text-[var(--accent-strong)]">{prettifyStatus(core.subscription?.status || "trialing")}</span></div></div><div className="flex flex-col gap-3 sm:flex-row"><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}{copy.signOut}</button></div></div></header>{workspaceError ? <div className="rounded-[24px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
           {activeTab === "dashboard" ? <><div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]"><AgendaCards items={core.upcomingAgenda.slice(0, 6)} onCreate={openBookingModal} locale={activeLocale} /><div className="grid gap-6"><SectionCard eyebrow={copy.coachPulse} title={copy.quickSummary} description={copy.summaryText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><Sparkles size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">{copy.coachNameLabel}</p><p className="text-sm text-[var(--text-muted)]">{coachName}</p></div></div></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><CreditCard size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">{copy.subscriptionLabel}</p><p className="text-sm text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p></div></div></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><div className="flex items-center gap-3"><CalendarDays size={18} className="text-[var(--accent)]" /><div><p className="font-medium text-[var(--text)]">{copy.tabs.agenda}</p><p className="text-sm text-[var(--text-muted)]">{copy.agendaTodayHint}</p></div></div></div></div></SectionCard><SectionCard eyebrow={copy.quickAction} title={copy.bookFaster} description={copy.bookFasterText} action={<button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={16} />{copy.createNow}</button>}><p className="leading-7 text-[var(--text-muted)]">{copy.createNowHint}</p></SectionCard></div></div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">{metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}</div></> : null}
           {activeTab === "clients" ? <ClientWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} onOpenAssessments={openAssessmentsForStudent} onOpenTrainings={openTrainingsForStudent} locale={activeLocale} /> : null}
-          {activeTab === "assessments" ? <SectionCard eyebrow={copy.tabs.assessments} title={copy.assessmentsTitle} description={copy.assessmentsText}>{loadingTabs.assessments ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAssessments}</div> : lists.recentAssessments.length > 0 ? <div className="grid gap-4">{lists.recentAssessments.map((item) => <PersonRow key={item.id} name={item.students?.full_name} detail={`${Object.keys(item.fields || {}).length} ${copy.savedMetrics}`} meta={formatDate(item.assessment_date, true, activeLocale)} colorHex={item.students?.client_color_hex} locale={activeLocale} />)}</div> : <EmptyState title={copy.noAssessments} text={copy.noAssessmentsText} />}</SectionCard> : null}
+          {activeTab === "assessments" ? <AssessmentWorkspace items={lists.recentAssessments} loading={loadingTabs.assessments} copy={copy} locale={activeLocale} /> : null}
           {activeTab === "agenda" ? <AgendaWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} locale={activeLocale} /> : null}
-          {activeTab === "trainings" ? <SectionCard eyebrow={copy.tabs.trainings} title={copy.trainingsTitle} description={copy.trainingsText}>{loadingTabs.trainings ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingTrainings}</div> : lists.recentTrainings.length > 0 ? <div className="grid gap-4">{lists.recentTrainings.map((item) => <PersonRow key={item.id} name={item.name || copy.untitledSession} detail={item.students?.full_name || copy.noLinkedClient} meta={formatDate(item.session_date, true, activeLocale)} colorHex={item.students?.client_color_hex} locale={activeLocale} />)}</div> : <EmptyState title={copy.noTrainings} text={copy.noTrainingsText} />}</SectionCard> : null}
+          {activeTab === "trainings" ? <TrainingWorkspace items={lists.recentTrainings} loading={loadingTabs.trainings} copy={copy} locale={activeLocale} currentUser={currentUser} onItemsChange={(updater) => setLists((current) => ({ ...current, recentTrainings: typeof updater === "function" ? updater(current.recentTrainings) : updater }))} /> : null}
           {activeTab === "coach" ? <div className="grid gap-6 xl:grid-cols-3"><SectionCard eyebrow={copy.coachHub} title={copy.coachAccount} description={copy.coachAccountText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.nameLabel}</p><p className="mt-2 font-semibold text-[var(--text)]">{coachName}</p></div><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.emailLabel}</p><p className="mt-2 font-semibold text-[var(--text)]">{currentUser?.email || copy.noEmail}</p></div></div></SectionCard><SectionCard eyebrow={copy.subscriptionEyebrow} title={copy.subscriptionTitle} description={copy.subscriptionText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.planStatus}</p><p className="mt-2 text-2xl font-semibold text-[var(--text)]">{prettifyStatus(core.subscription?.status || "trialing")}</p><p className="mt-2 leading-7 text-[var(--text-muted)]">{(core.subscription?.subscription_category || "apex_coach").toString().replace(/_/g, " ")}{core.subscription?.payment_method_last4 ? ` · •••• ${core.subscription.payment_method_last4}` : ""}</p></div><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3 font-semibold text-[var(--text)] disabled:opacity-60">{signingOut ? <LoaderCircle size={16} className="animate-spin" /> : <LogOut size={16} />}{copy.signOut}</button></div></SectionCard><SectionCard eyebrow={copy.languageSetup} title={copy.languageSettings} description={copy.languageSettingsText}><div className="grid gap-4"><div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-5"><p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.activeLanguage}</p><p className="mt-2 text-xl font-semibold text-[var(--text)]">{LANGUAGE_OPTIONS.find((option) => option.value === activeLocale)?.label || activeLocale.toUpperCase()}</p><p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{copy.saveLanguageHint}</p></div><div className="grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => { setPreferredLanguage(option.value); setActiveLocale(option.value); applyCoachLocale(option.value); }} className={`flex items-center justify-between rounded-[22px] border px-4 py-4 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-white hover:bg-[var(--surface-muted)]"}`}><div className="flex items-center gap-3"><span className="text-2xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p><p className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{option.short}</p></div></div>{active ? <Check size={16} className="text-[var(--accent-strong)]" /> : null}</button>; })}</div>{languageError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<button onClick={() => handleSaveLanguage(preferredLanguage, { closeModal: false })} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}{copy.saveLanguage}</button></div></SectionCard></div> : null}
           </section>
         </div>
