@@ -426,12 +426,12 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
 
   return (
     <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-      <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+      <section className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-5">
         <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.clients}</p>
-        <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.rosterTitle}</h2>
-        <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.rosterSubtitle}</p>
+        <h2 className="mt-2 text-xl font-semibold text-[var(--text)]">{copy.rosterTitle}</h2>
+        <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{copy.rosterSubtitle}</p>
 
-        <div className="mt-5 flex items-center gap-3 rounded-[26px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+        <div className="mt-4 flex items-center gap-3 rounded-[22px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2.5">
           <Search size={16} className="text-[var(--text-muted)]" />
           <input
             value={search}
@@ -447,16 +447,16 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
         {loading ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingClients}</div> : null}
         {error ? <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
 
-        <div className="mt-6 grid gap-3">
+        <div className="mt-5 grid gap-2">
           {filteredStudents.map((student) => (
             <button
               key={student.id}
               onClick={() => setSelectedId(student.id)}
-              className={`rounded-[26px] border px-4 py-4 text-left transition ${selectedId === student.id ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}
+              className={`rounded-[20px] border px-3.5 py-3 text-left transition ${selectedId === student.id ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}
             >
               <div className="flex items-center gap-4">
                 <div
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold text-[var(--text)]"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold text-[var(--text)]"
                   style={{ background: `${student.clientColor}24`, border: `1px solid ${student.clientColor}44` }}
                 >
                   {initialsFromName(student.full_name, copy.clientFallback.slice(0, 1))}
@@ -485,57 +485,37 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
         </div>
       </section>
 
-      <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+      <section className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-5">
         {selectedStudent && form ? (
           <>
             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.clientPage}</p>
-                <h2 className="mt-2 text-3xl font-semibold text-[var(--text)]">{selectedStudent.full_name}</h2>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.quickAccess}</p>
-                <div className="mt-4 flex flex-wrap gap-3">
+                <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{selectedStudent.full_name}</h2>
+                <div className="mt-3 flex flex-wrap gap-2.5">
                   <DetailChip label={copy.age} value={calculateAge(selectedStudent.birth_date)} />
                   <DetailChip label={copy.height} value={`${selectedStudent.height_cm || "-"} cm`} />
                   <DetailChip label={copy.id} value={selectedStudent.legacy_id_pessoa || selectedStudent.id} />
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <button onClick={() => onOpenCreateBooking(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
+              <div className="flex flex-wrap gap-2.5">
+                <button onClick={() => onOpenCreateBooking(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
                   <CalendarPlus2 size={16} />
                   {copy.addSession}
                 </button>
-                <button onClick={() => onOpenAssessments(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)]">
+                <button onClick={() => onOpenAssessments(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--text)]">
                   <ClipboardPlus size={16} />
                   {copy.addAssessment}
                 </button>
-                <button onClick={() => onOpenTrainings(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)]">
+                <button onClick={() => onOpenTrainings(selectedStudent.id)} className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--text)]">
                   <UserRound size={16} />
                   {copy.trainingHistory}
                 </button>
               </div>
             </div>
 
-            <div className="mt-8 grid gap-6">
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-[26px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.fullName}</p>
-                  <p className="mt-2 text-xl font-semibold text-[var(--text)]">{selectedStudent.full_name || copy.clientFallback}</p>
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">{selectedStudent.email || "-"}</p>
-                </div>
-                <div className="rounded-[26px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.mainGoal}</p>
-                  <p className="mt-2 text-lg font-semibold text-[var(--text)]">{selectedStudent.main_goal || copy.noGoal}</p>
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">{copy.trainingHistory}</p>
-                </div>
-                <div className="rounded-[26px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.id}</p>
-                  <p className="mt-2 text-lg font-semibold text-[var(--text)]">{selectedStudent.legacy_id_pessoa || selectedStudent.id}</p>
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">{formatDate(selectedStudent.created_at, locale)}</p>
-                </div>
-              </div>
-
-              <div className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
+            <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_0.95fr]">
                 <div className="grid gap-4">
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{copy.fullName}</span>
@@ -594,7 +574,6 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
                     )}
                   </div>
                 </div>
-              </div>
             </div>
           </>
         ) : (
