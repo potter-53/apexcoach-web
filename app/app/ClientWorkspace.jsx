@@ -42,6 +42,9 @@ const COPY = {
     rosterTitle: "Client roster",
     searchClient: "Search client...",
     totalClients: "total clients",
+    orderBy: "Order",
+    orderName: "Name",
+    orderNumber: "Number",
   },
   pt: {
     noDate: "Sem data",
@@ -79,6 +82,9 @@ const COPY = {
     rosterTitle: "Carteira de clientes",
     searchClient: "Pesquisar cliente...",
     totalClients: "clientes totais",
+    orderBy: "Ordem",
+    orderName: "Nome",
+    orderNumber: "Numero",
   },
   es: {
     noDate: "Sin fecha",
@@ -116,6 +122,9 @@ const COPY = {
     rosterTitle: "Cartera de clientes",
     searchClient: "Buscar cliente...",
     totalClients: "clientes totales",
+    orderBy: "Orden",
+    orderName: "Nombre",
+    orderNumber: "Numero",
   },
   fr: {
     noDate: "Sans date",
@@ -153,6 +162,9 @@ const COPY = {
     rosterTitle: "Portefeuille clients",
     searchClient: "Rechercher un client...",
     totalClients: "clients au total",
+    orderBy: "Ordre",
+    orderName: "Nom",
+    orderNumber: "Numero",
   },
 };
 
@@ -188,6 +200,16 @@ function normalizeStudents(rows) {
     ...row,
     clientColor: row.client_color_hex || "#2ad07d",
   }));
+}
+
+function sortStudents(rows, orderBy) {
+  const nextRows = [...rows];
+  if (orderBy === "number") {
+    nextRows.sort((a, b) => String(a.legacy_id_pessoa || a.id).localeCompare(String(b.legacy_id_pessoa || b.id), undefined, { numeric: true, sensitivity: "base" }));
+    return nextRows;
+  }
+  nextRows.sort((a, b) => String(a.full_name || "").localeCompare(String(b.full_name || ""), undefined, { sensitivity: "base" }));
+  return nextRows;
 }
 
 function initialsFromName(value, fallback = "C") {
@@ -227,6 +249,50 @@ function normalizeHistory(items, type, copy) {
   });
 }
 
+function AvatarBadge({ student, size = 40, textSize = "text-xs" }) {
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    const supabaseId = String(student?.supabase_id || "").trim();
+    if (!supabaseId) {
+      setAvatarUrl("");
+      return () => {
+        mounted = false;
+      };
+    }
+
+    async function loadAvatar() {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data, error } = await supabase.storage.from("student-photos").createSignedUrl(`${supabaseId}/avatar.jpg`, 60 * 60);
+        if (error) throw error;
+        if (mounted) setAvatarUrl(data?.signedUrl || "");
+      } catch {
+        if (mounted) setAvatarUrl("");
+      }
+    }
+
+    loadAvatar();
+    return () => {
+      mounted = false;
+    };
+  }, [student?.supabase_id]);
+
+  if (avatarUrl) {
+    return <img src={avatarUrl} alt={student?.full_name || "Client"} className="shrink-0 rounded-2xl object-cover" style={{ width: size, height: size }} />;
+  }
+
+  return (
+    <div
+      className={`flex shrink-0 items-center justify-center rounded-2xl font-semibold text-[var(--text)] ${textSize}`}
+      style={{ width: size, height: size, background: `${student?.clientColor || "#2ad07d"}24`, border: `1px solid ${student?.clientColor || "#2ad07d"}44` }}
+    >
+      {initialsFromName(student?.full_name, "C")}
+    </div>
+  );
+}
+
 export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOpenAssessments, onOpenTrainings, locale = "en" }) {
   const copy = getCopy(locale);
   const [students, setStudents] = useState([]);
@@ -237,6 +303,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
   const [error, setError] = useState("");
   const [form, setForm] = useState(null);
   const [search, setSearch] = useState("");
+  const [orderBy, setOrderBy] = useState("name");
 
   const selectedStudent = useMemo(
     () => students.find((student) => student.id === selectedId) || null,
@@ -245,13 +312,13 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
 
   const filteredStudents = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return students;
-    return students.filter((student) =>
+    const source = !query ? students : students.filter((student) =>
       [student.full_name, student.email, student.main_goal, student.legacy_id_pessoa]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(query)),
     );
-  }, [search, students]);
+    return sortStudents(source, orderBy);
+  }, [orderBy, search, students]);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -265,7 +332,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
       try {
         const response = await supabase
           .from("students")
-          .select("id, legacy_id_pessoa, full_name, birth_date, height_cm, email, main_goal, clinical_history, created_at, client_color_hex")
+          .select("id, supabase_id, legacy_id_pessoa, full_name, birth_date, height_cm, email, main_goal, clinical_history, created_at, client_color_hex")
           .eq("coach_id", currentUser.id)
           .order("full_name", { ascending: true });
 
@@ -435,6 +502,13 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
             className="w-full bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
           />
         </div>
+        <div className="mt-2.5 flex items-center justify-between gap-3 rounded-[16px] border border-[var(--border)] bg-white px-3 py-2">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.orderBy}</span>
+          <div className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1">
+            <button onClick={() => setOrderBy("name")} className={`rounded-full px-3 py-1.5 text-xs font-medium ${orderBy === "name" ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}>{copy.orderName}</button>
+            <button onClick={() => setOrderBy("number")} className={`rounded-full px-3 py-1.5 text-xs font-medium ${orderBy === "number" ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}>{copy.orderNumber}</button>
+          </div>
+        </div>
 
         {loading ? <div className="mt-4 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingClients}</div> : null}
         {error ? <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
@@ -447,12 +521,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
               className={`rounded-[16px] border px-3 py-2.5 text-left transition ${selectedId === student.id ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}
             >
               <div className="flex items-center gap-3">
-                <div
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold text-[var(--text)]"
-                  style={{ background: `${student.clientColor}24`, border: `1px solid ${student.clientColor}44` }}
-                >
-                  {initialsFromName(student.full_name, copy.clientFallback.slice(0, 1))}
-                </div>
+                <AvatarBadge student={student} size={40} textSize="text-[11px]" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -462,7 +531,8 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
                     <ChevronRight size={16} className="shrink-0 text-[var(--text-muted)]" />
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <span className="text-xs text-[var(--text-muted)]">{calculateAge(student.birth_date)} y | {student.height_cm || "-"} cm</span>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[11px] text-[var(--text-muted)]"><span className="h-2 w-2 rounded-full" style={{ background: student.clientColor }} />{calculateAge(student.birth_date)} y</span>
+                    <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[11px] text-[var(--text-muted)]">{student.height_cm || "-"} cm</span>
                     <span
                       className="rounded-full px-2.5 py-1 text-[11px] font-semibold"
                       style={{ background: `${student.clientColor}20`, color: student.clientColor, border: `1px solid ${student.clientColor}33` }}
@@ -483,8 +553,14 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--accent)]">{copy.clientPage}</p>
-                <h2 className="mt-1.5 text-xl font-semibold text-[var(--text)]">{selectedStudent.full_name}</h2>
-                <div className="mt-2.5 flex flex-wrap gap-2">
+                <div className="mt-2 flex items-center gap-3">
+                  <AvatarBadge student={selectedStudent} size={52} textSize="text-sm" />
+                  <div>
+                    <h2 className="text-xl font-semibold text-[var(--text)]">{selectedStudent.full_name}</h2>
+                    <p className="mt-1 text-sm text-[var(--text-muted)]">{selectedStudent.main_goal || selectedStudent.email || copy.noGoal}</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
                   <DetailChip label={copy.age} value={calculateAge(selectedStudent.birth_date)} />
                   <DetailChip label={copy.height} value={`${selectedStudent.height_cm || "-"} cm`} />
                   <DetailChip label={copy.id} value={selectedStudent.legacy_id_pessoa || selectedStudent.id} />
@@ -507,7 +583,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
               </div>
             </div>
 
-            <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_320px]">
+            <div className="mt-6 grid gap-4">
               <div className="grid gap-3">
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{copy.fullName}</span>

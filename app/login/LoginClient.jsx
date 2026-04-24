@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getCoachLocaleFromUser, getInitialBrowserLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
@@ -43,75 +44,75 @@ const copy = {
   },
   pt: {
     highlights: [
-      "Continuidade direta com a lógica da app mobile",
+      "Continuidade direta com a logica da app mobile",
       "Mais contexto para gerir clientes, agenda e reports",
-      "Experiência desktop premium pensada para o coach",
+      "Experiencia desktop premium pensada para o coach",
     ],
-    backToLanding: "Voltar à landing",
+    backToLanding: "Voltar a landing",
     viewDemo: "Ver demo web",
     badge: "Acesso browser para coaches",
     title: "Entrar no workspace browser da APEX COACH.",
-    text: "O web é o complemento premium da app: mais espaço para pensar, mais informação visível e um workflow mais forte para o dia a dia do coach.",
+    text: "O web e o complemento premium da app: mais espaco para pensar, mais informacao visivel e um workflow mais forte para o dia a dia do coach.",
     eyebrow: "Login do coach",
     welcome: "Bem-vindo de volta",
     missingVars: "`NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` ainda precisam de ser configurados no projeto e na Vercel.",
     email: "Email",
     password: "Palavra-passe",
-    keepSignedIn: "Manter sessão iniciada",
+    keepSignedIn: "Manter sessao iniciada",
     recoverAccess: "Recuperar acesso",
     signingIn: "A entrar...",
     enterWorkspace: "Entrar no workspace browser",
     createAccount: "Criar conta coach",
-    identityTitle: "Identidade única do coach",
+    identityTitle: "Identidade unica do coach",
     identityText: "A mesma identidade funciona na app de terreno e no workspace browser premium.",
   },
   es: {
     highlights: [
-      "Continuidad directa con la lógica de la app móvil",
-      "Más contexto para gestionar clientes, agenda e informes",
+      "Continuidad directa con la logica de la app movil",
+      "Mas contexto para gestionar clientes, agenda e informes",
       "Experiencia desktop premium pensada para el coach",
     ],
     backToLanding: "Volver a la landing",
     viewDemo: "Ver demo web",
     badge: "Acceso browser para coaches",
     title: "Entrar en el workspace browser de APEX COACH.",
-    text: "La web es el complemento premium de la app: más espacio para pensar, más información visible y un flujo de trabajo más fuerte para el coach.",
+    text: "La web es el complemento premium de la app: mas espacio para pensar, mas informacion visible y un flujo de trabajo mas fuerte para el coach.",
     eyebrow: "Login del coach",
     welcome: "Bienvenido de nuevo",
-    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` todavía deben configurarse en el proyecto y en Vercel.",
+    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` todavia deben configurarse en el proyecto y en Vercel.",
     email: "Email",
-    password: "Contraseña",
-    keepSignedIn: "Mantener sesión iniciada",
+    password: "Contrasena",
+    keepSignedIn: "Mantener sesion iniciada",
     recoverAccess: "Recuperar acceso",
     signingIn: "Entrando...",
     enterWorkspace: "Entrar en el workspace browser",
     createAccount: "Crear cuenta coach",
-    identityTitle: "Identidad única del coach",
+    identityTitle: "Identidad unica del coach",
     identityText: "La misma identidad funciona en la app de campo y en el workspace browser premium.",
   },
   fr: {
     highlights: [
-      "Continuité directe avec la logique de l'app mobile",
-      "Plus de contexte pour gérer clients, agenda et rapports",
-      "Expérience desktop premium pensée pour le coach",
+      "Continute directe avec la logique de l'app mobile",
+      "Plus de contexte pour gerer clients, agenda et rapports",
+      "Experience desktop premium pensee pour le coach",
     ],
-    backToLanding: "Retour à la landing",
-    viewDemo: "Voir la démo web",
-    badge: "Accès navigateur pour les coachs",
+    backToLanding: "Retour a la landing",
+    viewDemo: "Voir la demo web",
+    badge: "Acces navigateur pour les coachs",
     title: "Entrer dans le workspace navigateur APEX COACH.",
-    text: "Le web est le complément premium de l'app : plus d'espace pour réfléchir, plus d'informations visibles et un workflow plus solide pour le coach.",
+    text: "Le web est le complement premium de l'app : plus d'espace pour reflechir, plus d'informations visibles et un workflow plus solide pour le coach.",
     eyebrow: "Connexion coach",
     welcome: "Bon retour",
-    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` doivent encore être configurés dans le projet et sur Vercel.",
+    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` doivent encore etre configures dans le projet et sur Vercel.",
     email: "Email",
     password: "Mot de passe",
-    keepSignedIn: "Rester connecté",
-    recoverAccess: "Récupérer l'accès",
+    keepSignedIn: "Rester connecte",
+    recoverAccess: "Recuperer l'acces",
     signingIn: "Connexion...",
     enterWorkspace: "Entrer dans le workspace navigateur",
-    createAccount: "Créer un compte coach",
-    identityTitle: "Identité coach unique",
-    identityText: "La même identité fonctionne pour l'app terrain et le workspace navigateur premium.",
+    createAccount: "Creer un compte coach",
+    identityTitle: "Identite coach unique",
+    identityText: "La meme identite fonctionne pour l'app terrain et le workspace navigateur premium.",
   },
 };
 
@@ -122,22 +123,22 @@ function describeAuthError(error, locale = "en") {
       ? {
           invalid: "Email ou palavra-passe incorretos.",
           confirm: "Confirma o teu email antes de entrar no workspace browser.",
-          env: "As variáveis de ambiente do Supabase estão em falta no projeto web.",
-          fallback: "Não foi possível entrar no workspace browser. Tenta novamente.",
+          env: "As variaveis de ambiente do Supabase estao em falta no projeto web.",
+          fallback: "Nao foi possivel entrar no workspace browser. Tenta novamente.",
         }
       : locale === "es"
         ? {
-            invalid: "Email o contraseña incorrectos.",
+            invalid: "Email o contrasena incorrectos.",
             confirm: "Confirma tu email antes de entrar en el workspace browser.",
             env: "Faltan variables de entorno de Supabase en el proyecto web.",
-            fallback: "No se pudo entrar en el workspace browser. Inténtalo de nuevo.",
+            fallback: "No se pudo entrar en el workspace browser. Intentalo de nuevo.",
           }
         : locale === "fr"
           ? {
               invalid: "Email ou mot de passe incorrect.",
               confirm: "Confirme ton email avant d'entrer dans le workspace navigateur.",
               env: "Les variables d'environnement Supabase manquent dans le projet web.",
-              fallback: "Impossible d'entrer dans le workspace navigateur. Réessaie.",
+              fallback: "Impossible d'entrer dans le workspace navigateur. Reessaie.",
             }
           : {
               invalid: "Incorrect email or password.",
@@ -176,6 +177,7 @@ export default function LoginClient() {
     const nextLocale = getInitialBrowserLocale();
     setLocale(nextLocale);
     applyCoachLocale(nextLocale);
+    trackEvent("landing_login_opened", { locale: nextLocale });
   }, []);
 
   async function handleSubmit(event) {
@@ -183,6 +185,7 @@ export default function LoginClient() {
 
     if (!configured) {
       setErrorMessage(t.missingVars);
+      trackEvent("landing_login_blocked", { reason: "missing_supabase_env", locale });
       return;
     }
 
@@ -209,10 +212,13 @@ export default function LoginClient() {
         }
       } catch {}
 
+      trackEvent("landing_login_success", { locale, rememberMe });
       router.push("/app");
       router.refresh();
     } catch (error) {
-      setErrorMessage(describeAuthError(error, locale));
+      const message = describeAuthError(error, locale);
+      setErrorMessage(message);
+      trackEvent("landing_login_error", { locale, message });
     } finally {
       setSubmitting(false);
     }
@@ -226,6 +232,7 @@ export default function LoginClient() {
         <div className="flex items-center justify-between">
           <Link
             href="/"
+            onClick={() => trackEvent("landing_login_back_click", { locale })}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm text-[var(--text-muted)] transition hover:bg-white hover:text-[var(--text)]"
           >
             <ArrowLeft size={16} />
@@ -234,6 +241,7 @@ export default function LoginClient() {
 
           <Link
             href="/app"
+            onClick={() => trackEvent("landing_login_demo_click", { locale })}
             className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
           >
             {t.viewDemo}
@@ -316,7 +324,7 @@ export default function LoginClient() {
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="••••••••••"
+                    placeholder="**********"
                     className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
                     autoComplete="current-password"
                     required
@@ -358,6 +366,7 @@ export default function LoginClient() {
 
                 <Link
                   href="/signup"
+                  onClick={() => trackEvent("landing_login_to_signup_click", { locale })}
                   className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-5 py-4 text-center font-semibold text-[var(--text)]"
                 >
                   {t.createAccount}

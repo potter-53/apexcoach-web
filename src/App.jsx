@@ -12,6 +12,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
 
 const screenshots = [
@@ -520,12 +521,14 @@ function Modal({ open, onClose, title, text, copy }) {
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           <Link
             href="/login"
+            onClick={() => trackEvent("landing_modal_trial_login_click")}
             className="rounded-2xl bg-[var(--accent)] px-5 py-3.5 text-center font-semibold text-[var(--accent-foreground)] shadow-[0_18px_40px_rgba(42,208,125,0.24)]"
           >
             {copy.trialLogin}
           </Link>
           <Link
             href="/app"
+            onClick={() => trackEvent("landing_modal_demo_click")}
             className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-5 py-3.5 text-center font-semibold text-[var(--text)]"
           >
             {copy.demoLabel}
@@ -550,6 +553,7 @@ export default function App() {
     const nextLocale = getInitialBrowserLocale();
     setLang(nextLocale);
     applyCoachLocale(nextLocale);
+    trackEvent("landing_view", { locale: nextLocale });
 
     const interval = window.setInterval(() => {
       setActiveShot((current) => (current + 1) % screenshots.length);
@@ -621,12 +625,14 @@ export default function App() {
             <div className="hidden items-center gap-3 lg:flex">
               <Link
                 href="/login"
+                onClick={() => trackEvent("landing_header_login_click", { locale: lang })}
                 className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 text-sm font-semibold text-[var(--text)]"
               >
                 {loginLabel}
               </Link>
               <Link
                 href="/signup"
+                onClick={() => trackEvent("landing_header_signup_click", { locale: lang })}
                 className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]"
               >
                 {signupLabel}
@@ -658,14 +664,20 @@ export default function App() {
               ))}
               <Link
                 href="/login"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  trackEvent("landing_mobile_menu_login_click", { locale: lang });
+                  setMobileMenuOpen(false);
+                }}
                 className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-center text-sm font-semibold text-[var(--text)]"
               >
                 {loginLabel}
               </Link>
               <Link
                 href="/signup"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  trackEvent("landing_mobile_menu_signup_click", { locale: lang });
+                  setMobileMenuOpen(false);
+                }}
                 className="rounded-2xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-semibold text-[var(--accent-foreground)]"
               >
                 {signupLabel}
@@ -695,6 +707,7 @@ export default function App() {
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <Link
                 href="/signup"
+                onClick={() => trackEvent("landing_hero_signup_click", { locale: lang })}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.24)]"
               >
                 {signupLabel}
@@ -702,6 +715,7 @@ export default function App() {
               </Link>
               <Link
                 href="/login"
+                onClick={() => trackEvent("landing_hero_login_click", { locale: lang })}
                 className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-6 py-4 text-base font-semibold text-[var(--text)]"
               >
                 {loginLabel}

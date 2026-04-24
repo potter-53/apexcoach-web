@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, LoaderCircle, ShieldCheck, UserPlus } from "lucide-react";
 
+import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getInitialBrowserLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
@@ -33,15 +34,15 @@ const copy = {
   },
   pt: {
     highlights: [
-      "Cria uma identidade única para app e browser",
-      "Começa com a experiência web premium desde o onboarding",
-      "Mantém clientes, agenda e operação na mesma conta",
+      "Cria uma identidade unica para app e browser",
+      "Comeca com a experiencia web premium desde o onboarding",
+      "Mantem clientes, agenda e operacao na mesma conta",
     ],
-    backToLanding: "Voltar à landing",
-    haveAccount: "Já tenho conta",
+    backToLanding: "Voltar a landing",
+    haveAccount: "Ja tenho conta",
     badge: "Cria a tua conta coach",
     title: "Cria a tua conta para APEX COACH.",
-    text: "Esta é a entrada única do coach: mesma conta, mesma lógica, app mobile no terreno e browser premium no desktop.",
+    text: "Esta e a entrada unica do coach: mesma conta, mesma logica, app mobile no terreno e browser premium no desktop.",
     eyebrow: "Registo do coach",
     heading: "Criar conta",
     missingVars: "`NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` ainda precisam de ser configurados.",
@@ -50,52 +51,52 @@ const copy = {
     password: "Palavra-passe",
     creating: "A criar conta...",
     createContinue: "Criar conta e continuar",
-    identityTitle: "Identidade única do coach",
+    identityTitle: "Identidade unica do coach",
     identityText: "Cria a conta uma vez e usa a mesma identidade na app de terreno e no workspace browser premium.",
   },
   es: {
     highlights: [
-      "Crea una identidad única para app y browser",
+      "Crea una identidad unica para app y browser",
       "Empieza con la experiencia web premium desde el onboarding",
-      "Mantén clientes, agenda y operación en la misma cuenta",
+      "Manten clientes, agenda y operacion en la misma cuenta",
     ],
     backToLanding: "Volver a la landing",
     haveAccount: "Ya tengo cuenta",
     badge: "Crea tu cuenta coach",
     title: "Crea tu cuenta para APEX COACH.",
-    text: "Esta es la entrada única del coach: misma cuenta, misma lógica, app móvil en el campo y browser premium en escritorio.",
+    text: "Esta es la entrada unica del coach: misma cuenta, misma logica, app movil en el campo y browser premium en escritorio.",
     eyebrow: "Registro del coach",
     heading: "Crear cuenta",
-    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` todavía deben configurarse.",
+    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` todavia deben configurarse.",
     coachName: "Nombre del coach",
     email: "Email",
-    password: "Contraseña",
+    password: "Contrasena",
     creating: "Creando cuenta...",
     createContinue: "Crear cuenta y continuar",
-    identityTitle: "Identidad única del coach",
+    identityTitle: "Identidad unica del coach",
     identityText: "Crea la cuenta una vez y usa la misma identidad en la app de campo y en el workspace browser premium.",
   },
   fr: {
     highlights: [
-      "Crée une identité unique pour l'app et le navigateur",
-      "Commence avec l'expérience web premium dès l'onboarding",
-      "Garde clients, agenda et opérations dans le même compte",
+      "Cree une identite unique pour l'app et le navigateur",
+      "Commence avec l'experience web premium des l'onboarding",
+      "Garde clients, agenda et operations dans le meme compte",
     ],
-    backToLanding: "Retour à la landing",
-    haveAccount: "J'ai déjà un compte",
-    badge: "Crée ton compte coach",
-    title: "Crée ton compte pour APEX COACH.",
-    text: "C'est l'entrée unique du coach : même compte, même logique, app mobile sur le terrain et navigateur premium sur desktop.",
+    backToLanding: "Retour a la landing",
+    haveAccount: "J'ai deja un compte",
+    badge: "Cree ton compte coach",
+    title: "Cree ton compte pour APEX COACH.",
+    text: "C'est l'entree unique du coach : meme compte, meme logique, app mobile sur le terrain et navigateur premium sur desktop.",
     eyebrow: "Inscription coach",
-    heading: "Créer un compte",
-    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` doivent encore être configurés.",
+    heading: "Creer un compte",
+    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` doivent encore etre configures.",
     coachName: "Nom du coach",
     email: "Email",
     password: "Mot de passe",
-    creating: "Création du compte...",
-    createContinue: "Créer le compte et continuer",
-    identityTitle: "Identité coach unique",
-    identityText: "Crée le compte une seule fois et utilise la même identité dans l'app terrain et dans le workspace navigateur premium.",
+    creating: "Creation du compte...",
+    createContinue: "Creer le compte et continuer",
+    identityTitle: "Identite coach unique",
+    identityText: "Cree le compte une seule fois et utilise la meme identite dans l'app terrain et dans le workspace navigateur premium.",
   },
 };
 
@@ -104,27 +105,28 @@ function describeSignupError(error, locale = "en") {
   const localized =
     locale === "pt"
       ? {
-          exists: "Este email já está registado.",
-          password: "A palavra-passe tem de cumprir os requisitos mínimos do Supabase.",
-          fallback: "Não foi possível criar a conta.",
+          exists: "Este email ja esta registado.",
+          password: "A palavra-passe tem de cumprir os requisitos minimos do Supabase.",
+          fallback: "Nao foi possivel criar a conta.",
         }
       : locale === "es"
         ? {
-            exists: "Este email ya está registrado.",
-            password: "La contraseña debe cumplir los requisitos mínimos de Supabase.",
+            exists: "Este email ya esta registrado.",
+            password: "La contrasena debe cumplir los requisitos minimos de Supabase.",
             fallback: "No se pudo crear la cuenta.",
           }
         : locale === "fr"
           ? {
-              exists: "Cet email est déjà enregistré.",
+              exists: "Cet email est deja enregistre.",
               password: "Le mot de passe doit respecter les exigences minimales de Supabase.",
-              fallback: "Impossible de créer le compte.",
+              fallback: "Impossible de creer le compte.",
             }
           : {
               exists: "This email is already registered.",
               password: "The password must meet the minimum Supabase requirements.",
               fallback: "Could not create the account.",
             };
+
   if (raw.toLowerCase().includes("user already registered")) return localized.exists;
   if (raw.toLowerCase().includes("password")) return localized.password;
   return raw || localized.fallback;
@@ -146,6 +148,7 @@ export default function SignupClient() {
     const nextLocale = getInitialBrowserLocale();
     setLocale(nextLocale);
     applyCoachLocale(nextLocale);
+    trackEvent("landing_signup_opened", { locale: nextLocale });
   }, []);
 
   async function handleSubmit(event) {
@@ -153,6 +156,7 @@ export default function SignupClient() {
 
     if (!configured) {
       setErrorMessage(t.missingVars);
+      trackEvent("landing_signup_blocked", { reason: "missing_supabase_env", locale });
       return;
     }
 
@@ -175,21 +179,25 @@ export default function SignupClient() {
       });
 
       if (error) throw error;
+      trackEvent("landing_signup_success", { locale });
 
       setSuccessMessage(
         locale === "pt"
-          ? "Conta criada. Se o Supabase exigir confirmação de email, confirma o email antes de iniciar sessão."
+          ? "Conta criada. Se o Supabase exigir confirmacao de email, confirma o email antes de iniciar sessao."
           : locale === "es"
-            ? "Cuenta creada. Si Supabase exige confirmación de email, confirma tu email antes de iniciar sesión."
+            ? "Cuenta creada. Si Supabase exige confirmacion de email, confirma tu email antes de iniciar sesion."
             : locale === "fr"
-              ? "Compte créé. Si Supabase exige une confirmation d'email, confirme ton email avant de te connecter."
+              ? "Compte cree. Si Supabase exige une confirmation d'email, confirme ton email avant de te connecter."
               : "Account created. If Supabase requires email confirmation, confirm your email before signing in.",
       );
+
       window.setTimeout(() => {
         router.push("/login");
       }, 900);
     } catch (error) {
-      setErrorMessage(describeSignupError(error, locale));
+      const message = describeSignupError(error, locale);
+      setErrorMessage(message);
+      trackEvent("landing_signup_error", { locale, message });
     } finally {
       setSubmitting(false);
     }
@@ -203,6 +211,7 @@ export default function SignupClient() {
         <div className="flex items-center justify-between">
           <Link
             href="/"
+            onClick={() => trackEvent("landing_signup_back_click", { locale })}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm text-[var(--text-muted)] transition hover:bg-white hover:text-[var(--text)]"
           >
             <ArrowLeft size={16} />
@@ -211,6 +220,7 @@ export default function SignupClient() {
 
           <Link
             href="/login"
+            onClick={() => trackEvent("landing_signup_to_login_click", { locale })}
             className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
           >
             {t.haveAccount}
