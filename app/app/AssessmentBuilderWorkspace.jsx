@@ -82,15 +82,9 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
   }, [selectedItem]);
 
   return (
-    <section className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.tabs.assessments}</p>
-        <h2 className="text-xl font-semibold text-[var(--text)]">{copy.assessmentsTitle}</h2>
-        <p className="text-sm leading-6 text-[var(--text-muted)]">{copy.assessmentsText}</p>
-      </div>
-
-      <div className="mt-5 grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+    <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-3.5 shadow-[var(--shadow-soft)]">
+      <div className="grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
           {loading ? (
             <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
               <LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />
@@ -107,11 +101,13 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
                       setSelectedId(item.id);
                       setDraftFields(normalizeFields(item.fields));
                     }}
-                    className={`rounded-[18px] border px-3 py-3 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
+                    className={`rounded-[16px] border px-3 py-2.5 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
                   >
                     <p className="font-medium text-[var(--text)]">{item.students?.full_name || copy.client}</p>
-                    <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(item.assessment_date, locale)}</p>
-                    <p className="mt-2 text-sm text-[var(--text-muted)]">{`${Object.keys(item.fields || {}).length} ${copy.savedMetrics}`}</p>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{formatDate(item.assessment_date, locale)}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{`${Object.keys(item.fields || {}).length} ${copy.savedMetrics}`}</p>
+                    </div>
                   </button>
                 );
               })}
@@ -123,38 +119,38 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
           )}
         </div>
 
-        <div className="rounded-[20px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-4">
+        <div className="rounded-[18px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-3.5">
           {selectedItem ? (
             <div className="grid gap-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.client}</p>
-                  <h3 className="mt-1 text-lg font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.client}</h3>
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.client}</p>
+                  <h3 className="mt-1 text-base font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.client}</h3>
                 </div>
-                <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                   {formatDate(selectedItem.assessment_date, locale)}
                 </span>
               </div>
 
               {quickSummary.length > 0 ? (
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="grid gap-2.5 md:grid-cols-3">
                   {quickSummary.map(([label, value, unit]) => (
-                    <div key={label} className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                      <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{label}</p>
-                      <p className="mt-1 text-lg font-semibold text-[var(--text)]">{value}{unit ? ` ${unit}` : ""}</p>
+                    <div key={label} className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-3">
+                      <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</p>
+                      <p className="mt-1 text-base font-semibold text-[var(--text)]">{value}{unit ? ` ${unit}` : ""}</p>
                     </div>
                   ))}
                 </div>
               ) : null}
 
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
                 {draftFields.map((field) => (
                   <label key={field.key} className="grid gap-2">
-                    <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{field.label}</span>
+                    <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{field.label}</span>
                     <input
                       value={field.value}
                       onChange={(event) => updateDraftField(field.key, event.target.value)}
-                      className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text)] outline-none"
+                      className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm text-[var(--text)] outline-none"
                     />
                   </label>
                 ))}

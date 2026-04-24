@@ -392,7 +392,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
             notes: item.notes || "",
           })
         }
-        className="w-full rounded-[22px] border border-[var(--border)] bg-white p-4 text-left shadow-[var(--shadow-soft)]"
+        className="w-full rounded-[18px] border border-[var(--border)] bg-white p-3 text-left shadow-[var(--shadow-soft)]"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -402,10 +402,10 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           </div>
           <PencilLine size={16} className="text-[var(--text-muted)]" />
         </div>
-        <p className="mt-4 text-lg font-semibold text-[var(--text)]">{item.studentName}</p>
-        <p className="mt-2 text-sm uppercase tracking-[0.16em] text-[var(--text-muted)]">{item.bookingName}</p>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">{formatTime(item.scheduledAt, locale)}</p>
-        {item.notes ? <p className="mt-3 line-clamp-2 text-sm text-[var(--text-muted)]">{item.notes}</p> : null}
+        <p className="mt-3 text-base font-semibold text-[var(--text)]">{item.studentName}</p>
+        <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{item.bookingName}</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">{formatTime(item.scheduledAt, locale)}</p>
+        {item.notes ? <p className="mt-2 line-clamp-2 text-sm text-[var(--text-muted)]">{item.notes}</p> : null}
       </button>
     );
   }
@@ -461,14 +461,14 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       ) : null}
 
       <div className="grid gap-6">
-        <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+        <section className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-4.5">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-[var(--accent)]">{copy.agenda}</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--accent)]">{copy.agenda}</p>
+              <h2 className="mt-1.5 text-xl font-semibold text-[var(--text)]">
                 {compact ? copy.weeklyCalendar || copy.weeklyMonthly : copy.liveScheduling}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p>
+              <p className="mt-1.5 text-sm leading-6 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p>
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -504,7 +504,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                 <CalendarDays size={16} />
                 {copy.today || "Today"}
               </button>
-              <button onClick={onOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
+              <button onClick={onOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
                 <Plus size={16} />
                 {copy.newBooking}
               </button>
@@ -515,8 +515,8 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAgenda}</div> : null}
 
           {mode === "week" ? (
-            <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_360px]">
-              <div className="grid gap-4 xl:grid-cols-7">
+            <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_320px]">
+              <div className="grid gap-3 xl:grid-cols-7">
                 {weekDays.map((day) => {
                   const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
                   return (
@@ -533,11 +533,11 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                           setError(moveError?.message || copy.moveBookingError);
                         }
                       }}
-                      className={`rounded-[24px] border p-4 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-[linear-gradient(180deg,rgba(233,251,241,0.95),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
+                      className={`rounded-[20px] border p-3 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-[linear-gradient(180deg,rgba(233,251,241,0.95),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
                     >
-                      <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
-                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
-                      <div className="mt-4 grid gap-3">
+                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                      <p className="mt-1.5 text-base font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
+                      <div className="mt-3 grid gap-2.5">
                         {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">{copy.dropHere}</p>}
                       </div>
                     </div>
@@ -545,20 +545,20 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                 })}
               </div>
 
-              <aside className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(250,252,251,0.96),rgba(241,245,243,0.98))] p-5">
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.liveWeek || copy.agenda}</p>
-                <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.week}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p>
+              <aside className="rounded-[22px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(250,252,251,0.96),rgba(241,245,243,0.98))] p-4 xl:sticky xl:top-4 xl:h-fit">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.liveWeek || copy.agenda}</p>
+                <h3 className="mt-1.5 text-lg font-semibold text-[var(--text)]">{copy.week}</h3>
+                <p className="mt-1.5 text-sm leading-6 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p>
 
-                <div className="mt-5 grid gap-3">
+                <div className="mt-4 grid gap-2.5">
                   {weekOverview.map(({ day, count, items: dayItems }) => (
                     <div
                       key={day.toISOString()}
-                      className={`rounded-[24px] border px-4 py-4 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
+                      className={`rounded-[18px] border px-3.5 py-3 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
                           <p className="mt-1 text-base font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
                         </div>
                         <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-xs font-semibold text-[var(--text-muted)]">
@@ -566,7 +566,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                         </span>
                       </div>
 
-                      <div className="mt-4 grid gap-2">
+                      <div className="mt-3 grid gap-2">
                         {dayItems.length > 0 ? (
                           dayItems.map((item) => (
                             <button
@@ -598,16 +598,16 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
               </aside>
             </div>
           ) : (
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
               {monthDays.map((day) => {
                 const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
                 const inMonth = day.getMonth() === anchorDate.getMonth();
 
                 return (
-                  <div key={day.toISOString()} className={`rounded-[22px] border p-4 ${inMonth ? "border-[var(--border)] bg-white" : "border-[var(--border)] bg-[var(--surface-muted)] opacity-60"}`}>
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
-                    <p className="mt-2 text-lg font-semibold text-[var(--text)]">{day.getDate()}</p>
-                    <div className="mt-3 grid gap-2">
+                  <div key={day.toISOString()} className={`rounded-[18px] border p-3 ${inMonth ? "border-[var(--border)] bg-white" : "border-[var(--border)] bg-[var(--surface-muted)] opacity-60"}`}>
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                    <p className="mt-1.5 text-base font-semibold text-[var(--text)]">{day.getDate()}</p>
+                    <div className="mt-2.5 grid gap-2">
                       {dayItems.slice(0, 3).map((item) => (
                         <button key={item.id} onClick={() => setEditingItem({ id: item.id, date: item.scheduledAt.toISOString().slice(0, 10), time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`, notes: item.notes || "" })} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-left text-sm text-[var(--text-muted)]">
                           {formatTime(item.scheduledAt, locale)} - {item.studentName}
@@ -622,23 +622,23 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           )}
         </section>
 
-        <div className={`grid gap-6 ${compact ? "xl:grid-cols-2" : "xl:grid-cols-[1fr_1fr]"}`}>
-          <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+        <div className={`grid gap-4 ${compact ? "xl:grid-cols-2" : "xl:grid-cols-[1fr_1fr]"}`}>
+          <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
             <div className="flex items-center gap-3">
               <CalendarDays size={18} className="text-[var(--accent)]" />
-              <h3 className="text-xl font-semibold text-[var(--text)]">{copy.lastFive}</h3>
+              <h3 className="text-base font-semibold text-[var(--text)]">{copy.lastFive}</h3>
             </div>
-            <div className="mt-5 grid gap-3">
+            <div className="mt-4 grid gap-2.5">
               {pastItems.length > 0 ? pastItems.map((item) => renderCard(item, false)) : <EmptyState title={copy.noPast} text={copy.noPastText} />}
             </div>
           </section>
 
-          <section className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+          <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
             <div className="flex items-center gap-3">
               <Clock3 size={18} className="text-[var(--accent)]" />
-              <h3 className="text-xl font-semibold text-[var(--text)]">{copy.nextFive}</h3>
+              <h3 className="text-base font-semibold text-[var(--text)]">{copy.nextFive}</h3>
             </div>
-            <div className="mt-5 grid gap-3">
+            <div className="mt-4 grid gap-2.5">
               {nextItems.length > 0 ? nextItems.map((item) => renderCard(item, false)) : <EmptyState title={copy.noUpcoming} text={copy.noUpcomingText} />}
             </div>
           </section>

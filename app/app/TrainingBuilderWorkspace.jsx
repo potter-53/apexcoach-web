@@ -101,6 +101,17 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
     return exerciseLibrary.filter((item) => item.label.toLowerCase().includes(query)).slice(0, 10);
   }, [exerciseLibrary, exerciseQuery]);
 
+  const ui = useMemo(() => ({
+    searchExercise: locale === "pt" ? "Pesquisar exercicio..." : locale === "es" ? "Buscar ejercicio..." : locale === "fr" ? "Rechercher un exercice..." : "Search exercise...",
+    builderTitle: locale === "pt" ? "Builder da sessao" : locale === "es" ? "Builder de sesion" : locale === "fr" ? "Builder de seance" : "Session builder",
+    loadingBuilder: locale === "pt" ? "A carregar builder..." : locale === "es" ? "Cargando builder..." : locale === "fr" ? "Chargement du builder..." : "Loading builder...",
+    emptyBuilder: locale === "pt" ? "Adiciona exercicios para montar esta sessao." : locale === "es" ? "Anade ejercicios para montar esta sesion." : locale === "fr" ? "Ajoute des exercices pour construire cette seance." : "Add exercises to build this session.",
+    sets: locale === "pt" ? "Series" : locale === "es" ? "Series" : locale === "fr" ? "Series" : "Sets",
+    reps: "Reps",
+    load: locale === "pt" ? "Carga" : locale === "es" ? "Carga" : locale === "fr" ? "Charge" : "Load",
+    rest: locale === "pt" ? "Desc." : locale === "es" ? "Desc." : locale === "fr" ? "Repos" : "Rest",
+  }), [locale]);
+
   function updateExerciseField(id, field, value) {
     setExercises((current) => current.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
   }
@@ -183,15 +194,9 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
   }
 
   return (
-    <section className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.tabs.trainings}</p>
-        <h2 className="text-xl font-semibold text-[var(--text)]">{copy.trainingsTitle}</h2>
-        <p className="text-sm leading-6 text-[var(--text-muted)]">{copy.trainingsText}</p>
-      </div>
-
-      <div className="mt-5 grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+    <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-3.5 shadow-[var(--shadow-soft)]">
+      <div className="mt-1 grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
           {loading ? (
             <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
               <LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />
@@ -208,11 +213,13 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                       setSelectedId(item.id);
                       setSessionDraft({ name: item.name || "", notes: item.notes || "" });
                     }}
-                    className={`rounded-[18px] border px-3 py-3 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
+                    className={`rounded-[16px] border px-3 py-2.5 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
                   >
                     <p className="font-medium text-[var(--text)]">{item.name || copy.untitledSession}</p>
-                    <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(item.session_date, locale)}</p>
-                    <p className="mt-2 truncate text-sm text-[var(--text-muted)]">{item.students?.full_name || copy.noLinkedClient}</p>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{formatDate(item.session_date, locale)}</p>
+                      <p className="truncate text-xs text-[var(--text-muted)]">{item.students?.full_name || copy.noLinkedClient}</p>
+                    </div>
                   </button>
                 );
               })}
@@ -224,47 +231,47 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
           )}
         </div>
 
-        <div className="rounded-[20px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-4">
+        <div className="rounded-[18px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-3.5">
           {selectedItem ? (
             <div className="grid gap-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.client}</p>
-                  <h3 className="mt-1 text-lg font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.noLinkedClient}</h3>
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.client}</p>
+                  <h3 className="mt-1 text-base font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.noLinkedClient}</h3>
                 </div>
-                <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
                   {formatDate(selectedItem.session_date, locale)}
                 </span>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-[1fr_1.15fr]">
+              <div className="grid gap-3 xl:grid-cols-[340px_minmax(0,1fr)]">
                 <div className="grid gap-3">
                   <label className="grid gap-2">
-                    <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.trainingLabel}</span>
+                    <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.trainingLabel}</span>
                     <input
                       value={sessionDraft.name}
                       onChange={(event) => setSessionDraft((current) => ({ ...current, name: event.target.value }))}
-                      className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text)] outline-none"
+                      className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm text-[var(--text)] outline-none"
                     />
                   </label>
                   <label className="grid gap-2">
-                    <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.notes}</span>
+                    <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.notes}</span>
                     <textarea
-                      rows={5}
+                      rows={4}
                       value={sessionDraft.notes}
                       onChange={(event) => setSessionDraft((current) => ({ ...current, notes: event.target.value }))}
-                      className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-sm leading-7 text-[var(--text)] outline-none"
+                      className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm leading-6 text-[var(--text)] outline-none"
                       placeholder={copy.notesPlaceholder}
                     />
                   </label>
 
-                  <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+                  <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
                     <div className="flex items-center gap-2">
                       <Search size={15} className="text-[var(--text-muted)]" />
                       <input
                         value={exerciseQuery}
                         onChange={(event) => setExerciseQuery(event.target.value)}
-                        placeholder="Search exercise..."
+                        placeholder={ui.searchExercise}
                         className="w-full bg-transparent text-sm text-[var(--text)] outline-none"
                       />
                     </div>
@@ -283,21 +290,21 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                   </div>
                 </div>
 
-                <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+                <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
                   <div className="flex items-center gap-2">
                     <Dumbbell size={15} className="text-[var(--accent)]" />
-                    <p className="text-sm font-semibold text-[var(--text)]">Session builder</p>
+                    <p className="text-sm font-semibold text-[var(--text)]">{ui.builderTitle}</p>
                   </div>
 
                   {loadingSession ? (
                     <div className="mt-4 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
                       <LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />
-                      Loading builder...
+                      {ui.loadingBuilder}
                     </div>
                   ) : exercises.length > 0 ? (
-                    <div className="mt-4 grid gap-3">
+                    <div className="mt-4 grid gap-2.5">
                       {exercises.map((exercise) => (
-                        <div key={exercise.id} className="rounded-[18px] border border-[var(--border)] bg-white p-3">
+                        <div key={exercise.id} className="rounded-[16px] border border-[var(--border)] bg-white p-3">
                           <div className="flex items-start justify-between gap-3">
                             <p className="font-medium text-[var(--text)]">{exercise.exercise_name}</p>
                             <button onClick={() => removeExercise(exercise.id)} className="text-[var(--text-muted)]">
@@ -305,10 +312,10 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                             </button>
                           </div>
                           <div className="mt-3 grid gap-2 sm:grid-cols-4">
-                            <input value={exercise.sets} onChange={(event) => updateExerciseField(exercise.id, "sets", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder="Sets" />
-                            <input value={exercise.reps_text} onChange={(event) => updateExerciseField(exercise.id, "reps_text", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder="Reps" />
-                            <input value={exercise.load_text} onChange={(event) => updateExerciseField(exercise.id, "load_text", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder="Load" />
-                            <input value={exercise.rest_seconds} onChange={(event) => updateExerciseField(exercise.id, "rest_seconds", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder="Rest" />
+                            <input value={exercise.sets} onChange={(event) => updateExerciseField(exercise.id, "sets", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder={ui.sets} />
+                            <input value={exercise.reps_text} onChange={(event) => updateExerciseField(exercise.id, "reps_text", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder={ui.reps} />
+                            <input value={exercise.load_text} onChange={(event) => updateExerciseField(exercise.id, "load_text", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder={ui.load} />
+                            <input value={exercise.rest_seconds} onChange={(event) => updateExerciseField(exercise.id, "rest_seconds", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder={ui.rest} />
                           </div>
                           <textarea value={exercise.notes} onChange={(event) => updateExerciseField(exercise.id, "notes", event.target.value)} rows={2} className="mt-2 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm" placeholder={copy.notesPlaceholder} />
                         </div>
@@ -316,7 +323,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                     </div>
                   ) : (
                     <div className="mt-4 rounded-[18px] border border-dashed border-[var(--border)] bg-white px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-                      Add exercises to build this session.
+                      {ui.emptyBuilder}
                     </div>
                   )}
                 </div>
