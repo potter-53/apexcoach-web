@@ -1,13 +1,26 @@
 "use client";
 
+import { Check, LoaderCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Check, ClipboardList, LoaderCircle } from "lucide-react";
 
 import { getSupabaseBrowserClient } from "../../src/lib/supabase-browser";
 
+function localeTag(locale) {
+  if (locale === "pt") return "pt-PT";
+  if (locale === "es") return "es-ES";
+  if (locale === "fr") return "fr-FR";
+  return "en-GB";
+}
+
 function formatDate(value, locale = "en") {
-  const tag = locale === "pt" ? "pt-PT" : locale === "es" ? "es-ES" : locale === "fr" ? "fr-FR" : "en-GB";
-  return new Date(value).toLocaleDateString(tag, { day: "2-digit", month: "short", year: "numeric" });
+  return new Date(value).toLocaleDateString(localeTag(locale), { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function formatMetric(value, unit = "") {
+  if (value === null || value === undefined || value === "") return "--";
+  const numeric = Number(value);
+  const base = Number.isFinite(numeric) ? (Number.isInteger(numeric) ? numeric.toString() : numeric.toFixed(1)) : String(value);
+  return unit ? `${base}${unit}` : base;
 }
 
 function normalizeFields(fields) {
@@ -20,10 +33,22 @@ function normalizeFields(fields) {
     }));
 }
 
+function partitionFields(fields) {
+  const headlineKeys = ["weight_kg", "body_fat_pct", "muscle_mass_kg"];
+  const secondaryKeys = ["lean_mass_kg", "bmi", "waist_cm", "hip_cm", "visceral_fat"];
+
+  const headline = fields.filter((field) => headlineKeys.includes(field.key));
+  const secondary = fields.filter((field) => secondaryKeys.includes(field.key));
+  const remaining = fields.filter((field) => !headlineKeys.includes(field.key) && !secondaryKeys.includes(field.key));
+
+  return { headline, secondary, remaining };
+}
+
 export default function AssessmentBuilderWorkspace({ items, loading, locale = "en", copy, currentUser, onItemsChange }) {
   const [selectedId, setSelectedId] = useState("");
   const [draftFields, setDraftFields] = useState([]);
   const [saving, setSaving] = useState(false);
+
   const selectedItem = useMemo(() => items.find((item) => item.id === selectedId) || items[0] || null, [items, selectedId]);
 
   useEffect(() => {
@@ -36,6 +61,13 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
     setSelectedId(nextSelected.id);
     setDraftFields(normalizeFields(nextSelected.fields));
   }, [items, selectedId]);
+
+  const grouped = useMemo(() => partitionFields(draftFields), [draftFields]);
+  const quickSummary = useMemo(() => ([
+    { label: "Peso", value: selectedItem?.fields?.weight_kg, unit: "kg" },
+    { label: "BF%", value: selectedItem?.fields?.body_fat_pct, unit: "%" },
+    { label: "MM", value: selectedItem?.fields?.muscle_mass_kg, unit: "kg" },
+  ]), [selectedItem]);
 
   function updateDraftField(key, value) {
     setDraftFields((current) => current.map((field) => (field.key === key ? { ...field, value } : field)));
@@ -72,18 +104,9 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
     }
   }
 
-  const quickSummary = useMemo(() => {
-    if (!selectedItem?.fields) return [];
-    return [
-      ["Weight", selectedItem.fields.weight_kg, "kg"],
-      ["BF%", selectedItem.fields.body_fat_pct, "%"],
-      ["MM", selectedItem.fields.muscle_mass_kg, "kg"],
-    ].filter(([, value]) => value !== null && value !== undefined && value !== "");
-  }, [selectedItem]);
-
   return (
     <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-3.5 shadow-[var(--shadow-soft)]">
-      <div className="grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
         <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
           {loading ? (
             <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
@@ -94,6 +117,7 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
             <div className="grid gap-2">
               {items.map((item) => {
                 const active = selectedItem?.id === item.id;
+                const assessmentFields = item.fields || {};
                 return (
                   <button
                     key={item.id}
@@ -101,12 +125,30 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
                       setSelectedId(item.id);
                       setDraftFields(normalizeFields(item.fields));
                     }}
-                    className={`rounded-[16px] border px-3 py-2.5 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
+                    className={`rounded-[16px] border px-3 py-3 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/85"}`}
                   >
-                    <p className="font-medium text-[var(--text)]">{item.students?.full_name || copy.client}</p>
-                    <div className="mt-1 flex items-center justify-between gap-2">
-                      <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{formatDate(item.assessment_date, locale)}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{`${Object.keys(item.fields || {}).length} ${copy.savedMetrics}`}</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-[var(--text)]">{item.students?.full_name || copy.client}</p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{formatDate(item.assessment_date, locale)}</p>
+                      </div>
+                      <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                        #{items.findIndex((entry) => entry.id === item.id) + 1}
+                      </span>
+                    </div>
+                    <div className="mt-3 grid grid-cols-3 gap-2">
+                      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-2">
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">Peso</p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{formatMetric(assessmentFields.weight_kg, "kg")}</p>
+                      </div>
+                      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-2">
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">BF%</p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{formatMetric(assessmentFields.body_fat_pct, "%")}</p>
+                      </div>
+                      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-2">
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">MM</p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{formatMetric(assessmentFields.muscle_mass_kg, "kg")}</p>
+                      </div>
                     </div>
                   </button>
                 );
@@ -132,26 +174,31 @@ export default function AssessmentBuilderWorkspace({ items, loading, locale = "e
                 </span>
               </div>
 
-              {quickSummary.length > 0 ? (
+              <div className="grid gap-2.5 md:grid-cols-3">
+                {quickSummary.map((metric) => (
+                  <div key={metric.label} className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-3">
+                    <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{metric.label}</p>
+                    <p className="mt-1 text-base font-semibold text-[var(--text)]">{formatMetric(metric.value, metric.unit)}</p>
+                  </div>
+                ))}
+              </div>
+
+              {grouped.secondary.length > 0 ? (
                 <div className="grid gap-2.5 md:grid-cols-3">
-                  {quickSummary.map(([label, value, unit]) => (
-                    <div key={label} className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-3">
-                      <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</p>
-                      <p className="mt-1 text-base font-semibold text-[var(--text)]">{value}{unit ? ` ${unit}` : ""}</p>
-                    </div>
+                  {grouped.secondary.map((field) => (
+                    <label key={field.key} className="grid gap-2 rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
+                      <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{field.label}</span>
+                      <input value={field.value} onChange={(event) => updateDraftField(field.key, event.target.value)} className="bg-transparent text-sm font-medium text-[var(--text)] outline-none" />
+                    </label>
                   ))}
                 </div>
               ) : null}
 
               <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
-                {draftFields.map((field) => (
-                  <label key={field.key} className="grid gap-2">
+                {grouped.remaining.map((field) => (
+                  <label key={field.key} className="grid gap-2 rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{field.label}</span>
-                    <input
-                      value={field.value}
-                      onChange={(event) => updateDraftField(field.key, event.target.value)}
-                      className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm text-[var(--text)] outline-none"
-                    />
+                    <input value={field.value} onChange={(event) => updateDraftField(field.key, event.target.value)} className="bg-transparent text-sm font-medium text-[var(--text)] outline-none" />
                   </label>
                 ))}
               </div>

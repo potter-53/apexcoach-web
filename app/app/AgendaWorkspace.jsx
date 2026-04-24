@@ -198,6 +198,9 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
   const [error, setError] = useState("");
   const [editingItem, setEditingItem] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const handleOpenCreateBooking = () => {
+    if (typeof onOpenCreateBooking === "function") onOpenCreateBooking();
+  };
 
   const range = useMemo(() => {
     if (mode === "month") {
@@ -504,7 +507,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                 <CalendarDays size={16} />
                 {copy.today || "Today"}
               </button>
-              <button onClick={onOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
+              <button onClick={handleOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
                 <Plus size={16} />
                 {copy.newBooking}
               </button>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { Check, Dumbbell, LoaderCircle, Plus, Search, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { getSupabaseBrowserClient } from "../../src/lib/supabase-browser";
 
@@ -30,28 +30,111 @@ function normalizeExerciseRows(rows) {
   })).sort((a, b) => a.order_index - b.order_index);
 }
 
+function normalizeTemplateGroups(rows) {
+  const groups = new Map();
+  for (const raw of rows || []) {
+    const key = String(raw.series_id || raw.id);
+    const existing = groups.get(key) || [];
+    existing.push(raw);
+    groups.set(key, existing);
+  }
+
+  return [...groups.entries()].map(([groupKey, groupRows]) => {
+    const ordered = [...groupRows].sort((a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime());
+    const future = ordered.find((row) => new Date(row.scheduled_at).getTime() >= Date.now()) || ordered[ordered.length - 1];
+    const firstTraining = Array.isArray(ordered[0]?.training_sessions) ? ordered[0].training_sessions[0] : null;
+    const activeTraining = Array.isArray(future?.training_sessions) ? future.training_sessions[0] : null;
+    const linked = activeTraining || firstTraining;
+
+    return {
+      id: linked?.id || `template-${groupKey}`,
+      builderSessionId: linked?.id || null,
+      name: linked?.name || "Template",
+      notes: linked?.notes || future?.notes || "",
+      status: linked?.status || future?.status || "scheduled",
+      session_date: linked?.session_date || future?.scheduled_at,
+      students: future?.students || null,
+      isTemplate: true,
+      templateCount: ordered.length,
+      templateSeriesId: groupKey,
+    };
+  }).sort((a, b) => new Date(b.session_date).getTime() - new Date(a.session_date).getTime());
+}
+
 export default function TrainingBuilderWorkspace({ items, loading, copy, locale = "en", currentUser, onItemsChange }) {
+  const [boardTab, setBoardTab] = useState("sessions");
   const [selectedId, setSelectedId] = useState("");
   const [sessionDraft, setSessionDraft] = useState({ name: "", notes: "" });
   const [exercises, setExercises] = useState([]);
   const [exerciseLibrary, setExerciseLibrary] = useState([]);
   const [exerciseQuery, setExerciseQuery] = useState("");
+  const [templates, setTemplates] = useState([]);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
   const [loadingSession, setLoadingSession] = useState(false);
   const [saving, setSaving] = useState(false);
-  const selectedItem = useMemo(() => items.find((item) => item.id === selectedId) || items[0] || null, [items, selectedId]);
+
+  const ui = useMemo(() => ({
+    sessions: locale === "pt" ? "Sessoes" : locale === "es" ? "Sesiones" : locale === "fr" ? "Seances" : "Sessions",
+    templates: locale === "pt" ? "Templates" : locale === "es" ? "Templates" : locale === "fr" ? "Templates" : "Templates",
+    searchExercise: locale === "pt" ? "Pesquisar exercicio..." : locale === "es" ? "Buscar ejercicio..." : locale === "fr" ? "Rechercher un exercice..." : "Search exercise...",
+    builderTitle: locale === "pt" ? "Builder da sessao" : locale === "es" ? "Builder de sesion" : locale === "fr" ? "Builder de seance" : "Session builder",
+    loadingBuilder: locale === "pt" ? "A carregar builder..." : locale === "es" ? "Cargando builder..." : locale === "fr" ? "Chargement du builder..." : "Loading builder...",
+    emptyBuilder: locale === "pt" ? "Adiciona exercicios para montar esta sessao." : locale === "es" ? "Anade ejercicios para montar esta sesion." : locale === "fr" ? "Ajoute des exercices pour construire cette seance." : "Add exercises to build this session.",
+    noTemplates: locale === "pt" ? "Sem templates criados." : locale === "es" ? "Sin templates creados." : locale === "fr" ? "Aucun template cree." : "No templates created.",
+    templateSeries: locale === "pt" ? "Blocos" : locale === "es" ? "Bloques" : locale === "fr" ? "Blocs" : "Blocks",
+    sets: locale === "pt" ? "Series" : locale === "es" ? "Series" : locale === "fr" ? "Series" : "Sets",
+    reps: "Reps",
+    load: locale === "pt" ? "Carga" : locale === "es" ? "Carga" : locale === "fr" ? "Charge" : "Load",
+    rest: locale === "pt" ? "Desc." : locale === "es" ? "Desc." : locale === "fr" ? "Repos" : "Rest",
+  }), [locale]);
+
+  const visibleItems = boardTab === "templates" ? templates : items;
+  const selectedItem = useMemo(() => visibleItems.find((item) => item.id === selectedId) || visibleItems[0] || null, [visibleItems, selectedId]);
+  const activeSessionId = selectedItem?.builderSessionId || selectedItem?.id || null;
 
   useEffect(() => {
-    if (!items.length) {
+    const source = visibleItems;
+    if (!source.length) {
       setSelectedId("");
+      setSessionDraft({ name: "", notes: "" });
       return;
     }
-    const nextSelected = items.some((item) => item.id === selectedId) ? items.find((item) => item.id === selectedId) : items[0];
+    const nextSelected = source.some((item) => item.id === selectedId) ? source.find((item) => item.id === selectedId) : source[0];
     setSelectedId(nextSelected.id);
     setSessionDraft({ name: nextSelected.name || "", notes: nextSelected.notes || "" });
-  }, [items, selectedId]);
+  }, [visibleItems, selectedId]);
 
   useEffect(() => {
-    if (!selectedItem || !currentUser) {
+    if (!currentUser) return;
+    const supabase = getSupabaseBrowserClient();
+    let mounted = true;
+
+    async function loadTemplates() {
+      setTemplatesLoading(true);
+      try {
+        const response = await supabase
+          .from("agenda_items")
+          .select("id, series_id, notes, scheduled_at, status, students(full_name, client_color_hex), training_sessions(id, name, notes, status, session_date)")
+          .eq("coach_id", currentUser.id)
+          .eq("item_type", "prescribed_training")
+          .order("scheduled_at", { ascending: false });
+
+        if (response.error) throw response.error;
+        if (!mounted) return;
+        setTemplates(normalizeTemplateGroups(response.data || []));
+      } finally {
+        if (mounted) setTemplatesLoading(false);
+      }
+    }
+
+    loadTemplates();
+    return () => {
+      mounted = false;
+    };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!activeSessionId || !currentUser) {
       setExercises([]);
       return;
     }
@@ -65,7 +148,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
           supabase
             .from("training_session_exercises")
             .select("id, exercise_id, exercise_name, order_index, sets, reps_text, load_text, rest_seconds, notes")
-            .eq("session_id", selectedItem.id)
+            .eq("session_id", activeSessionId)
             .order("order_index", { ascending: true }),
           supabase
             .from("exercise_library")
@@ -93,24 +176,13 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
     return () => {
       mounted = false;
     };
-  }, [selectedItem, currentUser, locale]);
+  }, [activeSessionId, currentUser, locale]);
 
   const filteredLibrary = useMemo(() => {
     const query = exerciseQuery.trim().toLowerCase();
     if (!query) return exerciseLibrary.slice(0, 10);
     return exerciseLibrary.filter((item) => item.label.toLowerCase().includes(query)).slice(0, 10);
   }, [exerciseLibrary, exerciseQuery]);
-
-  const ui = useMemo(() => ({
-    searchExercise: locale === "pt" ? "Pesquisar exercicio..." : locale === "es" ? "Buscar ejercicio..." : locale === "fr" ? "Rechercher un exercice..." : "Search exercise...",
-    builderTitle: locale === "pt" ? "Builder da sessao" : locale === "es" ? "Builder de sesion" : locale === "fr" ? "Builder de seance" : "Session builder",
-    loadingBuilder: locale === "pt" ? "A carregar builder..." : locale === "es" ? "Cargando builder..." : locale === "fr" ? "Chargement du builder..." : "Loading builder...",
-    emptyBuilder: locale === "pt" ? "Adiciona exercicios para montar esta sessao." : locale === "es" ? "Anade ejercicios para montar esta sesion." : locale === "fr" ? "Ajoute des exercices pour construire cette seance." : "Add exercises to build this session.",
-    sets: locale === "pt" ? "Series" : locale === "es" ? "Series" : locale === "fr" ? "Series" : "Sets",
-    reps: "Reps",
-    load: locale === "pt" ? "Carga" : locale === "es" ? "Carga" : locale === "fr" ? "Charge" : "Load",
-    rest: locale === "pt" ? "Desc." : locale === "es" ? "Desc." : locale === "fr" ? "Repos" : "Rest",
-  }), [locale]);
 
   function updateExerciseField(id, field, value) {
     setExercises((current) => current.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
@@ -139,7 +211,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
   }
 
   async function saveSessionBuilder() {
-    if (!selectedItem || !currentUser) return;
+    if (!activeSessionId || !currentUser) return;
     setSaving(true);
     try {
       const supabase = getSupabaseBrowserClient();
@@ -151,7 +223,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
       const updateSessionResponse = await supabase
         .from("training_sessions")
         .update(nextSession)
-        .eq("id", selectedItem.id)
+        .eq("id", activeSessionId)
         .eq("coach_id", currentUser.id);
 
       if (updateSessionResponse.error) throw updateSessionResponse.error;
@@ -159,7 +231,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
       const deleteResponse = await supabase
         .from("training_session_exercises")
         .delete()
-        .eq("session_id", selectedItem.id);
+        .eq("session_id", activeSessionId);
 
       if (deleteResponse.error) throw deleteResponse.error;
 
@@ -168,7 +240,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
           .from("training_session_exercises")
           .insert(
             exercises.map((exercise, index) => ({
-              session_id: selectedItem.id,
+              session_id: activeSessionId,
               exercise_id: exercise.exercise_id || null,
               exercise_name: exercise.exercise_name,
               order_index: index,
@@ -183,11 +255,8 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
         if (insertResponse.error) throw insertResponse.error;
       }
 
-      onItemsChange((current) =>
-        current.map((item) =>
-          item.id === selectedItem.id ? { ...item, ...nextSession } : item,
-        ),
-      );
+      onItemsChange((current) => current.map((item) => (item.id === activeSessionId ? { ...item, ...nextSession } : item)));
+      setTemplates((current) => current.map((item) => ((item.builderSessionId || item.id) === activeSessionId ? { ...item, ...nextSession } : item)));
     } finally {
       setSaving(false);
     }
@@ -195,16 +264,33 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
 
   return (
     <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-3.5 shadow-[var(--shadow-soft)]">
-      <div className="mt-1 grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1">
+          {["sessions", "templates"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setBoardTab(tab)}
+              className={`rounded-full px-4 py-2 text-sm font-medium ${boardTab === tab ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}
+            >
+              {tab === "sessions" ? ui.sessions : ui.templates}
+            </button>
+          ))}
+        </div>
+        <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          {visibleItems.length} {boardTab === "sessions" ? ui.sessions : ui.templates}
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
         <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
-          {loading ? (
+          {loading || (boardTab === "templates" && templatesLoading) ? (
             <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
               <LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />
-              {copy.loadingTrainings}
+              {boardTab === "sessions" ? copy.loadingTrainings : ui.templates}
             </div>
-          ) : items.length > 0 ? (
+          ) : visibleItems.length > 0 ? (
             <div className="grid gap-2">
-              {items.map((item) => {
+              {visibleItems.map((item) => {
                 const active = selectedItem?.id === item.id;
                 return (
                   <button
@@ -213,20 +299,23 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                       setSelectedId(item.id);
                       setSessionDraft({ name: item.name || "", notes: item.notes || "" });
                     }}
-                    className={`rounded-[16px] border px-3 py-2.5 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
+                    className={`rounded-[16px] border px-3 py-3 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
                   >
-                    <p className="font-medium text-[var(--text)]">{item.name || copy.untitledSession}</p>
-                    <div className="mt-1 flex items-center justify-between gap-2">
-                      <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{formatDate(item.session_date, locale)}</p>
-                      <p className="truncate text-xs text-[var(--text-muted)]">{item.students?.full_name || copy.noLinkedClient}</p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-[var(--text)]">{item.name || copy.untitledSession}</p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{formatDate(item.session_date, locale)}</p>
+                      </div>
+                      {item.isTemplate ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{item.templateCount}</span> : null}
                     </div>
+                    <p className="mt-2 truncate text-sm text-[var(--text-muted)]">{item.students?.full_name || copy.noLinkedClient}</p>
                   </button>
                 );
               })}
             </div>
           ) : (
             <div className="rounded-[18px] border border-dashed border-[var(--border)] bg-white px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-              {copy.noTrainingsText}
+              {boardTab === "sessions" ? copy.noTrainingsText : ui.noTemplates}
             </div>
           )}
         </div>
@@ -236,52 +325,36 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
             <div className="grid gap-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.client}</p>
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{boardTab === "sessions" ? ui.sessions : ui.templates}</p>
                   <h3 className="mt-1 text-base font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.noLinkedClient}</h3>
                 </div>
-                <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  {formatDate(selectedItem.session_date, locale)}
-                </span>
+                <div className="flex items-center gap-2">
+                  {selectedItem.isTemplate ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{ui.templateSeries}: {selectedItem.templateCount}</span> : null}
+                  <span className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                    {formatDate(selectedItem.session_date, locale)}
+                  </span>
+                </div>
               </div>
 
               <div className="grid gap-3 xl:grid-cols-[340px_minmax(0,1fr)]">
                 <div className="grid gap-3">
                   <label className="grid gap-2">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.trainingLabel}</span>
-                    <input
-                      value={sessionDraft.name}
-                      onChange={(event) => setSessionDraft((current) => ({ ...current, name: event.target.value }))}
-                      className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm text-[var(--text)] outline-none"
-                    />
+                    <input value={sessionDraft.name} onChange={(event) => setSessionDraft((current) => ({ ...current, name: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm text-[var(--text)] outline-none" />
                   </label>
                   <label className="grid gap-2">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.notes}</span>
-                    <textarea
-                      rows={4}
-                      value={sessionDraft.notes}
-                      onChange={(event) => setSessionDraft((current) => ({ ...current, notes: event.target.value }))}
-                      className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm leading-6 text-[var(--text)] outline-none"
-                      placeholder={copy.notesPlaceholder}
-                    />
+                    <textarea rows={4} value={sessionDraft.notes} onChange={(event) => setSessionDraft((current) => ({ ...current, notes: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm leading-6 text-[var(--text)] outline-none" placeholder={copy.notesPlaceholder} />
                   </label>
 
                   <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
                     <div className="flex items-center gap-2">
                       <Search size={15} className="text-[var(--text-muted)]" />
-                      <input
-                        value={exerciseQuery}
-                        onChange={(event) => setExerciseQuery(event.target.value)}
-                        placeholder={ui.searchExercise}
-                        className="w-full bg-transparent text-sm text-[var(--text)] outline-none"
-                      />
+                      <input value={exerciseQuery} onChange={(event) => setExerciseQuery(event.target.value)} placeholder={ui.searchExercise} className="w-full bg-transparent text-sm text-[var(--text)] outline-none" />
                     </div>
                     <div className="mt-3 grid gap-2">
                       {filteredLibrary.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => addExercise(item)}
-                          className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-white px-3 py-2 text-left"
-                        >
+                        <button key={item.id} onClick={() => addExercise(item)} className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-white px-3 py-2 text-left">
                           <span className="text-sm text-[var(--text)]">{item.label}</span>
                           <Plus size={15} className="text-[var(--accent)]" />
                         </button>
@@ -296,7 +369,11 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                     <p className="text-sm font-semibold text-[var(--text)]">{ui.builderTitle}</p>
                   </div>
 
-                  {loadingSession ? (
+                  {!activeSessionId ? (
+                    <div className="mt-4 rounded-[18px] border border-dashed border-[var(--border)] bg-white px-4 py-8 text-center text-sm text-[var(--text-muted)]">
+                      {ui.noTemplates}
+                    </div>
+                  ) : loadingSession ? (
                     <div className="mt-4 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
                       <LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />
                       {ui.loadingBuilder}
@@ -330,11 +407,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
               </div>
 
               <div className="flex justify-end">
-                <button
-                  onClick={saveSessionBuilder}
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60"
-                >
+                <button onClick={saveSessionBuilder} disabled={saving || !activeSessionId} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">
                   {saving ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}
                   {copy.saveChanges}
                 </button>
@@ -342,7 +415,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
             </div>
           ) : (
             <div className="rounded-[18px] border border-dashed border-[var(--border)] bg-white px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-              {copy.noTrainingsText}
+              {boardTab === "sessions" ? copy.noTrainingsText : ui.noTemplates}
             </div>
           )}
         </div>
