@@ -3,7 +3,7 @@
 import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, Plus, ShieldCheck, Users, X } from "lucide-react";
+import { AlertTriangle, BadgeEuro, CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, Package2, Plus, ShieldCheck, TimerReset, Users, X } from "lucide-react";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getStoredCoachLocale, guessCoachLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import AgendaWorkspace from "./AgendaWorkspace";
@@ -18,7 +18,24 @@ const DEFAULT_BOOKING_TYPES = [
   { name: "Avaliacao fisica", category: "physical_assessment", duration_minutes: 60, price_eur: 0 },
 ];
 
-const EMPTY_CORE = { profile: null, subscription: null, metrics: { clients: 0, agendaToday: 0, assessments: 0, trainings: 0 }, upcomingAgenda: [] };
+const EMPTY_CORE = {
+  profile: null,
+  subscription: null,
+  metrics: { clients: 0, agendaToday: 0, assessments: 0, trainings: 0 },
+  business: {
+    monthlyRevenue: 0,
+    yearlyRevenue: 0,
+    deliveredTrainings: 0,
+    missingBookings: 0,
+    pendingBillingCount: 0,
+    pendingBillingAmount: 0,
+    overdueBillingCount: 0,
+    expiringPacks: 0,
+    attention: [],
+    dueProfiles: [],
+  },
+  upcomingAgenda: [],
+};
 const EMPTY_LISTS = { students: [], recentAssessments: [], recentTrainings: [] };
 const EMPTY_FORM = { studentId: "", bookingTypeId: "", scheduledDate: "", scheduledTime: "", notes: "" };
 /*
@@ -117,6 +134,27 @@ const DASHBOARD_COPY = {
     prepareBookingError: "Could not prepare the booking.",
     createBookingError: "Could not create the booking.",
     selectRequired: "Select client, booking type, date, and time.",
+    businessPulseTitle: "Business pulse",
+    businessPulseText: "Revenue, delivery, billing gaps, and pack pressure in one place.",
+    monthlyBilling: "Monthly billing",
+    yearlyBilling: "Year to date",
+    deliveredSessions: "Sessions delivered",
+    missingBookings: "Bookings missing",
+    pendingBilling: "Pending billing",
+    expiringPacks: "Packs low",
+    overdueBilling: "Overdue billing",
+    operationsBoard: "Operations board",
+    financeOverview: "Billing overview",
+    financeOverviewText: "What is billed, what is pending, and where the coach needs to act next.",
+    attentionBoard: "Coach attention",
+    attentionBoardText: "Clients that need scheduling, billing follow-up, or pack renewal.",
+    noAttention: "No urgent coach alerts right now.",
+    pendingAmount: "Pending amount",
+    dueProfiles: "Clients awaiting billing follow-up",
+    noDueProfiles: "No billing profiles need follow-up right now.",
+    actionMissing: "bookings missing",
+    actionPack: "pack sessions left",
+    actionBilling: "billing pending",
   },
   pt: {
     tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Avaliações", agenda: "Agenda", trainings: "Treinos", coach: "Coach" },
@@ -203,6 +241,27 @@ const DASHBOARD_COPY = {
     prepareBookingError: "Não foi possível preparar a marcação.",
     createBookingError: "Não foi possível criar a marcação.",
     selectRequired: "Seleciona cliente, tipo de marcação, data e hora.",
+    businessPulseTitle: "Pulso do negócio",
+    businessPulseText: "Faturação, serviço entregue, falhas de agenda e packs sob pressão num só bloco.",
+    monthlyBilling: "Faturação mensal",
+    yearlyBilling: "Faturação do ano",
+    deliveredSessions: "Sessões dadas",
+    missingBookings: "Marcações em falta",
+    pendingBilling: "Faturação pendente",
+    expiringPacks: "Packs em baixo",
+    overdueBilling: "Cobranças em atraso",
+    operationsBoard: "Painel operacional",
+    financeOverview: "Visão de faturação",
+    financeOverviewText: "O que está a entrar, o que falta regularizar e onde o coach precisa de agir.",
+    attentionBoard: "Pontos de atenção",
+    attentionBoardText: "Clientes com falhas de agenda, cobrança pendente ou packs a precisar de renovação.",
+    noAttention: "Não existem alertas urgentes para o coach neste momento.",
+    pendingAmount: "Valor pendente",
+    dueProfiles: "Clientes à espera de seguimento de cobrança",
+    noDueProfiles: "Não há perfis de cobrança a precisar de seguimento.",
+    actionMissing: "marcações em falta",
+    actionPack: "sessões de pack restantes",
+    actionBilling: "cobrança pendente",
   },
   es: {
     tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Evaluaciones", agenda: "Agenda", trainings: "Entrenamientos", coach: "Coach" },
@@ -289,6 +348,27 @@ const DASHBOARD_COPY = {
     prepareBookingError: "No se pudo preparar la reserva.",
     createBookingError: "No se pudo crear la reserva.",
     selectRequired: "Selecciona cliente, tipo de reserva, fecha y hora.",
+    businessPulseTitle: "Pulso del negocio",
+    businessPulseText: "Facturación, servicio entregado, huecos de agenda y packs bajo presión en un solo lugar.",
+    monthlyBilling: "Facturación mensual",
+    yearlyBilling: "Facturación anual",
+    deliveredSessions: "Sesiones realizadas",
+    missingBookings: "Reservas faltantes",
+    pendingBilling: "Facturación pendiente",
+    expiringPacks: "Packs bajos",
+    overdueBilling: "Cobros atrasados",
+    operationsBoard: "Panel operativo",
+    financeOverview: "Resumen de facturación",
+    financeOverviewText: "Lo que entra, lo que falta regularizar y dónde el coach debe actuar.",
+    attentionBoard: "Atención del coach",
+    attentionBoardText: "Clientes que necesitan programación, seguimiento de cobro o renovación de pack.",
+    noAttention: "No hay alertas urgentes para el coach ahora mismo.",
+    pendingAmount: "Importe pendiente",
+    dueProfiles: "Clientes pendientes de seguimiento de cobro",
+    noDueProfiles: "No hay perfiles de cobro que necesiten seguimiento ahora.",
+    actionMissing: "reservas pendientes",
+    actionPack: "sesiones de pack restantes",
+    actionBilling: "cobro pendiente",
   },
   fr: {
     tabs: { dashboard: "Dashboard", clients: "Clients", assessments: "Évaluations", agenda: "Agenda", trainings: "Entraînements", coach: "Coach" },
@@ -375,6 +455,27 @@ const DASHBOARD_COPY = {
     prepareBookingError: "Impossible de préparer le rendez-vous.",
     createBookingError: "Impossible de créer le rendez-vous.",
     selectRequired: "Sélectionne le client, le type de rendez-vous, la date et l'heure.",
+    businessPulseTitle: "Pouls business",
+    businessPulseText: "Facturation, service livré, manques de planning et packs sous pression au même endroit.",
+    monthlyBilling: "Facturation mensuelle",
+    yearlyBilling: "Facturation annuelle",
+    deliveredSessions: "Séances réalisées",
+    missingBookings: "Rendez-vous manquants",
+    pendingBilling: "Facturation en attente",
+    expiringPacks: "Packs faibles",
+    overdueBilling: "Factures en retard",
+    operationsBoard: "Panneau opérationnel",
+    financeOverview: "Vue facturation",
+    financeOverviewText: "Ce qui entre, ce qui reste à régulariser et où le coach doit agir.",
+    attentionBoard: "Attention coach",
+    attentionBoardText: "Clients qui ont besoin de planification, de relance de paiement ou de renouvellement de pack.",
+    noAttention: "Aucune alerte urgente pour le coach en ce moment.",
+    pendingAmount: "Montant en attente",
+    dueProfiles: "Clients en attente de suivi de facturation",
+    noDueProfiles: "Aucun profil de facturation n'a besoin de suivi maintenant.",
+    actionMissing: "rendez-vous manquants",
+    actionPack: "séances pack restantes",
+    actionBilling: "facturation en attente",
   },
 };
 
@@ -417,6 +518,11 @@ function missingColumn(error) {
   return message.includes("client_color_hex") && (message.includes("42703") || message.includes("column"));
 }
 
+function missingResource(error, resource) {
+  const message = error?.message?.toLowerCase?.() ?? error?.toString?.().toLowerCase?.() ?? "";
+  return message.includes(resource.toLowerCase()) && (message.includes("42p01") || message.includes("does not exist") || message.includes("relation"));
+}
+
 async function colorFallback(builder) {
   try {
     return await builder(true);
@@ -426,12 +532,234 @@ async function colorFallback(builder) {
   }
 }
 
+async function optionalResource(builder, resource) {
+  try {
+    return await builder();
+  } catch (error) {
+    if (!missingResource(error, resource)) throw error;
+    return { data: [], error: null };
+  }
+}
+
 function todayBounds() {
   const now = new Date();
   return {
     start: new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString(),
     end: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString(),
   };
+}
+
+function startOfWeek(date) {
+  const base = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  base.setDate(base.getDate() - (base.getDay() === 0 ? 6 : base.getDay() - 1));
+  return base;
+}
+
+function startOfMonth(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function startOfYear(date) {
+  return new Date(date.getFullYear(), 0, 1);
+}
+
+function addMonths(date, months) {
+  return new Date(date.getFullYear(), date.getMonth() + months, 1);
+}
+
+function addYears(date, years) {
+  return new Date(date.getFullYear() + years, 0, 1);
+}
+
+function weeksInclusive(start, end) {
+  const startWeek = startOfWeek(start);
+  const endWeek = startOfWeek(end);
+  return Math.floor((endWeek.getTime() - startWeek.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+}
+
+function numericValue(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function billingPeriodStart(now, billing) {
+  if (billing?.last_paid_at) {
+    const paidAt = new Date(billing.last_paid_at);
+    if (!Number.isNaN(paidAt.getTime())) return new Date(paidAt.getTime() + 1000);
+  }
+
+  switch ((billing?.billing_cycle || "monthly").toLowerCase()) {
+    case "weekly":
+      return startOfWeek(now);
+    case "yearly":
+      return startOfYear(now);
+    case "custom":
+      if (billing?.next_due_at) {
+        const nextDue = new Date(billing.next_due_at);
+        if (!Number.isNaN(nextDue.getTime())) return addMonths(nextDue, -1);
+      }
+      return startOfMonth(now);
+    case "monthly":
+    default:
+      return startOfMonth(now);
+  }
+}
+
+function billingPeriodEndExclusive(now, billing) {
+  if (billing?.next_due_at) {
+    const nextDue = new Date(billing.next_due_at);
+    if (!Number.isNaN(nextDue.getTime())) return nextDue;
+  }
+
+  switch ((billing?.billing_cycle || "monthly").toLowerCase()) {
+    case "weekly":
+      return new Date(startOfWeek(now).getTime() + 7 * 24 * 60 * 60 * 1000);
+    case "yearly":
+      return addYears(startOfYear(now), 1);
+    case "custom":
+    case "monthly":
+    default:
+      return addMonths(startOfMonth(now), 1);
+  }
+}
+
+function fallbackPeriodEndExclusive(start, billingCycle) {
+  return billingCycle === "weekly" ? new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000) : addMonths(startOfMonth(start), 1);
+}
+
+function isPackPlan(plan) {
+  const mode = String(plan?.plan_mode || "").toLowerCase();
+  return mode.includes("pack") || numericValue(plan?.pack_sessions_count) > 0;
+}
+
+function isPendingBillingStatus(status) {
+  const normalized = String(status || "").toLowerCase();
+  return normalized && normalized !== "paid" && normalized !== "not_set";
+}
+
+function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now = new Date()) {
+  const monthStart = startOfMonth(now);
+  const yearStart = startOfYear(now);
+  const studentsById = Object.fromEntries((students || []).map((student) => [student.id, student]));
+  const pastPtRows = rows.filter((row) => {
+    const scheduledAt = new Date(row.scheduled_at);
+    return row.item_type === "pt_session" && row.status !== "canceled" && !Number.isNaN(scheduledAt.getTime()) && scheduledAt <= now;
+  });
+
+  const monthlyRevenue = pastPtRows
+    .filter((row) => new Date(row.scheduled_at) >= monthStart)
+    .reduce((sum, row) => sum + numericValue(row.booking_types?.price_eur), 0);
+
+  const yearlyRevenue = pastPtRows
+    .filter((row) => new Date(row.scheduled_at) >= yearStart)
+    .reduce((sum, row) => sum + numericValue(row.booking_types?.price_eur), 0);
+
+  const pendingProfiles = billingProfiles.filter((profile) => isPendingBillingStatus(profile.status) && numericValue(profile.amount_cents) > 0);
+  const pendingBillingAmount = pendingProfiles.reduce((sum, profile) => sum + numericValue(profile.amount_cents) / 100, 0);
+  const overdueBillingCount = pendingProfiles.filter((profile) => {
+    if (!profile.next_due_at) return false;
+    const dueAt = new Date(profile.next_due_at);
+    return !Number.isNaN(dueAt.getTime()) && dueAt < now;
+  }).length;
+
+  const rowsByStudent = rows.reduce((acc, row) => {
+    const studentId = row.student_id;
+    if (!studentId) return acc;
+    acc[studentId] ??= [];
+    acc[studentId].push(row);
+    return acc;
+  }, {});
+
+  const reminders = [];
+  const billingAlerts = pendingProfiles.map((profile) => ({
+    id: `billing-${profile.student_id}`,
+    type: "billing_pending",
+    studentName: studentsById[profile.student_id]?.full_name || "Client",
+    clientColorHex: studentsById[profile.student_id]?.client_color_hex || null,
+    attentionCount: 1,
+  }));
+
+  for (const plan of trainingPlans) {
+    const studentId = plan.student_id;
+    if (!studentId) continue;
+
+    const billing = billingProfiles.find((profile) => profile.student_id === studentId) || null;
+    const start = billingPeriodStart(now, billing);
+    const rawEnd = billingPeriodEndExclusive(now, billing);
+    const billingCycle = (billing?.billing_cycle || "monthly").toLowerCase() === "weekly" ? "weekly" : "monthly";
+    const end = rawEnd > start ? rawEnd : fallbackPeriodEndExclusive(start, billingCycle);
+    const coverageStart = billingCycle === "monthly" ? startOfWeek(start) : start;
+    const studentRows = (rowsByStudent[studentId] || []).filter((row) => {
+      const scheduledAt = new Date(row.scheduled_at);
+      return row.item_type === "pt_session" && row.status !== "canceled" && !Number.isNaN(scheduledAt.getTime()) && scheduledAt >= coverageStart && scheduledAt < end;
+    });
+
+    if (isPackPlan(plan)) {
+      const packSessionsCount = numericValue(plan.pack_sessions_count);
+      const remaining = Math.max(0, packSessionsCount - studentRows.length);
+      if (packSessionsCount > 0 && remaining <= 3) {
+        reminders.push({
+          id: `pack-${studentId}`,
+          type: "pack_low",
+          studentName: studentsById[studentId]?.full_name || "Client",
+          clientColorHex: studentsById[studentId]?.client_color_hex || null,
+          attentionCount: remaining,
+        });
+      }
+      continue;
+    }
+
+    const sessionsPerWeek = numericValue(plan.sessions_per_week);
+    if (sessionsPerWeek <= 0) continue;
+
+    const firstScheduled = [...studentRows].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))[0];
+    const createdAt = plan.created_at ? new Date(plan.created_at) : null;
+    const anchorSource = firstScheduled ? new Date(firstScheduled.scheduled_at) : createdAt && !Number.isNaN(createdAt.getTime()) ? createdAt : start;
+    const activeStart = startOfWeek(anchorSource < coverageStart ? coverageStart : anchorSource);
+    const periodProgressEnd = now < end ? now : new Date(end.getTime() - 1000);
+    if (periodProgressEnd < activeStart) continue;
+
+    const expectedCount = weeksInclusive(activeStart, periodProgressEnd) * sessionsPerWeek;
+    const missingCount = Math.max(0, expectedCount - studentRows.length);
+    if (missingCount > 0) {
+      reminders.push({
+        id: `schedule-${studentId}`,
+        type: "weekly_shortfall",
+        studentName: studentsById[studentId]?.full_name || "Client",
+        clientColorHex: studentsById[studentId]?.client_color_hex || null,
+        attentionCount: missingCount,
+      });
+    }
+  }
+
+  const attention = [...reminders, ...billingAlerts]
+    .sort((a, b) => b.attentionCount - a.attentionCount || a.studentName.localeCompare(b.studentName))
+    .slice(0, 6);
+
+  return {
+    monthlyRevenue,
+    yearlyRevenue,
+    deliveredTrainings: pastPtRows.length,
+    missingBookings: reminders.filter((item) => item.type === "weekly_shortfall").reduce((sum, item) => sum + item.attentionCount, 0),
+    pendingBillingCount: pendingProfiles.length,
+    pendingBillingAmount,
+    overdueBillingCount,
+    expiringPacks: reminders.filter((item) => item.type === "pack_low").length,
+    attention,
+    dueProfiles: pendingProfiles.slice(0, 5).map((profile) => ({
+      ...profile,
+      studentName: studentsById[profile.student_id]?.full_name || "Client",
+      clientColorHex: studentsById[profile.student_id]?.client_color_hex || null,
+    })),
+  };
+}
+
+function formatCurrency(amount, locale = "en", currencyCode = "EUR") {
+  try {
+    return new Intl.NumberFormat(localeTag(locale), { style: "currency", currency: currencyCode || "EUR", maximumFractionDigits: 0 }).format(amount || 0);
+  } catch {
+    return `${(amount || 0).toFixed(0)} ${currencyCode || "EUR"}`;
+  }
 }
 
 function defaultDate() {
@@ -453,21 +781,28 @@ function combineDateTime(dateValue, timeValue) {
 async function loadCore(supabase, user) {
   const { start, end } = todayBounds();
   const nowIso = new Date().toISOString();
+  const yearStartIso = startOfYear(new Date()).toISOString();
   const responses = await Promise.all([
     supabase.from("profiles").select("id, role, full_name").eq("id", user.id).maybeSingle(),
     supabase.from("subscriptions").select("status, plan, trial_ends_at, current_period_ends_at, subscription_category, payment_method_last4").eq("coach_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-    supabase.from("students").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
+    colorFallback((includeColor) => supabase.from("students").select(includeColor ? "id, full_name, client_color_hex" : "id, full_name").eq("coach_id", user.id).order("full_name", { ascending: true })),
     supabase.from("agenda_items").select("id", { count: "exact", head: true }).eq("coach_id", user.id).gte("scheduled_at", start).lt("scheduled_at", end),
     supabase.from("assessments").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
     supabase.from("training_sessions").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
     colorFallback((includeColor) => supabase.from("agenda_items").select(includeColor ? "id, item_type, notes, scheduled_at, status, students(full_name, client_color_hex), booking_types(name)" : "id, item_type, notes, scheduled_at, status, students(full_name), booking_types(name)").eq("coach_id", user.id).gte("scheduled_at", nowIso).order("scheduled_at", { ascending: true }).limit(8)),
+    optionalResource(() => supabase.from("client_billing_profiles").select("student_id, status, billing_cycle, amount_cents, currency_code, next_due_at, last_paid_at"), "client_billing_profiles"),
+    optionalResource(() => supabase.from("client_training_plans").select("student_id, plan_mode, sessions_per_week, pack_sessions_count, created_at").eq("coach_id", user.id), "client_training_plans"),
+    supabase.from("agenda_items").select("id, student_id, item_type, status, scheduled_at, booking_types(price_eur, name)").eq("coach_id", user.id).gte("scheduled_at", yearStartIso).lt("scheduled_at", nowIso).neq("status", "canceled").order("scheduled_at", { ascending: false }),
   ]);
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
+  const students = responses[2].data ?? [];
+  const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students);
   return {
     profile: responses[0].data,
     subscription: responses[1].data,
-    metrics: { clients: responses[2].count ?? 0, agendaToday: responses[3].count ?? 0, assessments: responses[4].count ?? 0, trainings: responses[5].count ?? 0 },
+    metrics: { clients: students.length, agendaToday: responses[3].count ?? 0, assessments: responses[4].count ?? 0, trainings: responses[5].count ?? 0 },
+    business,
     upcomingAgenda: responses[6].data ?? [],
   };
 }
@@ -511,6 +846,38 @@ function EmptyState({ title, text }) {
 
 function MetricCard({ label, value, Icon, hint }) {
   return <div className="rounded-[20px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-3.5 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={16} className="text-[var(--accent)]" /></div><span className="rounded-full border border-[var(--border)] bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</span></div><p className="mt-3 text-2xl font-semibold text-[var(--text)]">{value}</p><p className="mt-1.5 text-sm leading-5 text-[var(--text-muted)]">{hint}</p></div>;
+}
+
+function AttentionRow({ item, copy }) {
+  const label = item.type === "pack_low" ? copy.actionPack : item.type === "billing_pending" ? copy.actionBilling : copy.actionMissing;
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorDot(item.clientColorHex) }} />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-[var(--text)]">{item.studentName}</p>
+          <p className="truncate text-xs text-[var(--text-muted)]">{label}</p>
+        </div>
+      </div>
+      <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text)]">{item.attentionCount}</span>
+    </div>
+  );
+}
+
+function BillingProfileRow({ item, locale = "en" }) {
+  const currency = item.currency_code || "EUR";
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-[var(--text)]">{item.studentName || "Client"}</p>
+        <p className="truncate text-xs text-[var(--text-muted)]">{prettifyStatus(item.status)}</p>
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-semibold text-[var(--text)]">{formatCurrency(numericValue(item.amount_cents) / 100, locale, currency)}</p>
+        {item.next_due_at ? <p className="text-xs text-[var(--text-muted)]">{formatDate(item.next_due_at, true, locale)}</p> : null}
+      </div>
+    </div>
+  );
 }
 
 function PersonRow({ name, detail, meta, colorHex, locale = "en" }) {
@@ -1050,13 +1417,14 @@ export default function DashboardClient() {
     { id: "trainings", label: copy.tabs.trainings, icon: Dumbbell },
     { id: "coach", label: copy.tabs.coach, icon: ShieldCheck },
   ];
-  const metrics = [
-    { label: copy.tabs.clients, value: core.metrics.clients, Icon: Users, hint: copy.activeClientsHint },
-    { label: copy.tabs.agenda, value: core.metrics.agendaToday, Icon: CalendarDays, hint: copy.agendaTodayHint },
-    { label: copy.tabs.assessments, value: core.metrics.assessments, Icon: ClipboardList, hint: copy.assessmentsHint },
-    { label: copy.tabs.trainings, value: core.metrics.trainings, Icon: Dumbbell, hint: copy.trainingsHint },
+  const operationalMetrics = [
+    { label: copy.monthlyBilling, value: formatCurrency(core.business.monthlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.businessPulseText },
+    { label: copy.yearlyBilling, value: formatCurrency(core.business.yearlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.financeOverviewText },
+    { label: copy.deliveredSessions, value: core.business.deliveredTrainings, Icon: Dumbbell, hint: copy.trainingsHint },
+    { label: copy.missingBookings, value: core.business.missingBookings, Icon: TimerReset, hint: copy.attentionBoardText },
+    { label: copy.pendingBilling, value: core.business.pendingBillingCount, Icon: AlertTriangle, hint: copy.pendingAmount },
+    { label: copy.expiringPacks, value: core.business.expiringPacks, Icon: Package2, hint: copy.attentionBoardText },
   ];
-  const dashboardMetrics = metrics.filter((metric) => metric.label !== copy.tabs.agenda);
 
   return (
     <>
@@ -1068,7 +1436,99 @@ export default function DashboardClient() {
         <div className="mx-auto grid min-h-screen max-w-[1600px] gap-4 px-4 py-4 lg:grid-cols-[248px_minmax(0,1fr)] lg:px-5">
           <aside className="rounded-[26px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-3.5 shadow-[var(--shadow-panel)] lg:sticky lg:top-4 lg:flex lg:h-[calc(100vh-2rem)] lg:flex-col"><div className="flex items-center gap-3"><div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2"><LayoutDashboard size={17} className="text-[var(--accent-strong)]" /></div><div><p className="text-sm font-semibold tracking-[0.16em] text-[var(--text)]">APEX COACH</p><p className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">{copy.webWorkspace}</p></div></div><div className="mt-4 rounded-[20px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-3.5 py-3"><p className="text-sm font-semibold text-[var(--text)]">{coachName}</p><p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p></div><nav className="mt-4 grid gap-2 lg:flex-1 lg:content-start lg:overflow-y-auto lg:pr-1">{appTabs.map(({ id, label, icon: Icon }) => { const active = activeTab === id; const emphasized = id === "agenda"; return <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`flex items-center gap-3 rounded-[16px] border px-3 py-2.5 text-left text-sm transition ${active ? "border-[var(--accent)] bg-[var(--accent)] text-[#081014] shadow-[0_10px_22px_rgba(42,208,125,0.18)]" : emphasized ? "border-[var(--accent)]/25 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))] text-[var(--text)]" : "border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"}`}><span className={`flex h-8 w-8 items-center justify-center rounded-2xl ${active ? "bg-white/22" : "bg-white"}`}><Icon size={15} /></span><span className="font-medium">{label}</span></button>; })}</nav><div className="mt-4 grid gap-2 border-t border-[var(--border)] pt-3"><button onClick={openBookingModal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={15} />{copy.newBooking}</button><button onClick={handleSignOut} disabled={signingOut} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-4 py-2.5 text-sm text-[var(--text-muted)] disabled:opacity-60">{signingOut ? <LoaderCircle size={15} className="animate-spin" /> : <LogOut size={15} />}{copy.signOut}</button><Link href="/" className="rounded-2xl px-3 py-2 text-center text-sm text-[var(--text-muted)]">{copy.backToLanding}</Link></div></aside>
           <section className="grid min-w-0 gap-4"><header className="rounded-[22px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-3.5 shadow-[var(--shadow-panel)]"><div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"><div><p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.coachBrowserWorkspace}</p><h1 className="mt-1.5 text-xl font-semibold tracking-tight text-[var(--text)] sm:text-2xl">{appTabs.find((tab) => tab.id === activeTab)?.label || copy.tabs.dashboard}</h1><p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{activeTab === "dashboard" ? copy.agendaSubhead : copy.fastWorkspace}</p></div><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link></div></header>{workspaceError ? <div className="rounded-[20px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
-          {activeTab === "dashboard" ? <><div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]"><AgendaCards items={core.upcomingAgenda.slice(0, 5)} onCreate={openBookingModal} locale={activeLocale} /><SectionCard eyebrow={copy.coachPulse} title={copy.quickSummary} description={null} action={<button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-3.5 py-2 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={14} />{copy.createNow}</button>}><div className="grid gap-3"><div className="grid gap-2.5">{dashboardMetrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}</div><div className="grid gap-2 sm:grid-cols-3"><button onClick={() => startTransition(() => setActiveTab("clients"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left"><p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.clients}</p><p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.activeClientsHint}</p></button><button onClick={() => startTransition(() => setActiveTab("assessments"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left"><p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.assessments}</p><p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.savedMetrics}</p></button><button onClick={() => startTransition(() => setActiveTab("trainings"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left"><p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.trainings}</p><p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.trainingsTitle}</p></button></div></div></SectionCard></div></> : null}
+          {activeTab === "dashboard" ? (
+            <div className="grid gap-4">
+              <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
+                <AgendaCards items={core.upcomingAgenda.slice(0, 5)} onCreate={openBookingModal} locale={activeLocale} />
+                <SectionCard
+                  eyebrow={copy.businessPulseTitle}
+                  title={copy.operationsBoard}
+                  description={copy.businessPulseText}
+                  action={
+                    <button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-3.5 py-2 text-sm font-semibold text-[var(--accent-foreground)]">
+                      <Plus size={14} />
+                      {copy.createNow}
+                    </button>
+                  }
+                >
+                  <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-2">
+                    {operationalMetrics.map((metric) => (
+                      <MetricCard key={metric.label} {...metric} />
+                    ))}
+                  </div>
+                </SectionCard>
+              </div>
+
+              <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+                <SectionCard eyebrow={copy.financeOverview} title={copy.businessPulseTitle} description={copy.financeOverviewText}>
+                  <div className="grid gap-3">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.monthlyBilling}</p>
+                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{formatCurrency(core.business.monthlyRevenue, activeLocale)}</p>
+                      </div>
+                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.yearlyBilling}</p>
+                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{formatCurrency(core.business.yearlyRevenue, activeLocale)}</p>
+                      </div>
+                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.pendingAmount}</p>
+                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{formatCurrency(core.business.pendingBillingAmount, activeLocale)}</p>
+                      </div>
+                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.overdueBilling}</p>
+                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{core.business.overdueBillingCount}</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[20px] border border-[var(--border)] bg-white p-3.5">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.dueProfiles}</p>
+                        </div>
+                        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                          {core.business.pendingBillingCount}
+                        </span>
+                      </div>
+                      <div className="mt-3 grid gap-2">
+                        {core.business.dueProfiles.length > 0 ? (
+                          core.business.dueProfiles.map((item) => <BillingProfileRow key={`${item.student_id}-${item.next_due_at || item.status}`} item={item} locale={activeLocale} />)
+                        ) : (
+                          <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noDueProfiles}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </SectionCard>
+
+                <SectionCard eyebrow={copy.attentionBoard} title={copy.quickSummary} description={copy.attentionBoardText}>
+                  <div className="grid gap-3">
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      <button onClick={() => startTransition(() => setActiveTab("clients"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left">
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.clients}</p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.activeClientsHint}</p>
+                      </button>
+                      <button onClick={() => startTransition(() => setActiveTab("agenda"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left">
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.agenda}</p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.missingBookings}</p>
+                      </button>
+                      <button onClick={() => startTransition(() => setActiveTab("trainings"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left">
+                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.trainings}</p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.deliveredSessions}</p>
+                      </button>
+                    </div>
+                    <div className="grid gap-2">
+                      {core.business.attention.length > 0 ? (
+                        core.business.attention.map((item) => <AttentionRow key={item.id} item={item} copy={copy} />)
+                      ) : (
+                        <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noAttention}</div>
+                      )}
+                    </div>
+                  </div>
+                </SectionCard>
+              </div>
+            </div>
+          ) : null}
           {activeTab === "clients" ? <ClientWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} onOpenAssessments={openAssessmentsForStudent} onOpenTrainings={openTrainingsForStudent} locale={activeLocale} /> : null}
           {activeTab === "assessments" ? <AssessmentBuilderWorkspace items={lists.recentAssessments} loading={loadingTabs.assessments} copy={copy} locale={activeLocale} currentUser={currentUser} onItemsChange={(updater) => setLists((current) => ({ ...current, recentAssessments: typeof updater === "function" ? updater(current.recentAssessments) : updater }))} /> : null}
           {activeTab === "agenda" ? <AgendaWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} locale={activeLocale} /> : null}

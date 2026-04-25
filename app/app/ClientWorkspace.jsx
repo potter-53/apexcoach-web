@@ -198,6 +198,7 @@ function formatDate(value, locale) {
 function normalizeStudents(rows) {
   return rows.map((row) => ({
     ...row,
+    supabase_id: row.supabase_id || row.id,
     clientColor: row.client_color_hex || "#2ad07d",
   }));
 }
@@ -332,7 +333,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
       try {
         const response = await supabase
           .from("students")
-          .select("id, supabase_id, legacy_id_pessoa, full_name, birth_date, height_cm, email, main_goal, clinical_history, created_at, client_color_hex")
+          .select("id, legacy_id_pessoa, full_name, birth_date, height_cm, email, main_goal, clinical_history, created_at, client_color_hex")
           .eq("coach_id", currentUser.id)
           .order("full_name", { ascending: true });
 
