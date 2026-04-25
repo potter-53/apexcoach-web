@@ -844,8 +844,9 @@ function EmptyState({ title, text }) {
   return <div className="rounded-[20px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-6 text-center"><p className="text-base font-semibold text-[var(--text)]">{title}</p><p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{text}</p></div>;
 }
 
-function MetricCard({ label, value, Icon, hint }) {
-  return <div className="rounded-[20px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-3.5 shadow-[var(--shadow-soft)]"><div className="flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={16} className="text-[var(--accent)]" /></div><span className="rounded-full border border-[var(--border)] bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</span></div><p className="mt-3 text-2xl font-semibold text-[var(--text)]">{value}</p><p className="mt-1.5 text-sm leading-5 text-[var(--text-muted)]">{hint}</p></div>;
+function MetricCard({ label, value, Icon, hint, onClick }) {
+  const Component = onClick ? "button" : "div";
+  return <Component onClick={onClick} className={`rounded-[20px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-3.5 text-left shadow-[var(--shadow-soft)] ${onClick ? "transition hover:-translate-y-0.5 hover:border-[var(--accent)]" : ""}`}><div className="flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={16} className="text-[var(--accent)]" /></div><span className="rounded-full border border-[var(--border)] bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</span></div><p className="mt-3 text-2xl font-semibold text-[var(--text)]">{value}</p><p className="mt-1.5 text-sm leading-5 text-[var(--text-muted)]">{hint}</p></Component>;
 }
 
 function AttentionRow({ item, copy }) {
@@ -1418,12 +1419,12 @@ export default function DashboardClient() {
     { id: "coach", label: copy.tabs.coach, icon: ShieldCheck },
   ];
   const operationalMetrics = [
-    { label: copy.monthlyBilling, value: formatCurrency(core.business.monthlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.businessPulseText },
-    { label: copy.yearlyBilling, value: formatCurrency(core.business.yearlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.financeOverviewText },
-    { label: copy.deliveredSessions, value: core.business.deliveredTrainings, Icon: Dumbbell, hint: copy.trainingsHint },
-    { label: copy.missingBookings, value: core.business.missingBookings, Icon: TimerReset, hint: copy.attentionBoardText },
-    { label: copy.pendingBilling, value: core.business.pendingBillingCount, Icon: AlertTriangle, hint: copy.pendingAmount },
-    { label: copy.expiringPacks, value: core.business.expiringPacks, Icon: Package2, hint: copy.attentionBoardText },
+    { label: copy.monthlyBilling, value: formatCurrency(core.business.monthlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.businessPulseText, onClick: () => startTransition(() => setActiveTab("coach")) },
+    { label: copy.yearlyBilling, value: formatCurrency(core.business.yearlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.financeOverviewText, onClick: () => startTransition(() => setActiveTab("coach")) },
+    { label: copy.deliveredSessions, value: core.business.deliveredTrainings, Icon: Dumbbell, hint: copy.trainingsHint, onClick: () => startTransition(() => setActiveTab("trainings")) },
+    { label: copy.missingBookings, value: core.business.missingBookings, Icon: TimerReset, hint: copy.attentionBoardText, onClick: () => startTransition(() => setActiveTab("agenda")) },
+    { label: copy.pendingBilling, value: core.business.pendingBillingCount, Icon: AlertTriangle, hint: copy.pendingAmount, onClick: () => startTransition(() => setActiveTab("coach")) },
+    { label: copy.expiringPacks, value: core.business.expiringPacks, Icon: Package2, hint: copy.attentionBoardText, onClick: () => startTransition(() => setActiveTab("clients")) },
   ];
 
   return (
@@ -1503,20 +1504,6 @@ export default function DashboardClient() {
 
                 <SectionCard eyebrow={copy.attentionBoard} title={copy.quickSummary} description={copy.attentionBoardText}>
                   <div className="grid gap-3">
-                    <div className="grid gap-2 sm:grid-cols-3">
-                      <button onClick={() => startTransition(() => setActiveTab("clients"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left">
-                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.clients}</p>
-                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.activeClientsHint}</p>
-                      </button>
-                      <button onClick={() => startTransition(() => setActiveTab("agenda"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left">
-                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.agenda}</p>
-                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.missingBookings}</p>
-                      </button>
-                      <button onClick={() => startTransition(() => setActiveTab("trainings"))} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3 text-left">
-                        <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.trainings}</p>
-                        <p className="mt-1 text-sm font-semibold text-[var(--text)]">{copy.deliveredSessions}</p>
-                      </button>
-                    </div>
                     <div className="grid gap-2">
                       {core.business.attention.length > 0 ? (
                         core.business.attention.map((item) => <AttentionRow key={item.id} item={item} copy={copy} />)
