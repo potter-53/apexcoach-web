@@ -281,7 +281,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
         </span>
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
+      <div className="mt-4 grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)]">
         <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
           {loading || (boardTab === "templates" && templatesLoading) ? (
             <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm text-[var(--text-muted)]">
@@ -299,11 +299,11 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                       setSelectedId(item.id);
                       setSessionDraft({ name: item.name || "", notes: item.notes || "" });
                     }}
-                    className={`rounded-[16px] border px-3 py-3 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
+                    className={`rounded-[14px] border px-3 py-2.5 text-left ${active ? "border-[var(--accent)] bg-white" : "border-[var(--border)] bg-white/80"}`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="truncate font-medium text-[var(--text)]">{item.name || copy.untitledSession}</p>
+                        <p className="truncate text-sm font-medium text-[var(--text)]">{item.name || copy.untitledSession}</p>
                         <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{formatDate(item.session_date, locale)}</p>
                       </div>
                       {item.isTemplate ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{item.templateCount}</span> : null}
@@ -323,7 +323,7 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
         <div className="rounded-[18px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-3.5">
           {selectedItem ? (
             <div className="grid gap-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex flex-wrap items-start justify-between gap-3 rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{boardTab === "sessions" ? ui.sessions : ui.templates}</p>
                   <h3 className="mt-1 text-base font-semibold text-[var(--text)]">{selectedItem.students?.full_name || copy.noLinkedClient}</h3>
@@ -336,17 +336,18 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                 </div>
               </div>
 
-              <div className="grid gap-3 xl:grid-cols-[340px_minmax(0,1fr)]">
-                <div className="grid gap-3">
-                  <label className="grid gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.trainingLabel}</span>
-                    <input value={sessionDraft.name} onChange={(event) => setSessionDraft((current) => ({ ...current, name: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm text-[var(--text)] outline-none" />
-                  </label>
-                  <label className="grid gap-2">
-                    <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.notes}</span>
-                    <textarea rows={4} value={sessionDraft.notes} onChange={(event) => setSessionDraft((current) => ({ ...current, notes: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm leading-6 text-[var(--text)] outline-none" placeholder={copy.notesPlaceholder} />
-                  </label>
-
+              <div className="grid gap-3">
+                <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
+                  <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+                    <label className="grid gap-2">
+                      <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.trainingLabel}</span>
+                      <input value={sessionDraft.name} onChange={(event) => setSessionDraft((current) => ({ ...current, name: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm text-[var(--text)] outline-none" />
+                    </label>
+                    <label className="grid gap-2">
+                      <span className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.notes}</span>
+                      <textarea rows={2} value={sessionDraft.notes} onChange={(event) => setSessionDraft((current) => ({ ...current, notes: event.target.value }))} className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-sm leading-6 text-[var(--text)] outline-none" placeholder={copy.notesPlaceholder} />
+                    </label>
+                  </div>
                   <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
                     <div className="flex items-center gap-2">
                       <Search size={15} className="text-[var(--text-muted)]" />
@@ -355,8 +356,8 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                     <div className="mt-3 grid gap-2">
                       {filteredLibrary.map((item) => (
                         <button key={item.id} onClick={() => addExercise(item)} className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-white px-3 py-2 text-left">
-                          <span className="text-sm text-[var(--text)]">{item.label}</span>
-                          <Plus size={15} className="text-[var(--accent)]" />
+                          <span className="truncate text-sm text-[var(--text)]">{item.label}</span>
+                          <Plus size={15} className="shrink-0 text-[var(--accent)]" />
                         </button>
                       ))}
                     </div>
@@ -379,11 +380,11 @@ export default function TrainingBuilderWorkspace({ items, loading, copy, locale 
                       {ui.loadingBuilder}
                     </div>
                   ) : exercises.length > 0 ? (
-                    <div className="mt-4 grid gap-2.5">
+                    <div className="mt-4 grid gap-2">
                       {exercises.map((exercise) => (
-                        <div key={exercise.id} className="rounded-[16px] border border-[var(--border)] bg-white p-3">
+                        <div key={exercise.id} className="rounded-[14px] border border-[var(--border)] bg-white p-3">
                           <div className="flex items-start justify-between gap-3">
-                            <p className="font-medium text-[var(--text)]">{exercise.exercise_name}</p>
+                            <p className="text-sm font-medium text-[var(--text)]">{exercise.exercise_name}</p>
                             <button onClick={() => removeExercise(exercise.id)} className="text-[var(--text-muted)]">
                               <Trash2 size={15} />
                             </button>
