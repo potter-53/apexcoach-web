@@ -1444,7 +1444,7 @@ export default function DashboardClient() {
                 <SectionCard
                   eyebrow={copy.businessPulseTitle}
                   title={copy.operationsBoard}
-                  description={copy.businessPulseText}
+                  description={null}
                   action={
                     <button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-3.5 py-2 text-sm font-semibold text-[var(--accent-foreground)]">
                       <Plus size={14} />
@@ -1461,7 +1461,7 @@ export default function DashboardClient() {
               </div>
 
               <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-                <SectionCard eyebrow={copy.financeOverview} title={copy.businessPulseTitle} description={copy.financeOverviewText}>
+                <SectionCard eyebrow={copy.financeOverview} title={copy.financeOverview} description={null}>
                   <div className="grid gap-3">
                     <div className="grid gap-2 sm:grid-cols-2">
                       <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
@@ -1502,7 +1502,7 @@ export default function DashboardClient() {
                   </div>
                 </SectionCard>
 
-                <SectionCard eyebrow={copy.attentionBoard} title={copy.quickSummary} description={copy.attentionBoardText}>
+                <SectionCard eyebrow={copy.attentionBoard} title={copy.attentionBoard} description={null}>
                   <div className="grid gap-3">
                     <div className="grid gap-2">
                       {core.business.attention.length > 0 ? (

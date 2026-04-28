@@ -73,6 +73,9 @@ const COPY = {
     updateClient: "Update client",
     activeClientSnapshot: "Active client snapshot",
     activeClientSnapshotText: "Keep the roster compact and open the full detail only when you need it.",
+    overviewTab: "Overview",
+    paymentsTab: "Payments",
+    historyTab: "History",
   },
   pt: {
     noDate: "Sem data",
@@ -141,6 +144,9 @@ const COPY = {
     updateClient: "Atualizar cliente",
     activeClientSnapshot: "Snapshot do cliente",
     activeClientSnapshotText: "Mantém a lista compacta e abre o detalhe completo só quando precisas.",
+    overviewTab: "Visão geral",
+    paymentsTab: "Pagamentos",
+    historyTab: "Histórico",
   },
 };
 
@@ -314,6 +320,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
   const [activeProtocol, setActiveProtocol] = useState(null);
   const [recentAssessments, setRecentAssessments] = useState([]);
   const [recentSessions, setRecentSessions] = useState([]);
+  const [detailTab, setDetailTab] = useState("overview");
 
   const selectedStudent = useMemo(() => students.find((student) => student.id === selectedId) || null, [selectedId, students]);
 
@@ -381,6 +388,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
       main_goal: selectedStudent.main_goal || "",
       clinical_history: selectedStudent.clinical_history || "",
     });
+    setDetailTab("overview");
 
     async function loadDetail() {
       try {
@@ -542,17 +550,17 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
             <button
               key={student.id}
               onClick={() => setSelectedId(student.id)}
-              className={`rounded-[16px] border px-3 py-2 text-left transition ${selectedId === student.id ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]" : "border-[var(--border)] bg-white hover:bg-[var(--surface-muted)]"}`}
+              className={`rounded-[15px] border px-3 py-2 text-left transition ${selectedId === student.id ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]" : "border-[var(--border)] bg-white hover:bg-[var(--surface-muted)]"}`}
             >
               <div className="flex items-center gap-3">
                 <AvatarBadge student={student} size={38} textSize="text-[11px]" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="truncate text-[15px] font-semibold text-[var(--text)]">{student.full_name || copy.clientFallback}</p>
+                    <p className="truncate text-sm font-semibold text-[var(--text)]">{student.full_name || copy.clientFallback}</p>
                     <ChevronRight size={14} className="shrink-0 text-[var(--text-muted)]" />
                   </div>
-                  <p className="mt-0.5 truncate text-[13px] text-[var(--text-muted)]">{student.main_goal || student.email || copy.noGoal}</p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
+                  <p className="mt-0.5 truncate text-xs text-[var(--text-muted)]">{student.main_goal || student.email || copy.noGoal}</p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2 py-0.5 text-[11px] text-[var(--text-muted)]">{student.age ?? "-"} y</span>
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2 py-0.5 text-[11px] text-[var(--text-muted)]">{student.height_cm || "-"} cm</span>
                     <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ background: `${student.clientColor}20`, color: student.clientColor, border: `1px solid ${student.clientColor}33` }}>
@@ -599,6 +607,24 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
 
             <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
               <div className="grid gap-4">
+                <div className="inline-flex w-fit rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1">
+                  {[
+                    ["overview", copy.overviewTab],
+                    ["payments", copy.paymentsTab],
+                    ["history", copy.historyTab],
+                  ].map(([value, label]) => (
+                    <button
+                      key={value}
+                      onClick={() => setDetailTab(value)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium ${detailTab === value ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {detailTab === "overview" ? (
+                  <>
                 <MiniSection icon={UserRound} title={copy.details}>
                   <div className="grid gap-3">
                     <label className="grid gap-2">
@@ -678,10 +704,50 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
                     <EmptyInline text={copy.noProtocol} />
                   )}
                 </MiniSection>
+                  </>
+                ) : null}
+
+                {detailTab === "payments" ? (
+                  <MiniSection icon={CreditCard} title={copy.payments}>
+                    {billingProfile ? (
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <StatPill label={copy.status} value={billingProfile.status || "-"} />
+                        <StatPill label={copy.cycle} value={billingProfile.billing_cycle || "-"} />
+                        <StatPill label={copy.amount} value={formatCurrency((billingProfile.amount_cents || 0) / 100, billingProfile.currency_code, locale)} />
+                        <StatPill label={copy.dueDate} value={formatDate(billingProfile.next_due_at, locale)} />
+                      </div>
+                    ) : (
+                      <EmptyInline text={copy.noPayments} />
+                    )}
+                  </MiniSection>
+                ) : null}
+
+                {detailTab === "history" ? (
+                  <MiniSection icon={History} title={copy.studentHistory}>
+                    {history.length > 0 ? (
+                      <div className="grid gap-2">
+                        {history.map((item) => (
+                          <div key={item.id} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                                {item.type === "agenda" ? copy.agendaLabel : item.type === "assessment" ? copy.assessmentLabel : copy.trainingLabel}
+                              </p>
+                              <span className="text-xs text-[var(--text-muted)]">{formatDate(item.occurredAt, locale)}</span>
+                            </div>
+                            <p className="mt-1 font-semibold text-[var(--text)]">{item.title}</p>
+                            {item.detail ? <p className="mt-1 text-sm text-[var(--text-muted)]">{item.detail}</p> : null}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <EmptyInline text={copy.noHistory} />
+                    )}
+                  </MiniSection>
+                ) : null}
               </div>
 
               <div className="grid gap-4">
-                <MiniSection icon={Dumbbell} title={copy.recentSessions}>
+                {detailTab !== "payments" ? <MiniSection icon={Dumbbell} title={copy.recentSessions}>
                   {recentSessions.length > 0 ? (
                     <div className="grid gap-2">
                       {recentSessions.map((item) => (
@@ -697,9 +763,9 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
                   ) : (
                     <EmptyInline text={copy.noSessionsYet} />
                   )}
-                </MiniSection>
+                </MiniSection> : null}
 
-                <MiniSection icon={ClipboardPlus} title={copy.recentAssessments}>
+                {detailTab !== "payments" ? <MiniSection icon={ClipboardPlus} title={copy.recentAssessments}>
                   {recentAssessments.length > 0 ? (
                     <div className="grid gap-2">
                       {recentAssessments.map((item) => (
@@ -714,28 +780,7 @@ export default function ClientWorkspace({ currentUser, onOpenCreateBooking, onOp
                   ) : (
                     <EmptyInline text={copy.noAssessmentsYet} />
                   )}
-                </MiniSection>
-
-                <MiniSection icon={History} title={copy.studentHistory}>
-                  {history.length > 0 ? (
-                    <div className="grid gap-2">
-                      {history.map((item) => (
-                        <div key={item.id} className="rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
-                          <div className="flex items-center justify-between gap-3">
-                            <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
-                              {item.type === "agenda" ? copy.agendaLabel : item.type === "assessment" ? copy.assessmentLabel : copy.trainingLabel}
-                            </p>
-                            <span className="text-xs text-[var(--text-muted)]">{formatDate(item.occurredAt, locale)}</span>
-                          </div>
-                          <p className="mt-1 font-semibold text-[var(--text)]">{item.title}</p>
-                          {item.detail ? <p className="mt-1 text-sm text-[var(--text-muted)]">{item.detail}</p> : null}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <EmptyInline text={copy.noHistory} />
-                  )}
-                </MiniSection>
+                </MiniSection> : null}
               </div>
             </div>
           </div>
