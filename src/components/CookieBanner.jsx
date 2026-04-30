@@ -9,13 +9,13 @@ import { hasCookieConsentChoice, readCookieConsent, saveCookieConsent } from "..
 const COPY = {
   title: "Cookies e privacidade",
   text: "Usamos cookies essenciais para o funcionamento do site e, se concordares, analytics para medição.",
-  essential: "Estritamente necessários",
-  analytics: "Medição e analytics",
-  acceptSelected: "Guardar",
-  acceptAll: "Aceitar",
-  essentialOnly: "Só essenciais",
+  analytics: "Permitir analytics",
+  reject: "Recusar opcionais",
+  accept: "Aceitar",
+  save: "Guardar escolha",
   policy: "Política de Cookies",
   privacy: "Política de Privacidade",
+  alwaysOn: "Essenciais sempre ativos.",
 };
 
 export default function CookieBanner() {
@@ -40,12 +40,13 @@ export default function CookieBanner() {
   if (!open) return null;
 
   return (
-    <div className="fixed bottom-3 left-3 right-3 z-[60] mx-auto max-w-3xl rounded-[20px] border border-[var(--border-strong)] bg-white p-3 shadow-[var(--shadow-panel)]">
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
-        <div>
+    <div className="fixed bottom-3 left-3 right-3 z-[60] mx-auto max-w-5xl rounded-[20px] border border-[var(--border-strong)] bg-white p-3 shadow-[var(--shadow-panel)]">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div className="min-w-0">
           <p className="text-sm font-semibold text-[var(--text)]">{COPY.title}</p>
-          <p className="mt-1.5 text-xs leading-5 text-[var(--text-muted)]">{COPY.text}</p>
-          <div className="mt-2 flex flex-wrap gap-3 text-xs">
+          <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{COPY.text}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+            <span className="text-[var(--text-muted)]">{COPY.alwaysOn}</span>
             <Link href="/legal/cookies" className="text-[var(--accent-strong)] underline-offset-4 hover:underline">
               {COPY.policy}
             </Link>
@@ -55,33 +56,18 @@ export default function CookieBanner() {
           </div>
         </div>
 
-        <div className="grid gap-2.5">
-          <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium text-[var(--text)]">{COPY.essential}</p>
-                <p className="mt-0.5 text-[11px] leading-4 text-[var(--text-muted)]">Sessão, autenticação, idioma e segurança.</p>
-              </div>
-              <span className="rounded-full bg-[var(--accent-soft)] px-2 py-1 text-[10px] font-semibold text-[var(--accent-strong)]">Ativo</span>
-            </div>
-          </div>
-
-          <label className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium text-[var(--text)]">{COPY.analytics}</p>
-                <p className="mt-0.5 text-[11px] leading-4 text-[var(--text-muted)]">Só ativado com o teu consentimento.</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={analytics}
-                onChange={(event) => setAnalytics(event.target.checked)}
-                className="mt-1 h-4 w-4 accent-[var(--accent)]"
-              />
-            </div>
+        <div className="flex flex-col gap-2 lg:items-end">
+          <label className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-xs text-[var(--text)]">
+            <input
+              type="checkbox"
+              checked={analytics}
+              onChange={(event) => setAnalytics(event.target.checked)}
+              className="h-4 w-4 accent-[var(--accent)]"
+            />
+            <span className="font-medium">{COPY.analytics}</span>
           </label>
 
-          <div className="grid gap-2 sm:grid-cols-3">
+          <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap">
             <button
               type="button"
               onClick={() => {
@@ -89,9 +75,9 @@ export default function CookieBanner() {
                 setAnalytics(false);
                 setOpen(false);
               }}
-              className="rounded-2xl border border-[var(--border)] bg-white px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
+              className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2 text-xs font-medium text-[var(--text-muted)]"
             >
-              {COPY.essentialOnly}
+              {COPY.reject}
             </button>
             <button
               type="button"
@@ -99,9 +85,9 @@ export default function CookieBanner() {
                 saveCookieConsent({ analytics });
                 setOpen(false);
               }}
-              className="rounded-2xl border border-[var(--border)] bg-white px-3 py-2 text-xs font-medium text-[var(--text)]"
+              className="rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2 text-xs font-medium text-[var(--text)]"
             >
-              {COPY.acceptSelected}
+              {COPY.save}
             </button>
             <button
               type="button"
@@ -110,13 +96,13 @@ export default function CookieBanner() {
                 setAnalytics(true);
                 setOpen(false);
               }}
-              className="rounded-2xl bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-[var(--accent-foreground)]"
+              className="rounded-2xl bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[var(--accent-foreground)]"
             >
-              {COPY.acceptAll}
+              {COPY.accept}
             </button>
           </div>
 
-          <p className="text-[10px] leading-4 text-[var(--text-muted)]">
+          <p className="max-w-[320px] text-[10px] leading-4 text-[var(--text-muted)] lg:text-right">
             Configuração aplicável ao domínio {LEGAL_CONFIG.websiteUrl}. Podes alterar esta escolha a qualquer momento.
           </p>
         </div>
