@@ -121,6 +121,28 @@ const copy = {
         text: "Cria estruturas reutilizáveis, acelera a prescrição e melhora a forma como repetes e classificas o teu trabalho.",
       },
     ],
+    clientValueTag: "Valor para o client",
+    clientValueTitle: "O coach organiza melhor. O client percebe mais valor.",
+    clientValueText:
+      "A APEX COACH não melhora apenas a operação do coach. Também reforça a experiência do client, porque cria uma app onde o aluno pode concentrar o que foi feito, o que está planeado e como a sua evolução está a ser acompanhada.",
+    clientValueCards: [
+      {
+        title: "Tudo num só lugar",
+        text: "O client deixa de depender de mensagens dispersas, notas soltas e memória. Passa a ter uma estrutura mais clara daquilo que está a fazer e do que vem a seguir.",
+      },
+      {
+        title: "Treino com mais clareza",
+        text: "Quando o coach prescreve, ajusta e regista o que foi executado, o client percebe melhor o processo e valoriza mais a qualidade do acompanhamento.",
+      },
+      {
+        title: "Evolução visível",
+        text: "Métricas, avaliações, contexto e histórico deixam de estar desconectados. O client sente maior progressão porque consegue perceber melhor o caminho que está a fazer.",
+      },
+      {
+        title: "Mais confiança no acompanhamento",
+        text: "Uma experiência mais organizada, mais profissional e mais consistente aumenta a perceção de valor do serviço e reforça a relação entre coach e client.",
+      },
+    ],
     detailTag: "O que muda na prática",
     detailTitle: "Não é apenas uma app para coaches. É uma estrutura de trabalho mais forte para todos os dias.",
     detailCards: [
@@ -324,6 +346,28 @@ const copy = {
         text: "Create reusable structures, accelerate prescription, and improve the way you repeat and classify your work.",
       },
     ],
+    clientValueTag: "Value for the client",
+    clientValueTitle: "The coach works with more structure. The client feels more value.",
+    clientValueText:
+      "APEX COACH does not only improve the coach's operation. It also strengthens the client experience by giving the client an app where completed work, planned work, and overall progress can live in one clearer structure.",
+    clientValueCards: [
+      {
+        title: "Everything in one place",
+        text: "The client no longer depends on scattered messages, loose notes, and memory. Instead, there is a clearer structure of what is being done and what comes next.",
+      },
+      {
+        title: "Clearer training delivery",
+        text: "When the coach prescribes, adjusts, and logs what was executed, the client understands the process better and perceives more value in the quality of follow-up.",
+      },
+      {
+        title: "Visible progress",
+        text: "Metrics, assessments, context, and history stop feeling disconnected. The client experiences more progress because the journey becomes easier to understand.",
+      },
+      {
+        title: "More confidence in the service",
+        text: "A more organized, more professional, and more consistent experience increases the perceived value of the coaching service and strengthens the coach-client relationship.",
+      },
+    ],
     detailTag: "What changes in practice",
     detailTitle: "This is not just another app for coaches. It is a stronger operating structure for daily work.",
     detailCards: [
@@ -422,7 +466,7 @@ function SectionLabel({ children }) {
 }
 
 function BrandMark() {
-  return <span className="italic text-[var(--accent-strong)]">APEX COACH</span>;
+  return <span className="bg-[linear-gradient(90deg,var(--accent-strong),var(--electric))] bg-clip-text italic text-transparent">APEX COACH</span>;
 }
 
 function renderBrandText(text) {
@@ -501,6 +545,18 @@ function CapabilityCard({ title, text }) {
         {renderBrandText(title)}
       </div>
       <p className="leading-7 text-[var(--text-muted)]">{renderBrandText(text)}</p>
+    </div>
+  );
+}
+
+function ClientValueCard({ title, text }) {
+  return (
+    <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-6 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
+        <Sparkles size={18} className="text-[var(--accent-strong)]" />
+      </div>
+      <h3 className="text-xl font-semibold text-[var(--text)]">{renderBrandText(title)}</h3>
+      <p className="mt-3 leading-7 text-[var(--text-muted)]">{renderBrandText(text)}</p>
     </div>
   );
 }
@@ -797,6 +853,21 @@ export default function App() {
             {t.capabilityCards.map((card) => (
               <CapabilityCard key={card.title} title={card.title} text={card.text} />
             ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <SectionLabel>{t.clientValueTag}</SectionLabel>
+          <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <h2 className="max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.clientValueTitle)}</h2>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{renderBrandText(t.clientValueText)}</p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {t.clientValueCards.map((card) => (
+                <ClientValueCard key={card.title} title={card.title} text={card.text} />
+              ))}
+            </div>
           </div>
         </section>
 
