@@ -8,12 +8,11 @@ import { hasCookieConsentChoice, readCookieConsent, saveCookieConsent } from "..
 
 const COPY = {
   title: "Cookies e privacidade",
-  text:
-    "Usamos cookies e tecnologias semelhantes para manter o site funcional e, se concordares, para medir a utilização do produto. Os cookies estritamente necessários ficam sempre ativos.",
+  text: "Usamos cookies essenciais para o funcionamento do site e, se concordares, analytics para medição.",
   essential: "Estritamente necessários",
   analytics: "Medição e analytics",
-  acceptSelected: "Guardar preferências",
-  acceptAll: "Aceitar analytics",
+  acceptSelected: "Guardar",
+  acceptAll: "Aceitar",
   essentialOnly: "Só essenciais",
   policy: "Política de Cookies",
   privacy: "Política de Privacidade",
@@ -41,12 +40,12 @@ export default function CookieBanner() {
   if (!open) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-[60] mx-auto max-w-4xl rounded-[24px] border border-[var(--border-strong)] bg-white p-4 shadow-[var(--shadow-panel)]">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+    <div className="fixed bottom-3 left-3 right-3 z-[60] mx-auto max-w-3xl rounded-[20px] border border-[var(--border-strong)] bg-white p-3 shadow-[var(--shadow-panel)]">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
         <div>
           <p className="text-sm font-semibold text-[var(--text)]">{COPY.title}</p>
-          <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{COPY.text}</p>
-          <div className="mt-3 flex flex-wrap gap-3 text-sm">
+          <p className="mt-1.5 text-xs leading-5 text-[var(--text-muted)]">{COPY.text}</p>
+          <div className="mt-2 flex flex-wrap gap-3 text-xs">
             <Link href="/legal/cookies" className="text-[var(--accent-strong)] underline-offset-4 hover:underline">
               {COPY.policy}
             </Link>
@@ -56,22 +55,22 @@ export default function CookieBanner() {
           </div>
         </div>
 
-        <div className="grid gap-3">
-          <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
-            <div className="flex items-start justify-between gap-4">
+        <div className="grid gap-2.5">
+          <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-medium text-[var(--text)]">{COPY.essential}</p>
-                <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">Sessão, autenticação, idioma e segurança.</p>
+                <p className="mt-0.5 text-[11px] leading-4 text-[var(--text-muted)]">Sessão, autenticação, idioma e segurança.</p>
               </div>
-              <span className="rounded-full bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--accent-strong)]">Ativo</span>
+              <span className="rounded-full bg-[var(--accent-soft)] px-2 py-1 text-[10px] font-semibold text-[var(--accent-strong)]">Ativo</span>
             </div>
           </div>
 
-          <label className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
-            <div className="flex items-start justify-between gap-4">
+          <label className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] p-2.5">
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-medium text-[var(--text)]">{COPY.analytics}</p>
-                <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">Só ativado com o teu consentimento.</p>
+                <p className="mt-0.5 text-[11px] leading-4 text-[var(--text-muted)]">Só ativado com o teu consentimento.</p>
               </div>
               <input
                 type="checkbox"
@@ -90,7 +89,7 @@ export default function CookieBanner() {
                 setAnalytics(false);
                 setOpen(false);
               }}
-              className="rounded-2xl border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--text-muted)]"
+              className="rounded-2xl border border-[var(--border)] bg-white px-3 py-2 text-xs font-medium text-[var(--text-muted)]"
             >
               {COPY.essentialOnly}
             </button>
@@ -100,7 +99,7 @@ export default function CookieBanner() {
                 saveCookieConsent({ analytics });
                 setOpen(false);
               }}
-              className="rounded-2xl border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--text)]"
+              className="rounded-2xl border border-[var(--border)] bg-white px-3 py-2 text-xs font-medium text-[var(--text)]"
             >
               {COPY.acceptSelected}
             </button>
@@ -111,13 +110,13 @@ export default function CookieBanner() {
                 setAnalytics(true);
                 setOpen(false);
               }}
-              className="rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]"
+              className="rounded-2xl bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-[var(--accent-foreground)]"
             >
               {COPY.acceptAll}
             </button>
           </div>
 
-          <p className="text-[11px] leading-5 text-[var(--text-muted)]">
+          <p className="text-[10px] leading-4 text-[var(--text-muted)]">
             Configuração aplicável ao domínio {LEGAL_CONFIG.websiteUrl}. Podes alterar esta escolha a qualquer momento.
           </p>
         </div>

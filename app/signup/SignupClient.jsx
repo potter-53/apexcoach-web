@@ -27,6 +27,12 @@ const copy = {
     coachName: "Coach name",
     email: "Email",
     password: "Password",
+    acceptLegalPrefix: "I have read and accept the",
+    acceptTerms: "Terms and Conditions",
+    acceptLegalMiddle: "and the",
+    acceptPrivacy: "Privacy Policy",
+    acceptLegalSuffix: ".",
+    acceptRequired: "You need to accept the Terms and Privacy Policy to create an account.",
     creating: "Creating account...",
     createContinue: "Create account and continue",
     identityTitle: "Single coach identity",
@@ -49,6 +55,12 @@ const copy = {
     coachName: "Nome do coach",
     email: "Email",
     password: "Palavra-passe",
+    acceptLegalPrefix: "Li e aceito os",
+    acceptTerms: "Termos e Condicoes",
+    acceptLegalMiddle: "e a",
+    acceptPrivacy: "Politica de Privacidade",
+    acceptLegalSuffix: ".",
+    acceptRequired: "Tens de aceitar os Termos e a Politica de Privacidade para criar conta.",
     creating: "A criar conta...",
     createContinue: "Criar conta e continuar",
     identityTitle: "Identidade unica do coach",
@@ -71,6 +83,12 @@ const copy = {
     coachName: "Nombre del coach",
     email: "Email",
     password: "Contrasena",
+    acceptLegalPrefix: "He leido y acepto los",
+    acceptTerms: "Terminos y Condiciones",
+    acceptLegalMiddle: "y la",
+    acceptPrivacy: "Politica de Privacidad",
+    acceptLegalSuffix: ".",
+    acceptRequired: "Debes aceptar los Terminos y la Politica de Privacidad para crear la cuenta.",
     creating: "Creando cuenta...",
     createContinue: "Crear cuenta y continuar",
     identityTitle: "Identidad unica del coach",
@@ -93,6 +111,12 @@ const copy = {
     coachName: "Nom du coach",
     email: "Email",
     password: "Mot de passe",
+    acceptLegalPrefix: "J'ai lu et j'accepte les",
+    acceptTerms: "Conditions Generales",
+    acceptLegalMiddle: "et la",
+    acceptPrivacy: "Politique de Confidentialite",
+    acceptLegalSuffix: ".",
+    acceptRequired: "Tu dois accepter les conditions et la politique de confidentialite pour creer le compte.",
     creating: "Creation du compte...",
     createContinue: "Creer le compte et continuer",
     identityTitle: "Identite coach unique",
@@ -139,6 +163,7 @@ export default function SignupClient() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -161,6 +186,12 @@ export default function SignupClient() {
       return;
     }
 
+    if (!acceptedLegal) {
+      setErrorMessage(t.acceptRequired);
+      trackEvent("landing_signup_blocked", { reason: "legal_not_accepted", locale });
+      return;
+    }
+
     setSubmitting(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -175,6 +206,9 @@ export default function SignupClient() {
           data: {
             full_name: fullName.trim(),
             role: "coach",
+            accepted_terms_at: new Date().toISOString(),
+            accepted_privacy_at: new Date().toISOString(),
+            accepted_legal_version: "2026-04",
           },
         },
       });
@@ -401,9 +435,35 @@ export default function SignupClient() {
                   />
                 </label>
 
+                <label className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={acceptedLegal}
+                      onChange={(event) => {
+                        setAcceptedLegal(event.target.checked);
+                        if (event.target.checked) setErrorMessage("");
+                      }}
+                      className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent)]"
+                      required
+                    />
+                    <p className="text-sm leading-6 text-[var(--text-muted)]">
+                      {t.acceptLegalPrefix}{" "}
+                      <Link href="/legal/terms" target="_blank" className="font-medium text-[var(--accent-strong)] underline underline-offset-4">
+                        {t.acceptTerms}
+                      </Link>{" "}
+                      {t.acceptLegalMiddle}{" "}
+                      <Link href="/legal/privacy" target="_blank" className="font-medium text-[var(--accent-strong)] underline underline-offset-4">
+                        {t.acceptPrivacy}
+                      </Link>
+                      {t.acceptLegalSuffix}
+                    </p>
+                  </div>
+                </label>
+
                 <button
                   type="submit"
-                  disabled={submitting || !configured}
+                  disabled={submitting || !configured || !acceptedLegal}
                   className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-4 font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {submitting ? (
