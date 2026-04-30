@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
+import CookieSettingsButton from "./components/CookieSettingsButton";
 
 const screenshots = [
   "/screenshot_1.jpeg",
@@ -965,7 +966,7 @@ export default function App() {
       </main>
 
       <footer className="border-t border-[var(--border)]">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-[var(--text-muted)] lg:flex-row lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-5 py-8 text-sm text-[var(--text-muted)] lg:flex-row lg:px-8">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="APEX COACH" className="h-8 w-auto rounded-lg" />
             <div>
@@ -977,6 +978,22 @@ export default function App() {
           <p className="text-center text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">
             One coach system. Fast in the app. Premium in the web companion.
           </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+            <Link href="/legal/privacy" className="hover:text-[var(--text)]">
+              Privacy
+            </Link>
+            <Link href="/legal/cookies" className="hover:text-[var(--text)]">
+              Cookies
+            </Link>
+            <Link href="/legal/terms" className="hover:text-[var(--text)]">
+              Terms
+            </Link>
+            <Link href="/legal/consumer" className="hover:text-[var(--text)]">
+              Consumer info
+            </Link>
+            <CookieSettingsButton className="hover:text-[var(--text)]">Cookie settings</CookieSettingsButton>
+          </div>
         </div>
       </footer>
     </div>

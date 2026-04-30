@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, LoaderCircle, ShieldCheck, UserPlus } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, LoaderCircle, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
 
 import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getInitialBrowserLocale } from "../../src/lib/coach-locale";
@@ -142,6 +142,7 @@ export default function SignupClient() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const t = copy[locale] || copy.en;
 
   useEffect(() => {
@@ -190,10 +191,7 @@ export default function SignupClient() {
               ? "Compte cree. Si Supabase exige une confirmation d'email, confirme ton email avant de te connecter."
               : "Account created. If Supabase requires email confirmation, confirm your email before signing in.",
       );
-
-      window.setTimeout(() => {
-        router.push("/login");
-      }, 900);
+      setDownloadModalOpen(true);
     } catch (error) {
       const message = describeSignupError(error, locale);
       setErrorMessage(message);
@@ -205,6 +203,81 @@ export default function SignupClient() {
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      {downloadModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4 py-6 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[28px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">APEX COACH</p>
+                <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">
+                  {locale === "pt" ? "Conta criada com sucesso." : "Account created successfully."}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+                  {locale === "pt"
+                    ? "Descarrega a app no teu dispositivo para iniciar o trial e entrar no modo APEX."
+                    : "Download the app on your device to start your trial and enter APEX mode."}
+                </p>
+              </div>
+              <button
+                onClick={() => setDownloadModalOpen(false)}
+                className="rounded-full border border-[var(--border)] p-2 text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-3">
+              <a
+                href="/download/apk"
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => {
+                  trackEvent("landing_signup_download_apk_click", { locale });
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"
+              >
+                <Smartphone size={16} />
+                {locale === "pt" ? "Download direto (.apk)" : "Direct download (.apk)"}
+              </a>
+              <button
+                type="button"
+                onClick={() => trackEvent("landing_signup_play_store_coming_soon_click", { locale })}
+                className="inline-flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Smartphone size={16} />
+                  Google Play
+                </span>
+                <span className="text-xs uppercase tracking-[0.12em]">Coming soon</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => trackEvent("landing_signup_app_store_coming_soon_click", { locale })}
+                className="inline-flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Smartphone size={16} />
+                  App Store
+                </span>
+                <span className="text-xs uppercase tracking-[0.12em]">Coming soon</span>
+              </button>
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => {
+                  trackEvent("landing_signup_continue_to_login_click", { locale });
+                  router.push("/login");
+                }}
+                className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm font-semibold text-[var(--text)]"
+              >
+                {locale === "pt" ? "Continuar para login" : "Continue to login"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_22%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_52%,#f2f4f3_100%)]" />
 
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-8 lg:px-8">

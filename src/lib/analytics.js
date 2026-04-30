@@ -1,5 +1,8 @@
+import { canTrackAnalytics } from "./cookie-consent";
+
 export function trackEvent(name, properties = {}) {
   if (typeof window === "undefined") return;
+  if (!canTrackAnalytics()) return;
 
   const event = {
     name,

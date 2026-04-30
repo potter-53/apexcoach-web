@@ -1,4 +1,5 @@
 import "../src/index.css";
+import CookieBanner from "../src/components/CookieBanner";
 
 export const metadata = {
   title: "APEX COACH | App + Browser para coaches",
@@ -9,7 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }
