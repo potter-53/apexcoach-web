@@ -101,6 +101,26 @@ const copy = {
       "Periodizacao semanal e organizacao por protocolos de treino",
       "Templates, tags, packs, pagamentos, avisos e automatismos no mesmo sistema",
     ],
+    capabilityTag: "Blocos essenciais",
+    capabilityTitle: "O que torna a APEX COACH mais util para um coach exigente.",
+    capabilityCards: [
+      {
+        title: "Clients ilimitados",
+        text: "Acompanha a tua carteira de alunos sem limites artificiais e sem comprometer a organizacao da operacao.",
+      },
+      {
+        title: "Atividades externas",
+        text: "Regista o que o aluno faz fora da sessao e ganha contexto adicional para ajustar carga, volume e continuidade.",
+      },
+      {
+        title: "Periodizacao e protocolos",
+        text: "Organiza semanas, blocos e protocolos de treino para trabalhar com mais criterio e maior consistencia.",
+      },
+      {
+        title: "Templates e tags",
+        text: "Cria estruturas reutilizaveis, acelera a prescricao e melhora a forma como repetes e classificas o teu trabalho.",
+      },
+    ],
     detailTag: "O que muda na pratica",
     detailTitle: "Nao e apenas uma app para coaches. E uma estrutura de trabalho mais forte para todos os dias.",
     detailCards: [
@@ -277,6 +297,26 @@ const copy = {
       "Weekly periodization and structured training protocols",
       "Templates, tags, packs, payments, alerts, and automations in the same system",
     ],
+    capabilityTag: "Core capabilities",
+    capabilityTitle: "What makes APEX COACH more useful for a demanding coach.",
+    capabilityCards: [
+      {
+        title: "Unlimited clients",
+        text: "Follow your client base without artificial limits and without compromising the structure of your operation.",
+      },
+      {
+        title: "External activities",
+        text: "Log what the client does outside the session and gain stronger context to adjust load, volume, and continuity.",
+      },
+      {
+        title: "Periodization and protocols",
+        text: "Organize weeks, blocks, and training protocols to work with more structure and stronger consistency.",
+      },
+      {
+        title: "Templates and tags",
+        text: "Create reusable structures, accelerate prescription, and improve the way you repeat and classify your work.",
+      },
+    ],
     detailTag: "What changes in practice",
     detailTitle: "This is not just another app for coaches. It is a stronger operating structure for daily work.",
     detailCards: [
@@ -373,7 +413,8 @@ function BrandMark() {
 
 function renderBrandText(text) {
   if (typeof text !== "string") return text;
-  const parts = text.split("APEX COACH");
+  const normalized = text.replace(/\*APEX COACH\*/g, "APEX COACH");
+  const parts = normalized.split("APEX COACH");
   return parts.flatMap((part, index) => (index === parts.length - 1 ? [part] : [part, <BrandMark key={`brand-${index}`} />]));
 }
 
@@ -432,6 +473,17 @@ function ScenarioCard({ title, text }) {
   return (
     <div className="rounded-[28px] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
       <div className="mb-4 inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+        {renderBrandText(title)}
+      </div>
+      <p className="leading-7 text-[var(--text-muted)]">{renderBrandText(text)}</p>
+    </div>
+  );
+}
+
+function CapabilityCard({ title, text }) {
+  return (
+    <div className="rounded-[28px] border border-[var(--border)] bg-white p-6 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
+      <div className="mb-4 inline-flex rounded-full border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
         {renderBrandText(title)}
       </div>
       <p className="leading-7 text-[var(--text-muted)]">{renderBrandText(text)}</p>
@@ -720,6 +772,16 @@ export default function App() {
           <div className="mt-10 grid gap-4 lg:grid-cols-3">
             {t.scenarioCards.map((card) => (
               <ScenarioCard key={card.title} title={card.title} text={card.text} />
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <SectionLabel>{t.capabilityTag}</SectionLabel>
+          <h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.capabilityTitle)}</h2>
+          <div className="mt-10 grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+            {t.capabilityCards.map((card) => (
+              <CapabilityCard key={card.title} title={card.title} text={card.text} />
             ))}
           </div>
         </section>
