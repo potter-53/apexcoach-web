@@ -33,7 +33,7 @@ const copy = {
     sectionProduct: "Produto",
     productTitle: "Uma app criada para elevar a forma como o coach trabalha.",
     productText:
-      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, mais rápida e mais profissional em contexto real. Foi pensada para reduzir passos desnecessários e transformar o dia a dia numa operação mais fluida, organizada e consistente.",
+      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, mais rápida e mais profissional em contexto real. Foi pensada para reduzir passos desnecessários, elevar a tua operação e transformar o dia a dia numa estrutura mais fluida, organizada e consistente.",
     featureTitle: "O que a app já melhora no trabalho do coach",
     features: [
       "Clients ilimitados para acompanhar a tua operação sem limites artificiais",
@@ -46,7 +46,7 @@ const copy = {
     differentiatorTag: "Vantagens claras",
     differentiatorTitle: "Onde a APEX COACH cria uma vantagem operacional real no trabalho diário.",
     differentiatorText:
-      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa no acompanhamento dos alunos.",
+      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa para elevar a tua operação e o acompanhamento dos alunos.",
     differentiators: [
       {
         title: "Mais tempo livre",
@@ -151,7 +151,7 @@ const copy = {
     pilotTag: "Resultados para o coach",
     pilotTitle: "Onde a APEX COACH se traduz em valor concreto para o coach.",
     pilotText:
-      "A diferença não está em ter mais uma aplicação. Está em orientar melhor, decidir mais depressa e manter a operação organizada sem acrescentar complexidade ao dia de trabalho.",
+      "A diferença não está em ter mais uma aplicação. Está em orientar melhor, decidir mais depressa e elevar a tua operação sem acrescentar complexidade ao dia de trabalho.",
     pilotPoints: ["Download direto da APK", "Criacao de conta imediata", "Acesso rapido", "Uma experiencia mais clara e mais profissional"],
     proofTitle: "O que um coach deve sentir ao usar a app",
     proofItems: [
@@ -180,20 +180,22 @@ const copy = {
       "Campanha Foundation Coach pensada para os primeiros 50 coaches",
     ],
     faqTag: "FAQ",
-    faqTitle: "Preço e acesso",
+    faqTitle: "Perguntas frequentes",
     faqItems: [
-      { title: "Que tipo de subscrição existe?", text: "Existe uma única subscrição da APEX COACH, disponível em plano mensal ou anual." },
-      { title: "O que é o Foundation Coach?", text: "É a campanha especial para os primeiros 50 coaches, com valor reduzido e mantido enquanto a conta continuar ativa." },
-      { title: "Para quem foi feita a APEX COACH?", text: "Para coaches que pretendem trabalhar com maior eficiência, melhor organização e mais controlo no acompanhamento dos seus alunos." },
-      { title: "Posso ter clients ilimitados?", text: "Sim. A estrutura da app foi pensada para acompanhar a operação do coach sem impor limites artificiais ao número de clients." },
-      { title: "A app permite acompanhar atividades externas do aluno?", text: "Sim. A APEX COACH permite registar contexto adicional e atividades externas para dar mais critério ao acompanhamento e ao ajustamento do treino." },
-      { title: "É possível organizar periodização e protocolos?", text: "Sim. O coach pode estruturar a evolução do aluno por semanas, blocos e protocolos de treino, com uma leitura mais consistente do processo." },
-      { title: "Posso criar templates e usar tags?", text: "Sim. A app permite criar estruturas reutilizáveis para acelerar a prescrição e usar tags para organizar melhor o trabalho diário." },
-      { title: "A faturação dos clients pode ser acompanhada na app?", text: "Sim. A APEX COACH foi pensada para concentrar também a componente de packs, pagamentos, avisos e seguimento financeiro do aluno." },
+      { title: "Que modelo de subscrição existe?", text: "A APEX COACH funciona com uma subscrição única, disponível em modalidade mensal ou anual. A lógica comercial é simples: um único produto, duas formas de adesão e a mesma estrutura funcional da app." },
+      { title: "O que é o Foundation Coach e como funciona?", text: "Foundation Coach é a campanha de entrada para os primeiros 50 coaches. Enquanto a conta se mantiver ativa, o coach preserva o valor preferencial associado a essa adesão inicial, sem migração automática para o preço standard." },
+      { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus alunos, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
+      { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
+      { title: "A app permite acompanhar atividades externas do aluno?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
+      { title: "É possível organizar periodização e protocolos de treino?", text: "Sim. A APEX COACH suporta uma lógica de organização por semanas, blocos e protocolos, permitindo estruturar a progressão do aluno com maior clareza e manter uma leitura mais consistente do plano em execução." },
+      { title: "Posso criar templates e usar tags para acelerar a prescrição?", text: "Sim. A app permite criar templates reutilizáveis e aplicar tags para classificar melhor exercícios, sessões e estruturas de trabalho. Isto reduz repetição manual e ajuda a elevar a tua operação diária." },
+      { title: "A base de dados de exercícios serve apenas para consulta?", text: "Não. A base de dados de exercícios serve como suporte ativo à preparação, adaptação e repetição do treino. O objetivo não é apenas consultar exercícios, mas acelerar decisões de prescrição com mais consistência técnica." },
+      { title: "A faturação dos clients pode ser acompanhada na app?", text: "Sim. A APEX COACH foi pensada para concentrar também a componente de packs, pagamentos, avisos e seguimento financeiro do aluno, reduzindo a necessidade de sistemas paralelos para controlo operacional." },
+      { title: "O aluno consegue perceber o que foi feito e acompanhar a evolução?", text: "Sim. A estrutura da app foi desenhada para que o coach consiga registar o que foi prescrito, o que foi executado e o que mudou ao longo do tempo, criando uma visão mais clara da evolução global do aluno." },
     ],
     closingTitle: "Se procuras uma operação mais fluida, mais rigorosa e mais profissional, este é o momento certo para entrar.",
     closingText:
-      "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode elevar a tua operação.",
+      "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode elevar a tua operação com mais clareza, mais controlo e maior consistência.",
     closingPrimary: "Criar conta",
     closingSecondary: "Fazer download",
     modalTitle: "Quero comecar a usar a APEX COACH",
@@ -234,7 +236,7 @@ const copy = {
     sectionProduct: "Product",
     productTitle: "An app built to upgrade the way coaches work.",
     productText:
-      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps and turn daily work into something more fluid, organized, and dependable.",
+      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps, elevate your operation, and turn daily work into something more fluid, organized, and dependable.",
     featureTitle: "What the app already improves in a coach's work",
     features: [
       "Unlimited clients to support your operation without artificial limits",
@@ -247,7 +249,7 @@ const copy = {
     differentiatorTag: "Clear advantages",
     differentiatorTitle: "Where APEX COACH creates a genuine operational advantage in daily work.",
     differentiatorText:
-      "The difference is not adding one more app. It is freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in client follow-up.",
+      "The difference is not adding one more app. It is about freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in order to elevate the operation behind every client.",
     differentiators: [
       {
         title: "More free time",
@@ -352,7 +354,7 @@ const copy = {
     pilotTag: "Results for the coach",
     pilotTitle: "Where APEX COACH translates into tangible value for the coach.",
     pilotText:
-      "The difference is not simply having another app. It is about making better decisions, responding faster, and keeping operations organized without adding complexity to the working day.",
+      "The difference is not simply having another app. It is about making better decisions, responding faster, and elevating the operation without adding complexity to the working day.",
     pilotPoints: ["Direct APK download", "Immediate account creation", "Fast access", "A clearer and more professional experience"],
     proofTitle: "What a coach should feel while using the app",
     proofItems: [
@@ -381,15 +383,22 @@ const copy = {
       "Foundation Coach campaign designed for the first 50 coaches",
     ],
     faqTag: "FAQ",
-    faqTitle: "Pricing and access",
+    faqTitle: "Frequently asked questions",
     faqItems: [
-      { title: "What subscription options are available?", text: "There is one APEX COACH subscription, available in monthly or yearly format." },
-      { title: "What is Foundation Coach?", text: "It is the special launch offer for the first 50 coaches, with discounted pricing kept for as long as the account stays active." },
-      { title: "Who is APEX COACH built for?", text: "For coaches who want to work with greater efficiency, stronger organization, and more control in the way they follow each client." },
+      { title: "What subscription model is available?", text: "APEX COACH runs on a single subscription model, available in monthly or yearly format. The commercial structure is simple: one product, two billing options, and the same core app experience." },
+      { title: "What is Foundation Coach and how does it work?", text: "Foundation Coach is the entry campaign for the first 50 coaches. As long as the account remains active, the coach keeps the preferential pricing associated with that initial subscription." },
+      { title: "Who is APEX COACH built for?", text: "The app was built for coaches who need stronger technical structure, faster execution, and greater consistency in client follow-up, whether they work in performance, health, body composition, or hybrid coaching environments." },
+      { title: "Can I work with unlimited clients?", text: "Yes. The app structure was designed to support the coach's operation without artificial limits on the number of clients, allowing the business to grow without losing clarity or control." },
+      { title: "Can the app track external client activities?", text: "Yes. The coach can log relevant activity performed outside the main session, creating stronger context for load management, recovery interpretation, accumulated volume, and decision-making." },
+      { title: "Does the app support periodization and structured protocols?", text: "Yes. APEX COACH supports organization by weeks, blocks, and training protocols, allowing the coach to manage progression with more structure and a clearer reading of the plan in execution." },
+      { title: "Can I create templates and use tags?", text: "Yes. The app allows reusable templates and tagging logic to classify exercises, sessions, and work structures. This reduces manual repetition and helps elevate the daily operation." },
+      { title: "Is the exercise database only for consultation?", text: "No. The exercise database is meant to actively support training preparation, adaptation, and repetition. The goal is not just to view exercises, but to accelerate prescription decisions with stronger technical consistency." },
+      { title: "Can client billing be managed inside the app?", text: "Yes. APEX COACH was designed to concentrate packs, payments, alerts, and financial follow-up inside the same operational flow, reducing the need for parallel systems." },
+      { title: "Can the client understand what was done and follow overall progress?", text: "Yes. The app structure helps the coach register what was prescribed, what was executed, and what changed over time, creating a clearer view of the client's overall evolution." },
     ],
     closingTitle: "If you are looking for a more fluid, more rigorous, and more professional operation, this is the right time to join.",
     closingText:
-      "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how it can elevate the way you operate.",
+      "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how it can elevate the way you operate with more clarity, more control, and stronger consistency.",
     closingPrimary: "Create account",
     closingSecondary: "Download now",
     modalTitle: "I want to start using APEX COACH",
