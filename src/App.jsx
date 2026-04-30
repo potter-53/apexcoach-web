@@ -11,25 +11,25 @@ const screenshots = ["/screenshot_1.jpeg", "/screenshot_2.jpeg", "/screenshot_3.
 const copy = {
   pt: {
     navProduct: "Produto",
-    navFlow: "Dia a dia",
+    navFlow: "Operacao",
     navPilot: "Resultados",
-    navPricing: "Pricing",
+    navPricing: "Planos",
     navFaq: "FAQ",
-    badge: "A app para coaches que querem trabalhar com mais ritmo, clareza e controlo.",
+    badge: "A aplicacao para coaches que exigem mais rigor, mais eficiencia e mais controlo operacional.",
     titleA: "A APEX COACH",
-    titleB: "ajuda-te a",
-    titleC: "coaching melhor.",
+    titleB: "foi desenhada para",
+    titleC: "elevar a tua operacao.",
     subtitle:
-      "Feita para o trabalho real no terreno, a APEX COACH ajuda o coach a abrir sessao, ajustar cargas, acompanhar alunos e registar tudo com muito menos friccao. E a app certa para quem quer trabalhar com mais ritmo, mais clareza e mais profissionalismo.",
-    primaryCta: "Quero testar a app",
+      "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar alunos e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
+    primaryCta: "Experimentar a app",
     secondaryCta: "Criar conta",
-    trust1: "Mais rapidez em sessao",
+    trust1: "Mais eficiência em sessão",
     trust2: "Mais clareza no dia a dia",
     trust3: "Mais controlo sobre cada aluno",
     heroTag: "App no terreno",
-    heroTitle: "Menos friccao. Mais coaching. Mais tempo para o que importa.",
+    heroTitle: "Menos friccao operacional. Mais criterio tecnico. Mais tempo util.",
     heroText:
-      "Tudo o que o coach precisa para agir no momento certo: abrir a sessao, ajustar treino, rever historico, registar notas e manter o trabalho a fluir sem perder foco.",
+      "Tudo o que o coach necessita para intervir com qualidade no momento certo: consultar a sessão, ajustar o treino, rever histórico, registar notas e manter a continuidade do acompanhamento sem perder foco.",
     sectionProduct: "Produto",
     productTitle: "Uma app criada para elevar a forma como o coach trabalha.",
     productText:
@@ -50,7 +50,7 @@ const copy = {
     differentiators: [
       {
         title: "Mais tempo livre",
-        text: "Menos passos repetidos, menos procura de informação e menos fricção operacional para o coach se focar mais em orientar e menos em apagar fogos.",
+        text: "Menos tarefas repetitivas, menos tempo perdido a procurar informação e menos fricção operacional, para que o coach concentre mais energia na orientação técnica e na relação com o aluno.",
       },
       {
         title: "Gestão de clients mais simples",
@@ -73,38 +73,66 @@ const copy = {
         text: "Controlar pagamentos, receber alertas e automatizar partes do follow-up para gerir melhor a operação e reduzir esquecimentos.",
       },
     ],
+    scenarioTag: "Um dia com a app",
+    scenarioTitle: "Como a *APEX COACH* encaixa no trabalho real do coach.",
+    scenarioCards: [
+      {
+        title: "Antes da sessão",
+        text: "O coach revê a agenda, confirma o aluno, enquadra o contexto e inicia a sessão seguinte com uma linha de ação clara e bem preparada.",
+      },
+      {
+        title: "Durante a sessão",
+        text: "Ajusta o treino, gere o PSE, regista notas, acompanha métricas e mantém o foco no aluno sem comprometer a qualidade da condução da sessão.",
+      },
+      {
+        title: "Depois da sessão",
+        text: "Fica claro o que foi feito, o que mudou, o que precisa de seguimento e como continuar o acompanhamento com mais consistência.",
+      },
+    ],
+    systemTag: "Tudo no mesmo sistema",
+    systemTitle: "Uma app que junta as peças que normalmente andam espalhadas.",
+    systemText:
+      "Em vez de dispersar a operação por notas soltas, mensagens, folhas externas e memória, a *APEX COACH* integra agenda, clients, treinos, avaliações, PSE, faturação e alertas numa experiência muito mais clara e consistente para o coach.",
+    systemItems: [
+      "Base de dados de exercícios para preparar e adaptar treino",
+      "Prescrição de sessões com registo do que foi realmente feito",
+      "Tracking global da evolução do aluno ao longo do tempo",
+      "Gestão de PSE e contexto da sessão no mesmo fluxo",
+      "Controlo de faturação, packs e pagamentos pendentes",
+      "Avisos e automatismos para reduzir esquecimentos e follow-up manual",
+    ],
     detailTag: "O que muda na pratica",
-    detailTitle: "Nao e so uma app para coaches. E uma forma melhor de operar todos os dias.",
+    detailTitle: "Nao e apenas uma app para coaches. E uma estrutura de trabalho mais forte para todos os dias.",
     detailCards: [
       {
         title: "Agenda com contexto real",
-        text: "Nao e apenas ver horas. E perceber logo quem vem, o que ficou pendente, e como preparar a sessao seguinte sem perder tempo.",
+        text: "Nao se trata apenas de consultar horarios. Trata-se de perceber rapidamente quem vem, o que esta pendente e como enquadrar a proxima sessao com maior preparacao.",
       },
       {
         title: "Clients com historico util",
-        text: "Em vez de procurar informacao dispersa, o coach entra no aluno e percebe rapidamente historico, progresso, notas e o que precisa de ajustar.",
+        text: "Em vez de procurar informação dispersa, o coach acede ao aluno e interpreta de forma imediata histórico, progresso, notas e os ajustamentos que devem ser considerados.",
       },
       {
         title: "Trainings mais fluidos",
-        text: "A app ajuda o coach a prescrever, consultar e adaptar sessoes com muito menos friccao no momento em que esta a trabalhar.",
+        text: "A app ajuda o coach a prescrever, consultar e ajustar sessoes com muito menos friccao no momento em que esta a trabalhar.",
       },
       {
         title: "Assessments com leitura mais clara",
-        text: "Os valores ficam mais acessiveis, mais comparaveis e mais uteis para decidir o que fazer a seguir com cada aluno.",
+        text: "Os indicadores ficam mais acessíveis, mais comparáveis e mais relevantes para suportar decisões de continuidade e progressão com cada aluno.",
       },
     ],
     flowTag: "Fluxo do coach",
-    flowTitle: "Pensada para acompanhar o coach do primeiro toque ao fim da sessao.",
+    flowTitle: "Pensada para acompanhar o coach desde a preparacao ate ao fecho da sessao.",
     flowCards: [
-      { title: "Entrar e agir", text: "Abrir a app e chegar ao que interessa em segundos, sem menus pesados nem passos a mais." },
-      { title: "Registar no momento", text: "Tomar notas, ajustar cargas e acompanhar a sessao sem quebrar o ritmo do treino." },
-      { title: "Acompanhar melhor", text: "Perceber mais depressa o que mudou em cada aluno e decidir com mais seguranca." },
+      { title: "Acesso imediato", text: "Chegar rapidamente a acao certa, sem navegacao excessiva nem etapas desnecessarias." },
+      { title: "Registo em contexto", text: "Registar notas, ajustar cargas e conduzir a sessao sem comprometer o ritmo do treino." },
+      { title: "Acompanhamento qualificado", text: "Interpretar com mais rapidez o que mudou em cada aluno e decidir com maior seguranca tecnica." },
     ],
     pilotTag: "Resultados para o coach",
-    pilotTitle: "Onde a APEX COACH faz diferenca no teu trabalho.",
+    pilotTitle: "Onde a APEX COACH se traduz em valor concreto para o coach.",
     pilotText:
-      "A diferenca nao esta em ter mais uma app. Esta em conseguires orientar melhor, decidir mais depressa e manter o trabalho organizado sem carregar o dia com mais complexidade.",
-    pilotPoints: ["Download direto da APK", "Criacao de conta simples", "Login imediato", "Uma experiencia mais clara e mais profissional"],
+      "A diferença não está em ter mais uma aplicação. Está em orientar melhor, decidir mais depressa e manter a operação organizada sem acrescentar complexidade ao dia de trabalho.",
+    pilotPoints: ["Download direto da APK", "Criacao de conta imediata", "Acesso rapido", "Uma experiencia mais clara e mais profissional"],
     proofTitle: "O que um coach deve sentir ao usar a app",
     proofItems: [
       "Menos tempo perdido a procurar informacao",
@@ -112,10 +140,10 @@ const copy = {
       "Mais consistencia no acompanhamento dos alunos",
       "Mais controlo sobre o que foi feito, o que mudou e o que vem a seguir",
     ],
-    pricingTag: "Pricing",
-    pricingTitle: "Uma subscricao. Duas formas de entrar. Uma vantagem forte para os primeiros coaches.",
+    pricingTag: "Planos",
+    pricingTitle: "Uma subscrição. Duas modalidades de adesão. Uma vantagem relevante para os primeiros coaches.",
     pricingText:
-      "A APEX COACH funciona com uma subscricao simples: mensal ou anual. E quem entrar nos primeiros 50 lugares Foundation Coach garante um valor especial enquanto mantiver a conta ativa.",
+      "A APEX COACH funciona com uma subscrição simples, disponível em modalidade mensal ou anual. Os primeiros 50 lugares Foundation Coach garantem um valor preferencial enquanto a conta se mantiver ativa.",
     foundationLabel: "Foundation Coach",
     foundationTitle: "Oferta especial para os primeiros 50 coaches",
     foundationMonthly: "8,90€/mes",
@@ -127,8 +155,8 @@ const copy = {
     regularYearly: "290€/ano",
     pricingBullets: [
       "Uma unica subscricao para todo o ecossistema da app",
-      "Opcao mensal para entrar com menos risco",
-      "Opcao anual para quem quer compromisso e melhor valor",
+      "Modalidade mensal para uma adesao mais flexivel",
+      "Opcao anual para quem procura maior compromisso e melhor valor",
       "Campanha Foundation Coach pensada para os primeiros 50 coaches",
     ],
     faqTag: "FAQ",
@@ -136,22 +164,22 @@ const copy = {
     faqItems: [
       { title: "Que tipo de subscricao existe?", text: "Existe uma unica subscricao da APEX COACH, disponivel em plano mensal ou anual." },
       { title: "O que e o Foundation Coach?", text: "E a campanha especial para os primeiros 50 coaches, com valor reduzido e mantido enquanto a conta continuar ativa." },
-      { title: "Para quem foi feita a APEX COACH?", text: "Para coaches que querem trabalhar com mais rapidez, mais organizacao e mais controlo no acompanhamento dos seus alunos." },
+      { title: "Para quem foi feita a APEX COACH?", text: "Para coaches que pretendem trabalhar com maior eficiência, melhor organização e mais controlo no acompanhamento dos seus alunos." },
     ],
-    closingTitle: "Se queres trabalhar com mais fluidez, esta e a altura certa para entrar.",
+    closingTitle: "Se procuras uma operação mais fluida e mais profissional, este é o momento certo para entrar.",
     closingText:
-      "A APEX COACH esta a ser afinada com coaches reais para se tornar uma ferramenta cada vez mais rapida, intuitiva e valiosa. Entra agora, testa no terreno e ajuda-nos a construir algo realmente forte.",
+      "A APEX COACH esta a evoluir para se afirmar como uma ferramenta cada vez mais rapida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode elevar a tua operacao.",
     closingPrimary: "Criar conta",
     closingSecondary: "Fazer download",
     modalTitle: "Quero comecar a usar a APEX COACH",
     modalText:
-      "A APEX COACH foi criada para coaches que querem trabalhar com mais fluidez, mais rapidez e mais seguranca no dia a dia. Cria a tua conta e entra na app.",
+      "A APEX COACH foi criada para coaches que procuram maior fluidez operacional, maior rapidez de execução e maior segurança no acompanhamento diário. Cria a tua conta e entra na app.",
     modalPrimary: "Criar conta",
     modalSecondary: "Fazer login",
     closeLabel: "Fechar",
     login: "Login",
     signup: "Criar conta",
-    backline: "A experiencia web chegara depois. Agora o foco e dar-te uma app melhor.",
+    backline: "A experiencia web chegara depois. Neste momento, o foco esta numa aplicacao mais forte para o trabalho real do coach.",
     floatingSessionLabel: "Modo sessao",
     floatingSessionText: "Rapidez no momento certo",
     floatingPilotLabel: "Mais controlo",
@@ -159,29 +187,29 @@ const copy = {
   },
   en: {
     navProduct: "Product",
-    navFlow: "Daily work",
+    navFlow: "Operation",
     navPilot: "Results",
     navPricing: "Pricing",
     navFaq: "FAQ",
-    badge: "The app for coaches who want more speed, clarity, and control.",
+    badge: "The app for coaches who expect stronger standards, greater efficiency, and tighter operational control.",
     titleA: "APEX COACH",
-    titleB: "helps you",
-    titleC: "coach better.",
+    titleB: "was designed to",
+    titleC: "elevate your operation.",
     subtitle:
-      "Built for real work in the field, APEX COACH helps coaches open sessions, adjust loads, follow clients, and log everything with far less friction. It is the right app for coaches who want to work with more speed, clarity, and professionalism.",
-    primaryCta: "Try the app",
+      "Built for real coaching environments, APEX COACH allows coaches to manage sessions, adjust loads, follow clients, and record critical information with far less operational friction. It is the right solution for professionals seeking greater efficiency, clearer oversight, and a more elevated standard of work.",
+    primaryCta: "Explore the app",
     secondaryCta: "Create account",
-    trust1: "More speed in session",
+    trust1: "More efficiency in session",
     trust2: "More clarity every day",
     trust3: "More control over every client",
     heroTag: "Field app",
-    heroTitle: "Less friction. Better coaching. More time for what matters.",
+    heroTitle: "Less operational friction. Better judgement. More useful time.",
     heroText:
-      "Everything a coach needs to act at the right moment: open the session, adjust training, review history, capture notes, and keep the work flowing without losing focus.",
+      "Everything a coach needs to intervene at the right moment: review the session, adjust training, analyze history, capture notes, and preserve continuity without losing focus.",
     sectionProduct: "Product",
     productTitle: "An app built to upgrade the way coaches work.",
     productText:
-      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps and turn daily work into something more fluid, organized, and powerful.",
+      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps and turn daily work into something more fluid, organized, and dependable.",
     featureTitle: "What the app is already designed to improve",
     features: [
       "Faster organization of sessions and daily work",
@@ -192,13 +220,13 @@ const copy = {
       "A more professional and premium day-to-day experience",
     ],
     differentiatorTag: "Clear advantages",
-    differentiatorTitle: "Where APEX COACH gives you a real edge in daily work.",
+    differentiatorTitle: "Where APEX COACH creates a genuine operational advantage in daily work.",
     differentiatorText:
-      "The difference is not having one more app. It is freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in client follow-up.",
+      "The difference is not adding one more app. It is freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in client follow-up.",
     differentiators: [
       {
         title: "More free time",
-        text: "Fewer repeated steps, less searching for information, and less operational friction so the coach can spend more time coaching and less time firefighting.",
+        text: "Fewer repetitive steps, less time spent searching for information, and less operational friction, so the coach can invest more energy in technical guidance and client care.",
       },
       {
         title: "Easier client management",
@@ -221,16 +249,44 @@ const copy = {
         text: "Track payments, receive reminders, and automate parts of follow-up to run the operation better and reduce missed actions.",
       },
     ],
+    scenarioTag: "A day with the app",
+    scenarioTitle: "How *APEX COACH* fits into the coach's real working day.",
+    scenarioCards: [
+      {
+        title: "Before the session",
+        text: "The coach reviews the agenda, confirms the client, frames the context, and starts the next session with a clear operational direction.",
+      },
+      {
+        title: "During the session",
+        text: "Adjust training, manage RPE, capture notes, monitor metrics, and remain focused on the client without compromising session quality.",
+      },
+      {
+        title: "After the session",
+        text: "It becomes clear what was done, what changed, what needs follow-up, and how to continue the client journey more consistently.",
+      },
+    ],
+    systemTag: "Everything in one system",
+    systemTitle: "One app that brings together the pieces that are usually scattered.",
+    systemText:
+      "Instead of dispersing the workflow across loose notes, messages, external sheets, and memory, *APEX COACH* brings agenda, clients, training, assessments, RPE, billing, and alerts into one much clearer and more consistent coach workflow.",
+    systemItems: [
+      "Exercise database to prepare and adapt training",
+      "Session prescription with a record of what was actually done",
+      "Global progress tracking over time",
+      "RPE and session context in the same working flow",
+      "Billing, packs, and pending payment control",
+      "Alerts and automations to reduce missed tasks and manual follow-up",
+    ],
     detailTag: "What changes in practice",
-    detailTitle: "This is not just another app for coaches. It is a better way to run the work every day.",
+    detailTitle: "This is not just another app for coaches. It is a stronger operating structure for daily work.",
     detailCards: [
       {
         title: "Agenda with real context",
-        text: "It is not only about seeing times. It is about understanding who is coming, what is pending, and how to prepare the next session faster.",
+        text: "It is not simply about checking time slots. It is about understanding who is coming, what remains pending, and how to prepare the next session with greater readiness.",
       },
       {
         title: "Clients with useful history",
-        text: "Instead of hunting for scattered information, the coach opens the client and quickly understands history, progress, notes, and what needs adjusting.",
+        text: "Instead of searching through scattered information, the coach accesses the client and immediately interprets history, progress, notes, and the adjustments that should be considered.",
       },
       {
         title: "Smoother training work",
@@ -238,20 +294,20 @@ const copy = {
       },
       {
         title: "Clearer assessments",
-        text: "The numbers become easier to access, easier to compare, and more useful when deciding what comes next for each client.",
+        text: "The indicators become easier to access, easier to compare, and more relevant when making continuity and progression decisions for each client.",
       },
     ],
     flowTag: "Coach flow",
-    flowTitle: "Built to support the coach from first tap to end of session.",
+    flowTitle: "Built to support the coach from preparation through session close.",
     flowCards: [
-      { title: "Open and act", text: "Open the app and reach the right action in seconds, without heavy menus or extra steps." },
-      { title: "Log in the moment", text: "Capture notes, adjust loads, and manage the session without breaking training rhythm." },
-      { title: "Follow up better", text: "Understand faster what changed in each client and make decisions with more confidence." },
+      { title: "Immediate access", text: "Reach the right action quickly, without excessive navigation or unnecessary steps." },
+      { title: "Contextual logging", text: "Capture notes, adjust loads, and manage the session without disrupting training rhythm." },
+      { title: "Qualified follow-up", text: "Understand more quickly what changed in each client and make decisions with greater technical confidence." },
     ],
     pilotTag: "Results for the coach",
-    pilotTitle: "Where APEX COACH makes a real difference in your work.",
+    pilotTitle: "Where APEX COACH translates into tangible value for the coach.",
     pilotText:
-      "The difference is not having one more app. The difference is coaching better, deciding faster, and keeping the work organized without adding more complexity to the day.",
+      "The difference is not simply having another app. It is about making better decisions, responding faster, and keeping operations organized without adding complexity to the working day.",
     pilotPoints: ["Direct APK download", "Simple account creation", "Immediate login", "A clearer and more professional experience"],
     proofTitle: "What a coach should feel while using the app",
     proofItems: [
@@ -261,9 +317,9 @@ const copy = {
       "More control over what happened, what changed, and what comes next",
     ],
     pricingTag: "Pricing",
-    pricingTitle: "One subscription. Two ways to join. One strong advantage for the first coaches.",
+    pricingTitle: "One subscription. Two subscription formats. One meaningful advantage for the first coaches.",
     pricingText:
-      "APEX COACH runs on one simple subscription: monthly or yearly. And the first 50 Foundation Coaches lock in a special price for as long as they keep the account active.",
+      "APEX COACH runs on one simple subscription, available in monthly or yearly format. The first 50 Foundation Coaches secure a preferential price for as long as the account remains active.",
     foundationLabel: "Foundation Coach",
     foundationTitle: "Special offer for the first 50 coaches",
     foundationMonthly: "€8.90/month",
@@ -275,7 +331,7 @@ const copy = {
     regularYearly: "€290/year",
     pricingBullets: [
       "One subscription for the full app ecosystem",
-      "Monthly option to start with lower risk",
+      "Monthly option for lower initial commitment",
       "Yearly option for stronger commitment and better value",
       "Foundation Coach campaign designed for the first 50 coaches",
     ],
@@ -284,22 +340,22 @@ const copy = {
     faqItems: [
       { title: "What subscription options are available?", text: "There is one APEX COACH subscription, available in monthly or yearly format." },
       { title: "What is Foundation Coach?", text: "It is the special launch offer for the first 50 coaches, with discounted pricing kept for as long as the account stays active." },
-      { title: "Who is APEX COACH built for?", text: "For coaches who want to work with more speed, better organization, and more control in the way they follow each client." },
+      { title: "Who is APEX COACH built for?", text: "For coaches who want to work with greater efficiency, stronger organization, and more control in the way they follow each client." },
     ],
-    closingTitle: "If you want to work with more flow, this is the right time to join.",
+    closingTitle: "If you are looking for a more fluid, more rigorous, and more professional operation, this is the right time to join.",
     closingText:
-      "APEX COACH is being refined with real coaches to become a faster, more intuitive, and more valuable tool. Join now, test it in the field, and help us build something genuinely strong.",
+      "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how it can elevate the way you operate.",
     closingPrimary: "Create account",
     closingSecondary: "Download now",
     modalTitle: "I want to start using APEX COACH",
     modalText:
-      "APEX COACH was built for coaches who want to work with more flow, more speed, and more confidence every day. Create your account and get into the app.",
+      "APEX COACH was built for coaches seeking greater operational flow, faster execution, and more confidence in daily follow-up. Create your account and enter the app.",
     modalPrimary: "Create account",
     modalSecondary: "Login",
     closeLabel: "Close",
     login: "Login",
     signup: "Sign up",
-    backline: "The web experience comes later. Right now the focus is giving you a better app.",
+    backline: "The web experience comes later. Right now, the focus is a stronger mobile app for real coaching work.",
     floatingSessionLabel: "Session mode",
     floatingSessionText: "Speed when it matters",
     floatingPilotLabel: "More control",
@@ -368,6 +424,17 @@ function DifferentiatorCard({ title, text, icon: Icon }) {
       </div>
       <h3 className="text-xl font-semibold text-[var(--text)]">{renderBrandText(title)}</h3>
       <p className="mt-3 leading-7 text-[var(--text-muted)]">{renderBrandText(text)}</p>
+    </div>
+  );
+}
+
+function ScenarioCard({ title, text }) {
+  return (
+    <div className="rounded-[28px] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
+      <div className="mb-4 inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+        {renderBrandText(title)}
+      </div>
+      <p className="leading-7 text-[var(--text-muted)]">{renderBrandText(text)}</p>
     </div>
   );
 }
@@ -475,7 +542,7 @@ export default function App() {
             <img src="/logo.png" alt="APEX COACH" className="h-10 w-auto rounded-xl" />
             <div>
               <p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]"><BrandMark /></p>
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">coach performance app</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">professional coaching app</p>
             </div>
           </a>
 
@@ -620,7 +687,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="flow" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+        <section id="day" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <SectionLabel>{t.detailTag}</SectionLabel>
           <h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.detailTitle)}</h2>
           <div className="mt-10 grid gap-4 lg:grid-cols-2">
@@ -643,6 +710,33 @@ export default function App() {
                 const Icon = icons[index] || BellRing;
                 return <DifferentiatorCard key={item.title} title={item.title} text={item.text} icon={Icon} />;
               })}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <SectionLabel>{t.scenarioTag}</SectionLabel>
+          <h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.scenarioTitle)}</h2>
+          <div className="mt-10 grid gap-4 lg:grid-cols-3">
+            {t.scenarioCards.map((card) => (
+              <ScenarioCard key={card.title} title={card.title} text={card.text} />
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <div className="rounded-[36px] border border-[var(--border-strong)] bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(246,248,247,0.96),rgba(124,77,255,0.04))] p-8 shadow-[var(--shadow-panel)] lg:p-12">
+            <SectionLabel>{t.systemTag}</SectionLabel>
+            <div className="mt-5 grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+              <div>
+                <h2 className="max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.systemTitle)}</h2>
+                <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{renderBrandText(t.systemText)}</p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {t.systemItems.map((item) => (
+                  <FeatureItem key={item}>{item}</FeatureItem>
+                ))}
+              </div>
             </div>
           </div>
         </section>
