@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Clock3, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
+import { ArrowRight, BellRing, Check, Clock3, CreditCard, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
 
 import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
@@ -41,6 +41,36 @@ const copy = {
       "Fluxo mais intuitivo entre clients, trainings e assessments",
       "Menos passos para as acoes que o coach mais repete",
       "Uma imagem mais profissional e mais premium no trabalho diario",
+    ],
+    differentiatorTag: "Vantagens claras",
+    differentiatorTitle: "Onde a APEX COACH te dá uma vantagem real no trabalho diário.",
+    differentiatorText:
+      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa no acompanhamento dos alunos.",
+    differentiators: [
+      {
+        title: "Mais tempo livre",
+        text: "Menos passos repetidos, menos procura de informação e menos fricção operacional para o coach se focar mais em orientar e menos em apagar fogos.",
+      },
+      {
+        title: "Gestão de clients mais simples",
+        text: "Cada aluno fica mais fácil de entender, acompanhar e atualizar sem navegação dispersa ou perda de contexto.",
+      },
+      {
+        title: "Marcações e sessões",
+        text: "Agendar, consultar e acompanhar sessões torna-se mais rápido, mais claro e mais fácil de manter organizado.",
+      },
+      {
+        title: "Tracking de métricas e avaliações",
+        text: "Os dados deixam de estar perdidos. O coach consegue perceber mais depressa evolução, mudanças e próximos passos.",
+      },
+      {
+        title: "Criação de treinos e gestão de PSE",
+        text: "Prescrever, ajustar e registar treino com sensação de continuidade, sem quebrar o ritmo do acompanhamento.",
+      },
+      {
+        title: "Faturação, avisos e automatismos",
+        text: "Controlar pagamentos, receber alertas e automatizar partes do follow-up para gerir melhor a operação e reduzir esquecimentos.",
+      },
     ],
     detailTag: "O que muda na pratica",
     detailTitle: "Nao e so uma app para coaches. E uma forma melhor de operar todos os dias.",
@@ -139,6 +169,36 @@ const copy = {
       "A more intuitive flow between clients, trainings, and assessments",
       "Fewer steps for the actions coaches repeat most",
       "A more professional and premium day-to-day experience",
+    ],
+    differentiatorTag: "Clear advantages",
+    differentiatorTitle: "Where APEX COACH gives you a real edge in daily work.",
+    differentiatorText:
+      "The difference is not having one more app. It is freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in client follow-up.",
+    differentiators: [
+      {
+        title: "More free time",
+        text: "Fewer repeated steps, less searching for information, and less operational friction so the coach can spend more time coaching and less time firefighting.",
+      },
+      {
+        title: "Easier client management",
+        text: "Each client becomes easier to understand, follow, and update without scattered navigation or lost context.",
+      },
+      {
+        title: "Bookings and sessions",
+        text: "Scheduling, checking, and managing sessions becomes faster, clearer, and easier to keep organized.",
+      },
+      {
+        title: "Metrics and assessment tracking",
+        text: "Data stops getting lost. The coach can understand progress, changes, and next steps much faster.",
+      },
+      {
+        title: "Training creation and RPE management",
+        text: "Prescribe, adjust, and log training with a sense of continuity, without breaking the rhythm of follow-up.",
+      },
+      {
+        title: "Client billing, alerts, and automations",
+        text: "Track payments, receive reminders, and automate parts of follow-up to run the operation better and reduce missed actions.",
+      },
     ],
     detailTag: "What changes in practice",
     detailTitle: "This is not just another app for coaches. It is a better way to run the work every day.",
@@ -243,6 +303,18 @@ function DetailCard({ title, text }) {
     <div className="rounded-[28px] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
       <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
         <Target size={18} className="text-[var(--accent-strong)]" />
+      </div>
+      <h3 className="text-xl font-semibold text-[var(--text)]">{title}</h3>
+      <p className="mt-3 leading-7 text-[var(--text-muted)]">{text}</p>
+    </div>
+  );
+}
+
+function DifferentiatorCard({ title, text, icon: Icon }) {
+  return (
+    <div className="rounded-[28px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-5 shadow-[0_12px_32px_rgba(14,17,16,0.05)]">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
+        <Icon size={18} className="text-[var(--accent-strong)]" />
       </div>
       <h3 className="text-xl font-semibold text-[var(--text)]">{title}</h3>
       <p className="mt-3 leading-7 text-[var(--text-muted)]">{text}</p>
@@ -485,6 +557,23 @@ export default function App() {
           </div>
         </section>
 
+        <section id="pilot" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <SectionLabel>{t.differentiatorTag}</SectionLabel>
+          <div className="mt-5 grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
+            <div>
+              <h2 className="max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{t.differentiatorTitle}</h2>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{t.differentiatorText}</p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {t.differentiators.map((item, index) => {
+                const icons = [Clock3, Users, Smartphone, Target, Check, CreditCard];
+                const Icon = icons[index] || BellRing;
+                return <DifferentiatorCard key={item.title} title={item.title} text={item.text} icon={Icon} />;
+              })}
+            </div>
+          </div>
+        </section>
+
         <section id="flow" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <SectionLabel>{t.flowTag}</SectionLabel>
           <h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{t.flowTitle}</h2>
@@ -495,7 +584,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="pilot" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <div className="rounded-[36px] border border-[var(--border-strong)] bg-[linear-gradient(135deg,rgba(42,208,125,0.10),rgba(124,77,255,0.05),rgba(255,255,255,0.95))] p-8 shadow-[var(--shadow-panel)] lg:p-12">
             <SectionLabel>{t.pilotTag}</SectionLabel>
             <div className="mt-5 grid gap-8 lg:grid-cols-[1fr_0.9fr]">
