@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Clock3, Menu, Smartphone, Sparkles, Users, X } from "lucide-react";
+import { ArrowRight, Check, Clock3, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
 
 import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
@@ -11,8 +11,8 @@ const screenshots = ["/screenshot_1.jpeg", "/screenshot_2.jpeg", "/screenshot_3.
 const copy = {
   pt: {
     navProduct: "Produto",
-    navFlow: "Fluxo",
-    navPilot: "Vantagem",
+    navFlow: "Dia a dia",
+    navPilot: "Resultados",
     navFaq: "FAQ",
     badge: "A app para coaches que querem trabalhar com mais ritmo, clareza e controlo.",
     titleA: "A APEX COACH",
@@ -42,6 +42,26 @@ const copy = {
       "Menos passos para as acoes que o coach mais repete",
       "Uma imagem mais profissional e mais premium no trabalho diario",
     ],
+    detailTag: "O que muda na pratica",
+    detailTitle: "Nao e so uma app para coaches. E uma forma melhor de operar todos os dias.",
+    detailCards: [
+      {
+        title: "Agenda com contexto real",
+        text: "Nao e apenas ver horas. E perceber logo quem vem, o que ficou pendente, e como preparar a sessao seguinte sem perder tempo.",
+      },
+      {
+        title: "Clients com historico util",
+        text: "Em vez de procurar informacao dispersa, o coach entra no aluno e percebe rapidamente historico, progresso, notas e o que precisa de ajustar.",
+      },
+      {
+        title: "Trainings mais fluidos",
+        text: "A app ajuda o coach a prescrever, consultar e adaptar sessoes com muito menos friccao no momento em que esta a trabalhar.",
+      },
+      {
+        title: "Assessments com leitura mais clara",
+        text: "Os valores ficam mais acessiveis, mais comparaveis e mais uteis para decidir o que fazer a seguir com cada aluno.",
+      },
+    ],
     flowTag: "Fluxo do coach",
     flowTitle: "Pensada para acompanhar o coach do primeiro toque ao fim da sessao.",
     flowCards: [
@@ -49,11 +69,18 @@ const copy = {
       { title: "Registar no momento", text: "Tomar notas, ajustar cargas e acompanhar a sessao sem quebrar o ritmo do treino." },
       { title: "Acompanhar melhor", text: "Perceber mais depressa o que mudou em cada aluno e decidir com mais seguranca." },
     ],
-    pilotTag: "Porque APEX",
-    pilotTitle: "Uma app feita para coaches que querem subir o nivel do seu trabalho.",
+    pilotTag: "Resultados para o coach",
+    pilotTitle: "Onde a APEX COACH faz diferenca no teu trabalho.",
     pilotText:
-      "A APEX COACH foi desenhada para dar ao coach mais agilidade em sessao, mais controlo sobre cada aluno e uma experiencia mais profissional no trabalho diario. Tudo isto numa app que quer simplificar o que normalmente consome tempo e energia.",
+      "A diferenca nao esta em ter mais uma app. Esta em conseguires orientar melhor, decidir mais depressa e manter o trabalho organizado sem carregar o dia com mais complexidade.",
     pilotPoints: ["Download direto da APK", "Criacao de conta simples", "Login imediato", "Uma experiencia mais clara e mais profissional"],
+    proofTitle: "O que um coach deve sentir ao usar a app",
+    proofItems: [
+      "Menos tempo perdido a procurar informacao",
+      "Mais seguranca na continuidade entre sessoes",
+      "Mais consistencia no acompanhamento dos alunos",
+      "Mais controlo sobre o que foi feito, o que mudou e o que vem a seguir",
+    ],
     faqTag: "FAQ",
     faqTitle: "Perguntas que um coach vai querer esclarecer antes de entrar",
     faqItems: [
@@ -77,13 +104,13 @@ const copy = {
     backline: "A experiencia web chegara depois. Agora o foco e dar-te uma app melhor.",
     floatingSessionLabel: "Modo sessao",
     floatingSessionText: "Rapidez no momento certo",
-    floatingPilotLabel: "Valor real",
-    floatingPilotText: "Uma app feita para o trabalho diario do coach",
+    floatingPilotLabel: "Mais controlo",
+    floatingPilotText: "Uma app desenhada para o dia real do coach",
   },
   en: {
     navProduct: "Product",
-    navFlow: "Flow",
-    navPilot: "Advantage",
+    navFlow: "Daily work",
+    navPilot: "Results",
     navFaq: "FAQ",
     badge: "The app for coaches who want more speed, clarity, and control.",
     titleA: "APEX COACH",
@@ -113,6 +140,26 @@ const copy = {
       "Fewer steps for the actions coaches repeat most",
       "A more professional and premium day-to-day experience",
     ],
+    detailTag: "What changes in practice",
+    detailTitle: "This is not just another app for coaches. It is a better way to run the work every day.",
+    detailCards: [
+      {
+        title: "Agenda with real context",
+        text: "It is not only about seeing times. It is about understanding who is coming, what is pending, and how to prepare the next session faster.",
+      },
+      {
+        title: "Clients with useful history",
+        text: "Instead of hunting for scattered information, the coach opens the client and quickly understands history, progress, notes, and what needs adjusting.",
+      },
+      {
+        title: "Smoother training work",
+        text: "The app helps the coach prescribe, review, and adapt sessions with far less friction while actual work is happening.",
+      },
+      {
+        title: "Clearer assessments",
+        text: "The numbers become easier to access, easier to compare, and more useful when deciding what comes next for each client.",
+      },
+    ],
     flowTag: "Coach flow",
     flowTitle: "Built to support the coach from first tap to end of session.",
     flowCards: [
@@ -120,11 +167,18 @@ const copy = {
       { title: "Log in the moment", text: "Capture notes, adjust loads, and manage the session without breaking training rhythm." },
       { title: "Follow up better", text: "Understand faster what changed in each client and make decisions with more confidence." },
     ],
-    pilotTag: "Why APEX",
-    pilotTitle: "An app made for coaches who want to raise the level of their work.",
+    pilotTag: "Results for the coach",
+    pilotTitle: "Where APEX COACH makes a real difference in your work.",
     pilotText:
-      "APEX COACH was designed to give coaches more session agility, more control over each client, and a more professional daily experience. All inside an app built to simplify what usually consumes time and energy.",
+      "The difference is not having one more app. The difference is coaching better, deciding faster, and keeping the work organized without adding more complexity to the day.",
     pilotPoints: ["Direct APK download", "Simple account creation", "Immediate login", "A clearer and more professional experience"],
+    proofTitle: "What a coach should feel while using the app",
+    proofItems: [
+      "Less time lost searching for information",
+      "More confidence in continuity between sessions",
+      "More consistency in client follow-up",
+      "More control over what happened, what changed, and what comes next",
+    ],
     faqTag: "FAQ",
     faqTitle: "Questions a coach will want answered before joining",
     faqItems: [
@@ -148,8 +202,8 @@ const copy = {
     backline: "The web experience comes later. Right now the focus is giving you a better app.",
     floatingSessionLabel: "Session mode",
     floatingSessionText: "Speed when it matters",
-    floatingPilotLabel: "Real value",
-    floatingPilotText: "An app built for the coach's daily work",
+    floatingPilotLabel: "More control",
+    floatingPilotText: "An app built for the coach's real working day",
   },
 };
 
@@ -180,6 +234,18 @@ function FeatureItem({ children }) {
         <Check size={14} className="text-[var(--accent-strong)]" />
       </div>
       <p className="text-[var(--text-muted)]">{children}</p>
+    </div>
+  );
+}
+
+function DetailCard({ title, text }) {
+  return (
+    <div className="rounded-[28px] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
+        <Target size={18} className="text-[var(--accent-strong)]" />
+      </div>
+      <h3 className="text-xl font-semibold text-[var(--text)]">{title}</h3>
+      <p className="mt-3 leading-7 text-[var(--text-muted)]">{text}</p>
     </div>
   );
 }
@@ -410,6 +476,16 @@ export default function App() {
         </section>
 
         <section id="flow" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <SectionLabel>{t.detailTag}</SectionLabel>
+          <h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{t.detailTitle}</h2>
+          <div className="mt-10 grid gap-4 lg:grid-cols-2">
+            {t.detailCards.map((card) => (
+              <DetailCard key={card.title} title={card.title} text={card.text} />
+            ))}
+          </div>
+        </section>
+
+        <section id="flow" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <SectionLabel>{t.flowTag}</SectionLabel>
           <h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{t.flowTitle}</h2>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -439,6 +515,15 @@ export default function App() {
 
               <div className="grid gap-3">
                 {t.pilotPoints.map((item) => (
+                  <FeatureItem key={item}>{item}</FeatureItem>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-10 rounded-[28px] border border-[var(--border)] bg-white p-6 shadow-[0_12px_28px_rgba(14,17,16,0.04)]">
+              <h3 className="text-2xl font-semibold text-[var(--text)]">{t.proofTitle}</h3>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {t.proofItems.map((item) => (
                   <FeatureItem key={item}>{item}</FeatureItem>
                 ))}
               </div>
