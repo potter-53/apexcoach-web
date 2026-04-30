@@ -12,16 +12,16 @@ const copy = {
   pt: {
     navProduct: "Produto",
     navFlow: "Fluxo",
-    navPilot: "Piloto",
+    navPilot: "Vantagem",
     navFaq: "FAQ",
     badge: "A app para coaches que querem trabalhar com mais ritmo, clareza e controlo.",
     titleA: "A APEX COACH",
     titleB: "ajuda-te a",
     titleC: "coaching melhor.",
     subtitle:
-      "Feita para o trabalho real no terreno, a APEX COACH ajuda o coach a abrir sessao, ajustar cargas, acompanhar alunos e registar tudo com muito menos friccao. Nesta fase piloto estamos a refinar a experiencia com coaches reais para a tornar ainda mais rapida, intuitiva e profissional.",
+      "Feita para o trabalho real no terreno, a APEX COACH ajuda o coach a abrir sessao, ajustar cargas, acompanhar alunos e registar tudo com muito menos friccao. E a app certa para quem quer trabalhar com mais ritmo, mais clareza e mais profissionalismo.",
     primaryCta: "Quero testar a app",
-    secondaryCta: "Pedir acesso piloto",
+    secondaryCta: "Criar conta",
     trust1: "Mais rapidez em sessao",
     trust2: "Mais clareza no dia a dia",
     trust3: "Mais controlo sobre cada aluno",
@@ -32,7 +32,7 @@ const copy = {
     sectionProduct: "Produto",
     productTitle: "Uma app criada para elevar a forma como o coach trabalha.",
     productText:
-      "A APEX COACH nasce para dar ao coach uma experiencia mais limpa, mais rapida e mais profissional em contexto real. O piloto serve para afinar a logica, cortar passos desnecessarios e transformar a app numa ferramenta em que o coach confia todos os dias.",
+      "A APEX COACH nasce para dar ao coach uma experiencia mais limpa, mais rapida e mais profissional em contexto real. Foi pensada para cortar passos desnecessarios e transformar o dia a dia numa operacao mais fluida, mais organizada e mais forte.",
     featureTitle: "O que a app ja promete melhorar no trabalho do coach",
     features: [
       "Organizacao mais rapida das sessoes e do dia de trabalho",
@@ -49,27 +49,27 @@ const copy = {
       { title: "Registar no momento", text: "Tomar notas, ajustar cargas e acompanhar a sessao sem quebrar o ritmo do treino." },
       { title: "Acompanhar melhor", text: "Perceber mais depressa o que mudou em cada aluno e decidir com mais seguranca." },
     ],
-    pilotTag: "Programa piloto",
-    pilotTitle: "Uma montra feita para os coaches que querem trabalhar melhor.",
+    pilotTag: "Porque APEX",
+    pilotTitle: "Uma app feita para coaches que querem subir o nivel do seu trabalho.",
     pilotText:
-      "Nesta fase estamos a abrir a app a coaches piloto para testar o produto em contexto real, recolher feedback forte e transformar a experiencia numa referencia ainda mais util e mais premium para o trabalho diario.",
-    pilotPoints: ["Download direto da APK", "Criacao de conta simples", "Acesso reservado a coaches piloto", "Canal claro para melhorias e feedback real"],
+      "A APEX COACH foi desenhada para dar ao coach mais agilidade em sessao, mais controlo sobre cada aluno e uma experiencia mais profissional no trabalho diario. Tudo isto numa app que quer simplificar o que normalmente consome tempo e energia.",
+    pilotPoints: ["Download direto da APK", "Criacao de conta simples", "Login imediato", "Uma experiencia mais clara e mais profissional"],
     faqTag: "FAQ",
     faqTitle: "Perguntas que um coach vai querer esclarecer antes de entrar",
     faqItems: [
       { title: "Porque estamos a focar a app primeiro?", text: "Porque e na app que o coach vive o momento critico do trabalho. Queremos tornar essa experiencia realmente forte antes do segundo passo web." },
       { title: "A versao web vai existir?", text: "Sim. Mas primeiro queremos que o nucleo do produto esteja limpo, rapido e consistente com utilizacao real no terreno." },
-      { title: "Quem deve entrar nesta fase piloto?", text: "Coaches que querem experimentar uma nova ferramenta de trabalho e ajudar-nos a leva-la para um nivel ainda mais profissional." },
+      { title: "Para quem foi feita a APEX COACH?", text: "Para coaches que querem trabalhar com mais rapidez, mais organizacao e mais controlo no acompanhamento dos seus alunos." },
     ],
     closingTitle: "Se queres trabalhar com mais fluidez, esta e a altura certa para entrar.",
     closingText:
       "A APEX COACH esta a ser afinada com coaches reais para se tornar uma ferramenta cada vez mais rapida, intuitiva e valiosa. Entra agora, testa no terreno e ajuda-nos a construir algo realmente forte.",
-    closingPrimary: "Quero acesso piloto",
+    closingPrimary: "Criar conta",
     closingSecondary: "Fazer download",
-    modalTitle: "Quero entrar como coach piloto",
+    modalTitle: "Quero comecar a usar a APEX COACH",
     modalText:
-      "Estamos a abrir esta fase a coaches que queiram usar a app em contexto real, sentir o ganho no trabalho diario e ajudar-nos a polir a experiencia com feedback direto.",
-    modalPrimary: "Pedir acesso",
+      "A APEX COACH foi criada para coaches que querem trabalhar com mais fluidez, mais rapidez e mais seguranca no dia a dia. Cria a tua conta e entra na app.",
+    modalPrimary: "Criar conta",
     modalSecondary: "Fazer login",
     closeLabel: "Fechar",
     login: "Login",
@@ -83,16 +83,16 @@ const copy = {
   en: {
     navProduct: "Product",
     navFlow: "Flow",
-    navPilot: "Pilot",
+    navPilot: "Advantage",
     navFaq: "FAQ",
     badge: "The app for coaches who want more speed, clarity, and control.",
     titleA: "APEX COACH",
     titleB: "helps you",
     titleC: "coach better.",
     subtitle:
-      "Built for real work in the field, APEX COACH helps coaches open sessions, adjust loads, follow clients, and log everything with far less friction. In this pilot phase we are refining the experience with real coaches to make it even faster, more intuitive, and more professional.",
+      "Built for real work in the field, APEX COACH helps coaches open sessions, adjust loads, follow clients, and log everything with far less friction. It is the right app for coaches who want to work with more speed, clarity, and professionalism.",
     primaryCta: "Try the app",
-    secondaryCta: "Request pilot access",
+    secondaryCta: "Create account",
     trust1: "More speed in session",
     trust2: "More clarity every day",
     trust3: "More control over every client",
@@ -103,7 +103,7 @@ const copy = {
     sectionProduct: "Product",
     productTitle: "An app built to upgrade the way coaches work.",
     productText:
-      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. The pilot helps us refine the logic, remove unnecessary steps, and turn the app into a tool coaches can trust every day.",
+      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps and turn daily work into something more fluid, organized, and powerful.",
     featureTitle: "What the app is already designed to improve",
     features: [
       "Faster organization of sessions and daily work",
@@ -120,27 +120,27 @@ const copy = {
       { title: "Log in the moment", text: "Capture notes, adjust loads, and manage the session without breaking training rhythm." },
       { title: "Follow up better", text: "Understand faster what changed in each client and make decisions with more confidence." },
     ],
-    pilotTag: "Pilot program",
-    pilotTitle: "A showcase for coaches who want to work better.",
+    pilotTag: "Why APEX",
+    pilotTitle: "An app made for coaches who want to raise the level of their work.",
     pilotText:
-      "At this stage we are opening the app to pilot coaches so they can test it in real working conditions, feel the workflow gains, and help us shape an even stronger product.",
-    pilotPoints: ["Direct APK download", "Simple account creation", "Access reserved for pilot coaches", "A clear path for improvements and real feedback"],
+      "APEX COACH was designed to give coaches more session agility, more control over each client, and a more professional daily experience. All inside an app built to simplify what usually consumes time and energy.",
+    pilotPoints: ["Direct APK download", "Simple account creation", "Immediate login", "A clearer and more professional experience"],
     faqTag: "FAQ",
     faqTitle: "Questions a coach will want answered before joining",
     faqItems: [
       { title: "Why are we focusing on the app first?", text: "Because the app is where the coach lives the most critical part of the job. We want that experience to be truly strong before the second web step." },
       { title: "Will the web version exist?", text: "Yes. But first we want the product core to feel clean, fast, and consistent in real field usage." },
-      { title: "Who should join this pilot phase?", text: "Coaches who want to test a new working tool and help us push it to a more professional level." },
+      { title: "Who is APEX COACH built for?", text: "For coaches who want to work with more speed, better organization, and more control in the way they follow each client." },
     ],
     closingTitle: "If you want to work with more flow, this is the right time to join.",
     closingText:
       "APEX COACH is being refined with real coaches to become a faster, more intuitive, and more valuable tool. Join now, test it in the field, and help us build something genuinely strong.",
-    closingPrimary: "Request pilot access",
+    closingPrimary: "Create account",
     closingSecondary: "Download now",
-    modalTitle: "I want to join as a pilot coach",
+    modalTitle: "I want to start using APEX COACH",
     modalText:
-      "We are opening this phase to coaches who want to use the app in real work, feel the daily workflow gain, and help us polish the experience with direct feedback.",
-    modalPrimary: "Request access",
+      "APEX COACH was built for coaches who want to work with more flow, more speed, and more confidence every day. Create your account and get into the app.",
+    modalPrimary: "Create account",
     modalSecondary: "Login",
     closeLabel: "Close",
     login: "Login",
@@ -264,7 +264,7 @@ export default function App() {
             <img src="/logo.png" alt="APEX COACH" className="h-10 w-auto rounded-xl" />
             <div>
               <p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">APEX COACH</p>
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">pilot app</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">coach performance app</p>
             </div>
           </a>
 
@@ -484,11 +484,11 @@ export default function App() {
             <img src="/logo.png" alt="APEX COACH" className="h-8 w-auto rounded-lg" />
             <div>
               <p className="font-medium text-[var(--text)]">APEX COACH</p>
-              <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">pilot app landing</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">mobile coaching app</p>
             </div>
           </div>
 
-          <p className="text-center text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">App first. Pilot feedback now. Web later.</p>
+          <p className="text-center text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Faster sessions. Clearer coaching. Better work every day.</p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
             <Link href="/legal/privacy" className="hover:text-[var(--text)]">Privacy</Link>
