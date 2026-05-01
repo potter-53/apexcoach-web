@@ -17,6 +17,9 @@
   --accent-strong: #0f9f57;
   --accent-soft: #ddf8e9;
   --accent-foreground: #041009;
+  --brand-mid: #1fc06f;
+  --brand-soft-blue: #4d87c7;
+  --brand-gradient: linear-gradient(90deg, var(--accent-strong) 0%, var(--brand-mid) 46%, var(--brand-soft-blue) 100%);
   --electric: #7c4dff;
   --electric-soft: rgba(124, 77, 255, 0.08);
   --shadow-soft: 0 20px 60px rgba(14, 17, 16, 0.08);
