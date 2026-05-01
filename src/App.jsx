@@ -466,7 +466,7 @@ function SectionLabel({ children }) {
 }
 
 function BrandMark() {
-  return <span className="bg-[var(--brand-gradient)] bg-clip-text italic text-transparent">APEX COACH</span>;
+  return <span className="bg-[image:var(--brand-gradient)] bg-clip-text italic text-transparent">APEX COACH</span>;
 }
 
 function renderBrandText(text) {
@@ -735,7 +735,7 @@ export default function App() {
             <h1 className="mt-8 text-5xl font-semibold leading-[1.02] text-[var(--text)] sm:text-6xl xl:text-7xl">
               <span className="block">{renderBrandText(t.titleA)}</span>
               <span className="block text-[var(--text)]">{renderBrandText(t.titleB)}</span>
-              <span className="block bg-[var(--brand-gradient)] bg-clip-text text-transparent">{renderBrandText(t.titleC)}</span>
+              <span className="block bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">{renderBrandText(t.titleC)}</span>
             </h1>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--text-muted)] sm:text-xl">{renderBrandText(t.subtitle)}</p>
 
