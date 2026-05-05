@@ -465,15 +465,53 @@ function SectionLabel({ children }) {
   return <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--accent)]">{children}</p>;
 }
 
-function BrandMark() {
-  return <span className="bg-[image:var(--brand-gradient)] bg-clip-text italic text-transparent">APEX COACH</span>;
+function BrandLogoIcon({ className = "h-10 w-10" }) {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true" className={className}>
+      <defs>
+        <linearGradient id="apex-logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="var(--accent-strong)" />
+          <stop offset="52%" stopColor="var(--brand-mid)" />
+          <stop offset="100%" stopColor="var(--brand-soft-blue)" />
+        </linearGradient>
+      </defs>
+      <path d="M7 34.5 18.5 30V41H7v-6.5Z" fill="url(#apex-logo-gradient)" />
+      <path d="M19.75 24.5 31 18.5V41H19.75V24.5Z" fill="url(#apex-logo-gradient)" opacity="0.92" />
+      <path d="M32.25 11.75 41 7v34h-8.75V11.75Z" fill="url(#apex-logo-gradient)" opacity="0.84" />
+      <path d="M6.25 41 23.5 22.25l4.25 3.25L42 9.75V41H6.25Z" fill="rgba(14,17,16,0.12)" />
+      <path d="M31.75 41h9.5" stroke="var(--text)" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function BrandMark({ neutralClass = "text-[var(--text)]", sizeClass = "text-inherit", compact = false }) {
+  return (
+    <span className={`inline-flex items-baseline ${compact ? "gap-1.5" : "gap-2.5"} italic ${sizeClass}`}>
+      <span className={`text-current ${neutralClass}`}>APEX</span>
+      <span className="inline-block bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">COACH</span>
+    </span>
+  );
+}
+
+function BrandLockup() {
+  return (
+    <>
+      <BrandLogoIcon className="h-10 w-10 shrink-0" />
+      <div>
+        <p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]">
+          <BrandMark compact />
+        </p>
+        <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">professional coaching app</p>
+      </div>
+    </>
+  );
 }
 
 function renderBrandText(text) {
   if (typeof text !== "string") return text;
   const normalized = text.replace(/\*APEX COACH\*/g, "APEX COACH");
   const parts = normalized.split("APEX COACH");
-  return parts.flatMap((part, index) => (index === parts.length - 1 ? [part] : [part, <BrandMark key={`brand-${index}`} />]));
+  return parts.flatMap((part, index) => (index === parts.length - 1 ? [part] : [part, <BrandMark key={`brand-${index}`} compact sizeClass="text-inherit" />]));
 }
 
 function Chip({ children }) {
@@ -661,11 +699,7 @@ export default function App() {
       <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[rgba(255,255,255,0.78)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <a href="#top" className="flex items-center gap-4">
-            <img src="/logo.png" alt="APEX COACH" className="h-10 w-auto rounded-xl" />
-            <div>
-              <p className="text-sm font-semibold tracking-[0.18em] text-[var(--text)]"><BrandMark /></p>
-              <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">professional coaching app</p>
-            </div>
+            <BrandLockup />
           </a>
 
           <nav className="hidden items-center gap-2 lg:flex">
@@ -1000,9 +1034,9 @@ export default function App() {
       <footer className="border-t border-[var(--border)]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-5 py-8 text-sm text-[var(--text-muted)] lg:flex-row lg:px-8">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="APEX COACH" className="h-8 w-auto rounded-lg" />
+            <BrandLogoIcon className="h-8 w-8 shrink-0" />
             <div>
-              <p className="font-medium text-[var(--text)]"><BrandMark /></p>
+              <p className="font-medium text-[var(--text)]"><BrandMark compact /></p>
               <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">mobile coaching app</p>
             </div>
           </div>
