@@ -18,6 +18,7 @@ const copy = {
     ],
     backToLanding: "Back to landing",
     haveAccount: "I already have an account",
+    downloadNow: "Download APK",
     badge: "Create your coach account",
     title: "Create your account for APEX COACH.",
     text: "This is the single front door for the coach: same account, same logic, mobile app in the field and premium browser on desktop.",
@@ -37,6 +38,7 @@ const copy = {
     createContinue: "Create account and continue",
     identityTitle: "Single coach identity",
     identityText: "Create the account once and use the same identity for the field app and the premium browser workspace.",
+    downloadHint: "Prefer to install the app first? Download the current Android APK and create your coach account afterwards.",
   },
   pt: {
     highlights: [
@@ -46,6 +48,7 @@ const copy = {
     ],
     backToLanding: "Voltar a landing",
     haveAccount: "Ja tenho conta",
+    downloadNow: "Download APK",
     badge: "Cria a tua conta coach",
     title: "Cria a tua conta para APEX COACH.",
     text: "Esta e a entrada unica do coach: mesma conta, mesma logica, app mobile no terreno e browser premium no desktop.",
@@ -65,6 +68,7 @@ const copy = {
     createContinue: "Criar conta e continuar",
     identityTitle: "Identidade unica do coach",
     identityText: "Cria a conta uma vez e usa a mesma identidade na app de terreno e no workspace browser premium.",
+    downloadHint: "Preferes instalar primeiro a app? Faz download da APK Android atual e cria a tua conta coach depois.",
   },
   es: {
     highlights: [
@@ -74,6 +78,7 @@ const copy = {
     ],
     backToLanding: "Volver a la landing",
     haveAccount: "Ya tengo cuenta",
+    downloadNow: "Download APK",
     badge: "Crea tu cuenta coach",
     title: "Crea tu cuenta para APEX COACH.",
     text: "Esta es la entrada unica del coach: misma cuenta, misma logica, app movil en el campo y browser premium en escritorio.",
@@ -93,6 +98,7 @@ const copy = {
     createContinue: "Crear cuenta y continuar",
     identityTitle: "Identidad unica del coach",
     identityText: "Crea la cuenta una vez y usa la misma identidad en la app de campo y en el workspace browser premium.",
+    downloadHint: "Prefieres instalar primero la app? Descarga el APK Android actual y crea tu cuenta coach despues.",
   },
   fr: {
     highlights: [
@@ -102,6 +108,7 @@ const copy = {
     ],
     backToLanding: "Retour a la landing",
     haveAccount: "J'ai deja un compte",
+    downloadNow: "Download APK",
     badge: "Cree ton compte coach",
     title: "Cree ton compte pour APEX COACH.",
     text: "C'est l'entree unique du coach : meme compte, meme logique, app mobile sur le terrain et navigateur premium sur desktop.",
@@ -121,6 +128,7 @@ const copy = {
     createContinue: "Creer le compte et continuer",
     identityTitle: "Identite coach unique",
     identityText: "Cree le compte une seule fois et utilise la meme identite dans l'app terrain et dans le workspace navigateur premium.",
+    downloadHint: "Tu preferes installer l'app d'abord ? Telecharge l'APK Android actuel puis cree ton compte coach.",
   },
 };
 
@@ -335,6 +343,17 @@ export default function SignupClient() {
           </Link>
         </div>
 
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <a
+            href="/download/apk"
+            onClick={() => trackEvent("landing_signup_top_download_click", { locale })}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text)]"
+          >
+            <Smartphone size={16} />
+            {t.downloadNow}
+          </a>
+        </div>
+
         <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[0.95fr_1.05fr]">
           <section className="max-w-xl">
             <div className="inline-flex rounded-full border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-4 py-2 text-sm font-medium text-[var(--accent-strong)]">
@@ -359,6 +378,28 @@ export default function SignupClient() {
                   <p className="text-[var(--text-muted)]">{item}</p>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-8 rounded-[24px] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-soft)]">
+              <div className="flex items-start gap-3">
+                <div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]">
+                  <Smartphone size={18} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-[var(--text)]">{t.downloadNow}</h3>
+                  <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{t.downloadHint}</p>
+                  <div className="mt-4">
+                    <a
+                      href="/download/apk"
+                      onClick={() => trackEvent("landing_signup_side_download_click", { locale })}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-sm font-semibold text-[var(--text)]"
+                    >
+                      <Smartphone size={16} />
+                      {t.downloadNow}
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 

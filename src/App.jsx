@@ -23,6 +23,7 @@ const copy = {
       "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar alunos e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
     primaryCta: "Começar trial grátis 14 dias",
     secondaryCta: "Criar conta",
+    downloadCta: "Download APK",
     trust1: "Clients ilimitados",
     trust2: "Periodização e protocolos",
     trust3: "Templates, tags e tracking",
@@ -248,6 +249,7 @@ const copy = {
       "Built for real coaching environments, APEX COACH allows coaches to manage sessions, adjust loads, follow clients, and record critical information with far less operational friction. It is the right solution for professionals seeking greater efficiency, clearer oversight, and a more elevated standard of work.",
     primaryCta: "Start 14-day free trial",
     secondaryCta: "Create account",
+    downloadCta: "Download APK",
     trust1: "Unlimited clients",
     trust2: "Periodization and protocols",
     trust3: "Templates, tags, and tracking",
@@ -731,6 +733,13 @@ export default function App() {
               <Link href="/login" onClick={() => trackEvent("landing_header_login_click", { locale: lang })} className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 text-sm font-semibold text-[var(--text)]">
                 {t.login}
               </Link>
+              <a
+                href="/download/apk"
+                onClick={() => trackEvent("landing_header_download_click", { locale: lang })}
+                className="rounded-full border border-[var(--border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--text)]"
+              >
+                {t.downloadCta}
+              </a>
               <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
                 {t.primaryCta}
               </Link>
@@ -753,6 +762,16 @@ export default function App() {
               <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-center text-sm font-semibold text-[var(--text)]">
                 {t.login}
               </Link>
+              <a
+                href="/download/apk"
+                onClick={() => {
+                  trackEvent("landing_mobile_download_click", { locale: lang });
+                  setMobileMenuOpen(false);
+                }}
+                className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 text-center text-sm font-semibold text-[var(--text)]"
+              >
+                {t.downloadCta}
+              </a>
               <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="rounded-2xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-semibold text-[var(--accent-foreground)]">
                 {t.primaryCta}
               </Link>
@@ -779,6 +798,13 @@ export default function App() {
                 {t.primaryCta}
                 <ArrowRight size={18} />
               </Link>
+              <a
+                href="/download/apk"
+                onClick={() => trackEvent("landing_hero_download_click", { locale: lang })}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-6 py-4 text-base font-semibold text-[var(--text)]"
+              >
+                {t.downloadCta}
+              </a>
               <button onClick={() => setModalOpen(true)} className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-6 py-4 text-base font-semibold text-[var(--text)]">
                 {t.secondaryCta}
               </button>
