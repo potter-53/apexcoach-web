@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
-  Copy,
   LoaderCircle,
   Smartphone,
 } from "lucide-react";
@@ -21,11 +21,11 @@ const copyByLocale = {
     title: "Ativar conta cliente",
     subtitle:
       "Valida o codigo do convite e define a tua palavra-passe para ativar o acesso na app APEX COACH.",
-    code: "Codigo de convite",
     email: "Email",
     password: "Palavra-passe",
-    goals: "Objetivo principal (opcional)",
-    validate: "Validar convite",
+    confirmPassword: "Confirmar palavra-passe",
+    goals: "Objetivo principal",
+    validate: "A validar convite...",
     create: "Criar conta e ativar convite",
     creating: "A ativar...",
     invalidCode: "Codigo de convite invalido ou expirado.",
@@ -39,6 +39,13 @@ const copyByLocale = {
     confirmEmail:
       "Conta criada. Confirma o email e depois faz login na app para concluir a ativacao.",
     fallbackError: "Nao foi possivel concluir o registo.",
+    doneApex:
+      "Bem-vindo(a) a APEX COACH. A tua conta está ativa e pronta para elevar o teu processo.",
+    successPopupTitle: "Conta ativa",
+    successPopupText: "Queres fazer download da APK agora ou voltar à landing page?",
+    goLandingNow: "Voltar à landing",
+    autoRedirectIn: "Redirecionamento automático em",
+    popupPendingEmail: "Conta criada. Confirma o email e depois abre a app.",
     coach: "Coach",
     client: "Cliente",
   },
@@ -48,11 +55,11 @@ const copyByLocale = {
     title: "Activate client account",
     subtitle:
       "Validate the invite code and set your password to activate access in APEX COACH app.",
-    code: "Invite code",
     email: "Email",
     password: "Password",
-    goals: "Primary goal (optional)",
-    validate: "Validate invite",
+    confirmPassword: "Confirm password",
+    goals: "Primary goal",
+    validate: "Validating invite...",
     create: "Create account and activate invite",
     creating: "Activating...",
     invalidCode: "Invite code is invalid or expired.",
@@ -66,12 +73,21 @@ const copyByLocale = {
     confirmEmail:
       "Account created. Confirm your email and then login in the app to finish activation.",
     fallbackError: "Could not complete signup.",
+    doneApex:
+      "Welcome to APEX COACH. Your account is now active and ready to elevate your journey.",
+    successPopupTitle: "Account active",
+    successPopupText: "Do you want to download the APK now or go back to the landing page?",
+    goLandingNow: "Back to landing",
+    autoRedirectIn: "Auto redirect in",
+    popupPendingEmail: "Account created. Confirm your email and then open the app.",
     coach: "Coach",
     client: "Client",
   },
 };
 
-function detectLocale() {
+function detectLocale(searchParams) {
+  const queryLang = (searchParams?.get("lang") ?? "").toLowerCase().trim();
+  if (queryLang === "pt" || queryLang === "en") return queryLang;
   if (typeof navigator === "undefined") return "en";
   return navigator.language?.toLowerCase().startsWith("pt") ? "pt" : "en";
 }
@@ -87,6 +103,8 @@ function describeError(error, locale = "en") {
 }
 
 export default function ClientSignupClient() {
+  const uiVersion = "signup-v2026-05-06-3";
+  const router = useRouter();
   const searchParams = useSearchParams();
   const configured = useMemo(() => isSupabaseConfigured(), []);
   const [locale, setLocale] = useState("en");
@@ -95,19 +113,50 @@ export default function ClientSignupClient() {
   const [inviteCode, setInviteCode] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [goals, setGoals] = useState("");
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [invitePreview, setInvitePreview] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(20);
+  const [popupText, setPopupText] = useState("");
+  const [signupCompleted, setSignupCompleted] = useState(false);
 
   useEffect(() => {
-    setLocale(detectLocale());
+    setLocale(detectLocale(searchParams));
     const codeFromQuery =
       (searchParams.get("signup_code") ?? searchParams.get("code") ?? "").trim();
     if (codeFromQuery) setInviteCode(codeFromQuery);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!inviteCode.trim() || invitePreview || loadingPreview) return;
+    validateInvite();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inviteCode]);
+
+  useEffect(() => {
+    if (!showSuccessPopup) return;
+    setRedirectCountdown(20);
+    const intervalId = window.setInterval(() => {
+      setRedirectCountdown((prev) => (prev > 1 ? prev - 1 : 0));
+    }, 1000);
+    const timeoutId = window.setTimeout(() => {
+      router.push("/");
+    }, 20000);
+    return () => {
+      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [showSuccessPopup, router]);
+
+  useEffect(() => {
+    if (!signupCompleted) return;
+    setShowSuccessPopup(true);
+  }, [signupCompleted]);
 
   const appDeepLink = useMemo(() => {
     const code = encodeURIComponent(inviteCode.trim());
@@ -137,7 +186,7 @@ export default function ClientSignupClient() {
       if (!row) throw new Error(t.invalidCode);
 
       setInvitePreview(row);
-      if (!email.trim() && row.email) setEmail(String(row.email));
+      if (row.email) setEmail(String(row.email));
       setSuccessMessage(t.inviteOk);
     } catch (error) {
       setInvitePreview(null);
@@ -155,6 +204,10 @@ export default function ClientSignupClient() {
     }
     if (!invitePreview) {
       setErrorMessage(t.invalidCode);
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage(locale === "pt" ? "As palavras-passe nao coincidem." : "Passwords do not match.");
       return;
     }
     setSubmitting(true);
@@ -183,16 +236,36 @@ export default function ClientSignupClient() {
         if (signUpError) throw signUpError;
         if (!signUpData.session) {
           setSuccessMessage(t.confirmEmail);
+          setPopupText(t.popupPendingEmail ?? t.confirmEmail);
+          setSignupCompleted(true);
           return;
         }
       }
 
-      const { error: acceptError } = await supabase.rpc("accept_client_invite", {
+      const { data: acceptData, error: acceptError } = await supabase.rpc("accept_client_invite", {
         p_invite_token: cleanCode,
         p_client_goals: goals.trim(),
       });
       if (acceptError) throw acceptError;
-      setSuccessMessage(t.done);
+
+      // Fallback persistence in case RPC path does not propagate goals in some envs.
+      const normalizedGoals = goals.trim();
+      if (normalizedGoals.length > 0) {
+        const acceptedRow = Array.isArray(acceptData) ? acceptData[0] : acceptData;
+        const studentId = String(invitePreview?.student_id ?? acceptedRow?.student_id ?? "").trim();
+        if (studentId) {
+          await supabase
+            .from("students")
+            .update({
+              client_goals: normalizedGoals,
+              main_goal: normalizedGoals,
+            })
+            .eq("id", studentId);
+        }
+      }
+      setSuccessMessage(t.doneApex ?? t.done);
+      setPopupText(t.doneApex ?? t.done);
+      setSignupCompleted(true);
     } catch (error) {
       setErrorMessage(describeError(error, locale));
     } finally {
@@ -201,9 +274,9 @@ export default function ClientSignupClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <main className="h-[100dvh] overflow-hidden bg-[var(--bg)] text-[var(--text)]">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_22%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_52%,#f2f4f3_100%)]" />
-      <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-5 py-8 lg:px-8">
+      <div className="mx-auto flex h-[100dvh] max-w-2xl flex-col px-3 py-2 lg:px-5">
         <Link
           href="/"
           className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm text-[var(--text-muted)]"
@@ -212,63 +285,72 @@ export default function ClientSignupClient() {
           {t.back}
         </Link>
 
-        <section className="mt-8 rounded-[32px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)] sm:p-8">
-          <div className="inline-flex rounded-full border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-4 py-2 text-sm font-medium text-[var(--accent-strong)]">
+        <section className="mt-2 flex-1 overflow-hidden rounded-[24px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-3 shadow-[var(--shadow-panel)] sm:p-4">
+          <div className="mb-1 text-right text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+            {uiVersion}
+          </div>
+          <div className="inline-flex rounded-full border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-3 py-1.5 text-xs font-semibold text-[var(--accent-strong)]">
             {t.badge}
           </div>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight">{t.title}</h1>
-          <p className="mt-3 text-[var(--text-muted)]">{t.subtitle}</p>
+          <h1 className="mt-2 text-[2rem] font-semibold leading-tight sm:text-[2.2rem]">{t.title}</h1>
+          <p className="mt-1.5 text-[13px] text-[var(--text-muted)]">{t.subtitle}</p>
+
+          {!inviteCode.trim() && (
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-amber-700">
+              <AlertCircle size={18} className="mt-0.5 shrink-0" />
+              <p className="text-sm">
+                {locale === "pt"
+                  ? "Este link nao tem signup_code. Pede ao coach para reenviar o convite."
+                  : "This link has no signup_code. Ask your coach to resend the invite."}
+              </p>
+            </div>
+          )}
 
           {!!errorMessage && (
-            <div className="mt-5 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700">
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-rose-700">
               <AlertCircle size={18} className="mt-0.5 shrink-0" />
               <p className="text-sm">{errorMessage}</p>
             </div>
           )}
 
           {!!successMessage && (
-            <div className="mt-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700">
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700">
               <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
               <p className="text-sm">{successMessage}</p>
             </div>
           )}
 
-          <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
-            <label className="grid gap-2">
-              <span className="text-sm text-[var(--text-muted)]">{t.code}</span>
-              <div className="flex gap-2">
-                <input
-                  value={inviteCode}
-                  onChange={(event) => setInviteCode(event.target.value)}
-                  className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
-                  required
-                />
+          {signupCompleted ? (
+            <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-800">
+              <div className="flex items-center justify-between gap-2 text-sm font-semibold">
+                <span>{t.successPopupTitle}</span>
+                <span className="text-xs font-medium text-emerald-700">
+                  {t.autoRedirectIn} {redirectCountdown}s
+                </span>
+              </div>
+              <p className="mt-1 text-sm">{popupText || t.successPopupText}</p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <a
+                  href="/download/apk"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
+                >
+                  <Smartphone size={16} />
+                  {t.download}
+                </a>
                 <button
                   type="button"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(inviteCode.trim());
-                    setSuccessMessage(t.copied);
-                  }}
-                  className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-3"
-                  title={t.copyCode}
+                  onClick={() => router.push("/")}
+                  className="inline-flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm font-semibold"
                 >
-                  <Copy size={16} />
+                  {t.goLandingNow}
                 </button>
               </div>
-            </label>
+            </div>
+          ) : null}
 
-            <button
-              type="button"
-              onClick={validateInvite}
-              disabled={loadingPreview}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-sm font-semibold"
-            >
-              {loadingPreview ? <LoaderCircle size={16} className="animate-spin" /> : null}
-              {t.validate}
-            </button>
-
+          <form className="mt-3 grid gap-2 overflow-hidden" onSubmit={handleSubmit}>
             {invitePreview ? (
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm">
                 <p>
                   <strong>{t.client}:</strong> {String(invitePreview.client_name ?? "-")}
                 </p>
@@ -278,60 +360,86 @@ export default function ClientSignupClient() {
               </div>
             ) : null}
 
-            <label className="grid gap-2">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-sm text-[var(--text-muted)]">
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate">{inviteCode || "-"}</span>
+                {loadingPreview ? (
+                  <span className="inline-flex items-center gap-2 text-xs">
+                    <LoaderCircle size={14} className="animate-spin" />
+                    {t.validate}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <label className="grid gap-1">
               <span className="text-sm text-[var(--text-muted)]">{t.email}</span>
               <input
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
+                readOnly
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1.5 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
                 required
               />
             </label>
 
-            <label className="grid gap-2">
+            <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1">
               <span className="text-sm text-[var(--text-muted)]">{t.password}</span>
               <input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1.5 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
                 minLength={8}
                 required
               />
             </label>
 
-            <label className="grid gap-2">
+            <label className="grid gap-1">
+              <span className="text-sm text-[var(--text-muted)]">{t.confirmPassword}</span>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1.5 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
+                minLength={8}
+                required
+              />
+            </label>
+            </div>
+
+            <label className="grid gap-1">
               <span className="text-sm text-[var(--text-muted)]">{t.goals}</span>
               <textarea
                 value={goals}
                 onChange={(event) => setGoals(event.target.value)}
-                rows={3}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
+                rows={1}
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1.5 text-[var(--text)] outline-none focus:border-[var(--accent)]/40 focus:bg-white"
               />
             </label>
 
             <button
               type="submit"
-              disabled={submitting || !invitePreview}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={submitting || !invitePreview || !inviteCode.trim()}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitting ? <LoaderCircle size={16} className="animate-spin" /> : null}
               {submitting ? t.creating : t.create}
             </button>
           </form>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
             <a
               href={appDeepLink}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-sm font-semibold"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm font-semibold"
             >
               <Smartphone size={16} />
               {t.openApp}
             </a>
             <a
               href="/download/apk"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
             >
               <Smartphone size={16} />
               {t.download}
@@ -339,7 +447,33 @@ export default function ClientSignupClient() {
           </div>
         </section>
       </div>
+      {showSuccessPopup ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-panel)]">
+            <h2 className="text-xl font-semibold">{t.successPopupTitle}</h2>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">{popupText || t.successPopupText}</p>
+            <p className="mt-2 text-xs text-[var(--text-muted)]">
+              {t.autoRedirectIn} {redirectCountdown}s
+            </p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <a
+                href="/download/apk"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]"
+              >
+                <Smartphone size={16} />
+                {t.download}
+              </a>
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                className="inline-flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2.5 text-sm font-semibold"
+              >
+                {t.goLandingNow}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
-
