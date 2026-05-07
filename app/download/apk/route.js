@@ -1,10 +1,23 @@
+import { access } from "node:fs/promises";
+import path from "node:path";
+
 import { NextResponse } from "next/server";
+
+async function resolveBundledApk(request) {
+  const bundledApkPath = path.join(process.cwd(), "public", "downloads", "apex-coach-latest.apk");
+  try {
+    await access(bundledApkPath);
+    return new URL("/downloads/apex-coach-latest.apk", request.url).toString();
+  } catch {
+    return null;
+  }
+}
 
 function resolveConfiguredUrl(request) {
   const configuredUrl =
     process.env.APK_DIRECT_URL ||
     process.env.NEXT_PUBLIC_APK_DIRECT_URL ||
-    "/downloads/apex-coach-latest.apk";
+    "/signup";
   return new URL(configuredUrl, request.url).toString();
 }
 
@@ -51,6 +64,11 @@ async function resolveLatestFromStorage(request) {
 }
 
 export async function GET(request) {
+  const bundledApkUrl = await resolveBundledApk(request);
+  if (bundledApkUrl) {
+    return NextResponse.redirect(bundledApkUrl, 302);
+  }
+
   const explicitDirect =
     process.env.APK_DIRECT_URL?.trim() ||
     process.env.NEXT_PUBLIC_APK_DIRECT_URL?.trim() ||
