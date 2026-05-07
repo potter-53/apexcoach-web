@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BellRing, Check, Clock3, CreditCard, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
+import { ArrowRight, BellRing, Check, ChevronDown, Clock3, CreditCard, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
 
 import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
@@ -21,7 +21,7 @@ const copy = {
     titleC: "elevar a tua operação.",
     subtitle:
       "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar alunos e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
-    primaryCta: "Experimentar a app",
+    primaryCta: "Começar trial grátis 14 dias",
     secondaryCta: "Criar conta",
     trust1: "Clients ilimitados",
     trust2: "Periodização e protocolos",
@@ -219,7 +219,7 @@ const copy = {
     closingText:
       "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode elevar a tua operação com mais clareza, mais controlo e maior consistência.",
     closingPrimary: "Criar conta",
-    closingSecondary: "Fazer download",
+    closingSecondary: "Fazer download da APK",
     modalTitle: "Quero comecar a usar a APEX COACH",
     modalText:
       "A APEX COACH foi criada para coaches que procuram maior fluidez operacional, maior rapidez de execução e maior segurança no acompanhamento diário. Cria a tua conta e entra na app.",
@@ -246,7 +246,7 @@ const copy = {
     titleC: "elevate your operation.",
     subtitle:
       "Built for real coaching environments, APEX COACH allows coaches to manage sessions, adjust loads, follow clients, and record critical information with far less operational friction. It is the right solution for professionals seeking greater efficiency, clearer oversight, and a more elevated standard of work.",
-    primaryCta: "Explore the app",
+    primaryCta: "Start 14-day free trial",
     secondaryCta: "Create account",
     trust1: "Unlimited clients",
     trust2: "Periodization and protocols",
@@ -444,7 +444,7 @@ const copy = {
     closingText:
       "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how it can elevate the way you operate with more clarity, more control, and stronger consistency.",
     closingPrimary: "Create account",
-    closingSecondary: "Download now",
+    closingSecondary: "Download APK",
     modalTitle: "I want to start using APEX COACH",
     modalText:
       "APEX COACH was built for coaches seeking greater operational flow, faster execution, and more confidence in daily follow-up. Create your account and enter the app.",
@@ -664,6 +664,7 @@ export default function App() {
   const [activeShot, setActiveShot] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
   const t = copy[lang] || copy.en;
 
@@ -730,9 +731,9 @@ export default function App() {
               <Link href="/login" onClick={() => trackEvent("landing_header_login_click", { locale: lang })} className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 text-sm font-semibold text-[var(--text)]">
                 {t.login}
               </Link>
-              <a href="/download/apk" onClick={() => trackEvent("landing_header_apk_click", { locale: lang })} className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
+              <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
                 {t.primaryCta}
-              </a>
+              </Link>
             </div>
 
             <button onClick={() => setMobileMenuOpen((current) => !current)} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text)] lg:hidden" aria-label="Toggle navigation">
@@ -752,9 +753,9 @@ export default function App() {
               <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-center text-sm font-semibold text-[var(--text)]">
                 {t.login}
               </Link>
-              <a href="/download/apk" onClick={() => setMobileMenuOpen(false)} className="rounded-2xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-semibold text-[var(--accent-foreground)]">
+              <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="rounded-2xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-semibold text-[var(--accent-foreground)]">
                 {t.primaryCta}
-              </a>
+              </Link>
             </div>
           </div>
         ) : null}
@@ -774,10 +775,10 @@ export default function App() {
             <p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--text-muted)] sm:text-xl">{renderBrandText(t.subtitle)}</p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <a href="/download/apk" onClick={() => trackEvent("landing_hero_apk_click", { locale: lang })} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.24)]">
+              <Link href="/signup" onClick={() => trackEvent("landing_hero_signup_click", { locale: lang })} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.24)]">
                 {t.primaryCta}
                 <ArrowRight size={18} />
-              </a>
+              </Link>
               <button onClick={() => setModalOpen(true)} className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-6 py-4 text-base font-semibold text-[var(--text)]">
                 {t.secondaryCta}
               </button>
@@ -940,10 +941,10 @@ export default function App() {
                 <h2 className="text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.pilotTitle)}</h2>
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{renderBrandText(t.pilotText)}</p>
                 <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                  <a href="/download/apk" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 font-semibold text-[var(--accent-foreground)]">
+                  <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 font-semibold text-[var(--accent-foreground)]">
                     {t.primaryCta}
                     <ArrowRight size={18} />
-                  </a>
+                  </Link>
                   <Link href="/signup" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-6 py-4 font-semibold text-[var(--text)]">
                     {t.signup}
                   </Link>
@@ -1003,10 +1004,24 @@ export default function App() {
           <SectionLabel>{t.faqTag}</SectionLabel>
           <h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.faqTitle)}</h2>
           <div className="mt-10 grid gap-4">
-            {t.faqItems.map((item) => (
-              <div key={item.title} className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-soft)]">
-                <h3 className="text-xl font-semibold text-[var(--text)]">{item.title}</h3>
-                <p className="mt-3 max-w-4xl text-base leading-8 text-[var(--text-muted)]">{item.text}</p>
+            {t.faqItems.map((item, index) => (
+              <div key={item.title} className="overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)]">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaqIndex((current) => (current === index ? -1 : index))}
+                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition hover:bg-[var(--surface-muted)]"
+                >
+                  <h3 className="text-xl font-semibold text-[var(--text)]">{item.title}</h3>
+                  <ChevronDown
+                    size={18}
+                    className={`shrink-0 text-[var(--text-muted)] transition-transform ${openFaqIndex === index ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {openFaqIndex === index ? (
+                  <div className="border-t border-[var(--border)] px-6 py-5">
+                    <p className="max-w-4xl text-base leading-8 text-[var(--text-muted)]">{item.text}</p>
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
