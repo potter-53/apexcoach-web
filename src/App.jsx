@@ -730,14 +730,15 @@ export default function App() {
             </div>
 
             <div className="hidden items-center gap-3 lg:flex">
-              <Link href="/login" onClick={() => trackEvent("landing_header_login_click", { locale: lang })} className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 text-sm font-semibold text-[var(--text)]">
+              <Link href="/login" onClick={() => trackEvent("landing_header_login_click", { locale: lang })} className="px-1 text-sm font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
                 {t.login}
               </Link>
               <a
                 href="/download/apk"
                 onClick={() => trackEvent("landing_header_download_click", { locale: lang })}
-                className="rounded-full border border-[var(--border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--text)]"
+                className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
               >
+                <Smartphone size={15} />
                 {t.downloadCta}
               </a>
               <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
@@ -801,13 +802,21 @@ export default function App() {
               <a
                 href="/download/apk"
                 onClick={() => trackEvent("landing_hero_download_click", { locale: lang })}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-6 py-4 text-base font-semibold text-[var(--text)]"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-6 py-4 text-base font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
               >
+                <Smartphone size={18} />
                 {t.downloadCta}
               </a>
-              <button onClick={() => setModalOpen(true)} className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-6 py-4 text-base font-semibold text-[var(--text)]">
-                {t.secondaryCta}
-              </button>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--text-muted)]">
+              <span>{lang === "pt" ? "Ja tens conta?" : "Already have an account?"}</span>
+              <Link
+                href="/login"
+                onClick={() => trackEvent("landing_hero_login_click", { locale: lang })}
+                className="font-semibold text-[var(--text)] transition hover:text-[var(--accent-strong)]"
+              >
+                {t.login}
+              </Link>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">

@@ -323,7 +323,7 @@ export default function SignupClient() {
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_22%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_52%,#f2f4f3_100%)]" />
 
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-8 lg:px-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/"
             onClick={() => trackEvent("landing_signup_back_click", { locale })}
@@ -333,25 +333,24 @@ export default function SignupClient() {
             {t.backToLanding}
           </Link>
 
-          <Link
-            href="/login"
-            onClick={() => trackEvent("landing_signup_to_login_click", { locale })}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
-          >
-            {t.haveAccount}
-            <ArrowRight size={16} />
-          </Link>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <a
-            href="/download/apk"
-            onClick={() => trackEvent("landing_signup_top_download_click", { locale })}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text)]"
-          >
-            <Smartphone size={16} />
-            {t.downloadNow}
-          </a>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="/download/apk"
+              onClick={() => trackEvent("landing_signup_top_download_click", { locale })}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
+            >
+              <Smartphone size={16} />
+              {t.downloadNow}
+            </a>
+            <Link
+              href="/login"
+              onClick={() => trackEvent("landing_signup_to_login_click", { locale })}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
+            >
+              {t.haveAccount}
+              <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
 
         <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[0.95fr_1.05fr]">
@@ -388,15 +387,22 @@ export default function SignupClient() {
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-[var(--text)]">{t.downloadNow}</h3>
                   <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{t.downloadHint}</p>
-                  <div className="mt-4">
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
                     <a
                       href="/download/apk"
                       onClick={() => trackEvent("landing_signup_side_download_click", { locale })}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-sm font-semibold text-[var(--text)]"
+                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-white"
                     >
                       <Smartphone size={16} />
                       {t.downloadNow}
                     </a>
+                    <Link
+                      href="/login"
+                      onClick={() => trackEvent("landing_signup_side_login_click", { locale })}
+                      className="text-sm font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]"
+                    >
+                      {locale === "pt" ? "Ja tens conta? Faz login" : "Already have an account? Login"}
+                    </Link>
                   </div>
                 </div>
               </div>
