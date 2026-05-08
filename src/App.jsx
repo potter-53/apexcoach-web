@@ -169,7 +169,7 @@ const copy = {
     flowTag: "Fluxo do coach",
     flowTitle: "Pensada para acompanhar o coach desde a preparação até ao fecho da sessão.",
     flowCards: [
-      { title: "Acesso imediato", text: "Chegar rapidamente Ã  ação certa, sem navegação excessiva nem etapas desnecessárias." },
+      { title: "Acesso imediato", text: "Chegar rapidamente à ação certa, sem navegação excessiva nem etapas desnecessárias." },
       { title: "Registo em contexto", text: "Registar notas, ajustar cargas e conduzir a sessão sem comprometer o ritmo do treino." },
       { title: "Acompanhamento qualificado", text: "Interpretar com mais rapidez o que mudou em cada aluno e decidir com maior segurança técnica." },
     ],
@@ -712,8 +712,11 @@ function ProductMatrix({ lang = "en" }) {
         <table className="min-w-[920px] border-collapse text-left">
           <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
             <tr>
-              {headers.map((header) => (
-                <th key={header} className="px-5 py-4 text-sm font-semibold text-[var(--text)]">
+              {headers.map((header, index) => (
+                <th
+                  key={header}
+                  className={`px-5 py-4 text-sm font-semibold text-[var(--text)] ${index === 4 ? "bg-[rgba(42,208,125,0.10)]" : ""}`}
+                >
                   {header}
                 </th>
               ))}
@@ -726,7 +729,10 @@ function ProductMatrix({ lang = "en" }) {
                   <span className="font-semibold">{row[0]}</span>
                 </td>
                 {row.slice(1).map((value, index) => (
-                  <td key={`${row[0]}-${index}`} className="border-t border-[var(--border)] px-5 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)]">
+                  <td
+                    key={`${row[0]}-${index}`}
+                    className={`border-t border-[var(--border)] px-5 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)] ${index === 3 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
+                  >
                     <div className="flex justify-center">{renderStatus(value)}</div>
                   </td>
                 ))}
@@ -1030,16 +1036,6 @@ export default function App() {
         </section>
 
         <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-          <SectionLabel>{t.capabilityTag}</SectionLabel>
-          <h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.capabilityTitle)}</h2>
-          <div className="mt-10 grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
-            {t.capabilityCards.map((card) => (
-              <CapabilityCard key={card.title} title={card.title} text={card.text} />
-            ))}
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <SectionLabel>{t.clientValueTag}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
@@ -1068,6 +1064,11 @@ export default function App() {
                   {lang === "pt"
                     ? "Uma única matriz, sem ruído, para mostrar o que já está disponível na app, onde a concorrência responde melhor ou pior, e como a visão completa da APEX COACH fica consolidada na v2."
                     : "A single matrix, without extra noise, to show what is already available in the app, where competitors respond better or worse, and how the complete APEX COACH vision is consolidated in v2."}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+                  {lang === "pt"
+                    ? "Os preços apresentados são preços públicos de entrada verificados nas páginas oficiais em 8 de maio de 2026."
+                    : "Displayed prices are public entry prices verified on the official pricing pages on May 8, 2026."}
                 </p>
               </div>
               <div>
