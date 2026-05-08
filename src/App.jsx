@@ -730,19 +730,16 @@ export default function App() {
             </div>
 
             <div className="hidden items-center gap-3 lg:flex">
-              <Link href="/login" onClick={() => trackEvent("landing_header_login_click", { locale: lang })} className="px-1 text-sm font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
-                {t.login}
-              </Link>
               <a
                 href="/download/apk"
                 onClick={() => trackEvent("landing_header_download_click", { locale: lang })}
-                className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
               >
                 <Smartphone size={15} />
                 {t.downloadCta}
               </a>
-              <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
-                {t.primaryCta}
+              <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="whitespace-nowrap rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
+                {lang === "pt" ? "Trial grÃ¡tis 14 dias" : "14-day free trial"}
               </Link>
             </div>
 
@@ -760,9 +757,6 @@ export default function App() {
                   {item.label}
                 </a>
               ))}
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-center text-sm font-semibold text-[var(--text)]">
-                {t.login}
-              </Link>
               <a
                 href="/download/apk"
                 onClick={() => {
@@ -808,17 +802,6 @@ export default function App() {
                 {t.downloadCta}
               </a>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--text-muted)]">
-              <span>{lang === "pt" ? "Ja tens conta?" : "Already have an account?"}</span>
-              <Link
-                href="/login"
-                onClick={() => trackEvent("landing_hero_login_click", { locale: lang })}
-                className="font-semibold text-[var(--text)] transition hover:text-[var(--accent-strong)]"
-              >
-                {t.login}
-              </Link>
-            </div>
-
             <div className="mt-8 flex flex-wrap gap-3">
               <Chip>{t.trust1}</Chip>
               <Chip>{t.trust2}</Chip>
@@ -1031,6 +1014,58 @@ export default function App() {
                 monthly={t.regularMonthly}
                 yearly={t.regularYearly}
               />
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <div className="rounded-[36px] border border-[var(--border-strong)] bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(246,248,247,0.96),rgba(124,77,255,0.04))] p-8 shadow-[var(--shadow-panel)] lg:p-12">
+            <SectionLabel>Coming up next</SectionLabel>
+            <div className="mt-5 grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+              <div>
+                <h2 className="max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
+                  {lang === "pt" ? "O que vem nas proximas versoes da APEX COACH." : "What is coming in the next APEX COACH releases."}
+                </h2>
+                <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">
+                  {lang === "pt"
+                    ? "A app continua a evoluir para elevar a tua operacao com mais profundidade, mais conectividade e mais controlo sobre o ecossistema do coach."
+                    : "The app continues to evolve to elevate your operation with more depth, more connectivity, and stronger control across the coach ecosystem."}
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    title: lang === "pt" ? "Plataforma web" : "Web platform",
+                    text:
+                      lang === "pt"
+                        ? "Uma extensao natural da app para leitura mais ampla, gestao operacional e workflows mais fortes em desktop."
+                        : "A natural extension of the app for broader visibility, operational management, and stronger desktop workflows.",
+                  },
+                  {
+                    title: "Health app connect",
+                    text:
+                      lang === "pt"
+                        ? "Ligacoes a plataformas de saude e atividade para enriquecer o contexto do aluno com dados externos relevantes."
+                        : "Connections to health and activity platforms so the coach can read more useful external context around each client.",
+                  },
+                  {
+                    title: lang === "pt" ? "Automatismos mais fortes" : "Stronger automations",
+                    text:
+                      lang === "pt"
+                        ? "Mais avisos, seguimentos, logica de packs e tarefas repetitivas reduzidas na operacao diaria."
+                        : "More reminders, follow-ups, pack logic, and less repetitive work inside the day-to-day operation.",
+                  },
+                  {
+                    title: lang === "pt" ? "Ecossistema mais conectado" : "A more connected ecosystem",
+                    text:
+                      lang === "pt"
+                        ? "Mais integracao entre treino, avaliacoes, faturacao, atividade externa e acompanhamento continuo do client."
+                        : "More integration between training, assessments, billing, external activity, and continuous client follow-up.",
+                  },
+                ].map((item) => (
+                  <DetailCard key={item.title} title={item.title} text={item.text} />
+                ))}
+              </div>
             </div>
           </div>
         </section>
