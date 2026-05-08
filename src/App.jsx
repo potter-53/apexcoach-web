@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BellRing, Check, ChevronDown, Clock3, CreditCard, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, CircleDashed, Clock3, CreditCard, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
 
 import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
@@ -631,32 +631,38 @@ function ProductMatrix({ lang = "en" }) {
 
   const rows = isPt
     ? [
-        ["Registar clients", "yes", "yes", "yes", "yes", "soon"],
-        ["Registar assessments", "partial", "yes", "partial", "yes", "soon"],
-        ["Criar treinos", "yes", "yes", "yes", "yes", "soon"],
-        ["Periodização semanal", "partial", "yes", "partial", "yes", "soon"],
-        ["Protocolos de treino", "partial", "yes", "partial", "yes", "soon"],
-        ["Templates e tags", "partial", "yes", "yes", "yes", "soon"],
-        ["Atividades externas", "no", "yes", "partial", "yes", "soon"],
-        ["Tracking global da evolução", "partial", "yes", "yes", "yes", "soon"],
-        ["Faturação e packs", "no", "partial", "yes", "yes", "soon"],
-        ["Plataforma web", "yes", "yes", "yes", "no", "soon"],
-        ["Health app connect", "partial", "partial", "partial", "no", "soon"],
-        ["Automatismos", "partial", "partial", "partial", "partial", "soon"],
+        ["Registar clients", "yes", "yes", "yes", "yes", "yes"],
+        ["Registar assessments", "partial", "yes", "partial", "yes", "yes"],
+        ["Criar treinos", "yes", "yes", "yes", "yes", "yes"],
+        ["Base de dados de exercícios", "yes", "partial", "yes", "yes", "yes"],
+        ["Periodização semanal", "partial", "yes", "yes", "yes", "yes"],
+        ["Protocolos de treino", "partial", "yes", "yes", "yes", "yes"],
+        ["Templates e tags", "yes", "yes", "partial", "yes", "yes"],
+        ["Atividades externas", "no", "yes", "partial", "yes", "yes"],
+        ["Tracking global da evolução", "partial", "yes", "yes", "yes", "yes"],
+        ["Gestão de PSE", "no", "partial", "partial", "yes", "yes"],
+        ["Faturação e packs", "yes", "yes", "yes", "yes", "yes"],
+        ["App para o client", "yes", "yes", "yes", "yes", "yes"],
+        ["Plataforma web", "yes", "yes", "yes", "no", "yes"],
+        ["Health app connect", "yes", "partial", "partial", "no", "yes"],
+        ["Automatismos", "partial", "yes", "yes", "partial", "yes"],
       ]
     : [
-        ["Register clients", "yes", "yes", "yes", "yes", "soon"],
-        ["Register assessments", "partial", "yes", "partial", "yes", "soon"],
-        ["Create training", "yes", "yes", "yes", "yes", "soon"],
-        ["Weekly periodization", "partial", "yes", "partial", "yes", "soon"],
-        ["Training protocols", "partial", "yes", "partial", "yes", "soon"],
-        ["Templates and tags", "partial", "yes", "yes", "yes", "soon"],
-        ["External activities", "no", "yes", "partial", "yes", "soon"],
-        ["Global progress tracking", "partial", "yes", "yes", "yes", "soon"],
-        ["Billing and packs", "no", "partial", "yes", "yes", "soon"],
-        ["Web platform", "yes", "yes", "yes", "no", "soon"],
-        ["Health app connect", "partial", "partial", "partial", "no", "soon"],
-        ["Automations", "partial", "partial", "partial", "partial", "soon"],
+        ["Register clients", "yes", "yes", "yes", "yes", "yes"],
+        ["Register assessments", "partial", "yes", "partial", "yes", "yes"],
+        ["Create training", "yes", "yes", "yes", "yes", "yes"],
+        ["Exercise database", "yes", "partial", "yes", "yes", "yes"],
+        ["Weekly periodization", "partial", "yes", "yes", "yes", "yes"],
+        ["Training protocols", "partial", "yes", "yes", "yes", "yes"],
+        ["Templates and tags", "yes", "yes", "partial", "yes", "yes"],
+        ["External activities", "no", "yes", "partial", "yes", "yes"],
+        ["Global progress tracking", "partial", "yes", "yes", "yes", "yes"],
+        ["RPE management", "no", "partial", "partial", "yes", "yes"],
+        ["Billing and packs", "yes", "yes", "yes", "yes", "yes"],
+        ["Client app", "yes", "yes", "yes", "yes", "yes"],
+        ["Web platform", "yes", "yes", "yes", "no", "yes"],
+        ["Health app connect", "yes", "partial", "partial", "no", "yes"],
+        ["Automations", "partial", "yes", "yes", "partial", "yes"],
       ];
 
   function renderStatus(value) {
@@ -673,14 +679,9 @@ function ProductMatrix({ lang = "en" }) {
         label: isPt ? "Não" : "No",
       },
       partial: {
-        icon: <BellRing size={14} />,
+        icon: <CircleDashed size={14} />,
         className: "border-amber-200 bg-amber-50 text-amber-700",
         label: isPt ? "Parcial" : "Partial",
-      },
-      soon: {
-        icon: <Clock3 size={14} />,
-        className: "border-sky-200 bg-sky-50 text-sky-700",
-        label: isPt ? "Coming soon" : "Coming soon",
       },
     }[status];
 
@@ -726,7 +727,6 @@ function ProductMatrix({ lang = "en" }) {
             { key: "yes", label: isPt ? "Disponível" : "Available" },
             { key: "partial", label: isPt ? "Parcial" : "Partial" },
             { key: "no", label: isPt ? "Não disponível" : "Not available" },
-            { key: "soon", label: isPt ? "Planeado para v2" : "Planned for v2" },
           ].map((item) => (
             <div key={item.key} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2">
               {renderStatus(item.key)}
@@ -1047,13 +1047,13 @@ export default function App() {
               <div>
                 <h2 className="max-w-4xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
                   {lang === "pt"
-                    ? "O que a APEX COACH jÃ¡ faz hoje e o que entra nas prÃ³ximas versÃµes."
-                    : "What APEX COACH already does today and what enters in the next releases."}
+                    ? "O que a APEX COACH faz hoje, face a plataformas reais, e como a v2 fecha o sistema."
+                    : "What APEX COACH already does today, against real platforms, and how v2 closes the system."}
                 </h2>
                 <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--text-muted)]">
                   {lang === "pt"
-                    ? "Em vez de separar o sistema atual do roadmap, esta matriz mostra diretamente o que jÃ¡ estÃ¡ disponÃ­vel na app, onde plataformas generalistas costumam ficar curtas e o que estÃ¡ previsto para a prÃ³xima fase da APEX COACH."
-                    : "Instead of separating the current system from the roadmap, this matrix shows what is already available in the app, where broader platforms often fall short, and what is planned for the next APEX COACH phase."}
+                    ? "Uma única matriz, sem ruído, para mostrar o que já está disponível na app, onde a concorrência responde melhor ou pior, e como a visão completa da APEX COACH fica consolidada na v2."
+                    : "A single matrix, without extra noise, to show what is already available in the app, where competitors respond better or worse, and how the complete APEX COACH vision is consolidated in v2."}
                 </p>
               </div>
               <div>
