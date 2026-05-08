@@ -11,226 +11,228 @@ const screenshots = ["/screenshot_1.jpeg", "/screenshot_2.jpeg", "/screenshot_3.
 const copy = {
   pt: {
     navProduct: "Produto",
-    navFlow: "OperaÃ§Ã£o",
+    navFlow: "Operação",
     navPilot: "Resultados",
     navPricing: "Planos",
     navFaq: "FAQ",
-    badge: "Build your apex and elevate theirs. A aplicaÃ§Ã£o para coaches que exigem mais rigor, mais eficiÃªncia e mais controlo operacional.",
+    badge: "Build your apex and elevate theirs. A aplicação para coaches que exigem mais rigor, mais eficiência e mais controlo operacional.",
     titleA: "A APEX COACH",
     titleB: "foi desenhada para",
-    titleC: "organizar melhor a tua operaÃ§Ã£o.",
+    titleC: "organizar melhor a tua operação.",
     subtitle:
-      "Desenvolvida para o contexto real de intervenÃ§Ã£o, a APEX COACH permite ao coach gerir sessÃµes, ajustar cargas, acompanhar alunos e registar informaÃ§Ã£o crÃ­tica com muito menos fricÃ§Ã£o operacional. Ã‰ a soluÃ§Ã£o certa para quem procura maior eficiÃªncia, maior clareza e uma execuÃ§Ã£o mais profissional.",
-    primaryCta: "ComeÃ§ar trial grÃ¡tis 14 dias",
+      "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar alunos e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
+    primaryCta: "Começar trial grátis 14 dias",
     secondaryCta: "Criar conta",
     downloadCta: "Download APK",
     trust1: "Clients ilimitados",
-    trust2: "PeriodizaÃ§Ã£o e protocolos",
+    trust2: "Periodização e protocolos",
     trust3: "Templates, tags e tracking",
     heroTag: "App no terreno",
-    heroTitle: "Menos fricÃ§Ã£o operacional. Mais critÃ©rio tÃ©cnico. Mais tempo Ãºtil.",
+    heroTitle: "Menos fricção operacional. Mais critério técnico. Mais tempo útil.",
     heroText:
-      "Tudo o que o coach necessita para intervir com qualidade no momento certo: consultar a sessÃ£o, ajustar o treino, rever histÃ³rico, registar notas, acompanhar atividades externas e manter continuidade no acompanhamento sem perder foco.",
+      "Tudo o que o coach necessita para intervir com qualidade no momento certo: consultar a sessão, ajustar o treino, rever histórico, registar notas, acompanhar atividades externas e manter continuidade no acompanhamento sem perder foco.",
     sectionProduct: "Produto",
-    productTitle: "Uma app criada para reforÃ§ar a forma como o coach trabalha.",
+    productTitle: "Uma app criada para reforçar a forma como o coach trabalha.",
     productText:
-      "A APEX COACH nasce para dar ao coach uma experiÃªncia mais limpa, mais rÃ¡pida e mais profissional em contexto real. Foi pensada para reduzir passos desnecessÃ¡rios, clarificar a operaÃ§Ã£o e transformar o dia a dia numa estrutura mais fluida, organizada e consistente.",
-    featureTitle: "O que a app jÃ¡ melhora no trabalho do coach",
+      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, mais rápida e mais profissional em contexto real. Foi pensada para reduzir passos desnecessários, clarificar a operação e transformar o dia a dia numa estrutura mais fluida, organizada e consistente.",
+    featureTitle: "O que a app já melhora no trabalho do coach",
     features: [
-      "Clients ilimitados para acompanhar a tua operaÃ§Ã£o sem limites artificiais",
+      "Clients ilimitados para acompanhar a tua operação sem limites artificiais",
       "Registo simples de cargas, notas, contexto e atividades externas sem quebrar o ritmo",
-      "Leitura mais clara do histÃ³rico, progresso e evoluÃ§Ã£o de cada aluno",
-      "PeriodizaÃ§Ã£o semanal e organizaÃ§Ã£o por protocolos de treino",
-      "Templates e tags para acelerar prescriÃ§Ã£o, repetiÃ§Ã£o e consistÃªncia",
-      "Uma imagem mais profissional e mais premium no trabalho diÃ¡rio",
+      "Leitura mais clara do histórico, progresso e evolução de cada aluno",
+      "Periodização semanal e organização por protocolos de treino",
+      "Templates e tags para acelerar prescrição, repetição e consistência",
+      "Uma imagem mais profissional e mais premium no trabalho diário",
     ],
     differentiatorTag: "Vantagens claras",
-    differentiatorTitle: "Onde a APEX COACH cria uma vantagem operacional real no trabalho diÃ¡rio.",
+    differentiatorTitle: "Onde a APEX COACH cria uma vantagem operacional real no trabalho diário.",
     differentiatorText:
-      "A diferenÃ§a nÃ£o estÃ¡ em ter mais uma app. EstÃ¡ em libertar tempo, reduzir ruÃ­do mental e dar ao coach mais controlo sobre tudo o que realmente importa para melhorar a operaÃ§Ã£o e o acompanhamento dos alunos.",
+      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa para melhorar a operação e o acompanhamento dos alunos.",
     differentiators: [
       {
         title: "Mais tempo livre",
-        text: "Menos tarefas repetitivas, menos tempo perdido a procurar informaÃ§Ã£o e menos fricÃ§Ã£o operacional, para que o coach concentre mais energia na orientaÃ§Ã£o tÃ©cnica e na relaÃ§Ã£o com o aluno.",
+        text: "Menos tarefas repetitivas, menos tempo perdido a procurar informação e menos fricção operacional, para que o coach concentre mais energia na orientação técnica e na relação com o aluno.",
       },
       {
-        title: "GestÃ£o de clients mais simples",
-        text: "Cada aluno fica mais fÃ¡cil de entender, acompanhar e atualizar sem navegaÃ§Ã£o dispersa nem perda de contexto.",
+        title: "Gestão de clients mais simples",
+        text: "Cada aluno fica mais fácil de entender, acompanhar e atualizar sem navegação dispersa nem perda de contexto.",
       },
       {
-        title: "MarcaÃ§Ãµes e sessÃµes",
-        text: "Agendar, consultar e acompanhar sessÃµes torna-se mais rÃ¡pido, mais claro e mais fÃ¡cil de manter organizado.",
+        title: "Marcações e sessões",
+        text: "Agendar, consultar e acompanhar sessões torna-se mais rápido, mais claro e mais fácil de manter organizado.",
       },
       {
-        title: "Tracking de mÃ©tricas e avaliaÃ§Ãµes",
-        text: "Os dados deixam de estar dispersos. O coach consegue perceber com mais rapidez a evoluÃ§Ã£o, as mudanÃ§as e os prÃ³ximos passos.",
+        title: "Tracking de métricas e avaliações",
+        text: "Os dados deixam de estar dispersos. O coach consegue perceber com mais rapidez a evolução, as mudanças e os próximos passos.",
       },
       {
-        title: "CriaÃ§Ã£o de treinos e gestÃ£o de PSE",
-        text: "Prescrever, ajustar e registar treino com continuidade tÃ©cnica, sem quebrar o ritmo do acompanhamento.",
+        title: "Criação de treinos e gestão de PSE",
+        text: "Prescrever, ajustar e registar treino com continuidade técnica, sem quebrar o ritmo do acompanhamento.",
       },
       {
-        title: "FaturaÃ§Ã£o, avisos e automatismos",
-        text: "Controlar pagamentos, receber alertas e automatizar partes do follow-up para gerir melhor a operaÃ§Ã£o e reduzir esquecimentos.",
+        title: "Faturação, avisos e automatismos",
+        text: "Controlar pagamentos, receber alertas e automatizar partes do follow-up para gerir melhor a operação e reduzir esquecimentos.",
       },
     ],
     scenarioTag: "Um dia com a app",
     scenarioTitle: "Como a APEX COACH encaixa no trabalho real do coach e sustenta o lema build your apex and elevate theirs.",
     scenarioCards: [
       {
-        title: "Antes da sessÃ£o",
-        text: "O coach revÃª a agenda, confirma o aluno, enquadra o contexto, consulta o protocolo ou a semana planeada e inicia a sessÃ£o seguinte com uma linha de aÃ§Ã£o clara.",
+        title: "Antes da sessão",
+        text: "O coach revê a agenda, confirma o aluno, enquadra o contexto, consulta o protocolo ou a semana planeada e inicia a sessão seguinte com uma linha de ação clara.",
       },
       {
-        title: "Durante a sessÃ£o",
-        text: "Ajusta o treino, gere o PSE, regista notas, acompanha mÃ©tricas e mantÃ©m o foco no aluno sem comprometer a qualidade da conduÃ§Ã£o da sessÃ£o.",
+        title: "Durante a sessão",
+        text: "Ajusta o treino, gere o PSE, regista notas, acompanha métricas e mantém o foco no aluno sem comprometer a qualidade da condução da sessão.",
       },
       {
-        title: "Depois da sessÃ£o",
-        text: "Fica claro o que foi feito, o que mudou, o que precisa de seguimento e como continuar o acompanhamento com mais consistÃªncia.",
+        title: "Depois da sessão",
+        text: "Fica claro o que foi feito, o que mudou, o que precisa de seguimento e como continuar o acompanhamento com mais consistência.",
       },
     ],
     systemTag: "Tudo no mesmo sistema",
-    systemTitle: "Uma app que junta as peÃ§as que normalmente andam espalhadas.",
+    systemTitle: "Uma app que junta as peças que normalmente andam espalhadas.",
     systemText:
-      "Em vez de dispersar a operaÃ§Ã£o por notas soltas, mensagens, folhas externas e memÃ³ria, a APEX COACH integra agenda, clients, treinos, avaliaÃ§Ãµes, PSE, faturaÃ§Ã£o e alertas numa experiÃªncia muito mais clara e consistente para o coach.",
+      "Em vez de dispersar a operação por notas soltas, mensagens, folhas externas e memória, a APEX COACH integra agenda, clients, treinos, avaliações, PSE, faturação e alertas numa experiência muito mais clara e consistente para o coach.",
     systemItems: [
-      "Base de dados de exercÃ­cios para preparar, adaptar e repetir treino com critÃ©rio",
-      "PrescriÃ§Ã£o de sessÃµes com registo do que foi realmente feito",
-      "Tracking global da evoluÃ§Ã£o do aluno ao longo do tempo",
-      "GestÃ£o de PSE, atividades externas e contexto da sessÃ£o no mesmo fluxo",
-      "PeriodizaÃ§Ã£o semanal e organizaÃ§Ã£o por protocolos de treino",
+      "Base de dados de exercícios para preparar, adaptar e repetir treino com critério",
+      "Prescrição de sessões com registo do que foi realmente feito",
+      "Tracking global da evolução do aluno ao longo do tempo",
+      "Gestão de PSE, atividades externas e contexto da sessão no mesmo fluxo",
+      "Periodização semanal e organização por protocolos de treino",
       "Templates, tags, packs, pagamentos, avisos e automatismos no mesmo sistema",
     ],
-    capabilityTag: "Blocos essenciais",
-    capabilityTitle: "O que torna a APEX COACH mais Ãºtil para um coach exigente.",
+    capabilityTag: "Operação do coach",
+    capabilityTitle: "O essencial para operar melhor, com mais critério e menos dispersão.",
+    capabilityText:
+      "Em vez de repetir a mesma promessa em várias secções, este é o núcleo da APEX COACH: organizar clients, conduzir sessões com mais contexto, prescrever melhor e manter o acompanhamento técnico e financeiro no mesmo sistema.",
     capabilityCards: [
       {
-        title: "Clients ilimitados",
-        text: "Acompanha a tua carteira de alunos sem limites artificiais e sem comprometer a organizaÃ§Ã£o da operaÃ§Ã£o.",
+        title: "Clients, contexto e histórico",
+        text: "Toda a informação crítica do aluno fica mais acessível: perfil, evolução, avaliações, notas, atividades externas e continuidade do acompanhamento.",
       },
       {
-        title: "Atividades externas",
-        text: "Regista o que o aluno faz fora da sessao e ganha contexto adicional para ajustar carga, volume e continuidade.",
+        title: "Treino, periodização e protocolos",
+        text: "Prescreve, ajusta e estrutura o trabalho semanal com exercício, templates, tags, periodização e protocolos alinhados com a tua lógica de coaching.",
       },
       {
-        title: "PeriodizaÃ§Ã£o e protocolos",
-        text: "Organiza semanas, blocos e protocolos de treino para trabalhar com mais critÃ©rio e maior consistÃªncia.",
+        title: "Sessões, PSE e execução real",
+        text: "Acompanha a sessão no momento certo, regista o que foi feito, gere PSE e toma decisões com menos fricção durante o trabalho de campo.",
       },
       {
-        title: "Templates e tags",
-        text: "Cria estruturas reutilizÃ¡veis, acelera a prescriÃ§Ã£o e melhora a forma como repetes e classificas o teu trabalho.",
+        title: "Packs, faturação e automatismos",
+        text: "Controla pagamentos, packs, avisos e automatismos sem empurrar a operação para ferramentas soltas e menos integradas.",
       },
     ],
     clientValueTag: "Valor para o client",
     clientValueTitle: "O coach organiza melhor. O client percebe mais valor.",
     clientValueText:
-      "A APEX COACH nÃ£o melhora apenas a operaÃ§Ã£o do coach. TambÃ©m reforÃ§a a experiÃªncia do client, porque cria uma app onde o aluno pode concentrar o que foi feito, o que estÃ¡ planeado e como a sua evoluÃ§Ã£o estÃ¡ a ser acompanhada.",
+      "A APEX COACH não melhora apenas a operação do coach. Também reforça a experiência do client, porque cria uma app onde o aluno pode concentrar o que foi feito, o que está planeado e como a sua evolução está a ser acompanhada.",
     clientValueCards: [
       {
-        title: "Tudo num sÃ³ lugar",
-        text: "O client deixa de depender de mensagens dispersas, notas soltas e memÃ³ria. Passa a ter uma estrutura mais clara daquilo que estÃ¡ a fazer e do que vem a seguir.",
+        title: "Tudo num só lugar",
+        text: "O client deixa de depender de mensagens dispersas, notas soltas e memória. Passa a ter uma estrutura mais clara daquilo que está a fazer e do que vem a seguir.",
       },
       {
         title: "Treino com mais clareza",
         text: "Quando o coach prescreve, ajusta e regista o que foi executado, o client percebe melhor o processo e valoriza mais a qualidade do acompanhamento.",
       },
       {
-        title: "EvoluÃ§Ã£o visÃ­vel",
-        text: "MÃ©tricas, avaliaÃ§Ãµes, contexto e histÃ³rico deixam de estar desconectados. O client sente maior progressÃ£o porque consegue perceber melhor o caminho que estÃ¡ a fazer.",
+        title: "Evolução visível",
+        text: "Métricas, avaliações, contexto e histórico deixam de estar desconectados. O client sente maior progressão porque consegue perceber melhor o caminho que está a fazer.",
       },
       {
-        title: "Mais confianÃ§a no acompanhamento",
-        text: "Uma experiÃªncia mais organizada, mais profissional e mais consistente aumenta a perceÃ§Ã£o de valor do serviÃ§o e reforÃ§a a relaÃ§Ã£o entre coach e client.",
+        title: "Mais confiança no acompanhamento",
+        text: "Uma experiência mais organizada, mais profissional e mais consistente aumenta a perceção de valor do serviço e reforça a relação entre coach e client.",
       },
     ],
-    detailTag: "O que muda na prÃ¡tica",
-    detailTitle: "NÃ£o Ã© apenas uma app para coaches. Ã‰ uma estrutura de trabalho mais forte para todos os dias.",
+    detailTag: "O que muda na prática",
+    detailTitle: "Não é apenas uma app para coaches. É uma estrutura de trabalho mais forte para todos os dias.",
     detailCards: [
       {
         title: "Agenda com contexto real",
-        text: "NÃ£o se trata apenas de consultar horÃ¡rios. Trata-se de perceber rapidamente quem vem, o que estÃ¡ pendente e como enquadrar a prÃ³xima sessÃ£o com maior preparaÃ§Ã£o.",
+        text: "Não se trata apenas de consultar horários. Trata-se de perceber rapidamente quem vem, o que está pendente e como enquadrar a próxima sessão com maior preparação.",
       },
       {
-        title: "Clients com histÃ³rico Ãºtil",
-        text: "Em vez de procurar informaÃ§Ã£o dispersa, o coach acede ao aluno e interpreta de forma imediata histÃ³rico, progresso, notas e os ajustamentos que devem ser considerados.",
+        title: "Clients com histórico útil",
+        text: "Em vez de procurar informação dispersa, o coach acede ao aluno e interpreta de forma imediata histórico, progresso, notas e os ajustamentos que devem ser considerados.",
       },
       {
         title: "Trainings mais fluidos",
-        text: "A app ajuda o coach a prescrever, consultar e ajustar sessÃµes com muito menos fricÃ§Ã£o no momento em que estÃ¡ a trabalhar.",
+        text: "A app ajuda o coach a prescrever, consultar e ajustar sessões com muito menos fricção no momento em que está a trabalhar.",
       },
       {
         title: "Assessments com leitura mais clara",
-        text: "Os indicadores ficam mais acessÃ­veis, mais comparÃ¡veis e mais relevantes para suportar decisÃµes de continuidade e progressÃ£o com cada aluno.",
+        text: "Os indicadores ficam mais acessíveis, mais comparáveis e mais relevantes para suportar decisões de continuidade e progressão com cada aluno.",
       },
     ],
     flowTag: "Fluxo do coach",
-    flowTitle: "Pensada para acompanhar o coach desde a preparaÃ§Ã£o atÃ© ao fecho da sessÃ£o.",
+    flowTitle: "Pensada para acompanhar o coach desde a preparação até ao fecho da sessão.",
     flowCards: [
-      { title: "Acesso imediato", text: "Chegar rapidamente Ã  aÃ§Ã£o certa, sem navegaÃ§Ã£o excessiva nem etapas desnecessÃ¡rias." },
-      { title: "Registo em contexto", text: "Registar notas, ajustar cargas e conduzir a sessÃ£o sem comprometer o ritmo do treino." },
-      { title: "Acompanhamento qualificado", text: "Interpretar com mais rapidez o que mudou em cada aluno e decidir com maior seguranÃ§a tÃ©cnica." },
+      { title: "Acesso imediato", text: "Chegar rapidamente Ã  ação certa, sem navegação excessiva nem etapas desnecessárias." },
+      { title: "Registo em contexto", text: "Registar notas, ajustar cargas e conduzir a sessão sem comprometer o ritmo do treino." },
+      { title: "Acompanhamento qualificado", text: "Interpretar com mais rapidez o que mudou em cada aluno e decidir com maior segurança técnica." },
     ],
     pilotTag: "Resultados para o coach",
     pilotTitle: "Onde a APEX COACH se traduz em valor concreto para o coach.",
     pilotText:
-      "A diferenÃ§a nÃ£o estÃ¡ em ter mais uma aplicaÃ§Ã£o. EstÃ¡ em orientar melhor, decidir mais depressa e estruturar a operaÃ§Ã£o sem acrescentar complexidade ao dia de trabalho.",
+      "A diferença não está em ter mais uma aplicação. Está em orientar melhor, decidir mais depressa e estruturar a operação sem acrescentar complexidade ao dia de trabalho.",
     pilotPoints: ["Download direto da APK", "Criacao de conta imediata", "Acesso rapido", "Uma experiencia mais clara e mais profissional"],
     proofTitle: "O que um coach deve sentir ao usar a app",
     proofItems: [
-      "Menos tempo perdido a procurar informaÃ§Ã£o",
-      "Mais seguranÃ§a na continuidade entre sessÃµes e protocolos",
-      "Mais consistÃªncia no acompanhamento dos alunos",
+      "Menos tempo perdido a procurar informação",
+      "Mais segurança na continuidade entre sessões e protocolos",
+      "Mais consistência no acompanhamento dos alunos",
       "Mais controlo sobre o que foi feito, o que mudou e o que vem a seguir",
     ],
     pricingTag: "Planos",
-    pricingTitle: "Uma subscriÃ§Ã£o. Duas modalidades de adesÃ£o. Uma vantagem relevante para os primeiros coaches.",
+    pricingTitle: "Uma subscrição. Duas modalidades de adesão. Uma vantagem relevante para os primeiros coaches.",
     pricingText:
-      "A APEX COACH funciona com uma subscriÃ§Ã£o simples, disponÃ­vel em modalidade mensal ou anual. Os primeiros 50 lugares Foundation Coach garantem um valor preferencial enquanto a conta se mantiver ativa.",
+      "A APEX COACH funciona com uma subscrição simples, disponível em modalidade mensal ou anual. Os primeiros 50 lugares Foundation Coach garantem um valor preferencial enquanto a conta se mantiver ativa.",
     foundationLabel: "Foundation Coach",
     foundationTitle: "Oferta especial para os primeiros 50 coaches",
-    foundationMonthly: "8,90 EUR/mÃªs",
+    foundationMonthly: "8,90 EUR/mês",
     foundationYearly: "89 EUR/ano",
-    foundationNote: "Valor vÃ¡lido enquanto a conta se mantiver ativa.",
-    regularLabel: "SubscriÃ§Ã£o regular",
+    foundationNote: "Valor válido enquanto a conta se mantiver ativa.",
+    regularLabel: "Subscrição regular",
     regularTitle: "Valor standard da APEX COACH",
-    regularMonthly: "29,90 EUR/mÃªs",
+    regularMonthly: "29,90 EUR/mês",
     regularYearly: "290 EUR/ano",
     pricingBullets: [
-      "Uma Ãºnica subscriÃ§Ã£o para todo o ecossistema da app",
-      "Modalidade mensal para uma adesÃ£o mais flexÃ­vel",
-      "OpÃ§Ã£o anual para quem procura maior compromisso e melhor valor",
+      "Uma única subscrição para todo o ecossistema da app",
+      "Modalidade mensal para uma adesão mais flexível",
+      "Opção anual para quem procura maior compromisso e melhor valor",
       "Campanha Foundation Coach pensada para os primeiros 50 coaches",
     ],
     faqTag: "FAQ",
     faqTitle: "Perguntas frequentes",
     faqItems: [
-      { title: "Que modelo de subscriÃ§Ã£o existe?", text: "A APEX COACH funciona com uma subscriÃ§Ã£o Ãºnica, disponÃ­vel em modalidade mensal ou anual. A lÃ³gica comercial Ã© simples: um Ãºnico produto, duas formas de adesÃ£o e a mesma estrutura funcional da app." },
-      { title: "O que Ã© o Foundation Coach e como funciona?", text: "Foundation Coach Ã© a campanha de entrada para os primeiros 50 coaches. Enquanto a conta se mantiver ativa, o coach preserva o valor preferencial associado a essa adesÃ£o inicial, sem migraÃ§Ã£o automÃ¡tica para o preÃ§o standard." },
-      { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critÃ©rio tÃ©cnico, mais velocidade de execuÃ§Ã£o e maior consistÃªncia no acompanhamento dos seus alunos, quer trabalhem com performance, saÃºde, recomposiÃ§Ã£o corporal ou acompanhamento hÃ­brido." },
-      { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operaÃ§Ã£o do coach sem impor limites artificiais ao nÃºmero de clients, permitindo crescer a carteira de acompanhamento sem perder organizaÃ§Ã£o nem contexto." },
-      { title: "A app permite acompanhar atividades externas do aluno?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessÃ£o principal, o que melhora a leitura da carga global, da recuperaÃ§Ã£o, do volume acumulado e da continuidade do processo." },
-      { title: "Ã‰ possÃ­vel organizar periodizaÃ§Ã£o e protocolos de treino?", text: "Sim. A APEX COACH suporta uma lÃ³gica de organizaÃ§Ã£o por semanas, blocos e protocolos, permitindo estruturar a progressÃ£o do aluno com maior clareza e manter uma leitura mais consistente do plano em execuÃ§Ã£o." },
-      { title: "Posso criar templates e usar tags para acelerar a prescriÃ§Ã£o?", text: "Sim. A app permite criar templates reutilizÃ¡veis e aplicar tags para classificar melhor exercÃ­cios, sessÃµes e estruturas de trabalho. Isto reduz repetiÃ§Ã£o manual e ajuda a tornar a operaÃ§Ã£o diÃ¡ria mais consistente." },
-      { title: "A base de dados de exercÃ­cios serve apenas para consulta?", text: "NÃ£o. A base de dados de exercÃ­cios serve como suporte ativo Ã  preparaÃ§Ã£o, adaptaÃ§Ã£o e repetiÃ§Ã£o do treino. O objetivo nÃ£o Ã© apenas consultar exercÃ­cios, mas acelerar decisÃµes de prescriÃ§Ã£o com mais consistÃªncia tÃ©cnica." },
-      { title: "A faturaÃ§Ã£o dos clients pode ser acompanhada na app?", text: "Sim. A APEX COACH foi pensada para concentrar tambÃ©m a componente de packs, pagamentos, avisos e seguimento financeiro do aluno, reduzindo a necessidade de sistemas paralelos para controlo operacional." },
-      { title: "O aluno consegue perceber o que foi feito e acompanhar a evoluÃ§Ã£o?", text: "Sim. A estrutura da app foi desenhada para que o coach consiga registar o que foi prescrito, o que foi executado e o que mudou ao longo do tempo, criando uma visÃ£o mais clara da evoluÃ§Ã£o global do aluno." },
+      { title: "Que modelo de subscrição existe?", text: "A APEX COACH funciona com uma subscrição única, disponível em modalidade mensal ou anual. A lógica comercial é simples: um único produto, duas formas de adesão e a mesma estrutura funcional da app." },
+      { title: "O que é o Foundation Coach e como funciona?", text: "Foundation Coach é a campanha de entrada para os primeiros 50 coaches. Enquanto a conta se mantiver ativa, o coach preserva o valor preferencial associado a essa adesão inicial, sem migração automática para o preço standard." },
+      { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus alunos, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
+      { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
+      { title: "A app permite acompanhar atividades externas do aluno?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
+      { title: "É possível organizar periodização e protocolos de treino?", text: "Sim. A APEX COACH suporta uma lógica de organização por semanas, blocos e protocolos, permitindo estruturar a progressão do aluno com maior clareza e manter uma leitura mais consistente do plano em execução." },
+      { title: "Posso criar templates e usar tags para acelerar a prescrição?", text: "Sim. A app permite criar templates reutilizáveis e aplicar tags para classificar melhor exercícios, sessões e estruturas de trabalho. Isto reduz repetição manual e ajuda a tornar a operação diária mais consistente." },
+      { title: "A base de dados de exercícios serve apenas para consulta?", text: "Não. A base de dados de exercícios serve como suporte ativo à preparação, adaptação e repetição do treino. O objetivo não é apenas consultar exercícios, mas acelerar decisões de prescrição com mais consistência técnica." },
+      { title: "A faturação dos clients pode ser acompanhada na app?", text: "Sim. A APEX COACH foi pensada para concentrar também a componente de packs, pagamentos, avisos e seguimento financeiro do aluno, reduzindo a necessidade de sistemas paralelos para controlo operacional." },
+      { title: "O aluno consegue perceber o que foi feito e acompanhar a evolução?", text: "Sim. A estrutura da app foi desenhada para que o coach consiga registar o que foi prescrito, o que foi executado e o que mudou ao longo do tempo, criando uma visão mais clara da evolução global do aluno." },
     ],
-    closingTitle: "Se procuras uma operaÃ§Ã£o mais fluida, mais rigorosa e mais profissional, este Ã© o momento certo para entrar.",
+    closingTitle: "Se procuras uma operação mais fluida, mais rigorosa e mais profissional, este é o momento certo para entrar.",
     closingText:
-      "A APEX COACH estÃ¡ a evoluir para se afirmar como uma ferramenta cada vez mais rÃ¡pida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode gerir a tua operaÃ§Ã£o com mais clareza, mais controlo e maior consistÃªncia.",
+      "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode gerir a tua operação com mais clareza, mais controlo e maior consistência.",
     closingPrimary: "Criar conta",
     closingSecondary: "Fazer download da APK",
     modalTitle: "Quero comecar a usar a APEX COACH",
     modalText:
-      "A APEX COACH foi criada para coaches que procuram maior fluidez operacional, maior rapidez de execuÃ§Ã£o e maior seguranÃ§a no acompanhamento diÃ¡rio. Cria a tua conta e entra na app.",
+      "A APEX COACH foi criada para coaches que procuram maior fluidez operacional, maior rapidez de execução e maior segurança no acompanhamento diário. Cria a tua conta e entra na app.",
     modalPrimary: "Criar conta",
     modalSecondary: "Fazer login",
     closeLabel: "Fechar",
     login: "Login",
     signup: "Criar conta",
-    backline: "Build your apex and elevate theirs. A experiÃªncia web chegarÃ¡ depois. Neste momento, o foco estÃ¡ numa aplicaÃ§Ã£o mais forte para o trabalho real do coach.",
-    floatingSessionLabel: "Modo sessÃ£o",
+    backline: "Build your apex and elevate theirs. A experiência web chegará depois. Neste momento, o foco está numa aplicação mais forte para o trabalho real do coach.",
+    floatingSessionLabel: "Modo sessão",
     floatingSessionText: "Rapidez no momento certo",
     floatingPilotLabel: "Mais controlo",
     floatingPilotText: "Uma app desenhada para o dia real do coach",
@@ -328,24 +330,26 @@ const copy = {
       "Weekly periodization and structured training protocols",
       "Templates, tags, packs, payments, alerts, and automations in the same system",
     ],
-    capabilityTag: "Core capabilities",
-    capabilityTitle: "What makes APEX COACH more useful for a demanding coach.",
+    capabilityTag: "Coach operation",
+    capabilityTitle: "What really matters when the goal is to run a stronger coaching operation.",
+    capabilityText:
+      "Instead of repeating the same promise across multiple sections, this is the core of APEX COACH: organize clients, run sessions with stronger context, prescribe more clearly, and keep technical and financial follow-up inside one system.",
     capabilityCards: [
       {
-        title: "Unlimited clients",
-        text: "Follow your client base without artificial limits and without compromising the structure of your operation.",
+        title: "Clients, context, and history",
+        text: "Critical client information becomes easier to access: profile, progress, assessments, notes, external activities, and continuity across follow-up.",
       },
       {
-        title: "External activities",
-        text: "Log what the client does outside the session and gain stronger context to adjust load, volume, and continuity.",
+        title: "Training, periodization, and protocols",
+        text: "Prescribe, adjust, and structure weekly work with exercises, templates, tags, periodization, and protocols aligned with your coaching logic.",
       },
       {
-        title: "Periodization and protocols",
-        text: "Organize weeks, blocks, and training protocols to work with more structure and stronger consistency.",
+        title: "Sessions, RPE, and real execution",
+        text: "Support the live session, log what actually happened, manage RPE, and make decisions with less friction while coaching in the field.",
       },
       {
-        title: "Templates and tags",
-        text: "Create reusable structures, accelerate prescription, and improve the way you repeat and classify your work.",
+        title: "Billing, packs, and automations",
+        text: "Track payments, packages, alerts, and automations without pushing the operation into disconnected tools.",
       },
     ],
     clientValueTag: "Value for the client",
@@ -631,6 +635,7 @@ function ProductMatrix({ lang = "en" }) {
 
   const rows = isPt
     ? [
+        ["Preço base", "$9/mo", "$19.90/mo", "Free / $19/mo", "€8.90/mo", "€29.90/mo"],
         ["Registar clients", "yes", "yes", "yes", "yes", "yes"],
         ["Registar assessments", "partial", "yes", "partial", "yes", "yes"],
         ["Criar treinos", "yes", "yes", "yes", "yes", "yes"],
@@ -648,6 +653,7 @@ function ProductMatrix({ lang = "en" }) {
         ["Automatismos", "partial", "yes", "yes", "partial", "yes"],
       ]
     : [
+        ["Entry price", "$9/mo", "$19.90/mo", "Free / $19/mo", "€8.90/mo", "€29.90/mo"],
         ["Register clients", "yes", "yes", "yes", "yes", "yes"],
         ["Register assessments", "partial", "yes", "partial", "yes", "yes"],
         ["Create training", "yes", "yes", "yes", "yes", "yes"],
@@ -684,6 +690,14 @@ function ProductMatrix({ lang = "en" }) {
         label: isPt ? "Parcial" : "Partial",
       },
     }[status];
+
+    if (!config) {
+      return (
+        <span className="inline-flex whitespace-nowrap rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-3 py-1.5 text-xs font-semibold text-[var(--text)]">
+          {value}
+        </span>
+      );
+    }
 
     return (
       <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full border ${config.className}`} title={config.label} aria-label={config.label}>
@@ -855,7 +869,7 @@ export default function App() {
                 {t.downloadCta}
               </a>
               <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="whitespace-nowrap rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
-                {lang === "pt" ? "Trial grÃƒÂ¡tis 14 dias" : "14-day free trial"}
+                {lang === "pt" ? "Trial grátis 14 dias" : "14-day free trial"}
               </Link>
             </div>
 
@@ -1064,47 +1078,16 @@ export default function App() {
         </section>
 
         <section id="flow" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-          <SectionLabel>{t.flowTag}</SectionLabel>
-          <h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.flowTitle)}</h2>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {t.flowCards.map((card, index) => (
-              <FlowCard key={card.title} step={`0${index + 1}`} title={card.title} text={card.text} />
-            ))}
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-          <div className="rounded-[36px] border border-[var(--border-strong)] bg-[linear-gradient(135deg,rgba(42,208,125,0.10),rgba(124,77,255,0.05),rgba(255,255,255,0.95))] p-8 shadow-[var(--shadow-panel)] lg:p-12">
-            <SectionLabel>{t.pilotTag}</SectionLabel>
-            <div className="mt-5 grid gap-8 lg:grid-cols-[1fr_0.9fr]">
-              <div>
-                <h2 className="text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.pilotTitle)}</h2>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{renderBrandText(t.pilotText)}</p>
-                <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                  <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-4 font-semibold text-[var(--accent-foreground)]">
-                    {t.primaryCta}
-                    <ArrowRight size={18} />
-                  </Link>
-                  <Link href="/signup" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-6 py-4 font-semibold text-[var(--text)]">
-                    {t.signup}
-                  </Link>
-                </div>
-              </div>
-
-              <div className="grid gap-3">
-                {t.pilotPoints.map((item) => (
-                  <FeatureItem key={item}>{item}</FeatureItem>
-                ))}
-              </div>
+          <SectionLabel>{t.capabilityTag}</SectionLabel>
+          <div className="mt-5 grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+            <div>
+              <h2 className="max-w-3xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">{renderBrandText(t.capabilityTitle)}</h2>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{renderBrandText(t.capabilityText)}</p>
             </div>
-
-            <div className="mt-10 rounded-[28px] border border-[var(--border)] bg-white p-6 shadow-[0_12px_28px_rgba(14,17,16,0.04)]">
-              <h3 className="text-2xl font-semibold text-[var(--text)]">{t.proofTitle}</h3>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                {t.proofItems.map((item) => (
-                  <FeatureItem key={item}>{item}</FeatureItem>
-                ))}
-              </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {t.capabilityCards.map((card) => (
+                <CapabilityCard key={card.title} title={card.title} text={card.text} />
+              ))}
             </div>
           </div>
         </section>
