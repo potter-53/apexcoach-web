@@ -623,113 +623,78 @@ function PricingCard({ label, title, monthly, yearly, note, accent = false }) {
   );
 }
 
-function ComparisonMatrix({ lang = "en" }) {
-  const isPt = lang === "pt";
-  const headers = isPt
-    ? ["CritÃ©rio", "APEX COACH agora", "Apps generalistas para coaches", "APEX COACH V2"]
-    : ["Criteria", "APEX COACH now", "Generic coaching apps", "APEX COACH V2"];
-
-  const rows = isPt
-    ? [
-        ["ExperiÃªncia de terreno", "Desenhada para sessÃ£o real e registo rÃ¡pido", "Muitas vezes mais genÃ©rica e menos contextual", "Fluxo ainda mais afinado entre sessÃ£o, agenda e follow-up"],
-        ["Clients ilimitados", "IncluÃ­do", "Nem sempre claro ou sem limites reais", "IncluÃ­do com leitura operacional mais rica"],
-        ["PeriodizaÃ§Ã£o e protocolos", "Base jÃ¡ presente", "Frequentemente parcial ou pouco flexÃ­vel", "Leitura mais profunda por semana, bloco e histÃ³rico"],
-        ["Atividades externas", "Registo e contexto operacional", "Nem sempre integrado no mesmo fluxo", "Mais conexÃ£o a dados externos e apps de saÃºde"],
-        ["Treino e tracking", "PrescriÃ§Ã£o, histÃ³rico e evoluÃ§Ã£o no mesmo sistema", "Muitas vezes repartido entre mÃ³dulos ou apps", "Mais automaÃ§Ã£o e visualizaÃ§Ã£o global"],
-        ["FaturaÃ§Ã£o e packs", "OperaÃ§Ã£o centralizada na app", "Nem sempre parte do nÃºcleo do produto", "Mais automaÃ§Ã£o, avisos e lÃ³gica financeira"],
-        ["Plataforma web", "Ainda em preparaÃ§Ã£o", "Em alguns casos existe, mas com lÃ³gica menos integrada", "Workspace desktop completo e alinhado com a app"],
-      ]
-    : [
-        ["In-session experience", "Built for real sessions and fast logging", "Often broader but less contextual", "Even tighter flow across session, agenda, and follow-up"],
-        ["Unlimited clients", "Included", "Not always clear or truly unlimited", "Included with richer operational visibility"],
-        ["Periodization and protocols", "Core structure already present", "Often partial or less flexible", "Deeper reading by week, block, and history"],
-        ["External activities", "Logged inside the operational flow", "Not always integrated in the same workflow", "More connected to external data and health apps"],
-        ["Training and tracking", "Prescription, history, and evolution in one system", "Often split across modules or tools", "More automation and broader visibility"],
-        ["Billing and packs", "Handled inside the app operation", "Not always part of the product core", "More automation, alerts, and financial logic"],
-        ["Web platform", "Still being prepared", "Sometimes available, but usually less integrated", "Full desktop workspace aligned with the app"],
-      ];
-
-  return (
-    <div className="overflow-hidden rounded-[32px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)]">
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse text-left">
-          <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
-            <tr>
-              {headers.map((header) => (
-                <th key={header} className="px-5 py-4 text-sm font-semibold text-[var(--text)]">
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, rowIndex) => (
-              <tr key={row[0]} className={rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}>
-                {row.map((cell, cellIndex) => (
-                  <td key={`${row[0]}-${cellIndex}`} className="border-t border-[var(--border)] px-5 py-4 align-top text-sm leading-7 text-[var(--text-muted)]">
-                    {cellIndex === 0 ? <span className="font-semibold text-[var(--text)]">{cell}</span> : cell}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
 function ProductMatrix({ lang = "en" }) {
   const isPt = lang === "pt";
   const headers = isPt
-    ? ["FunÃ§Ã£o", "Trainerize", "APEX COACH [v1]", "APEX COACH [v2]"]
-    : ["Function", "Trainerize", "APEX COACH [v1]", "APEX COACH [v2]"];
+    ? ["Função", "Trainerize", "PT Distinction", "Everfit", "APEX COACH [v1]", "APEX COACH [v2]"]
+    : ["Function", "Trainerize", "PT Distinction", "Everfit", "APEX COACH [v1]", "APEX COACH [v2]"];
 
   const rows = isPt
     ? [
-        ["Registar clients", "No", "Yes", "Yes (coming soon)"],
-        ["Registar assessments", "Partial", "Yes", "Yes (coming soon)"],
-        ["Criar treinos", "Yes", "Yes", "Yes (coming soon)"],
-        ["PeriodizaÃ§Ã£o semanal", "Partial", "Yes", "Yes (coming soon)"],
-        ["Protocolos de treino", "Partial", "Yes", "Yes (coming soon)"],
-        ["Templates e tags", "Partial", "Yes", "Yes (coming soon)"],
-        ["Atividades externas", "No", "Yes", "Yes (coming soon)"],
-        ["Tracking global da evoluÃ§Ã£o", "Partial", "Yes", "Yes (coming soon)"],
-        ["FaturaÃ§Ã£o e packs", "Partial", "Yes", "Yes (coming soon)"],
-        ["Plataforma web", "Yes", "No", "Yes (coming soon)"],
-        ["Health app connect", "No", "No", "Yes (coming soon)"],
-        ["Automatismos mais fortes", "Partial", "Base", "Yes (coming soon)"],
+        ["Registar clients", "yes", "yes", "yes", "yes", "soon"],
+        ["Registar assessments", "partial", "yes", "partial", "yes", "soon"],
+        ["Criar treinos", "yes", "yes", "yes", "yes", "soon"],
+        ["Periodização semanal", "partial", "yes", "partial", "yes", "soon"],
+        ["Protocolos de treino", "partial", "yes", "partial", "yes", "soon"],
+        ["Templates e tags", "partial", "yes", "yes", "yes", "soon"],
+        ["Atividades externas", "no", "yes", "partial", "yes", "soon"],
+        ["Tracking global da evolução", "partial", "yes", "yes", "yes", "soon"],
+        ["Faturação e packs", "no", "partial", "yes", "yes", "soon"],
+        ["Plataforma web", "yes", "yes", "yes", "no", "soon"],
+        ["Health app connect", "partial", "partial", "partial", "no", "soon"],
+        ["Automatismos", "partial", "partial", "partial", "partial", "soon"],
       ]
     : [
-        ["Register clients", "No", "Yes", "Yes (coming soon)"],
-        ["Register assessments", "Partial", "Yes", "Yes (coming soon)"],
-        ["Create training", "Yes", "Yes", "Yes (coming soon)"],
-        ["Weekly periodization", "Partial", "Yes", "Yes (coming soon)"],
-        ["Training protocols", "Partial", "Yes", "Yes (coming soon)"],
-        ["Templates and tags", "Partial", "Yes", "Yes (coming soon)"],
-        ["External activities", "No", "Yes", "Yes (coming soon)"],
-        ["Global progress tracking", "Partial", "Yes", "Yes (coming soon)"],
-        ["Billing and packs", "Partial", "Yes", "Yes (coming soon)"],
-        ["Web platform", "Yes", "No", "Yes (coming soon)"],
-        ["Health app connect", "No", "No", "Yes (coming soon)"],
-        ["Stronger automations", "Partial", "Base", "Yes (coming soon)"],
+        ["Register clients", "yes", "yes", "yes", "yes", "soon"],
+        ["Register assessments", "partial", "yes", "partial", "yes", "soon"],
+        ["Create training", "yes", "yes", "yes", "yes", "soon"],
+        ["Weekly periodization", "partial", "yes", "partial", "yes", "soon"],
+        ["Training protocols", "partial", "yes", "partial", "yes", "soon"],
+        ["Templates and tags", "partial", "yes", "yes", "yes", "soon"],
+        ["External activities", "no", "yes", "partial", "yes", "soon"],
+        ["Global progress tracking", "partial", "yes", "yes", "yes", "soon"],
+        ["Billing and packs", "no", "partial", "yes", "yes", "soon"],
+        ["Web platform", "yes", "yes", "yes", "no", "soon"],
+        ["Health app connect", "partial", "partial", "partial", "no", "soon"],
+        ["Automations", "partial", "partial", "partial", "partial", "soon"],
       ];
 
   function renderStatus(value) {
-    const lower = String(value).toLowerCase();
-    if (lower.startsWith("yes")) {
-      return <span className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700">{value}</span>;
-    }
-    if (lower === "no") {
-      return <span className="inline-flex w-fit rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-rose-700">{value}</span>;
-    }
-    return <span className="inline-flex w-fit rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-700">{value}</span>;
+    const status = String(value).toLowerCase();
+    const config = {
+      yes: {
+        icon: <Check size={14} />,
+        className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+        label: isPt ? "Disponível" : "Available",
+      },
+      no: {
+        icon: <X size={14} />,
+        className: "border-rose-200 bg-rose-50 text-rose-700",
+        label: isPt ? "Não" : "No",
+      },
+      partial: {
+        icon: <BellRing size={14} />,
+        className: "border-amber-200 bg-amber-50 text-amber-700",
+        label: isPt ? "Parcial" : "Partial",
+      },
+      soon: {
+        icon: <Clock3 size={14} />,
+        className: "border-sky-200 bg-sky-50 text-sky-700",
+        label: isPt ? "Coming soon" : "Coming soon",
+      },
+    }[status];
+
+    return (
+      <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full border ${config.className}`} title={config.label} aria-label={config.label}>
+        {config.icon}
+      </span>
+    );
   }
 
   return (
     <div className="overflow-hidden rounded-[32px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)]">
       <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse text-left">
+        <table className="min-w-[920px] border-collapse text-left">
           <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
             <tr>
               {headers.map((header) => (
@@ -745,13 +710,30 @@ function ProductMatrix({ lang = "en" }) {
                 <td className="border-t border-[var(--border)] px-5 py-4 align-top text-sm leading-7 text-[var(--text)]">
                   <span className="font-semibold">{row[0]}</span>
                 </td>
-                <td className="border-t border-[var(--border)] px-5 py-4 align-top text-sm leading-7 text-[var(--text-muted)]">{renderStatus(row[1])}</td>
-                <td className="border-t border-[var(--border)] px-5 py-4 align-top text-sm leading-7 text-[var(--text-muted)]">{renderStatus(row[2])}</td>
-                <td className="border-t border-[var(--border)] px-5 py-4 align-top text-sm leading-7 text-[var(--text-muted)]">{renderStatus(row[3])}</td>
+                {row.slice(1).map((value, index) => (
+                  <td key={`${row[0]}-${index}`} className="border-t border-[var(--border)] px-5 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)]">
+                    <div className="flex justify-center">{renderStatus(value)}</div>
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="border-t border-[var(--border)] bg-[var(--surface-muted)]/65 px-5 py-4">
+        <div className="flex flex-wrap gap-3 text-xs font-medium text-[var(--text-muted)]">
+          {[
+            { key: "yes", label: isPt ? "Disponível" : "Available" },
+            { key: "partial", label: isPt ? "Parcial" : "Partial" },
+            { key: "no", label: isPt ? "Não disponível" : "Not available" },
+            { key: "soon", label: isPt ? "Planeado para v2" : "Planned for v2" },
+          ].map((item) => (
+            <div key={item.key} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2">
+              {renderStatus(item.key)}
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
