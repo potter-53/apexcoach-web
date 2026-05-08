@@ -18,7 +18,7 @@ const copy = {
     badge: "Build your apex and elevate theirs. A aplicação para coaches que exigem mais rigor, mais eficiência e mais controlo operacional.",
     titleA: "A APEX COACH",
     titleB: "foi desenhada para",
-    titleC: "elevar a tua operação.",
+    titleC: "organizar melhor a tua operação.",
     subtitle:
       "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar alunos e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
     primaryCta: "Começar trial grátis 14 dias",
@@ -32,9 +32,9 @@ const copy = {
     heroText:
       "Tudo o que o coach necessita para intervir com qualidade no momento certo: consultar a sessão, ajustar o treino, rever histórico, registar notas, acompanhar atividades externas e manter continuidade no acompanhamento sem perder foco.",
     sectionProduct: "Produto",
-    productTitle: "Uma app criada para elevar a forma como o coach trabalha.",
+    productTitle: "Uma app criada para reforçar a forma como o coach trabalha.",
     productText:
-      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, mais rápida e mais profissional em contexto real. Foi pensada para reduzir passos desnecessários, elevar a tua operação e transformar o dia a dia numa estrutura mais fluida, organizada e consistente.",
+      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, mais rápida e mais profissional em contexto real. Foi pensada para reduzir passos desnecessários, clarificar a operação e transformar o dia a dia numa estrutura mais fluida, organizada e consistente.",
     featureTitle: "O que a app já melhora no trabalho do coach",
     features: [
       "Clients ilimitados para acompanhar a tua operação sem limites artificiais",
@@ -47,7 +47,7 @@ const copy = {
     differentiatorTag: "Vantagens claras",
     differentiatorTitle: "Onde a APEX COACH cria uma vantagem operacional real no trabalho diário.",
     differentiatorText:
-      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa para elevar a tua operação e o acompanhamento dos alunos.",
+      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa para melhorar a operação e o acompanhamento dos alunos.",
     differentiators: [
       {
         title: "Mais tempo livre",
@@ -174,7 +174,7 @@ const copy = {
     pilotTag: "Resultados para o coach",
     pilotTitle: "Onde a APEX COACH se traduz em valor concreto para o coach.",
     pilotText:
-      "A diferença não está em ter mais uma aplicação. Está em orientar melhor, decidir mais depressa e elevar a tua operação sem acrescentar complexidade ao dia de trabalho.",
+      "A diferença não está em ter mais uma aplicação. Está em orientar melhor, decidir mais depressa e estruturar a operação sem acrescentar complexidade ao dia de trabalho.",
     pilotPoints: ["Download direto da APK", "Criacao de conta imediata", "Acesso rapido", "Uma experiencia mais clara e mais profissional"],
     proofTitle: "O que um coach deve sentir ao usar a app",
     proofItems: [
@@ -211,14 +211,14 @@ const copy = {
       { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
       { title: "A app permite acompanhar atividades externas do aluno?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
       { title: "É possível organizar periodização e protocolos de treino?", text: "Sim. A APEX COACH suporta uma lógica de organização por semanas, blocos e protocolos, permitindo estruturar a progressão do aluno com maior clareza e manter uma leitura mais consistente do plano em execução." },
-      { title: "Posso criar templates e usar tags para acelerar a prescrição?", text: "Sim. A app permite criar templates reutilizáveis e aplicar tags para classificar melhor exercícios, sessões e estruturas de trabalho. Isto reduz repetição manual e ajuda a elevar a tua operação diária." },
+      { title: "Posso criar templates e usar tags para acelerar a prescrição?", text: "Sim. A app permite criar templates reutilizáveis e aplicar tags para classificar melhor exercícios, sessões e estruturas de trabalho. Isto reduz repetição manual e ajuda a tornar a operação diária mais consistente." },
       { title: "A base de dados de exercícios serve apenas para consulta?", text: "Não. A base de dados de exercícios serve como suporte ativo à preparação, adaptação e repetição do treino. O objetivo não é apenas consultar exercícios, mas acelerar decisões de prescrição com mais consistência técnica." },
       { title: "A faturação dos clients pode ser acompanhada na app?", text: "Sim. A APEX COACH foi pensada para concentrar também a componente de packs, pagamentos, avisos e seguimento financeiro do aluno, reduzindo a necessidade de sistemas paralelos para controlo operacional." },
       { title: "O aluno consegue perceber o que foi feito e acompanhar a evolução?", text: "Sim. A estrutura da app foi desenhada para que o coach consiga registar o que foi prescrito, o que foi executado e o que mudou ao longo do tempo, criando uma visão mais clara da evolução global do aluno." },
     ],
     closingTitle: "Se procuras uma operação mais fluida, mais rigorosa e mais profissional, este é o momento certo para entrar.",
     closingText:
-      "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode elevar a tua operação com mais clareza, mais controlo e maior consistência.",
+      "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode gerir a tua operação com mais clareza, mais controlo e maior consistência.",
     closingPrimary: "Criar conta",
     closingSecondary: "Fazer download da APK",
     modalTitle: "Quero comecar a usar a APEX COACH",
@@ -244,7 +244,7 @@ const copy = {
     badge: "Build your apex and elevate theirs. The app for coaches who expect stronger standards, greater efficiency, and tighter operational control.",
     titleA: "APEX COACH",
     titleB: "was designed to",
-    titleC: "elevate your operation.",
+    titleC: "organize your operation better.",
     subtitle:
       "Built for real coaching environments, APEX COACH allows coaches to manage sessions, adjust loads, follow clients, and record critical information with far less operational friction. It is the right solution for professionals seeking greater efficiency, clearer oversight, and a more elevated standard of work.",
     primaryCta: "Start 14-day free trial",
@@ -260,7 +260,7 @@ const copy = {
     sectionProduct: "Product",
     productTitle: "An app built to upgrade the way coaches work.",
     productText:
-      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps, elevate your operation, and turn daily work into something more fluid, organized, and dependable.",
+      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps, clarify the operation, and turn daily work into something more fluid, organized, and dependable.",
     featureTitle: "What the app already improves in a coach's work",
     features: [
       "Unlimited clients to support your operation without artificial limits",
@@ -273,7 +273,7 @@ const copy = {
     differentiatorTag: "Clear advantages",
     differentiatorTitle: "Where APEX COACH creates a genuine operational advantage in daily work.",
     differentiatorText:
-      "The difference is not adding one more app. It is about freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in order to elevate the operation behind every client.",
+      "The difference is not adding one more app. It is about freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in order to improve the operation behind every client.",
     differentiators: [
       {
         title: "More free time",
@@ -400,7 +400,7 @@ const copy = {
     pilotTag: "Results for the coach",
     pilotTitle: "Where APEX COACH translates into tangible value for the coach.",
     pilotText:
-      "The difference is not simply having another app. It is about making better decisions, responding faster, and elevating the operation without adding complexity to the working day.",
+      "The difference is not simply having another app. It is about making better decisions, responding faster, and structuring the operation without adding complexity to the working day.",
     pilotPoints: ["Direct APK download", "Immediate account creation", "Fast access", "A clearer and more professional experience"],
     proofTitle: "What a coach should feel while using the app",
     proofItems: [
@@ -437,14 +437,14 @@ const copy = {
       { title: "Can I work with unlimited clients?", text: "Yes. The app structure was designed to support the coach's operation without artificial limits on the number of clients, allowing the business to grow without losing clarity or control." },
       { title: "Can the app track external client activities?", text: "Yes. The coach can log relevant activity performed outside the main session, creating stronger context for load management, recovery interpretation, accumulated volume, and decision-making." },
       { title: "Does the app support periodization and structured protocols?", text: "Yes. APEX COACH supports organization by weeks, blocks, and training protocols, allowing the coach to manage progression with more structure and a clearer reading of the plan in execution." },
-      { title: "Can I create templates and use tags?", text: "Yes. The app allows reusable templates and tagging logic to classify exercises, sessions, and work structures. This reduces manual repetition and helps elevate the daily operation." },
+      { title: "Can I create templates and use tags?", text: "Yes. The app allows reusable templates and tagging logic to classify exercises, sessions, and work structures. This reduces manual repetition and helps make the daily operation more consistent." },
       { title: "Is the exercise database only for consultation?", text: "No. The exercise database is meant to actively support training preparation, adaptation, and repetition. The goal is not just to view exercises, but to accelerate prescription decisions with stronger technical consistency." },
       { title: "Can client billing be managed inside the app?", text: "Yes. APEX COACH was designed to concentrate packs, payments, alerts, and financial follow-up inside the same operational flow, reducing the need for parallel systems." },
       { title: "Can the client understand what was done and follow overall progress?", text: "Yes. The app structure helps the coach register what was prescribed, what was executed, and what changed over time, creating a clearer view of the client's overall evolution." },
     ],
     closingTitle: "If you are looking for a more fluid, more rigorous, and more professional operation, this is the right time to join.",
     closingText:
-      "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how it can elevate the way you operate with more clarity, more control, and stronger consistency.",
+      "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how it can help you run your operation with more clarity, more control, and stronger consistency.",
     closingPrimary: "Create account",
     closingSecondary: "Download APK",
     modalTitle: "I want to start using APEX COACH",
@@ -619,6 +619,62 @@ function PricingCard({ label, title, monthly, yearly, note, accent = false }) {
         </div>
       </div>
       {note ? <p className="mt-4 text-sm leading-7 text-[var(--text-muted)]">{note}</p> : null}
+    </div>
+  );
+}
+
+function ComparisonMatrix({ lang = "en" }) {
+  const isPt = lang === "pt";
+  const headers = isPt
+    ? ["Critério", "APEX COACH agora", "Apps generalistas para coaches", "APEX COACH V2"]
+    : ["Criteria", "APEX COACH now", "Generic coaching apps", "APEX COACH V2"];
+
+  const rows = isPt
+    ? [
+        ["Experiência de terreno", "Desenhada para sessão real e registo rápido", "Muitas vezes mais genérica e menos contextual", "Fluxo ainda mais afinado entre sessão, agenda e follow-up"],
+        ["Clients ilimitados", "Incluído", "Nem sempre claro ou sem limites reais", "Incluído com leitura operacional mais rica"],
+        ["Periodização e protocolos", "Base já presente", "Frequentemente parcial ou pouco flexível", "Leitura mais profunda por semana, bloco e histórico"],
+        ["Atividades externas", "Registo e contexto operacional", "Nem sempre integrado no mesmo fluxo", "Mais conexão a dados externos e apps de saúde"],
+        ["Treino e tracking", "Prescrição, histórico e evolução no mesmo sistema", "Muitas vezes repartido entre módulos ou apps", "Mais automação e visualização global"],
+        ["Faturação e packs", "Operação centralizada na app", "Nem sempre parte do núcleo do produto", "Mais automação, avisos e lógica financeira"],
+        ["Plataforma web", "Ainda em preparação", "Em alguns casos existe, mas com lógica menos integrada", "Workspace desktop completo e alinhado com a app"],
+      ]
+    : [
+        ["In-session experience", "Built for real sessions and fast logging", "Often broader but less contextual", "Even tighter flow across session, agenda, and follow-up"],
+        ["Unlimited clients", "Included", "Not always clear or truly unlimited", "Included with richer operational visibility"],
+        ["Periodization and protocols", "Core structure already present", "Often partial or less flexible", "Deeper reading by week, block, and history"],
+        ["External activities", "Logged inside the operational flow", "Not always integrated in the same workflow", "More connected to external data and health apps"],
+        ["Training and tracking", "Prescription, history, and evolution in one system", "Often split across modules or tools", "More automation and broader visibility"],
+        ["Billing and packs", "Handled inside the app operation", "Not always part of the product core", "More automation, alerts, and financial logic"],
+        ["Web platform", "Still being prepared", "Sometimes available, but usually less integrated", "Full desktop workspace aligned with the app"],
+      ];
+
+  return (
+    <div className="overflow-hidden rounded-[32px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)]">
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse text-left">
+          <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
+            <tr>
+              {headers.map((header) => (
+                <th key={header} className="px-5 py-4 text-sm font-semibold text-[var(--text)]">
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, rowIndex) => (
+              <tr key={row[0]} className={rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}>
+                {row.map((cell, cellIndex) => (
+                  <td key={`${row[0]}-${cellIndex}`} className="border-t border-[var(--border)] px-5 py-4 align-top text-sm leading-7 text-[var(--text-muted)]">
+                    {cellIndex === 0 ? <span className="font-semibold text-[var(--text)]">{cell}</span> : cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -988,6 +1044,25 @@ export default function App() {
         </section>
 
         <section id="pricing" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+          <SectionLabel>{lang === "pt" ? "Comparação" : "Comparison"}</SectionLabel>
+          <div className="mt-5 mb-12">
+            <div className="max-w-4xl">
+              <h2 className="text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
+                {lang === "pt"
+                  ? "O que a APEX COACH já faz hoje, onde o mercado costuma falhar e para onde a V2 vai crescer."
+                  : "What APEX COACH already does today, where the market usually falls short, and where V2 will expand next."}
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-[var(--text-muted)]">
+                {lang === "pt"
+                  ? "Em vez de prometer tudo ao mesmo tempo, esta tabela mostra a lógica do produto com mais clareza: o que já está disponível, o que normalmente encontras em alternativas generalistas e o que está previsto para a próxima fase."
+                  : "Instead of promising everything at once, this table makes the product logic clearer: what is already available, what you usually find in broader alternatives, and what is planned for the next phase."}
+              </p>
+            </div>
+            <div className="mt-8">
+              <ComparisonMatrix lang={lang} />
+            </div>
+          </div>
+
           <SectionLabel>{t.pricingTag}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
