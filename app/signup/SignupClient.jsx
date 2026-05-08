@@ -449,7 +449,7 @@ export default function SignupClient() {
                     type="text"
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
-                    placeholder="Gabriel Coach"
+                    placeholder={locale === "pt" ? "Nome" : locale === "es" ? "Nombre" : locale === "fr" ? "Nom" : "Name"}
                     className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
                     autoComplete="name"
                     required

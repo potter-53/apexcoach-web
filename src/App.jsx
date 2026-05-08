@@ -630,45 +630,45 @@ function PricingCard({ label, title, monthly, yearly, note, accent = false }) {
 function ProductMatrix({ lang = "en" }) {
   const isPt = lang === "pt";
   const headers = isPt
-    ? ["Função", "Trainerize", "PT Distinction", "Everfit", "APEX COACH [v1]", "APEX COACH [v2]"]
-    : ["Function", "Trainerize", "PT Distinction", "Everfit", "APEX COACH [v1]", "APEX COACH [v2]"];
+    ? ["Função", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"]
+    : ["Function", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"];
 
   const rows = isPt
     ? [
-        ["Preço base", "$9/mo", "$19.90/mo", "Free / $19/mo", "€8.90/mo", "€29.90/mo"],
-        ["Registar clients", "yes", "yes", "yes", "yes", "yes"],
-        ["Registar assessments", "partial", "yes", "partial", "yes", "yes"],
-        ["Criar treinos", "yes", "yes", "yes", "yes", "yes"],
-        ["Base de dados de exercícios", "yes", "partial", "yes", "yes", "yes"],
-        ["Periodização semanal", "partial", "yes", "yes", "yes", "yes"],
-        ["Protocolos de treino", "partial", "yes", "yes", "yes", "yes"],
-        ["Templates e tags", "yes", "yes", "partial", "yes", "yes"],
-        ["Atividades externas", "no", "yes", "partial", "yes", "yes"],
-        ["Tracking global da evolução", "partial", "yes", "yes", "yes", "yes"],
-        ["Gestão de PSE", "no", "partial", "partial", "yes", "yes"],
-        ["Faturação e packs", "yes", "yes", "yes", "yes", "yes"],
-        ["App para o client", "yes", "yes", "yes", "yes", "yes"],
-        ["Plataforma web", "yes", "yes", "yes", "no", "yes"],
-        ["Health app connect", "yes", "partial", "partial", "no", "yes"],
-        ["Automatismos", "partial", "yes", "yes", "partial", "yes"],
+        ["Preço base", "$9/mo", "$19.90/mo", "Free / $19/mo", "€33/mo", "€8.90/mo", "€29.90/mo"],
+        ["Registar clients", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["Registar assessments", "partial", "yes", "partial", "yes", "yes", "yes"],
+        ["Criar treinos", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["Base de dados de exercícios", "yes", "partial", "yes", "partial", "yes", "yes"],
+        ["Periodização semanal", "partial", "yes", "yes", "partial", "yes", "yes"],
+        ["Protocolos de treino", "partial", "yes", "yes", "partial", "yes", "yes"],
+        ["Templates e tags", "yes", "yes", "partial", "partial", "yes", "yes"],
+        ["Atividades externas", "no", "yes", "partial", "partial", "yes", "yes"],
+        ["Tracking global da evolução", "partial", "yes", "yes", "yes", "yes", "yes"],
+        ["Gestão de PSE", "no", "partial", "partial", "no", "yes", "yes"],
+        ["Faturação e packs", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["App para o client", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["Plataforma web", "yes", "yes", "yes", "yes", "no", "yes"],
+        ["Health app connect", "yes", "partial", "partial", "no", "no", "yes"],
+        ["Automatismos", "partial", "yes", "yes", "no", "partial", "yes"],
       ]
     : [
-        ["Entry price", "$9/mo", "$19.90/mo", "Free / $19/mo", "€8.90/mo", "€29.90/mo"],
-        ["Register clients", "yes", "yes", "yes", "yes", "yes"],
-        ["Register assessments", "partial", "yes", "partial", "yes", "yes"],
-        ["Create training", "yes", "yes", "yes", "yes", "yes"],
-        ["Exercise database", "yes", "partial", "yes", "yes", "yes"],
-        ["Weekly periodization", "partial", "yes", "yes", "yes", "yes"],
-        ["Training protocols", "partial", "yes", "yes", "yes", "yes"],
-        ["Templates and tags", "yes", "yes", "partial", "yes", "yes"],
-        ["External activities", "no", "yes", "partial", "yes", "yes"],
-        ["Global progress tracking", "partial", "yes", "yes", "yes", "yes"],
-        ["RPE management", "no", "partial", "partial", "yes", "yes"],
-        ["Billing and packs", "yes", "yes", "yes", "yes", "yes"],
-        ["Client app", "yes", "yes", "yes", "yes", "yes"],
-        ["Web platform", "yes", "yes", "yes", "no", "yes"],
-        ["Health app connect", "yes", "partial", "partial", "no", "yes"],
-        ["Automations", "partial", "yes", "yes", "partial", "yes"],
+        ["Entry price", "$9/mo", "$19.90/mo", "Free / $19/mo", "€33/mo", "€8.90/mo", "€29.90/mo"],
+        ["Register clients", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["Register assessments", "partial", "yes", "partial", "yes", "yes", "yes"],
+        ["Create training", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["Exercise database", "yes", "partial", "yes", "partial", "yes", "yes"],
+        ["Weekly periodization", "partial", "yes", "yes", "partial", "yes", "yes"],
+        ["Training protocols", "partial", "yes", "yes", "partial", "yes", "yes"],
+        ["Templates and tags", "yes", "yes", "partial", "partial", "yes", "yes"],
+        ["External activities", "no", "yes", "partial", "partial", "yes", "yes"],
+        ["Global progress tracking", "partial", "yes", "yes", "yes", "yes", "yes"],
+        ["RPE management", "no", "partial", "partial", "no", "yes", "yes"],
+        ["Billing and packs", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["Client app", "yes", "yes", "yes", "yes", "yes", "yes"],
+        ["Web platform", "yes", "yes", "yes", "yes", "no", "yes"],
+        ["Health app connect", "yes", "partial", "partial", "no", "no", "yes"],
+        ["Automations", "partial", "yes", "yes", "no", "partial", "yes"],
       ];
 
   function renderStatus(value) {
@@ -715,7 +715,7 @@ function ProductMatrix({ lang = "en" }) {
               {headers.map((header, index) => (
                 <th
                   key={header}
-                  className={`px-5 py-4 text-sm font-semibold text-[var(--text)] ${index === 4 ? "bg-[rgba(42,208,125,0.10)]" : ""}`}
+                  className={`px-5 py-4 text-sm font-semibold text-[var(--text)] ${index === 5 ? "bg-[rgba(42,208,125,0.10)]" : ""}`}
                 >
                   {header}
                 </th>
@@ -731,7 +731,7 @@ function ProductMatrix({ lang = "en" }) {
                 {row.slice(1).map((value, index) => (
                   <td
                     key={`${row[0]}-${index}`}
-                    className={`border-t border-[var(--border)] px-5 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)] ${index === 3 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
+                    className={`border-t border-[var(--border)] px-5 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)] ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
                   >
                     <div className="flex justify-center">{renderStatus(value)}</div>
                   </td>
