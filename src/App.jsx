@@ -756,9 +756,9 @@ function ProductMatrix({ lang = "en" }) {
               {headers.map((header, index) => (
                 <th
                   key={header}
-                  className={`sticky top-0 px-3 py-3 text-[11px] font-semibold leading-5 text-[var(--text)] sm:px-4 sm:text-xs ${index === 0 ? "left-0 z-30 min-w-[170px] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]" : index === 5 ? "z-20 bg-[rgba(42,208,125,0.10)]" : "z-20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]"}`}
+                  className={`sticky top-0 px-2.5 py-3 text-[10px] font-semibold leading-4 text-[var(--text)] sm:px-4 sm:text-xs sm:leading-5 ${index === 0 ? "left-0 z-30 min-w-[136px] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]" : index === 5 ? "z-20 min-w-[112px] bg-[rgba(42,208,125,0.10)]" : "z-20 min-w-[112px] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]"}`}
                 >
-                  {header}
+                  <span className="block whitespace-normal break-words">{header}</span>
                 </th>
               ))}
             </tr>
@@ -766,9 +766,9 @@ function ProductMatrix({ lang = "en" }) {
           <tbody>
             {rows.map((row, rowIndex) => (
               <tr key={row[0]} className={rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}>
-                <td className="border-t border-[var(--border)] px-4 py-4 align-top text-sm leading-7 text-[var(--text)] sm:px-5">
+                <td className="border-t border-[var(--border)] p-0 align-top text-sm leading-7 text-[var(--text)]">
                   <span
-                    className={`sticky left-0 z-10 block min-w-[170px] border-r border-[var(--border)] px-3 py-3 text-[11px] font-semibold leading-5 text-[var(--text)] sm:px-4 sm:text-xs ${rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}`}
+                    className={`sticky left-0 z-10 block min-w-[136px] border-r border-[var(--border)] px-2.5 py-3 text-[10px] font-semibold leading-4 text-[var(--text)] sm:px-4 sm:text-xs sm:leading-5 ${rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}`}
                   >
                     {row[0]}
                   </span>
@@ -776,7 +776,7 @@ function ProductMatrix({ lang = "en" }) {
                 {row.slice(1).map((value, index) => (
                   <td
                     key={`${row[0]}-${index}`}
-                    className={`border-t border-[var(--border)] px-3 py-3 align-top text-center text-[11px] leading-5 text-[var(--text-muted)] sm:px-4 sm:text-xs ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
+                    className={`border-t border-[var(--border)] px-2.5 py-3 align-top text-center text-[10px] leading-4 text-[var(--text-muted)] sm:px-4 sm:text-xs sm:leading-5 ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
                   >
                     <div className="flex justify-center">{renderStatus(value)}</div>
                   </td>
@@ -848,6 +848,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  const [headerVisible, setHeaderVisible] = useState(true);
 
   const t = copy[lang] || copy.en;
 
@@ -865,6 +866,31 @@ export default function App() {
     return () => window.clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    let previousY = window.scrollY;
+
+    function handleScroll() {
+      const currentY = window.scrollY;
+
+      if (currentY < 32) {
+        setHeaderVisible(true);
+        previousY = currentY;
+        return;
+      }
+
+      if (currentY > previousY + 8) {
+        setHeaderVisible(false);
+      } else if (currentY < previousY - 8) {
+        setHeaderVisible(true);
+      }
+
+      previousY = currentY;
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const navItems = [
     { id: "product", label: t.navProduct },
     { id: "flow", label: t.navFlow },
@@ -880,7 +906,7 @@ export default function App() {
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_top_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
       <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-[linear-gradient(180deg,rgba(255,255,255,0.65),transparent)]" />
 
-      <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[rgba(255,255,255,0.78)] backdrop-blur-xl">
+      <header className={`sticky top-0 z-50 border-b border-[var(--border)] bg-[rgba(255,255,255,0.78)] backdrop-blur-xl transition-transform duration-300 ${headerVisible ? "translate-y-0" : "-translate-y-full"}`}>
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
           <a href="#top" className="flex min-w-0 items-center gap-3 sm:gap-4">
             <BrandLockup />
@@ -993,26 +1019,6 @@ export default function App() {
               <Chip>{t.trust1}</Chip>
               <Chip>{t.trust2}</Chip>
               <Chip>{t.trust3}</Chip>
-            </div>
-
-            <div className="mt-6 grid gap-4 lg:hidden">
-              <div className="rounded-[24px] border border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06),rgba(255,255,255,0.98))] p-4 shadow-[var(--shadow-soft)]">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">{t.foundationLabel}</p>
-                    <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.foundationMonthly}</p>
-                    <p className="mt-1 text-sm text-[var(--text-muted)]">{t.foundationYearly}</p>
-                  </div>
-                  <div className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
-                    14-day trial
-                  </div>
-                </div>
-              </div>
-              <div className="rounded-[24px] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-soft)]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">{t.regularLabel}</p>
-                <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.regularMonthly}</p>
-                <p className="mt-1 text-sm text-[var(--text-muted)]">{t.regularYearly}</p>
-              </div>
             </div>
 
             <div className="mt-10 rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:mt-12 sm:rounded-[28px] sm:p-5">
