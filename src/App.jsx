@@ -670,9 +670,6 @@ function ProductMatrix({ lang = "en" }) {
   const headers = isPt
     ? ["Função", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"]
     : ["Function", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"];
-  const mobileHeaders = isPt
-    ? ["TR", "PTD", "EF", "ET", "V1", "V2"]
-    : ["TR", "PTD", "EF", "ET", "V1", "V2"];
 
   const rows = isPt
     ? [
@@ -748,58 +745,18 @@ function ProductMatrix({ lang = "en" }) {
   }
 
   return (
-    <>
-      <div className="grid gap-3 md:hidden">
-        <div className="rounded-[24px] border border-[var(--border-strong)] bg-white p-4 shadow-[var(--shadow-panel)]">
-          <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(6,minmax(0,1fr))] items-center gap-x-2 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-            <span>{isPt ? "Função" : "Feature"}</span>
-            {mobileHeaders.map((header, index) => (
-              <span key={header} className={`text-center ${index === 4 ? "text-[var(--accent-strong)]" : ""}`}>
-                {header}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {rows.map((row) => (
-          <div key={row[0]} className="rounded-[24px] border border-[var(--border)] bg-white p-4 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
-            <p className="text-sm font-semibold leading-6 text-[var(--text)]">{row[0]}</p>
-            <div className="mt-3 grid grid-cols-6 gap-2">
-              {row.slice(1).map((value, index) => (
-                <div key={`${row[0]}-${index}`} className={`rounded-2xl border px-2 py-2 text-center ${index === 4 ? "border-[var(--accent)]/30 bg-[rgba(42,208,125,0.06)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}>
-                  <div className="mb-1 text-[9px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">{mobileHeaders[index]}</div>
-                  <div className="flex justify-center">{renderStatus(value)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        <div className="rounded-[24px] border border-[var(--border)] bg-white p-4">
-          <div className="grid grid-cols-2 gap-2 text-xs font-medium text-[var(--text-muted)]">
-            {[
-              { key: "yes", label: isPt ? "Disponível" : "Available" },
-              { key: "partial", label: isPt ? "Parcial" : "Partial" },
-              { key: "no", label: isPt ? "Não disponível" : "Not available" },
-            ].map((item) => (
-              <div key={item.key} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-3 py-2">
-                {renderStatus(item.key)}
-                <span>{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="overflow-hidden rounded-[24px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)] sm:rounded-[32px]">
+      <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/65 px-4 py-3 text-xs font-medium text-[var(--text-muted)] sm:px-5">
+        {isPt ? "Desliza lateralmente para comparar todas as apps." : "Swipe horizontally to compare every app."}
       </div>
-
-      <div className="hidden overflow-hidden rounded-[24px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)] md:block sm:rounded-[32px]">
-        <div className="overflow-x-auto">
-        <table className="min-w-[880px] border-collapse text-left sm:min-w-[920px]">
+      <div className="overflow-x-auto">
+        <table className="min-w-[980px] border-collapse text-left lg:min-w-[1040px]">
           <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
             <tr>
               {headers.map((header, index) => (
                 <th
                   key={header}
-                  className={`px-5 py-4 text-sm font-semibold text-[var(--text)] ${index === 5 ? "bg-[rgba(42,208,125,0.10)]" : ""}`}
+                  className={`px-4 py-4 text-sm font-semibold text-[var(--text)] sm:px-5 ${index === 5 ? "bg-[rgba(42,208,125,0.10)]" : ""}`}
                 >
                   {header}
                 </th>
@@ -809,13 +766,13 @@ function ProductMatrix({ lang = "en" }) {
           <tbody>
             {rows.map((row, rowIndex) => (
               <tr key={row[0]} className={rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}>
-                <td className="border-t border-[var(--border)] px-5 py-4 align-top text-sm leading-7 text-[var(--text)]">
+                <td className="border-t border-[var(--border)] px-4 py-4 align-top text-sm leading-7 text-[var(--text)] sm:px-5">
                   <span className="font-semibold">{row[0]}</span>
                 </td>
                 {row.slice(1).map((value, index) => (
                   <td
                     key={`${row[0]}-${index}`}
-                    className={`border-t border-[var(--border)] px-5 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)] ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
+                    className={`border-t border-[var(--border)] px-4 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)] sm:px-5 ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
                   >
                     <div className="flex justify-center">{renderStatus(value)}</div>
                   </td>
@@ -839,8 +796,7 @@ function ProductMatrix({ lang = "en" }) {
           ))}
         </div>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
 
@@ -1035,6 +991,26 @@ export default function App() {
               <Chip>{t.trust3}</Chip>
             </div>
 
+            <div className="mt-6 grid gap-4 lg:hidden">
+              <div className="rounded-[24px] border border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06),rgba(255,255,255,0.98))] p-4 shadow-[var(--shadow-soft)]">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">{t.foundationLabel}</p>
+                    <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.foundationMonthly}</p>
+                    <p className="mt-1 text-sm text-[var(--text-muted)]">{t.foundationYearly}</p>
+                  </div>
+                  <div className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                    14-day trial
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-[24px] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-soft)]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">{t.regularLabel}</p>
+                <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.regularMonthly}</p>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">{t.regularYearly}</p>
+              </div>
+            </div>
+
             <div className="mt-10 rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:mt-12 sm:rounded-[28px] sm:p-5">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
                 <Smartphone size={22} className="text-[var(--accent-strong)]" />
@@ -1067,6 +1043,52 @@ export default function App() {
                   <p className="text-sm font-medium text-[var(--text)]">{t.floatingPilotText}</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="pricing" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+          <SectionLabel>{t.pricingTag}</SectionLabel>
+          <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <h2 className="max-w-3xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.pricingTitle)}</h2>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
+              <div className="mt-8 grid gap-3">
+                {t.pricingBullets.map((item) => (
+                  <FeatureItem key={item}>{item}</FeatureItem>
+                ))}
+              </div>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.24)] sm:px-6 sm:py-4 sm:text-base">
+                  {t.primaryCta}
+                  <ArrowRight size={18} />
+                </Link>
+                <a
+                  href={APK_DOWNLOAD_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)] sm:px-6 sm:py-4 sm:text-base"
+                >
+                  <Smartphone size={18} />
+                  {t.downloadCta}
+                </a>
+              </div>
+            </div>
+            <div className="grid gap-4">
+              <PricingCard
+                label={t.foundationLabel}
+                title={t.foundationTitle}
+                monthly={t.foundationMonthly}
+                yearly={t.foundationYearly}
+                note={t.foundationNote}
+                accent
+              />
+              <PricingCard
+                label={t.regularLabel}
+                title={t.regularTitle}
+                monthly={t.regularMonthly}
+                yearly={t.regularYearly}
+              />
             </div>
           </div>
         </section>
@@ -1195,37 +1217,6 @@ export default function App() {
               {t.capabilityCards.map((card) => (
                 <CapabilityCard key={card.title} title={card.title} text={card.text} />
               ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="pricing" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
-          <SectionLabel>{t.pricingTag}</SectionLabel>
-          <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-            <div>
-              <h2 className="max-w-3xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.pricingTitle)}</h2>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
-              <div className="mt-8 grid gap-3">
-                {t.pricingBullets.map((item) => (
-                  <FeatureItem key={item}>{item}</FeatureItem>
-                ))}
-              </div>
-            </div>
-            <div className="grid gap-4">
-              <PricingCard
-                label={t.foundationLabel}
-                title={t.foundationTitle}
-                monthly={t.foundationMonthly}
-                yearly={t.foundationYearly}
-                note={t.foundationNote}
-                accent
-              />
-              <PricingCard
-                label={t.regularLabel}
-                title={t.regularTitle}
-                monthly={t.regularMonthly}
-                yearly={t.regularYearly}
-              />
             </div>
           </div>
         </section>
