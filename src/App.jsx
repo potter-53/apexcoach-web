@@ -745,18 +745,18 @@ function ProductMatrix({ lang = "en" }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-[24px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)] sm:rounded-[32px]">
-      <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/65 px-4 py-3 text-xs font-medium text-[var(--text-muted)] sm:px-5">
-        {isPt ? "Desliza lateralmente para comparar todas as apps." : "Swipe horizontally to compare every app."}
+    <div className="rounded-[24px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)] sm:rounded-[32px]">
+      <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/65 px-4 py-3 text-[11px] font-medium leading-6 text-[var(--text-muted)] sm:px-5">
+        {isPt ? "Desliza lateralmente dentro da tabela para comparar todas as apps." : "Swipe horizontally inside the table to compare every app."}
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
         <table className="min-w-[980px] border-collapse text-left lg:min-w-[1040px]">
           <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
             <tr>
               {headers.map((header, index) => (
                 <th
                   key={header}
-                  className={`px-4 py-4 text-sm font-semibold text-[var(--text)] sm:px-5 ${index === 5 ? "bg-[rgba(42,208,125,0.10)]" : ""}`}
+                  className={`sticky top-0 px-3 py-3 text-[11px] font-semibold leading-5 text-[var(--text)] sm:px-4 sm:text-xs ${index === 0 ? "left-0 z-30 min-w-[170px] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]" : index === 5 ? "z-20 bg-[rgba(42,208,125,0.10)]" : "z-20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]"}`}
                 >
                   {header}
                 </th>
@@ -767,12 +767,16 @@ function ProductMatrix({ lang = "en" }) {
             {rows.map((row, rowIndex) => (
               <tr key={row[0]} className={rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}>
                 <td className="border-t border-[var(--border)] px-4 py-4 align-top text-sm leading-7 text-[var(--text)] sm:px-5">
-                  <span className="font-semibold">{row[0]}</span>
+                  <span
+                    className={`sticky left-0 z-10 block min-w-[170px] border-r border-[var(--border)] px-3 py-3 text-[11px] font-semibold leading-5 text-[var(--text)] sm:px-4 sm:text-xs ${rowIndex % 2 === 0 ? "bg-white" : "bg-[var(--surface-muted)]/55"}`}
+                  >
+                    {row[0]}
+                  </span>
                 </td>
                 {row.slice(1).map((value, index) => (
                   <td
                     key={`${row[0]}-${index}`}
-                    className={`border-t border-[var(--border)] px-4 py-4 align-top text-center text-sm leading-7 text-[var(--text-muted)] sm:px-5 ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
+                    className={`border-t border-[var(--border)] px-3 py-3 align-top text-center text-[11px] leading-5 text-[var(--text-muted)] sm:px-4 sm:text-xs ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
                   >
                     <div className="flex justify-center">{renderStatus(value)}</div>
                   </td>
@@ -782,14 +786,14 @@ function ProductMatrix({ lang = "en" }) {
           </tbody>
         </table>
       </div>
-      <div className="border-t border-[var(--border)] bg-[var(--surface-muted)]/65 px-5 py-4">
-        <div className="flex flex-wrap gap-3 text-xs font-medium text-[var(--text-muted)]">
+      <div className="border-t border-[var(--border)] bg-[var(--surface-muted)]/65 px-4 py-3 sm:px-5 sm:py-4">
+        <div className="flex flex-wrap gap-2 text-[11px] font-medium text-[var(--text-muted)] sm:gap-3 sm:text-xs">
           {[
             { key: "yes", label: isPt ? "Disponível" : "Available" },
             { key: "partial", label: isPt ? "Parcial" : "Partial" },
             { key: "no", label: isPt ? "Não disponível" : "Not available" },
           ].map((item) => (
-            <div key={item.key} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2">
+            <div key={item.key} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-2.5 py-1.5 sm:px-3 sm:py-2">
               {renderStatus(item.key)}
               <span>{item.label}</span>
             </div>
