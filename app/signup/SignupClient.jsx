@@ -9,6 +9,9 @@ import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getInitialBrowserLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
+const APK_DOWNLOAD_URL =
+  "https://1drv.ms/u/c/186169f40b6025f8/IQC5uK1lblofT73JdOxIxfphAQLeqTmclWTmpWz2f5zUCnQ?e=TXnr5t";
+
 const copy = {
   en: {
     highlights: [
@@ -271,7 +274,7 @@ export default function SignupClient() {
 
             <div className="mt-5 grid gap-3">
               <a
-                href="/download/apk"
+                href={APK_DOWNLOAD_URL}
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => {
@@ -335,7 +338,9 @@ export default function SignupClient() {
 
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="/download/apk"
+              href={APK_DOWNLOAD_URL}
+              target="_blank"
+              rel="noreferrer"
               onClick={() => trackEvent("landing_signup_top_download_click", { locale })}
               className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
             >
@@ -389,7 +394,9 @@ export default function SignupClient() {
                   <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{t.downloadHint}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-3">
                     <a
-                      href="/download/apk"
+                      href={APK_DOWNLOAD_URL}
+                      target="_blank"
+                      rel="noreferrer"
                       onClick={() => trackEvent("landing_signup_side_download_click", { locale })}
                       className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-white"
                     >

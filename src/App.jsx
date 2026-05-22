@@ -7,6 +7,8 @@ import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } fro
 import CookieSettingsButton from "./components/CookieSettingsButton";
 
 const screenshots = ["/screenshot_1.jpeg", "/screenshot_2.jpeg", "/screenshot_3.jpeg"];
+const APK_DOWNLOAD_URL =
+  "https://1drv.ms/u/c/186169f40b6025f8/IQC5uK1lblofT73JdOxIxfphAQLeqTmclWTmpWz2f5zUCnQ?e=TXnr5t";
 
 const copy = {
   pt: {
@@ -668,6 +670,9 @@ function ProductMatrix({ lang = "en" }) {
   const headers = isPt
     ? ["Função", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"]
     : ["Function", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"];
+  const mobileHeaders = isPt
+    ? ["TR", "PTD", "EF", "ET", "V1", "V2"]
+    : ["TR", "PTD", "EF", "ET", "V1", "V2"];
 
   const rows = isPt
     ? [
@@ -743,8 +748,51 @@ function ProductMatrix({ lang = "en" }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-[24px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)] sm:rounded-[32px]">
-      <div className="overflow-x-auto">
+    <>
+      <div className="grid gap-3 md:hidden">
+        <div className="rounded-[24px] border border-[var(--border-strong)] bg-white p-4 shadow-[var(--shadow-panel)]">
+          <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(6,minmax(0,1fr))] items-center gap-x-2 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            <span>{isPt ? "Função" : "Feature"}</span>
+            {mobileHeaders.map((header, index) => (
+              <span key={header} className={`text-center ${index === 4 ? "text-[var(--accent-strong)]" : ""}`}>
+                {header}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {rows.map((row) => (
+          <div key={row[0]} className="rounded-[24px] border border-[var(--border)] bg-white p-4 shadow-[0_10px_28px_rgba(14,17,16,0.05)]">
+            <p className="text-sm font-semibold leading-6 text-[var(--text)]">{row[0]}</p>
+            <div className="mt-3 grid grid-cols-6 gap-2">
+              {row.slice(1).map((value, index) => (
+                <div key={`${row[0]}-${index}`} className={`rounded-2xl border px-2 py-2 text-center ${index === 4 ? "border-[var(--accent)]/30 bg-[rgba(42,208,125,0.06)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}>
+                  <div className="mb-1 text-[9px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">{mobileHeaders[index]}</div>
+                  <div className="flex justify-center">{renderStatus(value)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div className="rounded-[24px] border border-[var(--border)] bg-white p-4">
+          <div className="grid grid-cols-2 gap-2 text-xs font-medium text-[var(--text-muted)]">
+            {[
+              { key: "yes", label: isPt ? "Disponível" : "Available" },
+              { key: "partial", label: isPt ? "Parcial" : "Partial" },
+              { key: "no", label: isPt ? "Não disponível" : "Not available" },
+            ].map((item) => (
+              <div key={item.key} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-3 py-2">
+                {renderStatus(item.key)}
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden overflow-hidden rounded-[24px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)] md:block sm:rounded-[32px]">
+        <div className="overflow-x-auto">
         <table className="min-w-[880px] border-collapse text-left sm:min-w-[920px]">
           <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
             <tr>
@@ -791,7 +839,8 @@ function ProductMatrix({ lang = "en" }) {
           ))}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -865,7 +914,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={t.modalTitle} text={t.modalText} copy={t} />
 
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_top_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
@@ -903,7 +952,9 @@ export default function App() {
 
             <div className="hidden items-center gap-3 lg:flex">
               <a
-                href="/download/apk"
+                href={APK_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
                 onClick={() => trackEvent("landing_header_download_click", { locale: lang })}
                 className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
               >
@@ -930,7 +981,9 @@ export default function App() {
                 </a>
               ))}
               <a
-                href="/download/apk"
+                href={APK_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
                 onClick={() => {
                   trackEvent("landing_mobile_download_click", { locale: lang });
                   setMobileMenuOpen(false);
@@ -947,7 +1000,7 @@ export default function App() {
         ) : null}
       </header>
 
-      <main id="top">
+      <main id="top" className="overflow-x-hidden">
         <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 pt-10 sm:gap-14 sm:px-5 sm:pb-20 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:pb-28 lg:pt-24">
           <div className="max-w-3xl">
             <div className="inline-flex max-w-full rounded-full border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-3 py-2 text-xs font-medium leading-6 text-[var(--accent-strong)] sm:px-4 sm:text-sm">
@@ -966,7 +1019,9 @@ export default function App() {
                 <ArrowRight size={18} />
               </Link>
               <a
-                href="/download/apk"
+                href={APK_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
                 onClick={() => trackEvent("landing_hero_download_click", { locale: lang })}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)] sm:px-6 sm:py-4 sm:text-base"
               >
@@ -1213,7 +1268,12 @@ export default function App() {
               <Link href="/signup" className="rounded-2xl bg-[var(--accent)] px-6 py-4 font-semibold text-[var(--accent-foreground)] shadow-[0_18px_40px_rgba(42,208,125,0.24)]">
                 {t.closingPrimary}
               </Link>
-              <a href="/download/apk" className="rounded-2xl border border-[var(--border)] bg-white px-6 py-4 font-semibold text-[var(--text)]">
+              <a
+                href={APK_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-2xl border border-[var(--border)] bg-white px-6 py-4 font-semibold text-[var(--text)]"
+              >
                 {t.closingSecondary}
               </a>
             </div>

@@ -14,6 +14,9 @@ import {
 
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
+const APK_DOWNLOAD_URL =
+  "https://1drv.ms/u/c/186169f40b6025f8/IQC5uK1lblofT73JdOxIxfphAQLeqTmclWTmpWz2f5zUCnQ?e=TXnr5t";
+
 const copyByLocale = {
   pt: {
     back: "Voltar",
@@ -331,7 +334,9 @@ export default function ClientSignupClient() {
               <p className="mt-1 text-sm">{popupText || t.successPopupText}</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 <a
-                  href="/download/apk"
+                  href={APK_DOWNLOAD_URL}
+                  target="_blank"
+                  rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
                 >
                   <Smartphone size={16} />
@@ -438,7 +443,9 @@ export default function ClientSignupClient() {
               {t.openApp}
             </a>
             <a
-              href="/download/apk"
+              href={APK_DOWNLOAD_URL}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
             >
               <Smartphone size={16} />
@@ -457,7 +464,9 @@ export default function ClientSignupClient() {
             </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <a
-                href="/download/apk"
+                href={APK_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]"
               >
                 <Smartphone size={16} />
