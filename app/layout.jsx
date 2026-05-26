@@ -6,9 +6,9 @@ export const metadata = {
   description:
     "APEX COACH is the mobile app for coaches who want faster sessions, clearer client follow-up, and a more professional day-to-day workflow.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/logo.png",
+    icon: "/favicon-logo.png",
+    shortcut: "/favicon-logo.png",
+    apple: "/favicon-logo.png",
   },
 };
 

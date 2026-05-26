@@ -511,20 +511,7 @@ function SectionLabel({ children }) {
 
 function BrandLogoIcon({ className = "h-8 w-8 sm:h-10 sm:w-10" }) {
   return (
-    <svg viewBox="0 0 48 48" aria-hidden="true" className={className}>
-      <defs>
-        <linearGradient id="apex-logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="var(--accent-strong)" />
-          <stop offset="52%" stopColor="var(--brand-mid)" />
-          <stop offset="100%" stopColor="var(--brand-soft-blue)" />
-        </linearGradient>
-      </defs>
-      <path d="M7 34.5 18.5 30V41H7v-6.5Z" fill="url(#apex-logo-gradient)" />
-      <path d="M19.75 24.5 31 18.5V41H19.75V24.5Z" fill="url(#apex-logo-gradient)" opacity="0.92" />
-      <path d="M32.25 11.75 41 7v34h-8.75V11.75Z" fill="url(#apex-logo-gradient)" opacity="0.84" />
-      <path d="M6.25 41 23.5 22.25l4.25 3.25L42 9.75V41H6.25Z" fill="rgba(14,17,16,0.12)" />
-      <path d="M31.75 41h9.5" stroke="var(--text)" strokeWidth="2.2" strokeLinecap="round" />
-    </svg>
+    <img src="/favicon-logo.png" alt="" aria-hidden="true" className={className} />
   );
 }
 
@@ -539,15 +526,11 @@ function BrandMark({ neutralClass = "text-[var(--text)]", sizeClass = "text-inhe
 
 function BrandLockup() {
   return (
-    <>
-      <BrandLogoIcon className="h-8 w-8 shrink-0 sm:h-10 sm:w-10" />
-      <div className="min-w-0">
-        <p className="truncate text-xs font-semibold tracking-[0.14em] text-[var(--text)] sm:text-sm sm:tracking-[0.18em]">
-          <BrandMark compact />
-        </p>
-        <p className="hidden text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)] sm:block sm:text-xs sm:tracking-[0.22em]">professional coaching app</p>
-      </div>
-    </>
+    <img
+      src="/logo.png"
+      alt="APEX COACH"
+      className="h-9 w-auto shrink-0 object-contain sm:h-11"
+    />
   );
 }
 
@@ -1284,13 +1267,7 @@ export default function App() {
 
       <footer className="border-t border-[var(--border)]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-5 py-8 text-sm text-[var(--text-muted)] lg:flex-row lg:px-8">
-          <div className="flex items-center gap-3">
-            <BrandLogoIcon className="h-8 w-8 shrink-0" />
-            <div>
-              <p className="font-medium text-[var(--text)]"><BrandMark compact /></p>
-              <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">mobile coaching app</p>
-            </div>
-          </div>
+          <img src="/logo.png" alt="APEX COACH" className="h-10 w-auto object-contain sm:h-12" />
 
           <p className="text-center text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Faster sessions. Clearer coaching. Better work every day.</p>
 
