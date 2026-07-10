@@ -7,8 +7,7 @@ import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } fro
 import CookieSettingsButton from "./components/CookieSettingsButton";
 
 const screenshots = ["/screenshot_1.jpeg", "/screenshot_2.jpeg", "/screenshot_3.jpeg"];
-const APK_DOWNLOAD_URL =
-  "https://1drv.ms/u/c/186169f40b6025f8/IQC5uK1lblofT73JdOxIxfphAQLeqTmclWTmpWz2f5zUCnQ?e=TXnr5t";
+const APK_DOWNLOAD_URL = "/download/apk";
 
 const copy = {
   pt: {

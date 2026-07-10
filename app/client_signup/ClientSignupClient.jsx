@@ -14,8 +14,7 @@ import {
 
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
-const APK_DOWNLOAD_URL =
-  "https://1drv.ms/u/c/186169f40b6025f8/IQC5uK1lblofT73JdOxIxfphAQLeqTmclWTmpWz2f5zUCnQ?e=TXnr5t";
+const APK_DOWNLOAD_URL = "/download/apk";
 
 const copyByLocale = {
   pt: {
