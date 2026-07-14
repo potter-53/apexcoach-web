@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronDown, CircleDashed, Clock3, CreditCard, Menu, Smartphone, Sparkles, Target, Users, X } from "lucide-react";
 
@@ -6,7 +6,11 @@ import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
 import CookieSettingsButton from "./components/CookieSettingsButton";
 
-const screenshots = ["/screenshot_1.jpeg", "/screenshot_2.jpeg", "/screenshot_3.jpeg"];
+const appPreviewScreens = [
+  { src: "/screenshot_2.jpeg", alt: "APEX COACH client progress screen" },
+  { src: "/screenshot_3.jpeg", alt: "APEX COACH client session history screen" },
+  { src: "/screenshot_1.jpeg", alt: "APEX COACH sessions screen" },
+];
 const APK_DOWNLOAD_URL = "/download/apk";
 
 const copy = {
@@ -21,13 +25,21 @@ const copy = {
     titleB: "foi desenhada para",
     titleC: "organizar melhor a tua operação.",
     subtitle:
-      "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar alunos e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
-    primaryCta: "Começar trial grátis 14 dias",
+      "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar clients e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
+    primaryCta: "Pedir acesso",
     secondaryCta: "Criar conta",
     downloadCta: "Download APK",
     trust1: "Clients ilimitados",
     trust2: "Periodização e protocolos",
     trust3: "Templates, tags e tracking",
+    heroOfferLabel: "Campanha Coach Fundador",
+    heroOfferPrice: "8,90 EUR",
+    heroOfferPeriod: "/mês",
+    heroOfferYearly: "ou 89 EUR/ano",
+    heroOfferNote: "Primeiros 50 coaches ate 01 dez 2026. Valor mantido enquanto a conta estiver ativa.",
+    heroStartLabel: "Começar é simples",
+    heroStartTitle: "Cria conta, inicia o download da APK beta e valida o email.",
+    heroStartSteps: ["Registo em apexcoach.pt", "Email automatico", "Download da APK beta", "Email validado e login"],
     heroTag: "App no terreno",
     heroTitle: "Menos fricção operacional. Mais critério técnico. Mais tempo útil.",
     heroText:
@@ -35,28 +47,54 @@ const copy = {
     sectionProduct: "Produto",
     productTitle: "Uma app criada para reforçar a forma como o coach trabalha.",
     productText:
-      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, mais rápida e mais profissional em contexto real. Foi pensada para reduzir passos desnecessários, clarificar a operação e transformar o dia a dia numa estrutura mais fluida, organizada e consistente.",
-    featureTitle: "O que a app já melhora no trabalho do coach",
+      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, rápida e profissional em contexto real. Foi pensada para reduzir passos desnecessários, clarificar prioridades e transformar o dia a dia numa operação mais organizada, mensurável e consistente.",
+    showcaseTag: "Experiência premium",
+    showcaseTitle: "Uma app que transmite controlo antes mesmo da sessão começar.",
+    showcaseText:
+      "A apresentação da APEX COACH deve vender mais do que ecrãs. Deve mostrar uma forma de trabalhar: rápida, limpa, orientada à decisão e com uma experiência que o coach e o client percebem como profissional.",
+    showcaseMoments: [
+      {
+        label: "01 / Dashboard",
+        title: "Prioridades claras logo ao abrir.",
+        text: "Agenda, sessões em falta, faturação, packs e avisos devem aparecer como ações, não como ruído.",
+      },
+      {
+        label: "02 / Client",
+        title: "Cada client com contexto completo.",
+        text: "Detalhes, histórico, avaliações, pagamentos, plano ativo, protocolo e notas ficam ligados ao mesmo perfil.",
+      },
+      {
+        label: "03 / Prescrição",
+        title: "Treino criado para ser usado no terreno.",
+        text: "Templates, tags, base de exercícios, PSE e tracking ajudam o coach a prescrever melhor sem perder ritmo.",
+      },
+      {
+        label: "04 / Client app",
+        title: "O client também sente o valor.",
+        text: "O client acompanha o que foi feito, percebe a evolução e ganha uma experiência mais clara e premium.",
+      },
+    ],
+    featureTitle: "O que a app já melhora no trabalho diário do coach",
     features: [
       "Clients ilimitados para acompanhar a tua operação sem limites artificiais",
       "Registo simples de cargas, notas, contexto e atividades externas sem quebrar o ritmo",
-      "Leitura mais clara do histórico, progresso e evolução de cada aluno",
+      "Leitura mais clara do histórico, progresso e evolução de cada client",
       "Periodização semanal e organização por protocolos de treino",
-      "Templates e tags para acelerar prescrição, repetição e consistência",
-      "Uma imagem mais profissional e mais premium no trabalho diário",
+      "Templates, tags e base de exercícios para acelerar a prescrição",
+      "Packs, faturação, avisos e automatismos para maior controlo operacional",
     ],
     differentiatorTag: "Vantagens claras",
     differentiatorTitle: "Onde a APEX COACH cria uma vantagem operacional real no trabalho diário.",
     differentiatorText:
-      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa para melhorar a operação e o acompanhamento dos alunos.",
+      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa para melhorar a operação e o acompanhamento dos clients.",
     differentiators: [
       {
         title: "Mais tempo livre",
-        text: "Menos tarefas repetitivas, menos tempo perdido a procurar informação e menos fricção operacional, para que o coach concentre mais energia na orientação técnica e na relação com o aluno.",
+        text: "Menos tarefas repetitivas, menos tempo perdido a procurar informação e menos fricção operacional, para que o coach concentre mais energia na orientação técnica e na relação com o client.",
       },
       {
         title: "Gestão de clients mais simples",
-        text: "Cada aluno fica mais fácil de entender, acompanhar e atualizar sem navegação dispersa nem perda de contexto.",
+        text: "Cada client fica mais fácil de entender, acompanhar e atualizar sem navegação dispersa nem perda de contexto.",
       },
       {
         title: "Marcações e sessões",
@@ -80,11 +118,11 @@ const copy = {
     scenarioCards: [
       {
         title: "Antes da sessão",
-        text: "O coach revê a agenda, confirma o aluno, enquadra o contexto, consulta o protocolo ou a semana planeada e inicia a sessão seguinte com uma linha de ação clara.",
+        text: "O coach revê a agenda, confirma o client, enquadra o contexto, consulta o protocolo ou a semana planeada e inicia a sessão seguinte com uma linha de ação clara.",
       },
       {
         title: "Durante a sessão",
-        text: "Ajusta o treino, gere o PSE, regista notas, acompanha métricas e mantém o foco no aluno sem comprometer a qualidade da condução da sessão.",
+        text: "Ajusta o treino, gere o PSE, regista notas, acompanha métricas e mantém o foco no client sem comprometer a qualidade da condução da sessão.",
       },
       {
         title: "Depois da sessão",
@@ -98,7 +136,7 @@ const copy = {
     systemItems: [
       "Base de dados de exercícios para preparar, adaptar e repetir treino com critério",
       "Prescrição de sessões com registo do que foi realmente feito",
-      "Tracking global da evolução do aluno ao longo do tempo",
+      "Tracking global da evolução do client ao longo do tempo",
       "Gestão de PSE, atividades externas e contexto da sessão no mesmo fluxo",
       "Periodização semanal e organização por protocolos de treino",
       "Templates, tags, packs, pagamentos, avisos e automatismos no mesmo sistema",
@@ -110,7 +148,7 @@ const copy = {
     capabilityCards: [
       {
         title: "Clients, contexto e histórico",
-        text: "Toda a informação crítica do aluno fica mais acessível: perfil, evolução, avaliações, notas, atividades externas e continuidade do acompanhamento.",
+        text: "Toda a informação crítica do client fica mais acessível: perfil, evolução, avaliações, notas, atividades externas e continuidade do acompanhamento.",
       },
       {
         title: "Treino, periodização e protocolos",
@@ -128,7 +166,7 @@ const copy = {
     clientValueTag: "Valor para o client",
     clientValueTitle: "O coach organiza melhor. O client percebe mais valor.",
     clientValueText:
-      "A APEX COACH não melhora apenas a operação do coach. Também reforça a experiência do client, porque cria uma app onde o aluno pode concentrar o que foi feito, o que está planeado e como a sua evolução está a ser acompanhada.",
+      "A APEX COACH não melhora apenas a operação do coach. Também reforça a experiência do client, porque cria uma app onde pode concentrar o que foi feito, o que está planeado e como a sua evolução está a ser acompanhada.",
     clientValueCards: [
       {
         title: "Tudo num só lugar",
@@ -148,21 +186,21 @@ const copy = {
       },
     ],
     onboardingTag: "Como começar",
-    onboardingTitle: "Três passos simples para entrar na APEX COACH e começar a trabalhar melhor.",
+    onboardingTitle: "O caminho simples do coach até ao primeiro login.",
     onboardingText:
-      "A entrada foi pensada para ser rápida e direta: criar conta, instalar a app e começar a organizar clientes, sessões e treino no mesmo sistema.",
+      "Da primeira visita ao site até ao login, o processo foi pensado para ser claro: criar conta, receber o email automático, iniciar o download da APK beta, confirmar o email e entrar.",
     onboardingSteps: [
       {
         title: "Criar a tua conta",
-        text: "Entras com uma identidade única de coach, válida para a app e preparada para a evolução futura da plataforma.",
+        text: "A partir de apexcoach.pt, crias uma identidade única de coach associada ao acesso de Coach Fundador.",
       },
       {
-        title: "Fazer download da APK",
-        text: "Instalas a versão Android atual e ficas pronto para começar a trabalhar no terreno sem depender de fluxos externos.",
+        title: "Iniciar download da APK beta",
+        text: "Depois do registo, podes descarregar a APK beta enquanto confirmas o email automático enviado pela APEX COACH.",
       },
       {
-        title: "Configurar e arrancar",
-        text: "Adicionas os primeiros clients, organizas a operação e começas a usar treinos, avaliações, packs e histórico no mesmo fluxo.",
+        title: "Confirmar email e fazer login",
+        text: "Com o email validado, fazes login e começas a organizar clients, sessões, treinos, assessments e histórico.",
       },
     ],
     detailTag: "O que muda na prática",
@@ -174,7 +212,7 @@ const copy = {
       },
       {
         title: "Clients com histórico útil",
-        text: "Em vez de procurar informação dispersa, o coach acede ao aluno e interpreta de forma imediata histórico, progresso, notas e os ajustamentos que devem ser considerados.",
+        text: "Em vez de procurar informação dispersa, o coach acede ao client e interpreta de forma imediata histórico, progresso, notas e os ajustamentos que devem ser considerados.",
       },
       {
         title: "Trainings mais fluidos",
@@ -182,7 +220,7 @@ const copy = {
       },
       {
         title: "Assessments com leitura mais clara",
-        text: "Os indicadores ficam mais acessíveis, mais comparáveis e mais relevantes para suportar decisões de continuidade e progressão com cada aluno.",
+        text: "Os indicadores ficam mais acessíveis, mais comparáveis e mais relevantes para suportar decisões de continuidade e progressão com cada client.",
       },
     ],
     flowTag: "Fluxo do coach",
@@ -190,59 +228,61 @@ const copy = {
     flowCards: [
       { title: "Acesso imediato", text: "Chegar rapidamente à ação certa, sem navegação excessiva nem etapas desnecessárias." },
       { title: "Registo em contexto", text: "Registar notas, ajustar cargas e conduzir a sessão sem comprometer o ritmo do treino." },
-      { title: "Acompanhamento qualificado", text: "Interpretar com mais rapidez o que mudou em cada aluno e decidir com maior segurança técnica." },
+      { title: "Acompanhamento qualificado", text: "Interpretar com mais rapidez o que mudou em cada client e decidir com maior segurança técnica." },
     ],
     pilotTag: "Resultados para o coach",
     pilotTitle: "Onde a APEX COACH se traduz em valor concreto para o coach.",
     pilotText:
       "A diferença não está em ter mais uma aplicação. Está em orientar melhor, decidir mais depressa e estruturar a operação sem acrescentar complexidade ao dia de trabalho.",
-    pilotPoints: ["Download direto da APK", "Criacao de conta imediata", "Acesso rapido", "Uma experiencia mais clara e mais profissional"],
+    pilotPoints: ["Download direto da APK", "Criação de conta imediata", "Acesso rápido", "Uma experiência mais clara e mais profissional"],
     proofTitle: "O que um coach deve sentir ao usar a app",
     proofItems: [
       "Menos tempo perdido a procurar informação",
       "Mais segurança na continuidade entre sessões e protocolos",
-      "Mais consistência no acompanhamento dos alunos",
+      "Mais consistência no acompanhamento dos clients",
       "Mais controlo sobre o que foi feito, o que mudou e o que vem a seguir",
     ],
     pricingTag: "Planos",
     pricingTitle: "Uma subscrição. Duas modalidades de adesão. Uma vantagem relevante para os primeiros coaches.",
     pricingText:
-      "A APEX COACH funciona com uma subscrição simples, disponível em modalidade mensal ou anual. Os primeiros 50 lugares Foundation Coach garantem um valor preferencial enquanto a conta se mantiver ativa.",
-    foundationLabel: "Foundation Coach",
+      "A APEX COACH funciona com uma subscrição simples, disponível em modalidade mensal ou anual. Os primeiros 50 lugares Coach Fundador garantem um valor preferencial enquanto a conta se mantiver ativa.",
+    foundationLabel: "Coach Fundador",
     foundationTitle: "Oferta especial para os primeiros 50 coaches",
+    monthlyLabel: "Mensal",
+    yearlyLabel: "Anual",
     foundationMonthly: "8,90 EUR/mês",
     foundationYearly: "89 EUR/ano",
-    foundationNote: "Valor válido enquanto a conta se mantiver ativa.",
+    foundationNote: "Disponível até 01 dez 2026 para os primeiros 50 coaches. Valor válido enquanto a conta se mantiver ativa.",
     regularLabel: "Subscrição regular",
-    regularTitle: "Valor standard da APEX COACH",
+    regularTitle: "Valor padrão da APEX COACH",
     regularMonthly: "29,90 EUR/mês",
     regularYearly: "290 EUR/ano",
     pricingBullets: [
       "Uma única subscrição para todo o ecossistema da app",
       "Modalidade mensal para uma adesão mais flexível",
       "Opção anual para quem procura maior compromisso e melhor valor",
-      "Campanha Foundation Coach pensada para os primeiros 50 coaches",
+      "Campanha Coach Fundador pensada para os primeiros 50 coaches",
     ],
     faqTag: "FAQ",
     faqTitle: "Perguntas frequentes",
     faqItems: [
       { title: "Que modelo de subscrição existe?", text: "A APEX COACH funciona com uma subscrição única, disponível em modalidade mensal ou anual. A lógica comercial é simples: um único produto, duas formas de adesão e a mesma estrutura funcional da app." },
-      { title: "O que é o Foundation Coach e como funciona?", text: "Foundation Coach é a campanha de entrada para os primeiros 50 coaches. Enquanto a conta se mantiver ativa, o coach preserva o valor preferencial associado a essa adesão inicial, sem migração automática para o preço standard." },
-      { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus alunos, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
+      { title: "O que é o Coach Fundador e como funciona?", text: "Coach Fundador é a campanha de entrada para os primeiros 50 coaches, disponível até 01 dez 2026. Enquanto a conta se mantiver ativa, o coach preserva o valor preferencial associado a essa adesão inicial, sem migração automática para o preço padrão." },
+      { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus clients, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
       { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
-      { title: "A app permite acompanhar atividades externas do aluno?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
-      { title: "É possível organizar periodização e protocolos de treino?", text: "Sim. A APEX COACH suporta uma lógica de organização por semanas, blocos e protocolos, permitindo estruturar a progressão do aluno com maior clareza e manter uma leitura mais consistente do plano em execução." },
+      { title: "A app permite acompanhar atividades externas do client?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
+      { title: "É possível organizar periodização e protocolos de treino?", text: "Sim. A APEX COACH suporta uma lógica de organização por semanas, blocos e protocolos, permitindo estruturar a progressão do client com maior clareza e manter uma leitura mais consistente do plano em execução." },
       { title: "Posso criar templates e usar tags para acelerar a prescrição?", text: "Sim. A app permite criar templates reutilizáveis e aplicar tags para classificar melhor exercícios, sessões e estruturas de trabalho. Isto reduz repetição manual e ajuda a tornar a operação diária mais consistente." },
       { title: "A base de dados de exercícios serve apenas para consulta?", text: "Não. A base de dados de exercícios serve como suporte ativo à preparação, adaptação e repetição do treino. O objetivo não é apenas consultar exercícios, mas acelerar decisões de prescrição com mais consistência técnica." },
-      { title: "A faturação dos clients pode ser acompanhada na app?", text: "Sim. A APEX COACH foi pensada para concentrar também a componente de packs, pagamentos, avisos e seguimento financeiro do aluno, reduzindo a necessidade de sistemas paralelos para controlo operacional." },
-      { title: "O aluno consegue perceber o que foi feito e acompanhar a evolução?", text: "Sim. A estrutura da app foi desenhada para que o coach consiga registar o que foi prescrito, o que foi executado e o que mudou ao longo do tempo, criando uma visão mais clara da evolução global do aluno." },
+      { title: "A faturação dos clients pode ser acompanhada na app?", text: "Sim. A APEX COACH foi pensada para concentrar também a componente de packs, pagamentos, avisos e seguimento financeiro do client, reduzindo a necessidade de sistemas paralelos para controlo operacional." },
+      { title: "O client consegue perceber o que foi feito e acompanhar a evolução?", text: "Sim. A estrutura da app foi desenhada para que o coach consiga registar o que foi prescrito, o que foi executado e o que mudou ao longo do tempo, criando uma visão mais clara da evolução global do client." },
     ],
     closingTitle: "Se procuras uma operação mais fluida, mais rigorosa e mais profissional, este é o momento certo para entrar.",
     closingText:
-      "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como pode gerir a tua operação com mais clareza, mais controlo e maior consistência.",
+      "A APEX COACH está a evoluir para se afirmar como uma ferramenta cada vez mais rápida, intuitiva e valiosa para o coach. Entra agora, experimenta no terreno e percebe como podes gerir a tua operação com mais clareza, mais controlo e maior consistência.",
     closingPrimary: "Criar conta",
     closingSecondary: "Fazer download da APK",
-    modalTitle: "Quero comecar a usar a APEX COACH",
+    modalTitle: "Quero começar a usar a APEX COACH",
     modalText:
       "A APEX COACH foi criada para coaches que procuram maior fluidez operacional, maior rapidez de execução e maior segurança no acompanhamento diário. Cria a tua conta e entra na app.",
     modalPrimary: "Criar conta",
@@ -250,7 +290,7 @@ const copy = {
     closeLabel: "Fechar",
     login: "Login",
     signup: "Criar conta",
-    backline: "Build your apex and elevate theirs. A experiência web chegará depois. Neste momento, o foco está numa aplicação mais forte para o trabalho real do coach.",
+    backline: "Build your apex and elevate theirs. A experiência web está planeada para uma próxima fase. Neste momento, o foco é uma app mobile mais forte para o trabalho real do coach.",
     floatingSessionLabel: "Modo sessão",
     floatingSessionText: "Rapidez no momento certo",
     floatingPilotLabel: "Mais controlo",
@@ -268,12 +308,20 @@ const copy = {
     titleC: "organize your operation better.",
     subtitle:
       "Built for real coaching environments, APEX COACH allows coaches to manage sessions, adjust loads, follow clients, and record critical information with far less operational friction. It is the right solution for professionals seeking greater efficiency, clearer oversight, and a more elevated standard of work.",
-    primaryCta: "Start 14-day free trial",
+    primaryCta: "Request access",
     secondaryCta: "Create account",
     downloadCta: "Download APK",
     trust1: "Unlimited clients",
     trust2: "Periodization and protocols",
     trust3: "Templates, tags, and tracking",
+    heroOfferLabel: "Founder Coach campaign",
+    heroOfferPrice: "EUR 8.90",
+    heroOfferPeriod: "/month",
+    heroOfferYearly: "or EUR 89/year",
+    heroOfferNote: "First 50 coaches until Dec 1, 2026. Price remains active while the account stays active.",
+    heroStartLabel: "Simple to start",
+    heroStartTitle: "Create your account, start the beta APK download, and verify your email.",
+    heroStartSteps: ["Register at apexcoach.pt", "Automatic email", "Beta APK download", "Verified email and login"],
     heroTag: "Field app",
     heroTitle: "Less operational friction. Better judgement. More useful time.",
     heroText:
@@ -281,15 +329,41 @@ const copy = {
     sectionProduct: "Product",
     productTitle: "An app built to upgrade the way coaches work.",
     productText:
-      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps, clarify the operation, and turn daily work into something more fluid, organized, and dependable.",
-    featureTitle: "What the app already improves in a coach's work",
+      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps, clarify priorities, and turn daily work into a more organized, measurable, and consistent operation.",
+    showcaseTag: "Premium experience",
+    showcaseTitle: "An app that communicates control before the session even starts.",
+    showcaseText:
+      "APEX COACH should sell more than screens. It should communicate a better way to work: fast, clean, decision-oriented, and professional enough for both coach and client to feel the difference.",
+    showcaseMoments: [
+      {
+        label: "01 / Dashboard",
+        title: "Clear priorities from the first open.",
+        text: "Agenda, missing sessions, billing, expiring packs, and alerts should appear as actions, not noise.",
+      },
+      {
+        label: "02 / Client",
+        title: "Every client with complete context.",
+        text: "Details, history, assessments, payments, active plan, protocol, and notes stay connected to the same profile.",
+      },
+      {
+        label: "03 / Prescription",
+        title: "Training built to be used in the field.",
+        text: "Templates, tags, exercise database, RPE, and tracking help the coach prescribe better without losing rhythm.",
+      },
+      {
+        label: "04 / Client app",
+        title: "The client feels the value too.",
+        text: "Clients can follow what was done, understand progress, and experience a clearer, more premium coaching service.",
+      },
+    ],
+    featureTitle: "What the app already improves in a coach's daily work",
     features: [
       "Unlimited clients to support your operation without artificial limits",
       "Simple logging of loads, notes, context, and external activity without breaking flow",
       "Clearer reading of each client's history, progress, and evolution",
       "Weekly periodization and structured training protocols",
-      "Templates and tags to accelerate prescription, repetition, and consistency",
-      "A more professional and premium day-to-day experience",
+      "Templates, tags, and an exercise database to accelerate prescription",
+      "Packs, billing, alerts, and automations for stronger operational control",
     ],
     differentiatorTag: "Clear advantages",
     differentiatorTitle: "Where APEX COACH creates a genuine operational advantage in daily work.",
@@ -394,21 +468,21 @@ const copy = {
       },
     ],
     onboardingTag: "How to start",
-    onboardingTitle: "Three simple steps to enter APEX COACH and start working better.",
+    onboardingTitle: "The simple path from first visit to first login.",
     onboardingText:
-      "The entry flow is designed to be direct: create your account, install the app, and begin organizing clients, sessions, and training in one system.",
+      "From the first visit to the site through login, the process is clear: create an account, receive the automatic email, start the beta APK download, confirm your email, and enter.",
     onboardingSteps: [
       {
         title: "Create your account",
-        text: "You enter with one coach identity, valid for the app today and ready for the platform that follows.",
+        text: "From apexcoach.pt, create a single coach identity associated with Founder access.",
       },
       {
-        title: "Download the APK",
-        text: "Install the current Android version and start working in the field without relying on disconnected external flows.",
+        title: "Start the beta APK download",
+        text: "After registration, download the beta APK while confirming the automatic email sent by APEX COACH.",
       },
       {
-        title: "Set up and begin",
-        text: "Add your first clients, structure your operation, and start using training, assessments, packs, and history in one flow.",
+        title: "Confirm email and sign in",
+        text: "With your email verified, sign in and start organizing clients, sessions, training, assessments, and history.",
       },
     ],
     detailTag: "What changes in practice",
@@ -453,12 +527,14 @@ const copy = {
     pricingTag: "Pricing",
     pricingTitle: "One subscription. Two formats. One meaningful advantage for the first coaches.",
     pricingText:
-      "APEX COACH runs on one simple subscription, available in monthly or yearly format. The first 50 Foundation Coaches secure a preferential price for as long as the account remains active.",
-    foundationLabel: "Foundation Coach",
+      "APEX COACH runs on one simple subscription, available in monthly or yearly format. The first 50 Founder Coaches secure a preferential price for as long as the account remains active.",
+    foundationLabel: "Founder Coach",
     foundationTitle: "Special offer for the first 50 coaches",
+    monthlyLabel: "Monthly",
+    yearlyLabel: "Yearly",
     foundationMonthly: "EUR 8.90/month",
     foundationYearly: "EUR 89/year",
-    foundationNote: "Pricing remains valid while the account stays active.",
+    foundationNote: "Available until Dec 1, 2026 for the first 50 coaches. Pricing remains valid while the account stays active.",
     regularLabel: "Regular subscription",
     regularTitle: "Standard APEX COACH pricing",
     regularMonthly: "EUR 29.90/month",
@@ -467,13 +543,13 @@ const copy = {
       "One subscription for the full app ecosystem",
       "Monthly option for more flexible entry",
       "Yearly option for stronger commitment and better value",
-      "Foundation Coach campaign designed for the first 50 coaches",
+      "Founder Coach campaign designed for the first 50 coaches",
     ],
     faqTag: "FAQ",
     faqTitle: "Frequently asked questions",
     faqItems: [
       { title: "What subscription model is available?", text: "APEX COACH runs on a single subscription model, available in monthly or yearly format. The commercial structure is simple: one product, two billing options, and the same core app experience." },
-      { title: "What is Foundation Coach and how does it work?", text: "Foundation Coach is the entry campaign for the first 50 coaches. As long as the account remains active, the coach keeps the preferential pricing associated with that initial subscription." },
+      { title: "What is Founder Coach and how does it work?", text: "Founder Coach is the entry campaign for the first 50 coaches, available until Dec 1, 2026. As long as the account remains active, the coach keeps the preferential pricing associated with that initial subscription." },
       { title: "Who is APEX COACH built for?", text: "The app was built for coaches who need stronger technical structure, faster execution, and greater consistency in client follow-up, whether they work in performance, health, body composition, or hybrid coaching environments." },
       { title: "Can I work with unlimited clients?", text: "Yes. The app structure was designed to support the coach's operation without artificial limits on the number of clients, allowing the business to grow without losing clarity or control." },
       { title: "Can the app track external client activities?", text: "Yes. The coach can log relevant activity performed outside the main session, creating stronger context for load management, recovery interpretation, accumulated volume, and decision-making." },
@@ -485,7 +561,7 @@ const copy = {
     ],
     closingTitle: "If you are looking for a more fluid, more rigorous, and more professional operation, this is the right time to join.",
     closingText:
-      "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how it can help you run your operation with more clarity, more control, and stronger consistency.",
+      "APEX COACH is evolving to establish itself as a faster, more intuitive, and more valuable tool for coaches. Join now, use it in the field, and see how you can run your operation with more clarity, more control, and stronger consistency.",
     closingPrimary: "Create account",
     closingSecondary: "Download APK",
     modalTitle: "I want to start using APEX COACH",
@@ -496,7 +572,7 @@ const copy = {
     closeLabel: "Close",
     login: "Login",
     signup: "Sign up",
-    backline: "Build your apex and elevate theirs. The web experience comes later. Right now, the focus is a stronger mobile app for real coaching work.",
+    backline: "Build your apex and elevate theirs. The web experience is planned for a future phase. Right now, the focus is a stronger mobile app for real coaching work.",
     floatingSessionLabel: "Session mode",
     floatingSessionText: "Speed when it matters",
     floatingPilotLabel: "More control",
@@ -508,9 +584,9 @@ function SectionLabel({ children }) {
   return <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--accent)] sm:text-xs sm:tracking-[0.28em]">{children}</p>;
 }
 
-function BrandLogoIcon({ className = "h-8 w-8 sm:h-10 sm:w-10" }) {
+function BrandLogoIcon({ className = "h-8 w-auto sm:h-10" }) {
   return (
-    <img src="/favicon-logo.png" alt="" aria-hidden="true" className={className} />
+    <img src="/main_logo_white.png" alt="" aria-hidden="true" className={className} />
   );
 }
 
@@ -525,11 +601,9 @@ function BrandMark({ neutralClass = "text-[var(--text)]", sizeClass = "text-inhe
 
 function BrandLockup() {
   return (
-    <img
-      src="/logo.png"
-      alt="APEX COACH"
-      className="h-9 w-auto shrink-0 object-contain sm:h-11"
-    />
+    <span className="inline-flex h-11 items-center rounded-full border border-[var(--border)] bg-white px-3 shadow-[var(--shadow-soft)] sm:h-[52px] sm:px-4">
+      <img src="/main_logo_white.png" alt="APEX COACH" className="h-8 w-auto max-w-[142px] object-contain sm:h-9 sm:max-w-[178px]" />
+    </span>
   );
 }
 
@@ -541,13 +615,44 @@ function renderBrandText(text) {
 }
 
 function Chip({ children }) {
-  return <div className="rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm text-[var(--text-muted)]">{children}</div>;
+  return <div className="rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs text-[var(--text-muted)] sm:px-4 sm:py-2 sm:text-sm">{children}</div>;
+}
+
+function HeroConversionPanel({ t }) {
+  return (
+    <div className="mt-6 grid gap-3 sm:mt-10 lg:grid-cols-[0.86fr_1.14fr]">
+      <div className="rounded-[18px] border border-[var(--accent)]/35 bg-[linear-gradient(135deg,var(--accent-soft),#ffffff_72%)] p-4 shadow-[var(--shadow-soft)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]">{t.heroOfferLabel}</p>
+        <div className="mt-3 flex items-end gap-1.5">
+          <span className="text-3xl font-semibold leading-none text-[var(--text)] sm:text-4xl">{t.heroOfferPrice}</span>
+          <span className="pb-1 text-sm font-semibold text-[var(--text-muted)]">{t.heroOfferPeriod}</span>
+        </div>
+        <p className="mt-2 text-sm font-semibold text-[var(--accent-strong)]">{t.heroOfferYearly}</p>
+        <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">{t.heroOfferNote}</p>
+      </div>
+
+      <div className="rounded-[18px] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-soft)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{t.heroStartLabel}</p>
+        <h2 className="mt-2 text-lg font-semibold leading-tight text-[var(--text)]">{t.heroStartTitle}</h2>
+        <div className="mt-4 grid gap-2">
+          {t.heroStartSteps.map((step) => (
+            <div key={step} className="flex items-center gap-2 rounded-[14px] border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-xs font-medium text-[var(--text)] sm:text-sm">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]">
+                <Check size={14} strokeWidth={3} />
+              </span>
+              {step}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function FlowCard({ step, title, text }) {
   return (
-    <div className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:rounded-[28px] sm:p-6">
-      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--accent)]/25 bg-[var(--accent-soft)] text-sm font-semibold text-[var(--accent-strong)] sm:mb-5 sm:h-11 sm:w-11">
+    <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-5">
+      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[14px] border border-[var(--accent)]/25 bg-[var(--accent-soft)] text-sm font-semibold text-[var(--accent-strong)] sm:mb-5 sm:h-11 sm:w-11">
         {step}
       </div>
       <h3 className="text-xl font-semibold text-[var(--text)] sm:text-2xl">{renderBrandText(title)}</h3>
@@ -569,8 +674,8 @@ function FeatureItem({ children }) {
 
 function DetailCard({ title, text }) {
   return (
-    <div className="rounded-[24px] border border-[var(--border)] bg-white p-4 shadow-[0_10px_28px_rgba(14,17,16,0.05)] sm:rounded-[28px] sm:p-5">
-      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
+    <div className="rounded-[16px] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-soft)] sm:p-5">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-[14px] bg-[var(--accent-soft)]">
         <Target size={18} className="text-[var(--accent-strong)]" />
       </div>
       <h3 className="text-lg font-semibold text-[var(--text)] sm:text-xl">{renderBrandText(title)}</h3>
@@ -581,8 +686,8 @@ function DetailCard({ title, text }) {
 
 function DifferentiatorCard({ title, text, icon: Icon }) {
   return (
-    <div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-4 shadow-[0_12px_32px_rgba(14,17,16,0.05)] sm:rounded-[28px] sm:p-5">
-      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
+    <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-5">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-[14px] bg-[var(--accent-soft)]">
         <Icon size={18} className="text-[var(--accent-strong)]" />
       </div>
       <h3 className="text-lg font-semibold text-[var(--text)] sm:text-xl">{renderBrandText(title)}</h3>
@@ -593,7 +698,7 @@ function DifferentiatorCard({ title, text, icon: Icon }) {
 
 function ScenarioCard({ title, text }) {
   return (
-    <div className="rounded-[24px] border border-[var(--border)] bg-white p-4 shadow-[0_10px_28px_rgba(14,17,16,0.05)] sm:rounded-[28px] sm:p-5">
+    <div className="rounded-[16px] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-soft)] sm:p-5">
       <div className="mb-4 inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
         {renderBrandText(title)}
       </div>
@@ -604,7 +709,7 @@ function ScenarioCard({ title, text }) {
 
 function CapabilityCard({ title, text }) {
   return (
-    <div className="rounded-[24px] border border-[var(--border)] bg-white p-5 shadow-[0_10px_28px_rgba(14,17,16,0.05)] sm:rounded-[28px] sm:p-6">
+    <div className="rounded-[16px] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-soft)]">
       <div className="mb-4 inline-flex rounded-full border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
         {renderBrandText(title)}
       </div>
@@ -615,8 +720,8 @@ function CapabilityCard({ title, text }) {
 
 function ClientValueCard({ title, text }) {
   return (
-    <div className="rounded-[24px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-5 shadow-[0_10px_28px_rgba(14,17,16,0.05)] sm:rounded-[28px] sm:p-6">
-      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
+    <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)]">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-[14px] bg-[var(--accent-soft)]">
         <Sparkles size={18} className="text-[var(--accent-strong)]" />
       </div>
       <h3 className="text-lg font-semibold text-[var(--text)] sm:text-xl">{renderBrandText(title)}</h3>
@@ -625,20 +730,20 @@ function ClientValueCard({ title, text }) {
   );
 }
 
-function PricingCard({ label, title, monthly, yearly, note, accent = false }) {
+function PricingCard({ label, title, monthly, yearly, note, monthlyLabel = "Monthly", yearlyLabel = "Yearly", accent = false }) {
   return (
-    <div className={`rounded-[24px] border p-5 shadow-[0_12px_32px_rgba(14,17,16,0.05)] sm:rounded-[30px] sm:p-6 ${accent ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-white"}`}>
+    <div className={`rounded-[18px] border p-5 shadow-[var(--shadow-soft)] sm:p-6 ${accent ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-white"}`}>
       <div className="inline-flex rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
         {label}
       </div>
       <h3 className="mt-4 text-xl font-semibold text-[var(--text)] sm:text-2xl">{title}</h3>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-[20px] border border-[var(--border)] bg-white px-4 py-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Monthly</p>
+        <div className="rounded-[16px] border border-[var(--border)] bg-white px-4 py-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{monthlyLabel}</p>
           <p className="mt-2 text-2xl font-semibold text-[var(--text)] sm:text-3xl">{monthly}</p>
         </div>
-        <div className="rounded-[20px] border border-[var(--border)] bg-white px-4 py-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Yearly</p>
+        <div className="rounded-[16px] border border-[var(--border)] bg-white px-4 py-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{yearlyLabel}</p>
           <p className="mt-2 text-2xl font-semibold text-[var(--text)] sm:text-3xl">{yearly}</p>
         </div>
       </div>
@@ -650,12 +755,12 @@ function PricingCard({ label, title, monthly, yearly, note, accent = false }) {
 function ProductMatrix({ lang = "en" }) {
   const isPt = lang === "pt";
   const headers = isPt
-    ? ["Função", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"]
-    : ["Function", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [v1]", "APEX COACH [v2]"];
+    ? ["Função", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [beta]", "APEX COACH [final]"]
+    : ["Function", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [beta]", "APEX COACH [final]"];
 
   const rows = isPt
     ? [
-        ["Preço base", "$9/mo", "$19.90/mo", "Free / $19/mo", "€33/mo", "€8.90/mo", "€29.90/mo"],
+        ["Preço base", "$9/mês", "$19,90/mês", "Grátis / $19/mês", "33 EUR/mês", "8,90 EUR/mês", "29,90 EUR/mês"],
         ["Registar clients", "yes", "yes", "yes", "yes", "yes", "yes"],
         ["Registar assessments", "partial", "yes", "partial", "yes", "yes", "yes"],
         ["Criar treinos", "yes", "yes", "yes", "yes", "yes", "yes"],
@@ -727,18 +832,18 @@ function ProductMatrix({ lang = "en" }) {
   }
 
   return (
-    <div className="rounded-[24px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)] sm:rounded-[32px]">
+    <div className="rounded-[18px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)]">
       <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/65 px-4 py-3 text-[11px] font-medium leading-6 text-[var(--text-muted)] sm:px-5">
         {isPt ? "Desliza lateralmente dentro da tabela para comparar todas as apps." : "Swipe horizontally inside the table to compare every app."}
       </div>
       <div className="overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
         <table className="min-w-[980px] border-collapse text-left lg:min-w-[1040px]">
-          <thead className="bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]">
+          <thead className="bg-[var(--accent-soft)]">
             <tr>
               {headers.map((header, index) => (
                 <th
                   key={header}
-                  className={`sticky top-0 px-2.5 py-3 text-[10px] font-semibold leading-4 text-[var(--text)] sm:px-4 sm:text-xs sm:leading-5 ${index === 0 ? "left-0 z-30 min-w-[136px] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]" : index === 5 ? "z-20 min-w-[112px] bg-[rgba(42,208,125,0.10)]" : "z-20 min-w-[112px] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]"}`}
+                  className={`sticky top-0 px-2.5 py-3 text-[10px] font-semibold leading-4 text-[var(--text)] sm:px-4 sm:text-xs sm:leading-5 ${index === 0 ? "left-0 z-30 min-w-[136px] bg-[var(--accent-soft)]" : index === 5 ? "z-20 min-w-[112px] bg-[rgba(57,185,138,0.14)]" : "z-20 min-w-[112px] bg-[var(--accent-soft)]"}`}
                 >
                   <span className="block whitespace-normal break-words">{header}</span>
                 </th>
@@ -758,7 +863,7 @@ function ProductMatrix({ lang = "en" }) {
                 {row.slice(1).map((value, index) => (
                   <td
                     key={`${row[0]}-${index}`}
-                    className={`border-t border-[var(--border)] px-2.5 py-3 align-top text-center text-[10px] leading-4 text-[var(--text-muted)] sm:px-4 sm:text-xs sm:leading-5 ${index === 4 ? "bg-[rgba(42,208,125,0.06)]" : ""}`}
+                    className={`border-t border-[var(--border)] px-2.5 py-3 align-top text-center text-[10px] leading-4 text-[var(--text-muted)] sm:px-4 sm:text-xs sm:leading-5 ${index === 4 ? "bg-[rgba(57,185,138,0.08)]" : ""}`}
                   >
                     <div className="flex justify-center">{renderStatus(value)}</div>
                   </td>
@@ -786,12 +891,86 @@ function ProductMatrix({ lang = "en" }) {
   );
 }
 
-function PhoneMock({ src }) {
+function PhoneMock({ screens = appPreviewScreens }) {
   return (
-    <div className="mx-auto w-[250px] rounded-[32px] border border-[var(--border-strong)] bg-[#111413] p-2 shadow-[var(--shadow-panel)] sm:w-[290px] sm:rounded-[38px] sm:p-2.5">
-      <div className="relative overflow-hidden rounded-[30px] border border-white/10 bg-black">
-        <div className="absolute left-1/2 top-3 z-10 h-5 w-28 -translate-x-1/2 rounded-full bg-black" />
-        <img src={src} alt="APEX COACH app preview" className="h-[510px] w-full object-cover object-top sm:h-[590px]" />
+    <div className="phone-stage relative mx-auto w-[178px] rounded-[20px] border border-[var(--border-strong)] bg-[#111413] p-1.5 shadow-[var(--shadow-panel)] sm:w-[290px] sm:rounded-[28px] sm:p-2.5">
+      <div className="relative overflow-hidden rounded-[18px] border border-white/10 bg-black sm:rounded-[22px]">
+        <div className="absolute left-1/2 top-2 z-10 h-3.5 w-20 -translate-x-1/2 rounded-full bg-black sm:top-3 sm:h-5 sm:w-28" />
+        <div className="relative h-[360px] w-full sm:h-[590px]">
+          {screens.map((screen, index) => (
+            <img
+              key={screen.src}
+              src={screen.src}
+              alt={screen.alt}
+              className={`app-preview-slide app-preview-slide-${index + 1} absolute inset-0 h-full w-full object-cover object-top`}
+            />
+          ))}
+        </div>
+        <div className="app-launch-overlay absolute inset-0 flex flex-col items-center justify-center bg-white px-8 text-center">
+          <img src="/main_logo_white.png" alt="APEX COACH" className="h-auto w-44 object-contain" />
+          <p className="mt-3 text-xs font-medium text-[var(--text-muted)]">Coach workspace ready</p>
+          <div className="mt-7 h-1.5 w-28 overflow-hidden rounded-full bg-[var(--surface-muted)]">
+            <div className="app-launch-progress h-full rounded-full bg-[var(--accent)]" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExperienceMomentCard({ moment, index, active = false, onActivate }) {
+  return (
+    <button
+      type="button"
+      onMouseEnter={onActivate}
+      onFocus={onActivate}
+      onClick={onActivate}
+      className={`experience-card rounded-[18px] border p-4 text-left shadow-[var(--shadow-soft)] backdrop-blur transition sm:p-5 ${active ? "border-[var(--accent)] bg-white shadow-[0_18px_46px_rgba(57,185,138,0.16)]" : "border-[var(--border)] bg-white/86 hover:border-[var(--accent)]/45 hover:bg-white"}`}
+      style={{ animationDelay: `${index * 130}ms` }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="inline-flex rounded-full border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
+          {moment.label}
+        </div>
+        <div className={`h-2 w-2 rounded-full bg-[var(--accent)] shadow-[0_0_0_6px_rgba(57,185,138,0.10)] transition ${active ? "scale-125 opacity-100" : "opacity-55"}`} />
+      </div>
+      <h3 className="mt-4 text-lg font-semibold leading-tight text-[var(--text)] sm:text-xl">{renderBrandText(moment.title)}</h3>
+      <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{renderBrandText(moment.text)}</p>
+    </button>
+  );
+}
+
+function PremiumExperiencePanel({ moments = [] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeMoment = moments[activeIndex] || moments[0];
+  const activeScreen = appPreviewScreens[activeIndex % appPreviewScreens.length] || appPreviewScreens[0];
+
+  return (
+    <div className="relative overflow-hidden rounded-[24px] border border-[var(--border-strong)] bg-[linear-gradient(145deg,#ffffff_0%,#f7fbf9_55%,#eef7f4_100%)] p-4 shadow-[var(--shadow-panel)] sm:p-6 lg:p-8">
+      <div className="relative grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="premium-mini-phone mx-auto hidden w-full max-w-[300px] rounded-[26px] border border-black/10 bg-[#111413] p-2 shadow-[0_24px_70px_rgba(14,17,16,0.18)] sm:block">
+          <div className="relative overflow-hidden rounded-[21px] bg-[#f7f8f7]">
+            <div className="absolute left-1/2 top-3 h-4 w-24 -translate-x-1/2 rounded-full bg-black" />
+            <div className="relative h-[610px]">
+              <img
+                key={activeScreen.src}
+                src={activeScreen.src}
+                alt={activeScreen.alt}
+                className="h-full w-full object-cover object-top transition duration-300"
+              />
+              <div className="absolute inset-x-4 bottom-4 rounded-[18px] border border-white/20 bg-white/92 p-4 shadow-[0_16px_42px_rgba(14,17,16,0.16)] backdrop-blur">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]">{activeMoment?.label}</p>
+                <p className="mt-2 text-sm font-semibold leading-tight text-[var(--text)]">{renderBrandText(activeMoment?.title)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {moments.map((moment, index) => (
+            <ExperienceMomentCard key={moment.label} moment={moment} index={index} active={index === activeIndex} onActivate={() => setActiveIndex(index)} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -802,7 +981,7 @@ function Modal({ open, onClose, title, text, copy }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(14,17,16,0.18)] p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-xl rounded-[32px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-8 text-[var(--text)] shadow-[var(--shadow-panel)]">
+      <div className="relative w-full max-w-xl rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-8 text-[var(--text)] shadow-[var(--shadow-panel)]">
         <button onClick={onClose} className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)] transition hover:bg-white hover:text-[var(--text)]" aria-label={copy.closeLabel}>
           <X size={18} />
         </button>
@@ -812,10 +991,10 @@ function Modal({ open, onClose, title, text, copy }) {
         <h3 className="max-w-lg text-3xl font-semibold leading-tight">{renderBrandText(title)}</h3>
         <p className="mt-5 text-lg leading-8 text-[var(--text-muted)]">{renderBrandText(text)}</p>
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <Link href="/signup" onClick={() => trackEvent("landing_modal_signup_click")} className="rounded-2xl bg-[var(--accent)] px-5 py-3.5 text-center font-semibold text-[var(--accent-foreground)] shadow-[0_18px_40px_rgba(42,208,125,0.24)]">
+          <Link href="/signup" onClick={() => trackEvent("landing_modal_signup_click")} className="rounded-[16px] bg-[var(--accent)] px-5 py-3.5 text-center font-semibold text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(57,185,138,0.2)]">
             {copy.modalPrimary}
           </Link>
-          <Link href="/login" onClick={() => trackEvent("landing_modal_login_click")} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-5 py-3.5 text-center font-semibold text-[var(--text)]">
+          <Link href="/login" onClick={() => trackEvent("landing_modal_login_click")} className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] px-5 py-3.5 text-center font-semibold text-[var(--text)]">
             {copy.modalSecondary}
           </Link>
         </div>
@@ -826,11 +1005,9 @@ function Modal({ open, onClose, title, text, copy }) {
 
 export default function App() {
   const [lang, setLang] = useState("en");
-  const [activeShot, setActiveShot] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [openFaqIndex, setOpenFaqIndex] = useState(0);
-  const [headerVisible, setHeaderVisible] = useState(true);
+  const [openFaqIndex, setOpenFaqIndex] = useState(-1);
 
   const t = copy[lang] || copy.en;
 
@@ -841,36 +1018,6 @@ export default function App() {
     applyCoachLocale(resolved);
     trackEvent("landing_view", { locale: resolved });
 
-    const interval = window.setInterval(() => {
-      setActiveShot((current) => (current + 1) % screenshots.length);
-    }, 3200);
-
-    return () => window.clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    let previousY = window.scrollY;
-
-    function handleScroll() {
-      const currentY = window.scrollY;
-
-      if (currentY < 32) {
-        setHeaderVisible(true);
-        previousY = currentY;
-        return;
-      }
-
-      if (currentY > previousY + 8) {
-        setHeaderVisible(false);
-      } else if (currentY < previousY - 8) {
-        setHeaderVisible(true);
-      }
-
-      previousY = currentY;
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navItems = [
@@ -885,11 +1032,10 @@ export default function App() {
     <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={t.modalTitle} text={t.modalText} copy={t} />
 
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_top_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
-      <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-[linear-gradient(180deg,rgba(255,255,255,0.65),transparent)]" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_46%,#f2f4f3_100%)]" />
 
-      <header className={`sticky top-0 z-50 border-b border-[var(--border)] bg-[rgba(255,255,255,0.78)] backdrop-blur-xl transition-transform duration-300 ${headerVisible ? "translate-y-0" : "-translate-y-full"}`}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4 lg:px-8">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[rgba(216,223,218,0.58)] bg-[rgba(255,255,255,0.72)] shadow-[0_8px_26px_rgba(14,17,16,0.035)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-4 lg:px-8">
           <a href="#top" className="flex min-w-0 items-center gap-3 sm:gap-4">
             <BrandLockup />
           </a>
@@ -929,8 +1075,8 @@ export default function App() {
                 <Smartphone size={15} />
                 {t.downloadCta}
               </a>
-              <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="whitespace-nowrap rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_40px_rgba(42,208,125,0.24)]">
-                {lang === "pt" ? "Trial grátis 14 dias" : "14-day free trial"}
+              <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="whitespace-nowrap rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_10px_24px_rgba(57,185,138,0.18)]">
+                {lang === "pt" ? "Pedir acesso" : "Request access"}
               </Link>
             </div>
 
@@ -943,7 +1089,7 @@ export default function App() {
         {mobileMenuOpen ? (
           <div className="border-t border-[var(--border)] px-5 py-4 lg:hidden">
             <div className="flex flex-col gap-2">
-              {navItems.map((item) => (
+              {navItems.filter((item) => item.id === "product" || item.id === "pricing" || item.id === "faq").map((item) => (
                 <a key={item.id} href={`#${item.id}`} onClick={() => setMobileMenuOpen(false)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-[var(--text-muted)]">
                   {item.label}
                 </a>
@@ -968,21 +1114,21 @@ export default function App() {
         ) : null}
       </header>
 
-      <main id="top" className="overflow-x-hidden">
-        <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 pt-10 sm:gap-14 sm:px-5 sm:pb-20 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:pb-28 lg:pt-24">
+      <main id="top" className="overflow-x-hidden pt-[68px] sm:pt-[84px]">
+        <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-7 sm:gap-14 sm:px-5 sm:pb-20 sm:pt-16 lg:grid-cols-[1fr_1fr] lg:items-center lg:px-8 lg:pb-20 lg:pt-16">
           <div className="max-w-3xl">
-            <div className="inline-flex max-w-full rounded-full border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-3 py-2 text-xs font-medium leading-6 text-[var(--accent-strong)] sm:px-4 sm:text-sm">
+            <div className="inline-flex max-w-full rounded-full border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-3 py-2 text-[11px] font-medium leading-5 text-[var(--accent-strong)] sm:px-4 sm:text-sm sm:leading-6">
               {renderBrandText(t.badge)}
             </div>
-            <h1 className="mt-6 text-4xl font-semibold leading-[1.04] text-[var(--text)] sm:mt-8 sm:text-5xl xl:text-7xl">
+            <h1 className="mt-5 text-[2.62rem] font-semibold leading-[0.98] text-[var(--text)] sm:mt-8 sm:text-5xl xl:text-7xl">
               <span className="block">{renderBrandText(t.titleA)}</span>
               <span className="block text-[var(--text)]">{renderBrandText(t.titleB)}</span>
               <span className="block bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">{renderBrandText(t.titleC)}</span>
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-muted)] sm:mt-7 sm:text-lg sm:leading-8 xl:text-xl">{renderBrandText(t.subtitle)}</p>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-7 sm:text-lg sm:leading-8 xl:text-xl">{renderBrandText(t.subtitle)}</p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-              <Link href="/signup" onClick={() => trackEvent("landing_hero_signup_click", { locale: lang })} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.24)] sm:px-6 sm:py-4 sm:text-base">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
+              <Link href="/signup" onClick={() => trackEvent("landing_hero_signup_click", { locale: lang })} className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(57,185,138,0.2)] sm:px-6 sm:py-4 sm:text-base">
                 {t.primaryCta}
                 <ArrowRight size={18} />
               </Link>
@@ -991,34 +1137,25 @@ export default function App() {
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => trackEvent("landing_hero_download_click", { locale: lang })}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)] sm:px-6 sm:py-4 sm:text-base"
+                className="inline-flex items-center justify-center gap-2 rounded-[16px] border border-[var(--border)] bg-white px-5 py-3.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)] sm:px-6 sm:py-4 sm:text-base"
               >
                 <Smartphone size={18} />
                 {t.downloadCta}
               </a>
             </div>
-            <div className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:gap-3">
+            <div className="mt-6 hidden flex-wrap gap-2 sm:mt-8 sm:flex sm:gap-3">
               <Chip>{t.trust1}</Chip>
               <Chip>{t.trust2}</Chip>
               <Chip>{t.trust3}</Chip>
             </div>
 
-            <div className="mt-10 rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:mt-12 sm:rounded-[28px] sm:p-5">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))]">
-                <Smartphone size={22} className="text-[var(--accent-strong)]" />
-              </div>
-              <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)] sm:text-sm sm:tracking-[0.2em]">{t.heroTag}</p>
-              <h2 className="mt-2 text-xl font-semibold text-[var(--text)]">{renderBrandText(t.heroTitle)}</h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--text-muted)] sm:text-base">{renderBrandText(t.heroText)}</p>
-              <p className="mt-4 text-sm font-medium text-[var(--accent-strong)]">{t.backline}</p>
-            </div>
+            <HeroConversionPanel t={t} />
           </div>
 
-          <div className="relative flex items-center justify-center lg:justify-end">
-            <div className="absolute left-[10%] top-[5%] h-32 w-32 rounded-full bg-[var(--accent)]/20 blur-3xl" />
-            <div className="absolute bottom-[12%] right-[8%] h-40 w-40 rounded-full bg-sky-400/15 blur-3xl" />
-            <PhoneMock src={screenshots[activeShot]} />
-            <div className="absolute -left-2 top-8 z-20 hidden rounded-3xl border border-[var(--border)] bg-[rgba(255,255,255,0.88)] px-4 py-3 shadow-[var(--shadow-soft)] md:block">
+          <div className="relative flex items-center justify-center lg:-translate-y-24 xl:-translate-y-32 2xl:-translate-y-36">
+            <div className="hero-phone-glow absolute inset-x-0 top-0 mx-auto h-[360px] max-w-[360px] rounded-full bg-[radial-gradient(circle,rgba(57,185,138,0.18),rgba(77,135,199,0.10)_42%,transparent_68%)] blur-2xl sm:h-[520px] sm:max-w-[520px]" />
+            <PhoneMock />
+            <div className="floating-proof-card absolute left-0 top-4 z-20 hidden rounded-[16px] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] px-4 py-3 shadow-[var(--shadow-soft)] backdrop-blur md:block lg:left-3 xl:left-8">
               <div className="flex items-center gap-3">
                 <Clock3 size={16} className="text-[var(--accent-strong)]" />
                 <div>
@@ -1027,9 +1164,9 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="absolute -right-2 bottom-10 z-20 hidden rounded-3xl border border-[var(--border)] bg-[rgba(255,255,255,0.88)] px-4 py-3 shadow-[var(--shadow-soft)] md:block">
+            <div className="floating-proof-card absolute bottom-14 right-0 z-20 hidden rounded-[16px] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] px-4 py-3 shadow-[var(--shadow-soft)] backdrop-blur md:block lg:right-3 xl:right-8">
               <div className="flex items-center gap-3">
-                <Users size={16} className="text-[var(--electric)]" />
+                <Users size={16} className="text-[var(--accent-strong)]" />
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">{t.floatingPilotLabel}</p>
                   <p className="text-sm font-medium text-[var(--text)]">{t.floatingPilotText}</p>
@@ -1039,19 +1176,19 @@ export default function App() {
           </div>
         </section>
 
-        <section id="pricing" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section id="pricing" className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.pricingTag}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
-              <h2 className="max-w-3xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.pricingTitle)}</h2>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
-              <div className="mt-8 grid gap-3">
+              <h2 className="max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.pricingTitle)}</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
+              <div className="mt-8 hidden gap-3 sm:grid">
                 {t.pricingBullets.map((item) => (
                   <FeatureItem key={item}>{item}</FeatureItem>
                 ))}
               </div>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.24)] sm:px-6 sm:py-4 sm:text-base">
+              <div className="mt-6 hidden flex-col gap-3 sm:mt-8 sm:flex sm:flex-row">
+                <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(57,185,138,0.2)] sm:px-6 sm:py-4 sm:text-base">
                   {t.primaryCta}
                   <ArrowRight size={18} />
                 </Link>
@@ -1059,7 +1196,7 @@ export default function App() {
                   href={APK_DOWNLOAD_URL}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white px-5 py-3.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)] sm:px-6 sm:py-4 sm:text-base"
+                  className="inline-flex items-center justify-center gap-2 rounded-[16px] border border-[var(--border)] bg-white px-5 py-3.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)] sm:px-6 sm:py-4 sm:text-base"
                 >
                   <Smartphone size={18} />
                   {t.downloadCta}
@@ -1072,25 +1209,31 @@ export default function App() {
                 title={t.foundationTitle}
                 monthly={t.foundationMonthly}
                 yearly={t.foundationYearly}
+                monthlyLabel={t.monthlyLabel}
+                yearlyLabel={t.yearlyLabel}
                 note={t.foundationNote}
                 accent
               />
-              <PricingCard
-                label={t.regularLabel}
-                title={t.regularTitle}
-                monthly={t.regularMonthly}
-                yearly={t.regularYearly}
-              />
+              <div className="hidden sm:block">
+                <PricingCard
+                  label={t.regularLabel}
+                  title={t.regularTitle}
+                  monthly={t.regularMonthly}
+                  yearly={t.regularYearly}
+                  monthlyLabel={t.monthlyLabel}
+                  yearlyLabel={t.yearlyLabel}
+                />
+              </div>
             </div>
           </div>
         </section>
 
-        <section id="product" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section id="product" className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.sectionProduct}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
             <div>
-              <h2 className="max-w-2xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.productTitle)}</h2>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.productText)}</p>
+              <h2 className="max-w-2xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.productTitle)}</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.productText)}</p>
             </div>
             <div>
               <h3 className="mb-4 text-lg font-semibold text-[var(--text)] sm:text-xl">{t.featureTitle}</h3>
@@ -1103,7 +1246,20 @@ export default function App() {
           </div>
         </section>
 
-        <section id="day" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-end">
+            <div>
+              <SectionLabel>{t.showcaseTag}</SectionLabel>
+              <h2 className="mt-4 max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:mt-5 sm:text-4xl lg:text-5xl">{renderBrandText(t.showcaseTitle)}</h2>
+            </div>
+            <p className="max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:text-lg sm:leading-8">{renderBrandText(t.showcaseText)}</p>
+          </div>
+          <div className="mt-6 sm:mt-10">
+            <PremiumExperiencePanel moments={t.showcaseMoments} />
+          </div>
+        </section>
+
+        <section id="day" className="mx-auto hidden max-w-7xl px-4 py-14 sm:px-5 sm:py-20 md:block lg:px-8">
           <SectionLabel>{t.detailTag}</SectionLabel>
           <h2 className="mt-5 max-w-4xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.detailTitle)}</h2>
           <div className="mt-10 grid gap-4 lg:grid-cols-2">
@@ -1113,7 +1269,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="pilot" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section id="pilot" className="mx-auto hidden max-w-7xl px-4 py-14 sm:px-5 sm:py-20 md:block lg:px-8">
           <SectionLabel>{t.differentiatorTag}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
             <div>
@@ -1130,7 +1286,7 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section className="mx-auto hidden max-w-7xl px-4 py-14 sm:px-5 sm:py-20 md:block lg:px-8">
           <SectionLabel>{t.scenarioTag}</SectionLabel>
           <h2 className="mt-5 max-w-4xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.scenarioTitle)}</h2>
           <div className="mt-10 grid gap-4 lg:grid-cols-3">
@@ -1140,12 +1296,12 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.clientValueTag}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
-              <h2 className="max-w-3xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.clientValueTitle)}</h2>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.clientValueText)}</p>
+              <h2 className="max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.clientValueTitle)}</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.clientValueText)}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {t.clientValueCards.map((card) => (
@@ -1155,7 +1311,7 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section className="mx-auto hidden max-w-7xl px-4 py-14 sm:px-5 sm:py-20 md:block lg:px-8">
           <SectionLabel>{t.onboardingTag}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
             <div>
@@ -1170,25 +1326,25 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
-          <div className="rounded-[28px] border border-[var(--border-strong)] bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(246,248,247,0.96),rgba(124,77,255,0.04))] p-5 shadow-[var(--shadow-panel)] sm:rounded-[36px] sm:p-8 lg:p-12">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
+          <div className="rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-panel)] sm:p-8 lg:p-10">
             <SectionLabel>{t.systemTag}</SectionLabel>
             <div className="mt-5 grid gap-8">
               <div>
-                <h2 className="max-w-4xl text-4xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
+                <h2 className="max-w-4xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
                   {lang === "pt"
-                    ? "O que a APEX COACH faz hoje e como a v2 fecha o sistema."
-                    : "What APEX COACH does today and how v2 closes the system."}
+                    ? "O que a APEX COACH faz hoje na beta e como a versão final fecha o sistema."
+                    : "What APEX COACH does today in beta and how the final version closes the system."}
                 </h2>
-                <p className="mt-5 max-w-3xl text-base leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">
                   {lang === "pt"
-                    ? "Uma única matriz, sem ruído, para mostrar o que já está disponível na app, onde a concorrência responde melhor ou pior, e como a visão completa da APEX COACH fica consolidada na v2."
-                    : "A single matrix, without extra noise, to show what is already available in the app, where competitors respond better or worse, and how the complete APEX COACH vision is consolidated in v2."}
+                    ? "Uma única matriz, sem ruído, para mostrar o que já está disponível na beta, onde a concorrência responde melhor ou pior, e como a visão completa da APEX COACH fica consolidada na versão final."
+                    : "A single matrix, without extra noise, to show what is already available in beta, where competitors respond better or worse, and how the complete APEX COACH vision is consolidated in the final version."}
                 </p>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
                   {lang === "pt"
-                    ? "Os preços apresentados são preços públicos de entrada verificados nas páginas oficiais em 8 de maio de 2026."
-                    : "Displayed prices are public entry prices verified on the official pricing pages on May 8, 2026."}
+                    ? "Valores apresentados como referência comercial de entrada. A comparação funcional deve ser lida como orientação de posicionamento e pode evoluir com cada produto."
+                    : "Prices are shown as entry-level commercial references. The feature comparison should be read as positioning guidance and may evolve as each product changes."}
                 </p>
               </div>
               <div>
@@ -1198,7 +1354,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="flow" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section id="flow" className="mx-auto hidden max-w-7xl px-4 py-14 sm:px-5 sm:py-20 md:block lg:px-8">
           <SectionLabel>{t.capabilityTag}</SectionLabel>
           <div className="mt-5 grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
             <div>
@@ -1213,26 +1369,26 @@ export default function App() {
           </div>
         </section>
 
-        <section id="faq" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
+        <section id="faq" className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.faqTag}</SectionLabel>
-          <h2 className="mt-5 max-w-3xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.faqTitle)}</h2>
-          <div className="mt-10 grid gap-4">
+          <h2 className="mt-4 max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:mt-5 sm:text-4xl lg:text-5xl">{renderBrandText(t.faqTitle)}</h2>
+          <div className="mt-6 grid gap-3 sm:mt-10 sm:gap-4">
             {t.faqItems.map((item, index) => (
-              <div key={item.title} className="overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)]">
+              <div key={item.title} className="overflow-hidden rounded-[16px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)]">
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex((current) => (current === index ? -1 : index))}
-                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition hover:bg-[var(--surface-muted)]"
+                  className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition hover:bg-[var(--surface-muted)] sm:px-6 sm:py-5"
                 >
-                  <h3 className="text-lg font-semibold text-[var(--text)] sm:text-xl">{item.title}</h3>
+                  <h3 className="text-base font-semibold text-[var(--text)] sm:text-xl">{item.title}</h3>
                   <ChevronDown
                     size={18}
                     className={`shrink-0 text-[var(--text-muted)] transition-transform ${openFaqIndex === index ? "rotate-180" : ""}`}
                   />
                 </button>
                 {openFaqIndex === index ? (
-                  <div className="border-t border-[var(--border)] px-6 py-5">
-                    <p className="max-w-4xl text-base leading-8 text-[var(--text-muted)]">{item.text}</p>
+                  <div className="border-t border-[var(--border)] px-4 py-4 sm:px-6 sm:py-5">
+                    <p className="max-w-4xl text-sm leading-7 text-[var(--text-muted)] sm:text-base sm:leading-8">{item.text}</p>
                   </div>
                 ) : null}
               </div>
@@ -1240,22 +1396,22 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-5 sm:pb-24 sm:pt-8 lg:px-8">
-          <div className="rounded-[28px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,245,245,0.92))] px-5 py-10 text-center shadow-[var(--shadow-panel)] sm:rounded-[40px] sm:px-10 sm:py-14">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.1))]">
-              <Sparkles size={28} className="text-[var(--electric)]" />
+        <section className="mx-auto max-w-7xl px-4 pb-16 pt-4 sm:px-5 sm:pb-24 sm:pt-8 lg:px-8">
+          <div className="rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-solid)] px-5 py-8 text-center shadow-[var(--shadow-panel)] sm:px-10 sm:py-14">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[16px] bg-[var(--accent-soft)]">
+              <Sparkles size={28} className="text-[var(--accent-strong)]" />
             </div>
-            <h2 className="mt-6 text-3xl font-semibold tracking-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.closingTitle)}</h2>
-            <p className="mx-auto mt-5 max-w-3xl text-base leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.closingText)}</p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link href="/signup" className="rounded-2xl bg-[var(--accent)] px-6 py-4 font-semibold text-[var(--accent-foreground)] shadow-[0_18px_40px_rgba(42,208,125,0.24)]">
+            <h2 className="mt-5 text-2xl font-semibold tracking-tight text-[var(--text)] sm:mt-6 sm:text-4xl lg:text-5xl">{renderBrandText(t.closingTitle)}</h2>
+            <p className="mx-auto mt-4 max-w-3xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.closingText)}</p>
+            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
+              <Link href="/signup" className="rounded-[16px] bg-[var(--accent)] px-6 py-4 font-semibold text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(57,185,138,0.2)]">
                 {t.closingPrimary}
               </Link>
               <a
                 href={APK_DOWNLOAD_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-2xl border border-[var(--border)] bg-white px-6 py-4 font-semibold text-[var(--text)]"
+                className="rounded-[16px] border border-[var(--border)] bg-white px-6 py-4 font-semibold text-[var(--text)]"
               >
                 {t.closingSecondary}
               </a>
@@ -1265,8 +1421,8 @@ export default function App() {
       </main>
 
       <footer className="border-t border-[var(--border)]">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-5 py-8 text-sm text-[var(--text-muted)] lg:flex-row lg:px-8">
-          <img src="/logo.png" alt="APEX COACH" className="h-10 w-auto object-contain sm:h-12" />
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-5 pb-24 pt-8 text-sm text-[var(--text-muted)] sm:pb-8 lg:flex-row lg:px-8">
+          <BrandLockup />
 
           <p className="text-center text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Faster sessions. Clearer coaching. Better work every day.</p>
 
@@ -1279,6 +1435,24 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border)] bg-white/94 px-4 py-3 shadow-[0_-12px_40px_rgba(14,17,16,0.08)] backdrop-blur md:hidden">
+        <div className="mx-auto grid max-w-md grid-cols-[1fr_auto] gap-2">
+          <Link href="/signup" onClick={() => trackEvent("landing_mobile_sticky_signup_click", { locale: lang })} className="inline-flex items-center justify-center rounded-[14px] bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
+            {lang === "pt" ? "Pedir acesso" : "Request access"}
+          </Link>
+          <a
+            href={APK_DOWNLOAD_URL}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => trackEvent("landing_mobile_sticky_download_click", { locale: lang })}
+            className="inline-flex h-12 w-12 items-center justify-center rounded-[14px] border border-[var(--border)] bg-white text-[var(--text)]"
+            aria-label={t.downloadCta}
+          >
+            <Smartphone size={18} />
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

@@ -209,13 +209,20 @@ export default function SignupClient() {
     try {
       const supabase = getSupabaseBrowserClient();
       const normalizedEmail = email.trim().toLowerCase();
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/login?verified=1`,
           data: {
             full_name: fullName.trim(),
             role: "coach",
+            beta_access_requested: true,
+            beta_requested_at: new Date().toISOString(),
+            founder_access_requested: true,
+            access_tier: "founder",
+            subscription_category: "apex_coach_founder",
+            billing_campaign_key: "apex_coach_founder",
             accepted_terms_at: new Date().toISOString(),
             accepted_privacy_at: new Date().toISOString(),
             accepted_legal_version: "2026-04",
@@ -224,16 +231,36 @@ export default function SignupClient() {
       });
 
       if (error) throw error;
+
+      try {
+        await fetch("/api/coach-applications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName: fullName.trim(),
+            email: normalizedEmail,
+            focus: "",
+            locale,
+            source: "apexcoach-signup-page",
+            accessTier: "founder",
+            subscriptionCategory: "apex_coach_founder",
+            userId: data?.user?.id || "",
+          }),
+        });
+      } catch {}
+
       trackEvent("landing_signup_success", { locale });
 
       setSuccessMessage(
         locale === "pt"
-          ? "Conta criada. Se o Supabase exigir confirmacao de email, confirma o email antes de iniciar sessao."
+          ? "Conta criada. Enviamos um email de validacao APEX COACH. Podes iniciar o download da APK beta e confirmar o email antes de iniciar sessao."
           : locale === "es"
-            ? "Cuenta creada. Si Supabase exige confirmacion de email, confirma tu email antes de iniciar sesion."
+            ? "Cuenta creada. Enviamos un email de validacion APEX COACH. Confirma tu email antes de iniciar sesion."
             : locale === "fr"
-              ? "Compte cree. Si Supabase exige une confirmation d'email, confirme ton email avant de te connecter."
-              : "Account created. If Supabase requires email confirmation, confirm your email before signing in.",
+              ? "Compte cree. Nous avons envoye un email de validation APEX COACH. Confirme ton email avant de te connecter."
+              : "Account created. We sent an APEX COACH verification email. You can start downloading the beta APK and confirm your email before signing in.",
       );
       setDownloadModalOpen(true);
     } catch (error) {
@@ -258,8 +285,8 @@ export default function SignupClient() {
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
                   {locale === "pt"
-                    ? "Descarrega a app no teu dispositivo para iniciar o trial e entrar no modo APEX."
-                    : "Download the app on your device to start your trial and enter APEX mode."}
+                    ? "Inicia o download da APK beta, confirma o email que acabaste de receber e depois faz login com esta conta."
+                    : "Start downloading the beta APK, confirm the email you just received, and then sign in with this account."}
                 </p>
               </div>
               <button
