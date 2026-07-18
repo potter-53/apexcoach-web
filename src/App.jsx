@@ -601,8 +601,8 @@ function BrandMark({ neutralClass = "text-[var(--text)]", sizeClass = "text-inhe
 
 function BrandLockup() {
   return (
-    <span className="inline-flex h-11 items-center rounded-full border border-[var(--border)] bg-white px-3 shadow-[var(--shadow-soft)] sm:h-[52px] sm:px-4">
-      <img src="/main_logo_white.png" alt="APEX COACH" className="h-8 w-auto max-w-[142px] object-contain sm:h-9 sm:max-w-[178px]" />
+    <span className="inline-flex h-10 items-center rounded-full border border-[var(--border)] bg-white px-2.5 shadow-[var(--shadow-soft)] sm:h-[52px] sm:px-4">
+      <img src="/main_logo_white.png" alt="APEX COACH" className="h-7 w-auto max-w-[128px] object-contain sm:h-9 sm:max-w-[178px]" />
     </span>
   );
 }
@@ -620,23 +620,23 @@ function Chip({ children }) {
 
 function HeroConversionPanel({ t }) {
   return (
-    <div className="mt-6 grid gap-3 sm:mt-10 lg:grid-cols-[0.86fr_1.14fr]">
-      <div className="rounded-[18px] border border-[var(--accent)]/35 bg-[linear-gradient(135deg,var(--accent-soft),#ffffff_72%)] p-4 shadow-[var(--shadow-soft)]">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]">{t.heroOfferLabel}</p>
-        <div className="mt-3 flex items-end gap-1.5">
+    <div className="mt-5 grid gap-3 sm:mt-10 lg:grid-cols-[0.86fr_1.14fr]">
+      <div className="rounded-[18px] border border-[var(--accent)]/35 bg-[linear-gradient(135deg,var(--accent-soft),#ffffff_72%)] p-3.5 shadow-[var(--shadow-soft)] sm:p-4">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)] sm:text-[10px] sm:tracking-[0.18em]">{t.heroOfferLabel}</p>
+        <div className="mt-2.5 flex items-end gap-1.5 sm:mt-3">
           <span className="text-3xl font-semibold leading-none text-[var(--text)] sm:text-4xl">{t.heroOfferPrice}</span>
           <span className="pb-1 text-sm font-semibold text-[var(--text-muted)]">{t.heroOfferPeriod}</span>
         </div>
         <p className="mt-2 text-sm font-semibold text-[var(--accent-strong)]">{t.heroOfferYearly}</p>
-        <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">{t.heroOfferNote}</p>
+        <p className="mt-2 text-[11px] leading-5 text-[var(--text-muted)] sm:mt-3 sm:text-xs">{t.heroOfferNote}</p>
       </div>
 
-      <div className="rounded-[18px] border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-soft)]">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{t.heroStartLabel}</p>
+      <div className="rounded-[18px] border border-[var(--border)] bg-white p-3.5 shadow-[var(--shadow-soft)] sm:p-4">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.18em]">{t.heroStartLabel}</p>
         <h2 className="mt-2 text-lg font-semibold leading-tight text-[var(--text)]">{t.heroStartTitle}</h2>
-        <div className="mt-4 grid gap-2">
+        <div className="mt-3 grid gap-2 sm:mt-4">
           {t.heroStartSteps.map((step) => (
-            <div key={step} className="flex items-center gap-2 rounded-[14px] border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-xs font-medium text-[var(--text)] sm:text-sm">
+            <div key={step} className="flex items-center gap-2 rounded-[14px] border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-[11px] font-medium text-[var(--text)] sm:text-sm">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]">
                 <Check size={14} strokeWidth={3} />
               </span>
@@ -663,11 +663,11 @@ function FlowCard({ step, title, text }) {
 
 function FeatureItem({ children }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 shadow-[0_8px_24px_rgba(14,17,16,0.04)]">
-      <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent-soft)]">
-        <Check size={14} className="text-[var(--accent-strong)]" />
+    <div className="flex items-start gap-2.5 rounded-[14px] border border-[var(--border)] bg-[var(--surface-solid)] px-3 py-2.5 shadow-[0_8px_24px_rgba(14,17,16,0.04)] sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-3">
+      <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft)] sm:h-6 sm:w-6">
+        <Check size={13} className="text-[var(--accent-strong)] sm:size-[14px]" />
       </div>
-      <p className="text-[var(--text-muted)]">{children}</p>
+      <p className="text-sm leading-6 text-[var(--text-muted)] sm:text-base">{children}</p>
     </div>
   );
 }
@@ -720,34 +720,34 @@ function CapabilityCard({ title, text }) {
 
 function ClientValueCard({ title, text }) {
   return (
-    <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)]">
-      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-[14px] bg-[var(--accent-soft)]">
-        <Sparkles size={18} className="text-[var(--accent-strong)]" />
+    <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-5">
+      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-[14px] bg-[var(--accent-soft)] sm:mb-4 sm:h-11 sm:w-11">
+        <Sparkles size={17} className="text-[var(--accent-strong)] sm:size-[18px]" />
       </div>
-      <h3 className="text-lg font-semibold text-[var(--text)] sm:text-xl">{renderBrandText(title)}</h3>
-      <p className="mt-3 text-sm leading-7 text-[var(--text-muted)] sm:text-base">{renderBrandText(text)}</p>
+      <h3 className="text-base font-semibold text-[var(--text)] sm:text-xl">{renderBrandText(title)}</h3>
+      <p className="mt-2 text-sm leading-6 text-[var(--text-muted)] sm:mt-3 sm:text-base sm:leading-7">{renderBrandText(text)}</p>
     </div>
   );
 }
 
 function PricingCard({ label, title, monthly, yearly, note, monthlyLabel = "Monthly", yearlyLabel = "Yearly", accent = false }) {
   return (
-    <div className={`rounded-[18px] border p-5 shadow-[var(--shadow-soft)] sm:p-6 ${accent ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-white"}`}>
-      <div className="inline-flex rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+    <div className={`rounded-[18px] border p-4 shadow-[var(--shadow-soft)] sm:p-6 ${accent ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-white"}`}>
+      <div className="inline-flex rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)] sm:text-[11px] sm:tracking-[0.14em]">
         {label}
       </div>
-      <h3 className="mt-4 text-xl font-semibold text-[var(--text)] sm:text-2xl">{title}</h3>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-[16px] border border-[var(--border)] bg-white px-4 py-4">
+      <h3 className="mt-3 text-lg font-semibold text-[var(--text)] sm:mt-4 sm:text-2xl">{title}</h3>
+      <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2">
+        <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
           <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{monthlyLabel}</p>
-          <p className="mt-2 text-2xl font-semibold text-[var(--text)] sm:text-3xl">{monthly}</p>
+          <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{monthly}</p>
         </div>
-        <div className="rounded-[16px] border border-[var(--border)] bg-white px-4 py-4">
+        <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
           <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{yearlyLabel}</p>
-          <p className="mt-2 text-2xl font-semibold text-[var(--text)] sm:text-3xl">{yearly}</p>
+          <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{yearly}</p>
         </div>
       </div>
-      {note ? <p className="mt-4 text-sm leading-7 text-[var(--text-muted)]">{note}</p> : null}
+      {note ? <p className="mt-3 text-xs leading-6 text-[var(--text-muted)] sm:mt-4 sm:text-sm sm:leading-7">{note}</p> : null}
     </div>
   );
 }
@@ -1114,24 +1114,29 @@ export default function App() {
         ) : null}
       </header>
 
-      <main id="top" className="overflow-x-hidden pt-[68px] sm:pt-[84px]">
-        <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-10 pt-7 sm:gap-14 sm:px-5 sm:pb-20 sm:pt-16 lg:grid-cols-[1fr_1fr] lg:items-center lg:px-8 lg:pb-20 lg:pt-16">
+      <main id="top" className="overflow-x-hidden pt-[62px] sm:pt-[84px]">
+        <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-8 pt-5 sm:gap-14 sm:px-5 sm:pb-20 sm:pt-16 lg:grid-cols-[1fr_1fr] lg:items-center lg:px-8 lg:pb-20 lg:pt-16">
           <div className="max-w-3xl">
-            <div className="inline-flex max-w-full rounded-full border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-3 py-2 text-[11px] font-medium leading-5 text-[var(--accent-strong)] sm:px-4 sm:text-sm sm:leading-6">
+            <div className="inline-flex max-w-full rounded-full border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-3 py-2 text-[10px] font-semibold leading-5 text-[var(--accent-strong)] sm:px-4 sm:text-sm sm:leading-6">
               {renderBrandText(t.badge)}
             </div>
-            <h1 className="mt-5 text-[2.62rem] font-semibold leading-[0.98] text-[var(--text)] sm:mt-8 sm:text-5xl xl:text-7xl">
+            <h1 className="mt-4 text-[2.35rem] font-semibold leading-[0.98] text-[var(--text)] min-[380px]:text-[2.62rem] sm:mt-8 sm:text-5xl xl:text-7xl">
               <span className="block">{renderBrandText(t.titleA)}</span>
               <span className="block text-[var(--text)]">{renderBrandText(t.titleB)}</span>
               <span className="block bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">{renderBrandText(t.titleC)}</span>
             </h1>
-            <div className="relative mt-7 flex justify-center lg:hidden">
-              <div className="hero-phone-glow absolute inset-x-0 top-2 mx-auto h-[300px] max-w-[300px] rounded-full bg-[radial-gradient(circle,rgba(57,185,138,0.18),rgba(77,135,199,0.10)_42%,transparent_68%)] blur-2xl" />
+            <p className="mt-4 max-w-xl text-sm leading-6 text-[var(--text-muted)] sm:hidden">
+              {lang === "pt"
+                ? "A app mobile para gerir clients, sessões, treino, assessments, PSE, pagamentos e alertas no momento em que o coach está a trabalhar."
+                : "The mobile app for managing clients, sessions, training, assessments, RPE, payments, and alerts while the coach is working."}
+            </p>
+            <div className="relative -mt-1 flex justify-center lg:hidden">
+              <div className="hero-phone-glow absolute inset-x-0 top-2 mx-auto h-[280px] max-w-[280px] rounded-full bg-[radial-gradient(circle,rgba(57,185,138,0.18),rgba(77,135,199,0.10)_42%,transparent_68%)] blur-2xl" />
               <PhoneMock />
             </div>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-7 sm:text-lg sm:leading-8 xl:text-xl">{renderBrandText(t.subtitle)}</p>
+            <p className="mt-4 hidden max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-7 sm:block sm:text-lg sm:leading-8 xl:text-xl">{renderBrandText(t.subtitle)}</p>
 
-            <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
+            <div className="mt-5 grid grid-cols-1 gap-3 min-[380px]:grid-cols-[1fr_auto] sm:mt-10 sm:flex sm:flex-row sm:gap-4">
               <Link href="/signup" onClick={() => trackEvent("landing_hero_signup_click", { locale: lang })} className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(57,185,138,0.2)] sm:px-6 sm:py-4 sm:text-base">
                 {t.primaryCta}
                 <ArrowRight size={18} />
@@ -1180,12 +1185,12 @@ export default function App() {
           </div>
         </section>
 
-        <section id="pricing" className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
+        <section id="pricing" className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.pricingTag}</SectionLabel>
-          <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="mt-4 grid gap-6 sm:mt-5 sm:gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
               <h2 className="max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.pricingTitle)}</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
               <div className="mt-8 hidden gap-3 sm:grid">
                 {t.pricingBullets.map((item) => (
                   <FeatureItem key={item}>{item}</FeatureItem>
@@ -1232,12 +1237,12 @@ export default function App() {
           </div>
         </section>
 
-        <section id="product" className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
+        <section id="product" className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.sectionProduct}</SectionLabel>
-          <div className="mt-5 grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+          <div className="mt-4 grid gap-6 sm:mt-5 sm:gap-8 lg:grid-cols-[0.92fr_1.08fr]">
             <div>
               <h2 className="max-w-2xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.productTitle)}</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.productText)}</p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.productText)}</p>
             </div>
             <div>
               <h3 className="mb-4 text-lg font-semibold text-[var(--text)] sm:text-xl">{t.featureTitle}</h3>
@@ -1250,7 +1255,7 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-end">
             <div>
               <SectionLabel>{t.showcaseTag}</SectionLabel>
@@ -1258,7 +1263,7 @@ export default function App() {
             </div>
             <p className="max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:text-lg sm:leading-8">{renderBrandText(t.showcaseText)}</p>
           </div>
-          <div className="mt-6 sm:mt-10">
+          <div className="mt-5 sm:mt-10">
             <PremiumExperiencePanel moments={t.showcaseMoments} />
           </div>
         </section>
@@ -1300,14 +1305,14 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.clientValueTag}</SectionLabel>
-          <div className="mt-5 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="mt-4 grid gap-6 sm:mt-5 sm:gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>
               <h2 className="max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.clientValueTitle)}</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.clientValueText)}</p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.clientValueText)}</p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
               {t.clientValueCards.map((card) => (
                 <ClientValueCard key={card.title} title={card.title} text={card.text} />
               ))}
@@ -1330,22 +1335,22 @@ export default function App() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
-          <div className="min-w-0 rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-panel)] sm:p-8 lg:p-10">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
+          <div className="min-w-0 rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-panel)] sm:p-8 lg:p-10">
             <SectionLabel>{t.systemTag}</SectionLabel>
-            <div className="mt-5 grid min-w-0 gap-8">
+            <div className="mt-4 grid min-w-0 gap-5 sm:mt-5 sm:gap-8">
               <div className="min-w-0">
                 <h2 className="max-w-4xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
                   {lang === "pt"
                     ? "O que a APEX COACH faz hoje na beta e como a versão final fecha o sistema."
                     : "What APEX COACH does today in beta and how the final version closes the system."}
                 </h2>
-                <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">
                   {lang === "pt"
                     ? "Uma única matriz, sem ruído, para mostrar o que já está disponível na beta, onde a concorrência responde melhor ou pior, e como a visão completa da APEX COACH fica consolidada na versão final."
                     : "A single matrix, without extra noise, to show what is already available in beta, where competitors respond better or worse, and how the complete APEX COACH vision is consolidated in the final version."}
                 </p>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+                <p className="mt-3 hidden text-sm leading-7 text-[var(--text-muted)] sm:block">
                   {lang === "pt"
                     ? "Valores apresentados como referência comercial de entrada. A comparação funcional deve ser lida como orientação de posicionamento e pode evoluir com cada produto."
                     : "Prices are shown as entry-level commercial references. The feature comparison should be read as positioning guidance and may evolve as each product changes."}
@@ -1373,7 +1378,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="faq" className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
+        <section id="faq" className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.faqTag}</SectionLabel>
           <h2 className="mt-4 max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:mt-5 sm:text-4xl lg:text-5xl">{renderBrandText(t.faqTitle)}</h2>
           <div className="mt-6 grid gap-3 sm:mt-10 sm:gap-4">
