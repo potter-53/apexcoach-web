@@ -15,7 +15,7 @@ const copy = {
   en: {
     highlights: [
       "Create one identity for both app and browser",
-      "Start with the premium web experience from onboarding",
+      "Start with a 14-day free trial from onboarding",
       "Keep clients, agenda, and operations in the same account",
     ],
     backToLanding: "Back to landing",
@@ -30,6 +30,7 @@ const copy = {
     coachName: "Coach name",
     email: "Email",
     password: "Password",
+    passwordPlaceholder: "minimum 8 characters",
     acceptLegalPrefix: "I have read and accept the",
     acceptTerms: "Terms and Conditions",
     acceptLegalMiddle: "and the",
@@ -41,96 +42,119 @@ const copy = {
     identityTitle: "Single coach identity",
     identityText: "Create the account once and use the same identity for the field app and the premium browser workspace.",
     downloadHint: "Prefer to install the app first? Download the current Android APK and create your coach account afterwards.",
+    alreadyHaveAccount: "Already have an account? Login",
+    modalTitle: "Account created successfully.",
+    modalText: "Start downloading the APK, confirm the email you just received, and then sign in with this account.",
+    directDownload: "Direct download (.apk)",
+    continueLogin: "Continue to login",
   },
   pt: {
     highlights: [
-      "Cria uma identidade unica para app e browser",
-      "Comeca com a experiencia web premium desde o onboarding",
-      "Mantem clientes, agenda e operacao na mesma conta",
+      "Cria uma identidade única para app e browser",
+      "Começa com trial grátis de 14 dias desde o onboarding",
+      "Mantém clientes, agenda e operação na mesma conta",
     ],
-    backToLanding: "Voltar a landing",
-    haveAccount: "Ja tenho conta",
+    backToLanding: "Voltar à landing",
+    haveAccount: "Já tenho conta",
     downloadNow: "Download APK",
     badge: "Cria a tua conta coach",
     title: "Cria a tua conta para APEX COACH.",
-    text: "Esta e a entrada unica do coach: mesma conta, mesma logica, app mobile no terreno e browser premium no desktop.",
+    text: "Esta é a entrada única do coach: mesma conta, mesma lógica, app mobile no terreno e browser premium no desktop.",
     eyebrow: "Registo do coach",
     heading: "Criar conta",
     missingVars: "`NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` ainda precisam de ser configurados.",
     coachName: "Nome do coach",
     email: "Email",
     password: "Palavra-passe",
+    passwordPlaceholder: "mínimo 8 caracteres",
     acceptLegalPrefix: "Li e aceito os",
-    acceptTerms: "Termos e Condicoes",
+    acceptTerms: "Termos e Condições",
     acceptLegalMiddle: "e a",
-    acceptPrivacy: "Politica de Privacidade",
+    acceptPrivacy: "Política de Privacidade",
     acceptLegalSuffix: ".",
-    acceptRequired: "Tens de aceitar os Termos e a Politica de Privacidade para criar conta.",
+    acceptRequired: "Tens de aceitar os Termos e a Política de Privacidade para criar conta.",
     creating: "A criar conta...",
     createContinue: "Criar conta e continuar",
-    identityTitle: "Identidade unica do coach",
+    identityTitle: "Identidade única do coach",
     identityText: "Cria a conta uma vez e usa a mesma identidade na app de terreno e no workspace browser premium.",
     downloadHint: "Preferes instalar primeiro a app? Faz download da APK Android atual e cria a tua conta coach depois.",
+    alreadyHaveAccount: "Já tens conta? Faz login",
+    modalTitle: "Conta criada com sucesso.",
+    modalText: "Inicia o download da APK, confirma o email que acabaste de receber e depois faz login com esta conta.",
+    directDownload: "Download direto (.apk)",
+    continueLogin: "Continuar para login",
   },
   es: {
     highlights: [
-      "Crea una identidad unica para app y browser",
+      "Crea una identidad única para app y navegador",
       "Empieza con la experiencia web premium desde el onboarding",
-      "Manten clientes, agenda y operacion en la misma cuenta",
+      "Mantén clientes, agenda y operación en la misma cuenta",
     ],
     backToLanding: "Volver a la landing",
     haveAccount: "Ya tengo cuenta",
     downloadNow: "Download APK",
     badge: "Crea tu cuenta coach",
     title: "Crea tu cuenta para APEX COACH.",
-    text: "Esta es la entrada unica del coach: misma cuenta, misma logica, app movil en el campo y browser premium en escritorio.",
+    text: "Esta es la entrada única del coach: misma cuenta, misma lógica, app móvil en el campo y navegador premium en escritorio.",
     eyebrow: "Registro del coach",
     heading: "Crear cuenta",
-    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` todavia deben configurarse.",
+    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` todavía deben configurarse.",
     coachName: "Nombre del coach",
     email: "Email",
-    password: "Contrasena",
-    acceptLegalPrefix: "He leido y acepto los",
-    acceptTerms: "Terminos y Condiciones",
+    password: "Contraseña",
+    passwordPlaceholder: "mínimo 8 caracteres",
+    acceptLegalPrefix: "He leído y acepto los",
+    acceptTerms: "Términos y Condiciones",
     acceptLegalMiddle: "y la",
-    acceptPrivacy: "Politica de Privacidad",
+    acceptPrivacy: "Política de Privacidad",
     acceptLegalSuffix: ".",
-    acceptRequired: "Debes aceptar los Terminos y la Politica de Privacidad para crear la cuenta.",
+    acceptRequired: "Debes aceptar los Términos y la Política de Privacidad para crear la cuenta.",
     creating: "Creando cuenta...",
     createContinue: "Crear cuenta y continuar",
-    identityTitle: "Identidad unica del coach",
-    identityText: "Crea la cuenta una vez y usa la misma identidad en la app de campo y en el workspace browser premium.",
-    downloadHint: "Prefieres instalar primero la app? Descarga el APK Android actual y crea tu cuenta coach despues.",
+    identityTitle: "Identidad única del coach",
+    identityText: "Crea la cuenta una vez y usa la misma identidad en la app de campo y en el workspace premium del navegador.",
+    downloadHint: "¿Prefieres instalar primero la app? Descarga el APK Android actual y crea tu cuenta coach después.",
+    alreadyHaveAccount: "¿Ya tienes cuenta? Login",
+    modalTitle: "Cuenta creada con éxito.",
+    modalText: "Inicia la descarga del APK, confirma el email que acabas de recibir y luego inicia sesión con esta cuenta.",
+    directDownload: "Descarga directa (.apk)",
+    continueLogin: "Continuar al login",
   },
   fr: {
     highlights: [
-      "Cree une identite unique pour l'app et le navigateur",
-      "Commence avec l'experience web premium des l'onboarding",
-      "Garde clients, agenda et operations dans le meme compte",
+      "Crée une identité unique pour l'app et le navigateur",
+      "Commence avec l'expérience web premium dès l'onboarding",
+      "Garde clients, agenda et opérations dans le même compte",
     ],
-    backToLanding: "Retour a la landing",
-    haveAccount: "J'ai deja un compte",
+    backToLanding: "Retour à la landing",
+    haveAccount: "J'ai déjà un compte",
     downloadNow: "Download APK",
-    badge: "Cree ton compte coach",
-    title: "Cree ton compte pour APEX COACH.",
-    text: "C'est l'entree unique du coach : meme compte, meme logique, app mobile sur le terrain et navigateur premium sur desktop.",
+    badge: "Crée ton compte coach",
+    title: "Crée ton compte pour APEX COACH.",
+    text: "C'est l'entrée unique du coach : même compte, même logique, app mobile sur le terrain et navigateur premium sur desktop.",
     eyebrow: "Inscription coach",
-    heading: "Creer un compte",
-    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` doivent encore etre configures.",
+    heading: "Créer un compte",
+    missingVars: "`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` doivent encore être configurés.",
     coachName: "Nom du coach",
     email: "Email",
     password: "Mot de passe",
+    passwordPlaceholder: "minimum 8 caractères",
     acceptLegalPrefix: "J'ai lu et j'accepte les",
-    acceptTerms: "Conditions Generales",
+    acceptTerms: "Conditions Générales",
     acceptLegalMiddle: "et la",
-    acceptPrivacy: "Politique de Confidentialite",
+    acceptPrivacy: "Politique de Confidentialité",
     acceptLegalSuffix: ".",
-    acceptRequired: "Tu dois accepter les conditions et la politique de confidentialite pour creer le compte.",
-    creating: "Creation du compte...",
-    createContinue: "Creer le compte et continuer",
-    identityTitle: "Identite coach unique",
-    identityText: "Cree le compte une seule fois et utilise la meme identite dans l'app terrain et dans le workspace navigateur premium.",
-    downloadHint: "Tu preferes installer l'app d'abord ? Telecharge l'APK Android actuel puis cree ton compte coach.",
+    acceptRequired: "Tu dois accepter les conditions et la politique de confidentialité pour créer le compte.",
+    creating: "Création du compte...",
+    createContinue: "Créer le compte et continuer",
+    identityTitle: "Identité coach unique",
+    identityText: "Crée le compte une seule fois et utilise la même identité dans l'app terrain et dans le workspace navigateur premium.",
+    downloadHint: "Tu préfères installer l'app d'abord ? Télécharge l'APK Android actuel puis crée ton compte coach.",
+    alreadyHaveAccount: "Tu as déjà un compte ? Login",
+    modalTitle: "Compte créé avec succès.",
+    modalText: "Lance le téléchargement de l'APK, confirme l'email que tu viens de recevoir, puis connecte-toi avec ce compte.",
+    directDownload: "Téléchargement direct (.apk)",
+    continueLogin: "Continuer vers le login",
   },
 };
 
@@ -139,21 +163,21 @@ function describeSignupError(error, locale = "en") {
   const localized =
     locale === "pt"
       ? {
-          exists: "Este email ja esta registado.",
-          password: "A palavra-passe tem de cumprir os requisitos minimos do Supabase.",
-          fallback: "Nao foi possivel criar a conta.",
+          exists: "Este email já está registado.",
+          password: "A palavra-passe tem de cumprir os requisitos mínimos do Supabase.",
+          fallback: "Não foi possível criar a conta.",
         }
       : locale === "es"
         ? {
-            exists: "Este email ya esta registrado.",
-            password: "La contrasena debe cumplir los requisitos minimos de Supabase.",
+            exists: "Este email ya está registrado.",
+            password: "La contraseña debe cumplir los requisitos mínimos de Supabase.",
             fallback: "No se pudo crear la cuenta.",
           }
         : locale === "fr"
           ? {
-              exists: "Cet email est deja enregistre.",
+              exists: "Cet email est déjà enregistré.",
               password: "Le mot de passe doit respecter les exigences minimales de Supabase.",
-              fallback: "Impossible de creer le compte.",
+              fallback: "Impossible de créer le compte.",
             }
           : {
               exists: "This email is already registered.",
@@ -255,12 +279,12 @@ export default function SignupClient() {
 
       setSuccessMessage(
         locale === "pt"
-          ? "Conta criada. Enviamos um email de validacao APEX COACH. Podes iniciar o download da APK beta e confirmar o email antes de iniciar sessao."
+          ? "Conta criada. Enviámos um email de validação APEX COACH. Podes iniciar o download da APK e confirmar o email antes de iniciar sessão."
           : locale === "es"
-            ? "Cuenta creada. Enviamos un email de validacion APEX COACH. Confirma tu email antes de iniciar sesion."
+            ? "Cuenta creada. Enviamos un email de validación APEX COACH. Confirma tu email antes de iniciar sesión."
             : locale === "fr"
-              ? "Compte cree. Nous avons envoye un email de validation APEX COACH. Confirme ton email avant de te connecter."
-              : "Account created. We sent an APEX COACH verification email. You can start downloading the beta APK and confirm your email before signing in.",
+              ? "Compte créé. Nous avons envoyé un email de validation APEX COACH. Confirme ton email avant de te connecter."
+              : "Account created. We sent an APEX COACH verification email. You can start downloading the APK and confirm your email before signing in.",
       );
       setDownloadModalOpen(true);
     } catch (error) {
@@ -281,12 +305,10 @@ export default function SignupClient() {
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">APEX COACH</p>
                 <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">
-                  {locale === "pt" ? "Conta criada com sucesso." : "Account created successfully."}
+                  {t.modalTitle}
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
-                  {locale === "pt"
-                    ? "Inicia o download da APK beta, confirma o email que acabaste de receber e depois faz login com esta conta."
-                    : "Start downloading the beta APK, confirm the email you just received, and then sign in with this account."}
+                  {t.modalText}
                 </p>
               </div>
               <button
@@ -309,7 +331,7 @@ export default function SignupClient() {
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"
               >
                 <Smartphone size={16} />
-                {locale === "pt" ? "Download direto (.apk)" : "Direct download (.apk)"}
+                {t.directDownload}
               </a>
               <button
                 type="button"
@@ -343,7 +365,7 @@ export default function SignupClient() {
                 }}
                 className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm font-semibold text-[var(--text)]"
               >
-                {locale === "pt" ? "Continuar para login" : "Continue to login"}
+                {t.continueLogin}
               </button>
             </div>
           </div>
@@ -434,7 +456,7 @@ export default function SignupClient() {
                       onClick={() => trackEvent("landing_signup_side_login_click", { locale })}
                       className="text-sm font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]"
                     >
-                      {locale === "pt" ? "Ja tens conta? Faz login" : "Already have an account? Login"}
+                      {t.alreadyHaveAccount}
                     </Link>
                   </div>
                 </div>
@@ -508,7 +530,7 @@ export default function SignupClient() {
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="minimum 8 characters"
+                    placeholder={t.passwordPlaceholder}
                     className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
                     autoComplete="new-password"
                     required

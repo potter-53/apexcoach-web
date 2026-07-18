@@ -20,13 +20,13 @@ const copy = {
     navPilot: "Resultados",
     navPricing: "Planos",
     navFaq: "FAQ",
-    badge: "Build your apex and elevate theirs. A aplicação para coaches que exigem mais rigor, mais eficiência e mais controlo operacional.",
+    badge: "Build your apex and elevate theirs. A app de uso diário para coaches que trabalham no terreno.",
     titleA: "A APEX COACH",
     titleB: "foi desenhada para",
-    titleC: "organizar melhor a tua operação.",
+    titleC: "ter o teu trabalho na palma da mão.",
     subtitle:
-      "Desenvolvida para o contexto real de intervenção, a APEX COACH permite ao coach gerir sessões, ajustar cargas, acompanhar clients e registar informação crítica com muito menos fricção operacional. É a solução certa para quem procura maior eficiência, maior clareza e uma execução mais profissional.",
-    primaryCta: "Pedir acesso",
+      "A APEX COACH foi criada para acompanhar o coach durante o dia real de trabalho: no ginásio, na sessão, entre marcações e no contacto direto com o client. Não é um software de PC adaptado ao mobile. É uma app para gerir clients, sessões, treino, avaliações, PSE, pagamentos e alertas diretamente no smartphone.",
+    primaryCta: "Trial grátis 14 dias",
     secondaryCta: "Criar conta",
     downloadCta: "Download APK",
     trust1: "Clients ilimitados",
@@ -38,20 +38,20 @@ const copy = {
     heroOfferYearly: "ou 89 EUR/ano",
     heroOfferNote: "Primeiros 50 coaches ate 01 dez 2026. Valor mantido enquanto a conta estiver ativa.",
     heroStartLabel: "Começar é simples",
-    heroStartTitle: "Cria conta, inicia o download da APK beta e valida o email.",
-    heroStartSteps: ["Registo em apexcoach.pt", "Email automatico", "Download da APK beta", "Email validado e login"],
-    heroTag: "App no terreno",
-    heroTitle: "Menos fricção operacional. Mais critério técnico. Mais tempo útil.",
+    heroStartTitle: "Cria conta, inicia o download da APK e valida o email.",
+    heroStartSteps: ["Registo em apexcoach.pt", "Email automático", "Download da APK", "Email validado e login"],
+    heroTag: "App de terreno",
+    heroTitle: "O coach precisa de agir no momento. A app tem de estar no bolso.",
     heroText:
-      "Tudo o que o coach necessita para intervir com qualidade no momento certo: consultar a sessão, ajustar o treino, rever histórico, registar notas, acompanhar atividades externas e manter continuidade no acompanhamento sem perder foco.",
+      "Consulta a próxima sessão, ajusta o treino, regista cargas e notas, acompanha atividades externas, gere PSE e mantém o histórico do client sempre disponível, sem depender de folhas soltas, mensagens ou computador.",
     sectionProduct: "Produto",
-    productTitle: "Uma app criada para reforçar a forma como o coach trabalha.",
+    productTitle: "Uma app criada para ser usada todos os dias, no local onde o coach trabalha.",
     productText:
-      "A APEX COACH nasce para dar ao coach uma experiência mais limpa, rápida e profissional em contexto real. Foi pensada para reduzir passos desnecessários, clarificar prioridades e transformar o dia a dia numa operação mais organizada, mensurável e consistente.",
+      "A APEX COACH nasce para o contexto real de intervenção: smartphone na mão, sessão a decorrer, decisões rápidas e informação crítica acessível. Foi pensada para reduzir passos desnecessários, clarificar prioridades e transformar o dia a dia numa operação mais organizada, mensurável e consistente.",
     showcaseTag: "Experiência premium",
-    showcaseTitle: "Uma app que transmite controlo antes mesmo da sessão começar.",
+    showcaseTitle: "Uma app que abre rápido, orienta a sessão e mantém o coach no controlo.",
     showcaseText:
-      "A apresentação da APEX COACH deve vender mais do que ecrãs. Deve mostrar uma forma de trabalhar: rápida, limpa, orientada à decisão e com uma experiência que o coach e o client percebem como profissional.",
+      "O valor está no uso diário: abrir a app, saber o que vem a seguir, tomar decisões com contexto e registar o essencial sem interromper a relação com o client. A experiência deve parecer premium porque ajuda o coach a trabalhar melhor no momento certo.",
     showcaseMoments: [
       {
         label: "01 / Dashboard",
@@ -74,19 +74,19 @@ const copy = {
         text: "O client acompanha o que foi feito, percebe a evolução e ganha uma experiência mais clara e premium.",
       },
     ],
-    featureTitle: "O que a app já melhora no trabalho diário do coach",
+    featureTitle: "O que a app melhora no trabalho diário e no terreno",
     features: [
-      "Clients ilimitados para acompanhar a tua operação sem limites artificiais",
-      "Registo simples de cargas, notas, contexto e atividades externas sem quebrar o ritmo",
-      "Leitura mais clara do histórico, progresso e evolução de cada client",
+      "Clients ilimitados sempre acessíveis no smartphone, sem limites artificiais",
+      "Registo simples de cargas, notas, contexto e atividades externas durante a sessão",
+      "Histórico, progresso e evolução de cada client disponíveis antes de decidir o próximo passo",
       "Periodização semanal e organização por protocolos de treino",
-      "Templates, tags e base de exercícios para acelerar a prescrição",
-      "Packs, faturação, avisos e automatismos para maior controlo operacional",
+      "Templates, tags e base de exercícios para prescrever com menos fricção no dia a dia",
+      "Packs, faturação, avisos e automatismos para reduzir esquecimentos entre sessões",
     ],
     differentiatorTag: "Vantagens claras",
-    differentiatorTitle: "Onde a APEX COACH cria uma vantagem operacional real no trabalho diário.",
+    differentiatorTitle: "Onde a APEX COACH cria vantagem no trabalho real, não apenas no planeamento.",
     differentiatorText:
-      "A diferença não está em ter mais uma app. Está em libertar tempo, reduzir ruído mental e dar ao coach mais controlo sobre tudo o que realmente importa para melhorar a operação e o acompanhamento dos clients.",
+      "A diferença não está em ter mais um painel bonito para consultar no computador. Está em libertar tempo, reduzir ruído mental e dar ao coach uma ferramenta rápida, móvel e prática para usar antes, durante e depois de cada sessão.",
     differentiators: [
       {
         title: "Mais tempo livre",
@@ -188,15 +188,15 @@ const copy = {
     onboardingTag: "Como começar",
     onboardingTitle: "O caminho simples do coach até ao primeiro login.",
     onboardingText:
-      "Da primeira visita ao site até ao login, o processo foi pensado para ser claro: criar conta, receber o email automático, iniciar o download da APK beta, confirmar o email e entrar.",
+      "Da primeira visita ao site até ao login, o processo foi pensado para ser claro: criar conta, receber o email automático, iniciar o download da APK, confirmar o email e entrar.",
     onboardingSteps: [
       {
         title: "Criar a tua conta",
         text: "A partir de apexcoach.pt, crias uma identidade única de coach associada ao acesso de Coach Fundador.",
       },
       {
-        title: "Iniciar download da APK beta",
-        text: "Depois do registo, podes descarregar a APK beta enquanto confirmas o email automático enviado pela APEX COACH.",
+        title: "Iniciar download da APK",
+        text: "Depois do registo, podes descarregar a APK enquanto confirmas o email automático enviado pela APEX COACH.",
       },
       {
         title: "Confirmar email e fazer login",
@@ -302,13 +302,13 @@ const copy = {
     navPilot: "Results",
     navPricing: "Pricing",
     navFaq: "FAQ",
-    badge: "Build your apex and elevate theirs. The app for coaches who expect stronger standards, greater efficiency, and tighter operational control.",
+    badge: "Build your apex and elevate theirs. The daily field app for coaches who work on the floor.",
     titleA: "APEX COACH",
     titleB: "was designed to",
-    titleC: "organize your operation better.",
+    titleC: "keep your work in your hand.",
     subtitle:
-      "Built for real coaching environments, APEX COACH allows coaches to manage sessions, adjust loads, follow clients, and record critical information with far less operational friction. It is the right solution for professionals seeking greater efficiency, clearer oversight, and a more elevated standard of work.",
-    primaryCta: "Request access",
+      "APEX COACH was built to follow the coach through the real working day: in the gym, inside the session, between bookings, and in direct contact with the client. It is not desktop software squeezed into mobile. It is a smartphone app for managing clients, sessions, training, assessments, RPE, payments, and alerts in the palm of your hand.",
+    primaryCta: "Start 14-day free trial",
     secondaryCta: "Create account",
     downloadCta: "Download APK",
     trust1: "Unlimited clients",
@@ -320,20 +320,20 @@ const copy = {
     heroOfferYearly: "or EUR 89/year",
     heroOfferNote: "First 50 coaches until Dec 1, 2026. Price remains active while the account stays active.",
     heroStartLabel: "Simple to start",
-    heroStartTitle: "Create your account, start the beta APK download, and verify your email.",
-    heroStartSteps: ["Register at apexcoach.pt", "Automatic email", "Beta APK download", "Verified email and login"],
+    heroStartTitle: "Create your account, start the APK download, and verify your email.",
+    heroStartSteps: ["Register at apexcoach.pt", "Automatic email", "APK download", "Verified email and login"],
     heroTag: "Field app",
-    heroTitle: "Less operational friction. Better judgement. More useful time.",
+    heroTitle: "Coaches need to act in the moment. The app has to be in the pocket.",
     heroText:
-      "Everything a coach needs to intervene at the right moment: review the session, adjust training, analyze history, capture notes, track external activity, and preserve continuity without losing focus.",
+      "Open the next session, adjust training, log loads and notes, track external activity, manage RPE, and keep each client's history available without relying on scattered sheets, messages, or a computer.",
     sectionProduct: "Product",
-    productTitle: "An app built to upgrade the way coaches work.",
+    productTitle: "An app built to be used every day, exactly where coaches work.",
     productText:
-      "APEX COACH is built to give coaches a cleaner, faster, and more professional experience in real working conditions. It is designed to remove unnecessary steps, clarify priorities, and turn daily work into a more organized, measurable, and consistent operation.",
+      "APEX COACH is designed for real intervention: smartphone in hand, session in progress, quick decisions, and critical information instantly available. It reduces unnecessary steps, clarifies priorities, and turns daily work into a more organized, measurable, and consistent operation.",
     showcaseTag: "Premium experience",
-    showcaseTitle: "An app that communicates control before the session even starts.",
+    showcaseTitle: "An app that opens fast, guides the session, and keeps the coach in control.",
     showcaseText:
-      "APEX COACH should sell more than screens. It should communicate a better way to work: fast, clean, decision-oriented, and professional enough for both coach and client to feel the difference.",
+      "The value is in daily use: open the app, know what comes next, make decisions with context, and record the essentials without interrupting the relationship with the client. The experience feels premium because it helps the coach work better at the right moment.",
     showcaseMoments: [
       {
         label: "01 / Dashboard",
@@ -356,19 +356,19 @@ const copy = {
         text: "Clients can follow what was done, understand progress, and experience a clearer, more premium coaching service.",
       },
     ],
-    featureTitle: "What the app already improves in a coach's daily work",
+    featureTitle: "What the app improves in daily field work",
     features: [
-      "Unlimited clients to support your operation without artificial limits",
-      "Simple logging of loads, notes, context, and external activity without breaking flow",
-      "Clearer reading of each client's history, progress, and evolution",
+      "Unlimited clients always accessible on the smartphone, without artificial limits",
+      "Simple logging of loads, notes, context, and external activities during the session",
+      "Client history, progress, and evolution available before the next decision",
       "Weekly periodization and structured training protocols",
-      "Templates, tags, and an exercise database to accelerate prescription",
-      "Packs, billing, alerts, and automations for stronger operational control",
+      "Templates, tags, and exercise database to prescribe with less friction day to day",
+      "Packs, billing, alerts, and automations to reduce missed follow-ups between sessions",
     ],
     differentiatorTag: "Clear advantages",
-    differentiatorTitle: "Where APEX COACH creates a genuine operational advantage in daily work.",
+    differentiatorTitle: "Where APEX COACH creates advantage in real work, not just planning.",
     differentiatorText:
-      "The difference is not adding one more app. It is about freeing up time, reducing mental clutter, and giving the coach more control over what truly matters in order to improve the operation behind every client.",
+      "The difference is not having another nice dashboard to check on a computer. It is about freeing time, reducing mental noise, and giving coaches a fast, mobile, practical tool to use before, during, and after every session.",
     differentiators: [
       {
         title: "More free time",
@@ -470,15 +470,15 @@ const copy = {
     onboardingTag: "How to start",
     onboardingTitle: "The simple path from first visit to first login.",
     onboardingText:
-      "From the first visit to the site through login, the process is clear: create an account, receive the automatic email, start the beta APK download, confirm your email, and enter.",
+      "From the first visit to the site through login, the process is clear: create an account, receive the automatic email, start the APK download, confirm your email, and enter.",
     onboardingSteps: [
       {
         title: "Create your account",
         text: "From apexcoach.pt, create a single coach identity associated with Founder access.",
       },
       {
-        title: "Start the beta APK download",
-        text: "After registration, download the beta APK while confirming the automatic email sent by APEX COACH.",
+        title: "Start the APK download",
+        text: "After registration, download the APK while confirming the automatic email sent by APEX COACH.",
       },
       {
         title: "Confirm email and sign in",
@@ -832,11 +832,11 @@ function ProductMatrix({ lang = "en" }) {
   }
 
   return (
-    <div className="rounded-[18px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)]">
+    <div className="w-full min-w-0 overflow-hidden rounded-[18px] border border-[var(--border-strong)] bg-white shadow-[var(--shadow-panel)]">
       <div className="border-b border-[var(--border)] bg-[var(--surface-muted)]/65 px-4 py-3 text-[11px] font-medium leading-6 text-[var(--text-muted)] sm:px-5">
         {isPt ? "Desliza lateralmente dentro da tabela para comparar todas as apps." : "Swipe horizontally inside the table to compare every app."}
       </div>
-      <div className="overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
+      <div className="max-w-full overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
         <table className="min-w-[980px] border-collapse text-left lg:min-w-[1040px]">
           <thead className="bg-[var(--accent-soft)]">
             <tr>
@@ -1076,7 +1076,7 @@ export default function App() {
                 {t.downloadCta}
               </a>
               <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="whitespace-nowrap rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_10px_24px_rgba(57,185,138,0.18)]">
-                {lang === "pt" ? "Pedir acesso" : "Request access"}
+                {lang === "pt" ? "Trial grátis 14 dias" : "14-day free trial"}
               </Link>
             </div>
 
@@ -1125,6 +1125,10 @@ export default function App() {
               <span className="block text-[var(--text)]">{renderBrandText(t.titleB)}</span>
               <span className="block bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">{renderBrandText(t.titleC)}</span>
             </h1>
+            <div className="relative mt-7 flex justify-center lg:hidden">
+              <div className="hero-phone-glow absolute inset-x-0 top-2 mx-auto h-[300px] max-w-[300px] rounded-full bg-[radial-gradient(circle,rgba(57,185,138,0.18),rgba(77,135,199,0.10)_42%,transparent_68%)] blur-2xl" />
+              <PhoneMock />
+            </div>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-7 sm:text-lg sm:leading-8 xl:text-xl">{renderBrandText(t.subtitle)}</p>
 
             <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4">
@@ -1152,7 +1156,7 @@ export default function App() {
             <HeroConversionPanel t={t} />
           </div>
 
-          <div className="relative flex items-center justify-center lg:-translate-y-24 xl:-translate-y-32 2xl:-translate-y-36">
+          <div className="relative hidden items-center justify-center lg:flex lg:-translate-y-40 xl:-translate-y-52 2xl:-translate-y-56">
             <div className="hero-phone-glow absolute inset-x-0 top-0 mx-auto h-[360px] max-w-[360px] rounded-full bg-[radial-gradient(circle,rgba(57,185,138,0.18),rgba(77,135,199,0.10)_42%,transparent_68%)] blur-2xl sm:h-[520px] sm:max-w-[520px]" />
             <PhoneMock />
             <div className="floating-proof-card absolute left-0 top-4 z-20 hidden rounded-[16px] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] px-4 py-3 shadow-[var(--shadow-soft)] backdrop-blur md:block lg:left-3 xl:left-8">
@@ -1327,10 +1331,10 @@ export default function App() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-5 sm:py-20 lg:px-8">
-          <div className="rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-panel)] sm:p-8 lg:p-10">
+          <div className="min-w-0 rounded-[20px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-panel)] sm:p-8 lg:p-10">
             <SectionLabel>{t.systemTag}</SectionLabel>
-            <div className="mt-5 grid gap-8">
-              <div>
+            <div className="mt-5 grid min-w-0 gap-8">
+              <div className="min-w-0">
                 <h2 className="max-w-4xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
                   {lang === "pt"
                     ? "O que a APEX COACH faz hoje na beta e como a versão final fecha o sistema."
@@ -1347,7 +1351,7 @@ export default function App() {
                     : "Prices are shown as entry-level commercial references. The feature comparison should be read as positioning guidance and may evolve as each product changes."}
                 </p>
               </div>
-              <div>
+              <div className="min-w-0">
                 <ProductMatrix lang={lang} />
               </div>
             </div>
@@ -1439,7 +1443,7 @@ export default function App() {
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border)] bg-white/94 px-4 py-3 shadow-[0_-12px_40px_rgba(14,17,16,0.08)] backdrop-blur md:hidden">
         <div className="mx-auto grid max-w-md grid-cols-[1fr_auto] gap-2">
           <Link href="/signup" onClick={() => trackEvent("landing_mobile_sticky_signup_click", { locale: lang })} className="inline-flex items-center justify-center rounded-[14px] bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
-            {lang === "pt" ? "Pedir acesso" : "Request access"}
+            {lang === "pt" ? "Trial grátis 14 dias" : "14-day free trial"}
           </Link>
           <a
             href={APK_DOWNLOAD_URL}

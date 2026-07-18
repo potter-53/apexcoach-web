@@ -28,15 +28,15 @@ const APK_DOWNLOAD_URL = "/download/apk";
 const copy = {
   pt: {
     navLogin: "Login",
-    navSignup: "Candidatar-me",
-    badge: "Acesso antecipado para coaches",
-    title: "Torna-te um dos primeiros coaches a operar com a APEX COACH.",
+    navSignup: "Criar conta",
+    badge: "Trial grátis 14 dias para coaches",
+    title: "Começa a operar com a APEX COACH.",
     subtitle:
       "Uma entrada mais limpa, mais premium e sem ruido: crias a tua identidade de coach, validas o email e começas a usar a APEX COACH no terreno.",
-    primary: "Candidatar-me ao acesso",
+    primary: "Começar trial grátis 14 dias",
     secondary: "Ver APK",
-    proof: ["Acesso controlado", "Email validado antes do uso", "Conta unica para app e browser"],
-    panelEyebrow: "Processo de acesso",
+    proof: ["Trial grátis 14 dias", "Email validado antes do uso", "Conta única para app e browser"],
+    panelEyebrow: "Processo de entrada",
     panelTitle: "Como funciona",
     steps: [
       {
@@ -45,11 +45,11 @@ const copy = {
       },
       {
         title: "2. Recebe email e inicia download",
-        text: "Recebes o email automatico de confirmacao e podes iniciar o download da APK beta.",
+        text: "Recebes o email automático de confirmação e podes iniciar o download da APK.",
       },
       {
         title: "3. Confirma email e faz login",
-        text: "Depois de confirmares o email, entras com a mesma conta e comecas a usar a app.",
+        text: "Depois de confirmares o email, entras com a mesma conta e começas a usar a app.",
       },
     ],
     specsEyebrow: "Specs da app",
@@ -82,46 +82,46 @@ const copy = {
         items: ["Convite por codigo", "Conta de atleta", "Sessoes do client", "Tracking e perfil"],
       },
     ],
-    betaStateTitle: "Estado atual do acesso",
+    betaStateTitle: "Estado atual",
     betaState: [
-      "APK beta Android disponivel para teste direto.",
-      "Workspace browser em evolucao para operacao desktop.",
-      "Email de validacao obrigatorio antes do login.",
-      "Google Play e App Store ainda em preparacao.",
+      "APK Android disponível para teste direto.",
+      "Workspace browser em evolução para operação desktop.",
+      "Email de validação obrigatório antes do login.",
+      "Google Play e App Store ainda em preparação.",
     ],
-    formTitle: "Candidatura de coach",
+    formTitle: "Criar conta coach",
     formText:
-      "Usa o email que queres associar a tua operacao de coach. Este email sera usado para validar a conta.",
+      "Usa o email que queres associar à tua operação de coach. Este email será usado para validar a conta e iniciar o trial grátis de 14 dias.",
     name: "Nome do coach",
     email: "Email profissional",
     password: "Password",
     focus: "Principal foco como coach",
     focusPlaceholder: "Ex: personal training, performance, saude, online coaching...",
     terms:
-      "Aceito criar uma conta APEX COACH e receber comunicacoes relacionadas com o meu pedido de acesso.",
-    submit: "Enviar candidatura e criar acesso",
-    submitting: "A preparar acesso...",
+      "Aceito criar uma conta APEX COACH e receber comunicações relacionadas com o meu trial e utilização da app.",
+    submit: "Criar conta e começar trial",
+    submitting: "A criar conta...",
     configuredError:
-      "As variaveis NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY precisam de estar configuradas.",
-    termsError: "Tens de aceitar as condicoes de acesso para continuar.",
+      "As variáveis NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY precisam de estar configuradas.",
+    termsError: "Tens de aceitar as condições para continuar.",
     success:
-      "Conta criada. Enviamos o email de validacao APEX COACH. Podes iniciar o download da APK beta e confirmar o email antes de fazer login.",
-    existing: "Este email ja esta registado. Faz login ou usa outro email.",
-    genericError: "Nao foi possivel criar o pedido de acesso.",
-    download: "Download APK beta",
-    loginAfter: "Ja validaste o email? Fazer login",
+      "Conta criada. Enviámos o email de validação APEX COACH. Podes iniciar o download da APK e confirmar o email antes de fazer login.",
+    existing: "Este email já está registado. Faz login ou usa outro email.",
+    genericError: "Não foi possível criar a conta.",
+    download: "Download APK",
+    loginAfter: "Já validaste o email? Fazer login",
   },
   en: {
     navLogin: "Login",
-    navSignup: "Apply",
-    badge: "Early access for coaches",
-    title: "Become one of the first coaches to operate with APEX COACH.",
+    navSignup: "Create account",
+    badge: "14-day free trial for coaches",
+    title: "Start operating with APEX COACH.",
     subtitle:
       "A cleaner, more premium entry point: create your coach identity, verify your email, and start using APEX COACH in the field.",
-    primary: "Apply for access",
+    primary: "Start 14-day free trial",
     secondary: "View APK",
-    proof: ["Controlled access", "Email verified before use", "One account for app and browser"],
-    panelEyebrow: "Access process",
+    proof: ["14-day free trial", "Email verified before use", "One account for app and browser"],
+    panelEyebrow: "Entry process",
     panelTitle: "How it works",
     steps: [
       {
@@ -130,7 +130,7 @@ const copy = {
       },
       {
         title: "2. Receive email and start download",
-        text: "You receive the automatic confirmation email and can start downloading the beta APK.",
+        text: "You receive the automatic confirmation email and can start downloading the APK.",
       },
       {
         title: "3. Confirm email and sign in",
@@ -167,14 +167,14 @@ const copy = {
         items: ["Invite code", "Athlete account", "Client sessions", "Tracking and profile"],
       },
     ],
-    betaStateTitle: "Current access state",
+    betaStateTitle: "Current state",
     betaState: [
-      "Android beta APK available for direct testing.",
+      "Android APK available for direct testing.",
       "Browser workspace evolving for desktop operations.",
       "Email verification required before login.",
       "Google Play and App Store are still in preparation.",
     ],
-    formTitle: "Coach application",
+    formTitle: "Create coach account",
     formText:
       "Use the email you want linked to your coach operation. This email will be used to verify the account.",
     name: "Coach name",
@@ -183,17 +183,17 @@ const copy = {
     focus: "Main coaching focus",
     focusPlaceholder: "Ex: personal training, performance, health, online coaching...",
     terms:
-      "I agree to create an APEX COACH account and receive communications related to my access request.",
-    submit: "Submit application and create access",
-    submitting: "Preparing access...",
+      "I agree to create an APEX COACH account and receive communications related to my trial and app usage.",
+    submit: "Create account and start trial",
+    submitting: "Creating account...",
     configuredError:
       "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be configured.",
-    termsError: "You need to accept the access conditions to continue.",
+    termsError: "You need to accept the conditions to continue.",
     success:
-      "Account created. We sent the APEX COACH verification email. You can start downloading the beta APK and confirm your email before signing in.",
+      "Account created. We sent the APEX COACH verification email. You can start downloading the APK and confirm your email before signing in.",
     existing: "This email is already registered. Sign in or use another email.",
-    genericError: "Could not create the access request.",
-    download: "Download beta APK",
+    genericError: "Could not create the account.",
+    download: "Download APK",
     loginAfter: "Already verified your email? Sign in",
   },
 };
@@ -218,14 +218,14 @@ function BetaProductMockup({ locale }) {
   const labels =
     locale === "pt"
       ? {
-          title: "Hoje na operacao",
+          title: "Hoje na operação",
           week: "Semana ativa",
           clients: "Clients",
           sessions: "Sessoes",
           assessments: "Assessments",
           next: "Proxima sessao",
           billing: "Billing em dia",
-          phone: "APK beta",
+          phone: "APK",
         }
       : {
           title: "Today in operations",
@@ -235,7 +235,7 @@ function BetaProductMockup({ locale }) {
           assessments: "Assessments",
           next: "Next session",
           billing: "Billing on track",
-          phone: "Beta APK",
+          phone: "APK",
         };
 
   const stats = [
@@ -541,7 +541,7 @@ export default function BetaCoachPage() {
                 <MailCheck size={20} className="mt-1 text-[var(--accent-strong)]" />
                 <p className="text-sm leading-7 text-[var(--text-muted)]">
                   {locale === "pt"
-                    ? "O email de validacao e parte da experiencia: curto, claro e com linguagem premium para o coach perceber que entrou num processo cuidado."
+                    ? "O email de validação é parte da experiência: curto, claro e com linguagem premium para o coach perceber que entrou num processo cuidado."
                     : "The verification email is part of the experience: short, clear, and premium, so the coach feels the access flow is intentional."}
                 </p>
               </div>

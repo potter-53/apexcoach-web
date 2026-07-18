@@ -41,15 +41,15 @@ function escapeHtml(value) {
 function candidateEmailHtml({ fullName, locale }) {
   const isPt = locale === "pt";
   const title = isPt
-    ? "Recebemos a tua candidatura."
-    : "We received your application.";
+    ? "A tua conta APEX COACH foi criada."
+    : "Your APEX COACH account was created.";
   const text = isPt
     ? "A tua identidade APEX COACH foi criada. Valida o email que acabaste de receber e depois entra na app com as tuas credenciais."
     : "Your APEX COACH identity has been created. Verify the email you just received and then sign into the app with your credentials.";
   const next = isPt ? "Proximo passo" : "Next step";
   const nextText = isPt
-    ? "Confirma o email, instala a APK beta quando estiveres pronto e comeca a explorar a app final da APEX COACH. O teu pedido ficou associado as condicoes Founder."
-    : "Confirm your email, install the beta APK when ready, and start exploring the final APEX COACH app experience. Your request is associated with Founder conditions.";
+    ? "Confirma o email, instala a APK quando estiveres pronto e começa a explorar a experiência APEX COACH. A tua conta ficou associada às condições Founder."
+    : "Confirm your email, install the APK when ready, and start exploring the APEX COACH app experience. Your account is associated with Founder conditions.";
 
   return `<!doctype html>
 <html>
@@ -246,8 +246,8 @@ export async function POST(request) {
         to: application.email,
         subject:
           application.locale === "pt"
-            ? "Recebemos a tua candidatura APEX COACH"
-            : "We received your APEX COACH application",
+            ? "A tua conta APEX COACH foi criada"
+            : "Your APEX COACH account was created",
         html: candidateEmailHtml(application),
       });
     } catch (emailError) {
