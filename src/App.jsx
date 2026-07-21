@@ -32,11 +32,11 @@ const copy = {
     trust1: "Clients ilimitados",
     trust2: "Periodização e protocolos",
     trust3: "Templates, tags e tracking",
-    heroOfferLabel: "Campanha Coach Fundador",
-    heroOfferPrice: "8,90 EUR",
-    heroOfferPeriod: "/mês",
-    heroOfferYearly: "ou 89 EUR/ano",
-    heroOfferNote: "Primeiros 50 coaches ate 01 dez 2026. Valor mantido enquanto a conta estiver ativa.",
+    heroOfferLabel: "50 vagas Coach Fundador",
+    heroOfferPrice: "199 EUR",
+    heroOfferPeriod: "/ano",
+    heroOfferYearly: "equivale a 16,58 EUR/mês",
+    heroOfferNote: "Exclusivo para subscrição anual. Válido enquanto a conta e a subscrição se mantiverem ativas.",
     heroStartLabel: "Começar é simples",
     heroStartTitle: "Cria conta, inicia o download da APK e valida o email.",
     heroStartSteps: ["Registo em apexcoach.pt", "Email automático", "Download da APK", "Email validado e login"],
@@ -192,7 +192,7 @@ const copy = {
     onboardingSteps: [
       {
         title: "Criar a tua conta",
-        text: "A partir de apexcoach.pt, crias uma identidade única de coach associada ao acesso de Coach Fundador.",
+        text: "A partir de apexcoach.pt, crias uma identidade única de coach e escolhes a modalidade que melhor se adapta ao teu momento.",
       },
       {
         title: "Iniciar download da APK",
@@ -243,31 +243,48 @@ const copy = {
       "Mais controlo sobre o que foi feito, o que mudou e o que vem a seguir",
     ],
     pricingTag: "Planos",
-    pricingTitle: "Uma subscrição. Duas modalidades de adesão. Uma vantagem relevante para os primeiros coaches.",
+    pricingTitle: "Duas modalidades. Um plano normal e uma oportunidade limitada para Coach Fundador.",
     pricingText:
-      "A APEX COACH funciona com uma subscrição simples, disponível em modalidade mensal ou anual. Os primeiros 50 lugares Coach Fundador garantem um valor preferencial enquanto a conta se mantiver ativa.",
+      "O coach pode entrar pela subscrição normal ou garantir uma das 50 vagas Coach Fundador com subscrição anual. A diferença está no preço, no estatuto e no acesso antecipado ao crescimento da app.",
     foundationLabel: "Coach Fundador",
-    foundationTitle: "Oferta especial para os primeiros 50 coaches",
+    foundationTitle: "50 vagas para coaches que querem entrar primeiro",
+    founderSpotsBadge: "50 vagas",
     monthlyLabel: "Mensal",
     yearlyLabel: "Anual",
-    foundationMonthly: "8,90 EUR/mês",
-    foundationYearly: "89 EUR/ano",
-    foundationNote: "Disponível até 01 dez 2026 para os primeiros 50 coaches. Valor válido enquanto a conta se mantiver ativa.",
-    regularLabel: "Subscrição regular",
-    regularTitle: "Valor padrão da APEX COACH",
+    equivalentLabel: "Equivalência",
+    foundationMonthly: "16,58 EUR/mês",
+    foundationYearly: "199 EUR/ano",
+    foundationNote: "Requer subscrição anual. Conta válida enquanto a subscrição estiver ativa.",
+    foundationBenefits: [
+      "Badge exclusivo de Coach Fundador",
+      "Acesso aos updates primeiro",
+      "Acesso ao fórum de crescimento da app",
+      "Referral code com trial de 21 dias para coaches convidados",
+    ],
+    regularLabel: "Coach",
+    regularTitle: "Subscrição normal da APEX COACH",
     regularMonthly: "29,90 EUR/mês",
-    regularYearly: "290 EUR/ano",
+    regularYearly: "299 EUR/ano",
+    regularNote: "Pode aderir a Coach Fundador com subscrição anual se ainda houver vagas disponíveis. Também pode desbloquear elegibilidade ao referir 5 coaches que adiram a qualquer plano.",
+    regularBenefits: [
+      "Acesso completo à app mobile",
+      "Plano mensal ou anual",
+      "Clients ilimitados e ferramentas de sessão",
+      "Possibilidade de entrar como Fundador se cumprir os requisitos",
+    ],
     pricingBullets: [
-      "Uma única subscrição para todo o ecossistema da app",
-      "Modalidade mensal para uma adesão mais flexível",
-      "Opção anual para quem procura maior compromisso e melhor valor",
-      "Campanha Coach Fundador pensada para os primeiros 50 coaches",
+      "Coach Fundador: 50 vagas, subscrição anual e estatuto exclusivo",
+      "Coach normal: 29,90 EUR/mês ou 299 EUR/ano",
+      "Referral code de Fundador dá trial de 21 dias aos coaches convidados",
+      "A conta mantém as condições enquanto a subscrição estiver ativa",
     ],
     faqTag: "FAQ",
     faqTitle: "Perguntas frequentes",
     faqItems: [
-      { title: "Que modelo de subscrição existe?", text: "A APEX COACH funciona com uma subscrição única, disponível em modalidade mensal ou anual. A lógica comercial é simples: um único produto, duas formas de adesão e a mesma estrutura funcional da app." },
-      { title: "O que é o Coach Fundador e como funciona?", text: "Coach Fundador é a campanha de entrada para os primeiros 50 coaches, disponível até 01 dez 2026. Enquanto a conta se mantiver ativa, o coach preserva o valor preferencial associado a essa adesão inicial, sem migração automática para o preço padrão." },
+      { title: "Que modalidades existem?", text: "Existem duas modalidades em vigor: Coach e Coach Fundador. O plano Coach pode ser mensal ou anual. O Coach Fundador é limitado a 50 vagas, requer subscrição anual e inclui vantagens exclusivas associadas ao crescimento da APEX COACH." },
+      { title: "O que é o Coach Fundador e como funciona?", text: "Coach Fundador é a modalidade limitada para os primeiros 50 coaches. Requer subscrição anual de 199 EUR, equivalente a 16,58 EUR por mês, e mantém as condições enquanto a conta e a subscrição estiverem ativas." },
+      { title: "Que vantagens tem o Coach Fundador?", text: "O Coach Fundador recebe badge exclusivo, acesso aos updates primeiro, acesso ao fórum de crescimento da app e um referral code que oferece trial de 21 dias aos coaches convidados." },
+      { title: "Um Coach normal pode tornar-se Coach Fundador?", text: "Sim, se aderir à subscrição anual e ainda existirem vagas disponíveis. Também pode desbloquear essa elegibilidade ao referir 5 coaches que adiram a qualquer um dos planos." },
       { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus clients, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
       { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
       { title: "A app permite acompanhar atividades externas do client?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
@@ -314,11 +331,11 @@ const copy = {
     trust1: "Unlimited clients",
     trust2: "Periodization and protocols",
     trust3: "Templates, tags, and tracking",
-    heroOfferLabel: "Founder Coach campaign",
-    heroOfferPrice: "EUR 8.90",
-    heroOfferPeriod: "/month",
-    heroOfferYearly: "or EUR 89/year",
-    heroOfferNote: "First 50 coaches until Dec 1, 2026. Price remains active while the account stays active.",
+    heroOfferLabel: "50 Founder Coach spots",
+    heroOfferPrice: "EUR 199",
+    heroOfferPeriod: "/year",
+    heroOfferYearly: "equals EUR 16.58/month",
+    heroOfferNote: "Annual subscription required. Valid while the account and subscription remain active.",
     heroStartLabel: "Simple to start",
     heroStartTitle: "Create your account, start the APK download, and verify your email.",
     heroStartSteps: ["Register at apexcoach.pt", "Automatic email", "APK download", "Verified email and login"],
@@ -474,7 +491,7 @@ const copy = {
     onboardingSteps: [
       {
         title: "Create your account",
-        text: "From apexcoach.pt, create a single coach identity associated with Founder access.",
+        text: "From apexcoach.pt, create a single coach identity and choose the modality that best fits your current stage.",
       },
       {
         title: "Start the APK download",
@@ -525,31 +542,48 @@ const copy = {
       "More control over what happened, what changed, and what comes next",
     ],
     pricingTag: "Pricing",
-    pricingTitle: "One subscription. Two formats. One meaningful advantage for the first coaches.",
+    pricingTitle: "Two modalities. A regular Coach plan and a limited Founder Coach opportunity.",
     pricingText:
-      "APEX COACH runs on one simple subscription, available in monthly or yearly format. The first 50 Founder Coaches secure a preferential price for as long as the account remains active.",
+      "Coaches can enter through the regular subscription or secure one of 50 Founder Coach spots with an annual subscription. The difference is price, status, and early access to the app's growth.",
     foundationLabel: "Founder Coach",
-    foundationTitle: "Special offer for the first 50 coaches",
+    foundationTitle: "50 spots for coaches who want to join first",
+    founderSpotsBadge: "50 spots",
     monthlyLabel: "Monthly",
     yearlyLabel: "Yearly",
-    foundationMonthly: "EUR 8.90/month",
-    foundationYearly: "EUR 89/year",
-    foundationNote: "Available until Dec 1, 2026 for the first 50 coaches. Pricing remains valid while the account stays active.",
-    regularLabel: "Regular subscription",
-    regularTitle: "Standard APEX COACH pricing",
+    equivalentLabel: "Equivalent",
+    foundationMonthly: "EUR 16.58/month",
+    foundationYearly: "EUR 199/year",
+    foundationNote: "Annual subscription required. Account remains valid while the subscription is active.",
+    foundationBenefits: [
+      "Exclusive Founder Coach badge",
+      "Early access to updates",
+      "Access to the app growth forum",
+      "Referral code with a 21-day trial for invited coaches",
+    ],
+    regularLabel: "Coach",
+    regularTitle: "Regular APEX COACH subscription",
     regularMonthly: "EUR 29.90/month",
-    regularYearly: "EUR 290/year",
+    regularYearly: "EUR 299/year",
+    regularNote: "Can join Founder Coach with an annual subscription if spots are still available. Coaches can also unlock eligibility by referring 5 coaches who subscribe to any plan.",
+    regularBenefits: [
+      "Full access to the mobile app",
+      "Monthly or annual plan",
+      "Unlimited clients and session tools",
+      "Possibility to join Founder if requirements are met",
+    ],
     pricingBullets: [
-      "One subscription for the full app ecosystem",
-      "Monthly option for more flexible entry",
-      "Yearly option for stronger commitment and better value",
-      "Founder Coach campaign designed for the first 50 coaches",
+      "Founder Coach: 50 spots, annual subscription, and exclusive status",
+      "Regular Coach: EUR 29.90/month or EUR 299/year",
+      "Founder referral code gives invited coaches a 21-day trial",
+      "Conditions remain active while the subscription is active",
     ],
     faqTag: "FAQ",
     faqTitle: "Frequently asked questions",
     faqItems: [
-      { title: "What subscription model is available?", text: "APEX COACH runs on a single subscription model, available in monthly or yearly format. The commercial structure is simple: one product, two billing options, and the same core app experience." },
-      { title: "What is Founder Coach and how does it work?", text: "Founder Coach is the entry campaign for the first 50 coaches, available until Dec 1, 2026. As long as the account remains active, the coach keeps the preferential pricing associated with that initial subscription." },
+      { title: "Which modalities are available?", text: "There are two active modalities: Coach and Founder Coach. The Coach plan can be monthly or annual. Founder Coach is limited to 50 spots, requires an annual subscription, and includes exclusive benefits connected to the growth of APEX COACH." },
+      { title: "What is Founder Coach and how does it work?", text: "Founder Coach is the limited modality for the first 50 coaches. It requires a EUR 199 annual subscription, equivalent to EUR 16.58 per month, and keeps its conditions while the account and subscription remain active." },
+      { title: "What benefits does Founder Coach include?", text: "Founder Coach includes an exclusive badge, early access to updates, access to the app growth forum, and a referral code that gives invited coaches a 21-day trial." },
+      { title: "Can a regular Coach become Founder Coach?", text: "Yes, by choosing the annual subscription if spots are still available. A coach can also unlock eligibility by referring 5 coaches who subscribe to any plan." },
       { title: "Who is APEX COACH built for?", text: "The app was built for coaches who need stronger technical structure, faster execution, and greater consistency in client follow-up, whether they work in performance, health, body composition, or hybrid coaching environments." },
       { title: "Can I work with unlimited clients?", text: "Yes. The app structure was designed to support the coach's operation without artificial limits on the number of clients, allowing the business to grow without losing clarity or control." },
       { title: "Can the app track external client activities?", text: "Yes. The coach can log relevant activity performed outside the main session, creating stronger context for load management, recovery interpretation, accumulated volume, and decision-making." },
@@ -730,16 +764,23 @@ function ClientValueCard({ title, text }) {
   );
 }
 
-function PricingCard({ label, title, monthly, yearly, note, monthlyLabel = "Monthly", yearlyLabel = "Yearly", accent = false }) {
+function PricingCard({ label, title, monthly, yearly, note, benefits = [], monthlyLabel = "Monthly", yearlyLabel = "Yearly", equivalentLabel = "Equivalent", spotsBadge, accent = false }) {
   return (
     <div className={`rounded-[18px] border p-4 shadow-[var(--shadow-soft)] sm:p-6 ${accent ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-white"}`}>
-      <div className="inline-flex rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)] sm:text-[11px] sm:tracking-[0.14em]">
-        {label}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className={`inline-flex rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] sm:text-[11px] sm:tracking-[0.14em] ${accent ? "border-[var(--accent)]/30 bg-white text-[var(--accent-strong)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>
+          {label}
+        </div>
+        {accent ? (
+          <div className="inline-flex rounded-full border border-[var(--accent)]/25 bg-[var(--accent)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--accent-foreground)]">
+            {spotsBadge}
+          </div>
+        ) : null}
       </div>
       <h3 className="mt-3 text-lg font-semibold text-[var(--text)] sm:mt-4 sm:text-2xl">{title}</h3>
       <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2">
         <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{monthlyLabel}</p>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{accent ? equivalentLabel : monthlyLabel}</p>
           <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{monthly}</p>
         </div>
         <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
@@ -748,6 +789,18 @@ function PricingCard({ label, title, monthly, yearly, note, monthlyLabel = "Mont
         </div>
       </div>
       {note ? <p className="mt-3 text-xs leading-6 text-[var(--text-muted)] sm:mt-4 sm:text-sm sm:leading-7">{note}</p> : null}
+      {benefits.length ? (
+        <div className="mt-4 grid gap-2.5">
+          {benefits.map((benefit) => (
+            <div key={benefit} className="flex items-start gap-2.5 text-xs leading-5 text-[var(--text-muted)] sm:text-sm sm:leading-6">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)]">
+                <Check size={12} strokeWidth={3} />
+              </span>
+              <span>{benefit}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -760,7 +813,7 @@ function ProductMatrix({ lang = "en" }) {
 
   const rows = isPt
     ? [
-        ["Preço base", "$9/mês", "$19,90/mês", "Grátis / $19/mês", "33 EUR/mês", "8,90 EUR/mês", "29,90 EUR/mês"],
+        ["Preço base", "$9/mês", "$19,90/mês", "Grátis / $19/mês", "33 EUR/mês", "199 EUR/ano", "29,90 EUR/mês"],
         ["Registar clients", "yes", "yes", "yes", "yes", "yes", "yes"],
         ["Registar assessments", "partial", "yes", "partial", "yes", "yes", "yes"],
         ["Criar treinos", "yes", "yes", "yes", "yes", "yes", "yes"],
@@ -778,7 +831,7 @@ function ProductMatrix({ lang = "en" }) {
         ["Automatismos", "partial", "yes", "yes", "no", "partial", "yes"],
       ]
     : [
-        ["Entry price", "$9/mo", "$19.90/mo", "Free / $19/mo", "€33/mo", "€8.90/mo", "€29.90/mo"],
+        ["Entry price", "$9/mo", "$19.90/mo", "Free / $19/mo", "€33/mo", "€199/year", "€29.90/mo"],
         ["Register clients", "yes", "yes", "yes", "yes", "yes", "yes"],
         ["Register assessments", "partial", "yes", "partial", "yes", "yes", "yes"],
         ["Create training", "yes", "yes", "yes", "yes", "yes", "yes"],
@@ -1220,19 +1273,22 @@ export default function App() {
                 yearly={t.foundationYearly}
                 monthlyLabel={t.monthlyLabel}
                 yearlyLabel={t.yearlyLabel}
+                equivalentLabel={t.equivalentLabel}
                 note={t.foundationNote}
+                benefits={t.foundationBenefits}
+                spotsBadge={t.founderSpotsBadge}
                 accent
               />
-              <div className="hidden sm:block">
-                <PricingCard
-                  label={t.regularLabel}
-                  title={t.regularTitle}
-                  monthly={t.regularMonthly}
-                  yearly={t.regularYearly}
-                  monthlyLabel={t.monthlyLabel}
-                  yearlyLabel={t.yearlyLabel}
-                />
-              </div>
+              <PricingCard
+                label={t.regularLabel}
+                title={t.regularTitle}
+                monthly={t.regularMonthly}
+                yearly={t.regularYearly}
+                monthlyLabel={t.monthlyLabel}
+                yearlyLabel={t.yearlyLabel}
+                note={t.regularNote}
+                benefits={t.regularBenefits}
+              />
             </div>
           </div>
         </section>
