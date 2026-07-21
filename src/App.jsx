@@ -652,37 +652,6 @@ function Chip({ children }) {
   return <div className="rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs text-[var(--text-muted)] sm:px-4 sm:py-2 sm:text-sm">{children}</div>;
 }
 
-function HeroConversionPanel({ t }) {
-  return (
-    <div className="mt-5 grid gap-3 sm:mt-10 lg:grid-cols-[0.86fr_1.14fr]">
-      <div className="rounded-[18px] border border-[var(--accent)]/35 bg-[linear-gradient(135deg,var(--accent-soft),#ffffff_72%)] p-3.5 shadow-[var(--shadow-soft)] sm:p-4">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)] sm:text-[10px] sm:tracking-[0.18em]">{t.heroOfferLabel}</p>
-        <div className="mt-2.5 flex items-end gap-1.5 sm:mt-3">
-          <span className="text-3xl font-semibold leading-none text-[var(--text)] sm:text-4xl">{t.heroOfferPrice}</span>
-          <span className="pb-1 text-sm font-semibold text-[var(--text-muted)]">{t.heroOfferPeriod}</span>
-        </div>
-        <p className="mt-2 text-sm font-semibold text-[var(--accent-strong)]">{t.heroOfferYearly}</p>
-        <p className="mt-2 text-[11px] leading-5 text-[var(--text-muted)] sm:mt-3 sm:text-xs">{t.heroOfferNote}</p>
-      </div>
-
-      <div className="rounded-[18px] border border-[var(--border)] bg-white p-3.5 shadow-[var(--shadow-soft)] sm:p-4">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.18em]">{t.heroStartLabel}</p>
-        <h2 className="mt-2 text-lg font-semibold leading-tight text-[var(--text)]">{t.heroStartTitle}</h2>
-        <div className="mt-3 grid gap-2 sm:mt-4">
-          {t.heroStartSteps.map((step) => (
-            <div key={step} className="flex items-center gap-2 rounded-[14px] border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-[11px] font-medium text-[var(--text)] sm:text-sm">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]">
-                <Check size={14} strokeWidth={3} />
-              </span>
-              {step}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function FlowCard({ step, title, text }) {
   return (
     <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)] sm:p-5">
@@ -778,16 +747,26 @@ function PricingCard({ label, title, monthly, yearly, note, benefits = [], month
         ) : null}
       </div>
       <h3 className="mt-3 text-lg font-semibold text-[var(--text)] sm:mt-4 sm:text-2xl">{title}</h3>
-      <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2">
-        <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{accent ? equivalentLabel : monthlyLabel}</p>
-          <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{monthly}</p>
-        </div>
-        <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
+      {accent ? (
+        <div className="mt-4 rounded-[16px] border border-[var(--accent)]/25 bg-white px-3 py-3 sm:mt-6 sm:px-4 sm:py-4">
           <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{yearlyLabel}</p>
-          <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{yearly}</p>
+          <p className="mt-1.5 text-3xl font-semibold leading-none text-[var(--text)] sm:mt-2 sm:text-4xl">{yearly}</p>
+          <p className="mt-2 text-[11px] font-medium leading-5 text-[var(--text-muted)] sm:text-xs">
+            {equivalentLabel}: {monthly}
+          </p>
         </div>
-      </div>
+      ) : (
+        <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2">
+          <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{monthlyLabel}</p>
+            <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{monthly}</p>
+          </div>
+          <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{yearlyLabel}</p>
+            <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{yearly}</p>
+          </div>
+        </div>
+      )}
       {note ? <p className="mt-3 text-xs leading-6 text-[var(--text-muted)] sm:mt-4 sm:text-sm sm:leading-7">{note}</p> : null}
       {benefits.length ? (
         <div className="mt-4 grid gap-2.5">
@@ -1211,7 +1190,6 @@ export default function App() {
               <Chip>{t.trust3}</Chip>
             </div>
 
-            <HeroConversionPanel t={t} />
           </div>
 
           <div className="relative hidden items-center justify-center lg:flex lg:-translate-y-40 xl:-translate-y-52 2xl:-translate-y-56">
