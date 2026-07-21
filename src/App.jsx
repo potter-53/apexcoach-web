@@ -7,9 +7,9 @@ import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } fro
 import CookieSettingsButton from "./components/CookieSettingsButton";
 
 const appPreviewScreens = [
-  { src: "/screenshot_2.jpeg", alt: "APEX COACH client progress screen" },
-  { src: "/screenshot_3.jpeg", alt: "APEX COACH client session history screen" },
   { src: "/screenshot_1.jpeg", alt: "APEX COACH sessions screen" },
+  { src: "/screenshot_3.jpeg", alt: "APEX COACH client session history screen" },
+  { src: "/screenshot_2.jpeg", alt: "APEX COACH client progress screen" },
 ];
 const APK_DOWNLOAD_URL = "/download/apk";
 
@@ -245,9 +245,9 @@ const copy = {
     pricingTag: "Planos",
     pricingTitle: "Duas modalidades. Um plano normal e uma oportunidade limitada para Coach Fundador.",
     pricingText:
-      "O coach pode entrar pela subscrição normal ou garantir uma das 50 vagas Coach Fundador com subscrição anual. A diferença está no preço, no estatuto e no acesso antecipado ao crescimento da app.",
+      "O coach pode entrar pela subscrição normal ou garantir uma das 50 vagas Coach Fundador com subscrição anual. Ser Fundador é participar no crescimento da APEX COACH, ganhar estatuto desde o início e acompanhar a evolução da app por dentro.",
     foundationLabel: "Coach Fundador",
-    foundationTitle: "50 vagas para coaches que querem entrar primeiro",
+    foundationTitle: "50 vagas para os coaches que querem crescer com a APEX COACH",
     founderSpotsBadge: "50 vagas",
     monthlyLabel: "Mensal",
     yearlyLabel: "Anual",
@@ -259,6 +259,7 @@ const copy = {
       "Badge exclusivo de Coach Fundador",
       "Acesso aos updates primeiro",
       "Acesso ao fórum de crescimento da app",
+      "Participação mais próxima na evolução da ferramenta e da comunidade",
       "Referral code com trial de 21 dias para coaches convidados",
     ],
     regularLabel: "Coach",
@@ -273,7 +274,7 @@ const copy = {
       "Possibilidade de entrar como Fundador se cumprir os requisitos",
     ],
     pricingBullets: [
-      "Coach Fundador: 50 vagas, subscrição anual e estatuto exclusivo",
+      "Coach Fundador: 50 vagas para coaches que querem crescer com a APEX COACH",
       "Coach normal: 29,90 EUR/mês ou 299 EUR/ano",
       "Referral code de Fundador dá trial de 21 dias aos coaches convidados",
       "A conta mantém as condições enquanto a subscrição estiver ativa",
@@ -283,7 +284,8 @@ const copy = {
     faqItems: [
       { title: "Que modalidades existem?", text: "Existem duas modalidades em vigor: Coach e Coach Fundador. O plano Coach pode ser mensal ou anual. O Coach Fundador é limitado a 50 vagas, requer subscrição anual e inclui vantagens exclusivas associadas ao crescimento da APEX COACH." },
       { title: "O que é o Coach Fundador e como funciona?", text: "Coach Fundador é a modalidade limitada para os primeiros 50 coaches. Requer subscrição anual de 199 EUR, equivalente a 16,58 EUR por mês, e mantém as condições enquanto a conta e a subscrição estiverem ativas." },
-      { title: "Que vantagens tem o Coach Fundador?", text: "O Coach Fundador recebe badge exclusivo, acesso aos updates primeiro, acesso ao fórum de crescimento da app e um referral code que oferece trial de 21 dias aos coaches convidados." },
+      { title: "Que vantagens tem o Coach Fundador?", text: "O Coach Fundador recebe badge exclusivo, acesso aos updates primeiro, acesso ao fórum de crescimento da app, participação mais próxima na evolução da ferramenta e um referral code que oferece trial de 21 dias aos coaches convidados." },
+      { title: "Porque é que ser Fundador é relevante para o crescimento do coach?", text: "Porque o coach deixa de ser apenas utilizador e passa a estar mais próximo da construção da app. Isto dá contexto, voz, prioridade nos updates e uma ligação mais forte a uma comunidade de coaches focados em melhorar a forma como trabalham." },
       { title: "Um Coach normal pode tornar-se Coach Fundador?", text: "Sim, se aderir à subscrição anual e ainda existirem vagas disponíveis. Também pode desbloquear essa elegibilidade ao referir 5 coaches que adiram a qualquer um dos planos." },
       { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus clients, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
       { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
@@ -544,9 +546,9 @@ const copy = {
     pricingTag: "Pricing",
     pricingTitle: "Two modalities. A regular Coach plan and a limited Founder Coach opportunity.",
     pricingText:
-      "Coaches can enter through the regular subscription or secure one of 50 Founder Coach spots with an annual subscription. The difference is price, status, and early access to the app's growth.",
+      "Coaches can enter through the regular subscription or secure one of 50 Founder Coach spots with an annual subscription. Being a Founder means taking part in the growth of APEX COACH, gaining status from the beginning, and following the app's evolution from the inside.",
     foundationLabel: "Founder Coach",
-    foundationTitle: "50 spots for coaches who want to join first",
+    foundationTitle: "50 spots for coaches who want to grow with APEX COACH",
     founderSpotsBadge: "50 spots",
     monthlyLabel: "Monthly",
     yearlyLabel: "Yearly",
@@ -558,6 +560,7 @@ const copy = {
       "Exclusive Founder Coach badge",
       "Early access to updates",
       "Access to the app growth forum",
+      "Closer participation in the evolution of the tool and community",
       "Referral code with a 21-day trial for invited coaches",
     ],
     regularLabel: "Coach",
@@ -572,7 +575,7 @@ const copy = {
       "Possibility to join Founder if requirements are met",
     ],
     pricingBullets: [
-      "Founder Coach: 50 spots, annual subscription, and exclusive status",
+      "Founder Coach: 50 spots for coaches who want to grow with APEX COACH",
       "Regular Coach: EUR 29.90/month or EUR 299/year",
       "Founder referral code gives invited coaches a 21-day trial",
       "Conditions remain active while the subscription is active",
@@ -582,7 +585,8 @@ const copy = {
     faqItems: [
       { title: "Which modalities are available?", text: "There are two active modalities: Coach and Founder Coach. The Coach plan can be monthly or annual. Founder Coach is limited to 50 spots, requires an annual subscription, and includes exclusive benefits connected to the growth of APEX COACH." },
       { title: "What is Founder Coach and how does it work?", text: "Founder Coach is the limited modality for the first 50 coaches. It requires a EUR 199 annual subscription, equivalent to EUR 16.58 per month, and keeps its conditions while the account and subscription remain active." },
-      { title: "What benefits does Founder Coach include?", text: "Founder Coach includes an exclusive badge, early access to updates, access to the app growth forum, and a referral code that gives invited coaches a 21-day trial." },
+      { title: "What benefits does Founder Coach include?", text: "Founder Coach includes an exclusive badge, early access to updates, access to the app growth forum, closer participation in the evolution of the tool, and a referral code that gives invited coaches a 21-day trial." },
+      { title: "Why does Founder status matter for coach growth?", text: "Because the coach is not just using the app; they are closer to its construction. This gives context, voice, update priority, and a stronger link to a community of coaches focused on improving how they work." },
       { title: "Can a regular Coach become Founder Coach?", text: "Yes, by choosing the annual subscription if spots are still available. A coach can also unlock eligibility by referring 5 coaches who subscribe to any plan." },
       { title: "Who is APEX COACH built for?", text: "The app was built for coaches who need stronger technical structure, faster execution, and greater consistency in client follow-up, whether they work in performance, health, body composition, or hybrid coaching environments." },
       { title: "Can I work with unlimited clients?", text: "Yes. The app structure was designed to support the coach's operation without artificial limits on the number of clients, allowing the business to grow without losing clarity or control." },
