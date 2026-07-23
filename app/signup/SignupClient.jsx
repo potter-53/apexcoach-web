@@ -37,6 +37,8 @@ const copy = {
     acceptPrivacy: "Privacy Policy",
     acceptLegalSuffix: ".",
     acceptRequired: "You need to accept the Terms and Privacy Policy to create an account.",
+    foundingProfileConsent: "I agree that my public Founding Coach profile (photo, name, location, testimonial and selected professional information) may be displayed by APEX Coach.",
+    foundingProfileConsentHelp: "Optional. This preference can be edited later in your coach settings.",
     creating: "Creating account...",
     createContinue: "Create account and continue",
     identityTitle: "Single coach identity",
@@ -73,6 +75,8 @@ const copy = {
     acceptPrivacy: "Política de Privacidade",
     acceptLegalSuffix: ".",
     acceptRequired: "Tens de aceitar os Termos e a Política de Privacidade para criar conta.",
+    foundingProfileConsent: "Aceito que o meu perfil público de Coach Fundador (foto, nome, localização, testemunho e informação profissional selecionada) possa ser apresentado pela APEX COACH.",
+    foundingProfileConsentHelp: "Opcional. Esta preferência poderá ser editada mais tarde nas definições da tua conta coach.",
     creating: "A criar conta...",
     createContinue: "Criar conta e continuar",
     identityTitle: "Identidade única do coach",
@@ -109,6 +113,8 @@ const copy = {
     acceptPrivacy: "Política de Privacidad",
     acceptLegalSuffix: ".",
     acceptRequired: "Debes aceptar los Términos y la Política de Privacidad para crear la cuenta.",
+    foundingProfileConsent: "Acepto que mi perfil público de Founder Coach (foto, nombre, ubicación, testimonio e información profesional seleccionada) pueda ser mostrado por APEX COACH.",
+    foundingProfileConsentHelp: "Opcional. Esta preferencia podrá editarse más tarde en la configuración de tu cuenta coach.",
     creating: "Creando cuenta...",
     createContinue: "Crear cuenta y continuar",
     identityTitle: "Identidad única del coach",
@@ -145,6 +151,8 @@ const copy = {
     acceptPrivacy: "Politique de Confidentialité",
     acceptLegalSuffix: ".",
     acceptRequired: "Tu dois accepter les conditions et la politique de confidentialité pour créer le compte.",
+    foundingProfileConsent: "J'accepte que mon profil public de Founder Coach (photo, nom, localisation, témoignage et informations professionnelles sélectionnées) puisse être affiché par APEX COACH.",
+    foundingProfileConsentHelp: "Optionnel. Cette préférence pourra être modifiée plus tard dans les paramètres de ton compte coach.",
     creating: "Création du compte...",
     createContinue: "Créer le compte et continuer",
     identityTitle: "Identité coach unique",
@@ -198,6 +206,7 @@ export default function SignupClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
+  const [foundingProfileConsent, setFoundingProfileConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -233,6 +242,7 @@ export default function SignupClient() {
     try {
       const supabase = getSupabaseBrowserClient();
       const normalizedEmail = email.trim().toLowerCase();
+      const submittedAt = new Date().toISOString();
       const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
@@ -242,14 +252,16 @@ export default function SignupClient() {
             full_name: fullName.trim(),
             role: "coach",
             beta_access_requested: true,
-            beta_requested_at: new Date().toISOString(),
+            beta_requested_at: submittedAt,
             founder_access_requested: true,
             access_tier: "founder",
             subscription_category: "apex_coach_founder",
             billing_campaign_key: "apex_coach_founder",
-            accepted_terms_at: new Date().toISOString(),
-            accepted_privacy_at: new Date().toISOString(),
+            accepted_terms_at: submittedAt,
+            accepted_privacy_at: submittedAt,
             accepted_legal_version: "2026-04",
+            founding_public_profile_consent: foundingProfileConsent,
+            founding_public_profile_consent_at: foundingProfileConsent ? submittedAt : null,
           },
         },
       });
@@ -270,6 +282,8 @@ export default function SignupClient() {
             source: "apexcoach-signup-page",
             accessTier: "founder",
             subscriptionCategory: "apex_coach_founder",
+            foundingPublicProfileConsent: foundingProfileConsent,
+            foundingPublicProfileConsentAt: foundingProfileConsent ? submittedAt : null,
             userId: data?.user?.id || "",
           }),
         });
@@ -560,6 +574,21 @@ export default function SignupClient() {
                       </Link>
                       {t.acceptLegalSuffix}
                     </p>
+                  </div>
+                </label>
+
+                <label className="rounded-[20px] border border-[var(--border)] bg-white p-4">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={foundingProfileConsent}
+                      onChange={(event) => setFoundingProfileConsent(event.target.checked)}
+                      className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent)]"
+                    />
+                    <div>
+                      <p className="text-sm leading-6 text-[var(--text-muted)]">{t.foundingProfileConsent}</p>
+                      <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{t.foundingProfileConsentHelp}</p>
+                    </div>
                   </div>
                 </label>
 

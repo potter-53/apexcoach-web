@@ -33,9 +33,9 @@ const copy = {
     trust2: "Periodização e protocolos",
     trust3: "Templates, tags e tracking",
     heroOfferLabel: "50 vagas Coach Fundador",
-    heroOfferPrice: "199 EUR",
+    heroOfferPrice: "199,90 EUR",
     heroOfferPeriod: "/ano",
-    heroOfferYearly: "equivale a 16,58 EUR/mês",
+    heroOfferYearly: "equivale a 16,66 EUR/mês",
     heroOfferNote: "Exclusivo para subscrição anual. Válido enquanto a conta e a subscrição se mantiverem ativas.",
     heroStartLabel: "Começar é simples",
     heroStartTitle: "Cria conta, inicia o download da APK e valida o email.",
@@ -252,21 +252,26 @@ const copy = {
     monthlyLabel: "Mensal",
     yearlyLabel: "Anual",
     equivalentLabel: "Equivalência",
-    foundationMonthly: "16,58 EUR/mês",
-    foundationYearly: "199 EUR/ano",
-    foundationNote: "Requer subscrição anual. Conta válida enquanto a subscrição estiver ativa.",
+    foundationMonthly: "≈ 16,66 EUR/mês",
+    foundationYearly: "199,90 EUR/ano",
+    foundationSaving: "Poupa 100 EUR todos os anos face ao plano anual Coach.",
+    foundationNote: "Disponível apenas através do plano anual. Não existe subscrição mensal para Coach Fundador.",
     foundationBenefits: [
       "Badge exclusivo de Coach Fundador",
+      "Número de Coach Fundador (#1, #2, #3...)",
+      "Preço Founder vitalício: 199,90 EUR/ano",
       "Acesso aos updates primeiro",
-      "Acesso ao fórum de crescimento da app",
-      "Participação mais próxima na evolução da ferramenta e da comunidade",
+      "Comunidade privada de Coaches Fundadores",
+      "Suporte prioritário e influência no roadmap",
       "Referral code com trial de 21 dias para coaches convidados",
+      "Certificado digital de Coach Fundador",
     ],
     regularLabel: "Coach",
     regularTitle: "Subscrição normal da APEX COACH",
     regularMonthly: "29,90 EUR/mês",
-    regularYearly: "299 EUR/ano",
-    regularNote: "Pode aderir a Coach Fundador com subscrição anual se ainda houver vagas disponíveis. Também pode desbloquear elegibilidade ao referir 5 coaches que adiram a qualquer plano.",
+    regularYearly: "299,90 EUR/ano",
+    regularAnnualNote: "Equivale a pagar apenas 10 meses em vez de 12.",
+    regularNote: "Pode aderir a Coach Fundador se escolher o plano anual e ainda houver vagas disponíveis. O referral está disponível para todos os coaches.",
     regularBenefits: [
       "Acesso completo à app mobile",
       "Plano mensal ou anual",
@@ -274,19 +279,93 @@ const copy = {
       "Possibilidade de entrar como Fundador se cumprir os requisitos",
     ],
     pricingBullets: [
-      "Coach Fundador: 50 vagas para coaches que querem crescer com a APEX COACH",
-      "Coach normal: 29,90 EUR/mês ou 299 EUR/ano",
-      "Referral code de Fundador dá trial de 21 dias aos coaches convidados",
-      "A conta mantém as condições enquanto a subscrição estiver ativa",
+      "Coach Fundador: limitado a apenas 50 coaches",
+      "Coach normal: 29,90 EUR/mês ou 299,90 EUR/ano",
+      "Coach Fundador: 199,90 EUR/ano enquanto mantiver a subscrição ativa",
+      "Referral normal: 14 dias de trial. Referral Founder: 21 dias de trial",
+    ],
+    foundingProgramTag: "Programa Founder",
+    foundingProgramTitle: "Become one of the 50 Founding Coaches.",
+    foundingProgramSubtitle: "Help build the future of coaching while unlocking exclusive lifetime benefits.",
+    foundingProgramText:
+      "Ser Coach Fundador não é comprar a app com desconto. É entrar no primeiro capítulo da APEX COACH, ter reconhecimento público dentro da comunidade e participar mais de perto na evolução de uma ferramenta criada para o trabalho real do coach.",
+    foundingScarcity: "Limited to only 50 Founding Coaches.",
+    foundingRequirementsTitle: "Requisitos",
+    foundingRequirements: [
+      "Ser um dos primeiros 50 coaches a subscrever o plano anual.",
+      "Manter a subscrição ativa para conservar o estatuto Founder.",
+    ],
+    foundingBenefitsTitle: "Benefícios Founder",
+    foundingBenefitsDetailed: [
+      "Badge exclusivo e número de Coach Fundador.",
+      "Preço Founder vitalício de 199,90 EUR/ano.",
+      "Acesso antecipado a novas funcionalidades.",
+      "Comunidade privada, suporte prioritário e influência no roadmap.",
+      "Referral Premium: coaches convidados recebem 21 dias de trial.",
+      "Certificado digital de Coach Fundador.",
+    ],
+    foundingWaitlistTitle: "Quando as 50 vagas estiverem preenchidas",
+    foundingWaitlistText:
+      "Os coaches podem entrar na Founding Waitlist. O estatuto Founder poderá ser atribuído mais tarde após análise da contribuição para o ecossistema APEX COACH.",
+    foundingWaitlistExamples: [
+      "Referrals bem-sucedidos",
+      "Feedback de produto com valor",
+      "Contributo ativo para a comunidade",
+      "Outros critérios definidos pela APEX COACH",
+    ],
+    foundingApprovalNote: "O estatuto Founder não é atribuído automaticamente por referrals. Cada candidatura requer aprovação.",
+    referralProgramTitle: "Referral disponível para todos",
+    referralProgramText:
+      "Todos os coaches podem convidar outros coaches. A diferença é que um Coach Fundador oferece uma experiência de entrada mais forte ao seu convite.",
+    referralNormalLabel: "Coach",
+    referralNormalTrial: "14 dias de trial",
+    referralFounderLabel: "Coach Fundador",
+    referralFounderTrial: "21 dias de trial",
+    foundingWallTag: "Founding Coach Wall",
+    foundingWallTitle: "Reconhecimento público para quem ajuda a construir a primeira fase.",
+    foundingWallText:
+      "A wall foi pensada para valorizar Coaches Fundadores, mostrar o crescimento da comunidade e dar prestígio a quem decide participar desde cedo.",
+    foundingWallConsent: "Perfis públicos só aparecem após consentimento opcional do coach.",
+    foundingWallProfiles: [
+      {
+        number: "#01",
+        name: "Perfil Founder reservado",
+        city: "Portugal",
+        activeSince: "Após ativação",
+        clients: "Informação opcional",
+        quote: "Espaço reservado para coaches que autorizem reconhecimento público.",
+        x: "47%",
+        y: "30%",
+      },
+      {
+        number: "#02",
+        name: "Perfil Founder reservado",
+        city: "Portugal",
+        activeSince: "Após ativação",
+        clients: "Informação opcional",
+        quote: "Cada perfil pode incluir foto, nome, localização, número Founder e testemunho.",
+        x: "55%",
+        y: "48%",
+      },
+      {
+        number: "#03",
+        name: "Perfil Founder reservado",
+        city: "Portugal",
+        activeSince: "Após ativação",
+        clients: "Informação opcional",
+        quote: "A wall é para reconhecimento da comunidade de coaches, não para comunicação com clients.",
+        x: "50%",
+        y: "68%",
+      },
     ],
     faqTag: "FAQ",
     faqTitle: "Perguntas frequentes",
     faqItems: [
       { title: "Que modalidades existem?", text: "Existem duas modalidades em vigor: Coach e Coach Fundador. O plano Coach pode ser mensal ou anual. O Coach Fundador é limitado a 50 vagas, requer subscrição anual e inclui vantagens exclusivas associadas ao crescimento da APEX COACH." },
-      { title: "O que é o Coach Fundador e como funciona?", text: "Coach Fundador é a modalidade limitada para os primeiros 50 coaches. Requer subscrição anual de 199 EUR, equivalente a 16,58 EUR por mês, e mantém as condições enquanto a conta e a subscrição estiverem ativas." },
-      { title: "Que vantagens tem o Coach Fundador?", text: "O Coach Fundador recebe badge exclusivo, acesso aos updates primeiro, acesso ao fórum de crescimento da app, participação mais próxima na evolução da ferramenta e um referral code que oferece trial de 21 dias aos coaches convidados." },
+      { title: "O que é o Coach Fundador e como funciona?", text: "Coach Fundador é a modalidade limitada para os primeiros 50 coaches. Requer subscrição anual de 199,90 EUR, equivalente a 16,66 EUR por mês, e mantém as condições enquanto a conta e a subscrição estiverem ativas." },
+      { title: "Que vantagens tem o Coach Fundador?", text: "O Coach Fundador recebe badge exclusivo, número Founder, preço vitalício de 199,90 EUR/ano, acesso antecipado a funcionalidades, comunidade privada, suporte prioritário, influência no roadmap, certificado digital e referral premium com trial de 21 dias para coaches convidados." },
       { title: "Porque é que ser Fundador é relevante para o crescimento do coach?", text: "Porque o coach deixa de ser apenas utilizador e passa a estar mais próximo da construção da app. Isto dá contexto, voz, prioridade nos updates e uma ligação mais forte a uma comunidade de coaches focados em melhorar a forma como trabalham." },
-      { title: "Um Coach normal pode tornar-se Coach Fundador?", text: "Sim, se aderir à subscrição anual e ainda existirem vagas disponíveis. Também pode desbloquear essa elegibilidade ao referir 5 coaches que adiram a qualquer um dos planos." },
+      { title: "Um Coach normal pode tornar-se Coach Fundador?", text: "Sim, se escolher a subscrição anual e ainda existirem vagas disponíveis. Quando as 50 vagas estiverem preenchidas, pode entrar na Founding Waitlist. Referrals, feedback e contributo para a comunidade podem ser analisados, mas o estatuto Founder nunca é automático e requer aprovação." },
       { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus clients, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
       { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
       { title: "A app permite acompanhar atividades externas do client?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
@@ -334,9 +413,9 @@ const copy = {
     trust2: "Periodization and protocols",
     trust3: "Templates, tags, and tracking",
     heroOfferLabel: "50 Founder Coach spots",
-    heroOfferPrice: "EUR 199",
+    heroOfferPrice: "EUR 199.90",
     heroOfferPeriod: "/year",
-    heroOfferYearly: "equals EUR 16.58/month",
+    heroOfferYearly: "equals EUR 16.66/month",
     heroOfferNote: "Annual subscription required. Valid while the account and subscription remain active.",
     heroStartLabel: "Simple to start",
     heroStartTitle: "Create your account, start the APK download, and verify your email.",
@@ -553,21 +632,26 @@ const copy = {
     monthlyLabel: "Monthly",
     yearlyLabel: "Yearly",
     equivalentLabel: "Equivalent",
-    foundationMonthly: "EUR 16.58/month",
-    foundationYearly: "EUR 199/year",
-    foundationNote: "Annual subscription required. Account remains valid while the subscription is active.",
+    foundationMonthly: "≈ EUR 16.66/month",
+    foundationYearly: "EUR 199.90/year",
+    foundationSaving: "Save EUR 100 every year compared with the regular annual Coach plan.",
+    foundationNote: "Available only through the annual plan. There is no monthly subscription for Founder Coaches.",
     foundationBenefits: [
       "Exclusive Founder Coach badge",
+      "Founder Coach number (#1, #2, #3...)",
+      "Lifetime Founder pricing: EUR 199.90/year",
       "Early access to updates",
-      "Access to the app growth forum",
-      "Closer participation in the evolution of the tool and community",
+      "Private Founder Coach community",
+      "Priority support and roadmap influence",
       "Referral code with a 21-day trial for invited coaches",
+      "Digital Founder Coach Certificate",
     ],
     regularLabel: "Coach",
     regularTitle: "Regular APEX COACH subscription",
     regularMonthly: "EUR 29.90/month",
-    regularYearly: "EUR 299/year",
-    regularNote: "Can join Founder Coach with an annual subscription if spots are still available. Coaches can also unlock eligibility by referring 5 coaches who subscribe to any plan.",
+    regularYearly: "EUR 299.90/year",
+    regularAnnualNote: "Equivalent to paying only 10 months instead of 12.",
+    regularNote: "Can join Founder Coach by choosing the annual plan if spots are still available. Referrals are available to every coach.",
     regularBenefits: [
       "Full access to the mobile app",
       "Monthly or annual plan",
@@ -575,19 +659,93 @@ const copy = {
       "Possibility to join Founder if requirements are met",
     ],
     pricingBullets: [
-      "Founder Coach: 50 spots for coaches who want to grow with APEX COACH",
-      "Regular Coach: EUR 29.90/month or EUR 299/year",
-      "Founder referral code gives invited coaches a 21-day trial",
-      "Conditions remain active while the subscription is active",
+      "Founder Coach: limited to only 50 coaches",
+      "Regular Coach: EUR 29.90/month or EUR 299.90/year",
+      "Founder Coach: EUR 199.90/year while the subscription stays active",
+      "Regular referral: 14-day trial. Founder referral: 21-day trial",
+    ],
+    foundingProgramTag: "Founder Program",
+    foundingProgramTitle: "Become one of the 50 Founding Coaches.",
+    foundingProgramSubtitle: "Help build the future of coaching while unlocking exclusive lifetime benefits.",
+    foundingProgramText:
+      "Being a Founder Coach is not about buying the app with a discount. It is about joining the first chapter of APEX COACH, gaining public recognition inside the community, and taking part more closely in the evolution of a tool built for real coaching work.",
+    foundingScarcity: "Limited to only 50 Founding Coaches.",
+    foundingRequirementsTitle: "Requirements",
+    foundingRequirements: [
+      "Be one of the first 50 coaches to subscribe to the annual plan.",
+      "Keep an active subscription to maintain Founder status.",
+    ],
+    foundingBenefitsTitle: "Founder benefits",
+    foundingBenefitsDetailed: [
+      "Exclusive badge and Founder Coach number.",
+      "Lifetime Founder pricing at EUR 199.90/year.",
+      "Early access to new features.",
+      "Private community, priority support, and roadmap influence.",
+      "Referral Premium: invited coaches receive a 21-day trial.",
+      "Digital Founder Coach Certificate.",
+    ],
+    foundingWaitlistTitle: "When the first 50 spots are filled",
+    foundingWaitlistText:
+      "Coaches can join the Founding Waitlist. Founder status may later be awarded after reviewing their contribution to the APEX COACH ecosystem.",
+    foundingWaitlistExamples: [
+      "Successful coach referrals",
+      "Valuable product feedback",
+      "Active community contribution",
+      "Other criteria defined by APEX COACH",
+    ],
+    foundingApprovalNote: "Founder status is not automatically granted after referrals. Every application requires approval.",
+    referralProgramTitle: "Referral available to every coach",
+    referralProgramText:
+      "Every coach can invite other coaches. The difference is that a Founder Coach gives their invitees a stronger entry experience.",
+    referralNormalLabel: "Coach",
+    referralNormalTrial: "14-day trial",
+    referralFounderLabel: "Founder Coach",
+    referralFounderTrial: "21-day trial",
+    foundingWallTag: "Founding Coach Wall",
+    foundingWallTitle: "Public recognition for coaches who help build the first phase.",
+    foundingWallText:
+      "The wall is designed to reward Founder Coaches, show community growth, and create prestige around joining early.",
+    foundingWallConsent: "Public profiles only appear after optional coach consent.",
+    foundingWallProfiles: [
+      {
+        number: "#01",
+        name: "Reserved Founder profile",
+        city: "Portugal",
+        activeSince: "After activation",
+        clients: "Optional information",
+        quote: "Reserved for coaches who authorize public recognition.",
+        x: "47%",
+        y: "30%",
+      },
+      {
+        number: "#02",
+        name: "Reserved Founder profile",
+        city: "Portugal",
+        activeSince: "After activation",
+        clients: "Optional information",
+        quote: "Each profile can include photo, name, location, Founder number, and testimonial.",
+        x: "55%",
+        y: "48%",
+      },
+      {
+        number: "#03",
+        name: "Reserved Founder profile",
+        city: "Portugal",
+        activeSince: "After activation",
+        clients: "Optional information",
+        quote: "The wall is for coach community recognition, not client communication.",
+        x: "50%",
+        y: "68%",
+      },
     ],
     faqTag: "FAQ",
     faqTitle: "Frequently asked questions",
     faqItems: [
       { title: "Which modalities are available?", text: "There are two active modalities: Coach and Founder Coach. The Coach plan can be monthly or annual. Founder Coach is limited to 50 spots, requires an annual subscription, and includes exclusive benefits connected to the growth of APEX COACH." },
-      { title: "What is Founder Coach and how does it work?", text: "Founder Coach is the limited modality for the first 50 coaches. It requires a EUR 199 annual subscription, equivalent to EUR 16.58 per month, and keeps its conditions while the account and subscription remain active." },
-      { title: "What benefits does Founder Coach include?", text: "Founder Coach includes an exclusive badge, early access to updates, access to the app growth forum, closer participation in the evolution of the tool, and a referral code that gives invited coaches a 21-day trial." },
+      { title: "What is Founder Coach and how does it work?", text: "Founder Coach is the limited modality for the first 50 coaches. It requires a EUR 199.90 annual subscription, equivalent to EUR 16.66 per month, and keeps its conditions while the account and subscription remain active." },
+      { title: "What benefits does Founder Coach include?", text: "Founder Coach includes an exclusive badge, Founder number, lifetime pricing at EUR 199.90/year, early feature access, private community, priority support, roadmap influence, digital certificate, and referral premium with a 21-day trial for invited coaches." },
       { title: "Why does Founder status matter for coach growth?", text: "Because the coach is not just using the app; they are closer to its construction. This gives context, voice, update priority, and a stronger link to a community of coaches focused on improving how they work." },
-      { title: "Can a regular Coach become Founder Coach?", text: "Yes, by choosing the annual subscription if spots are still available. A coach can also unlock eligibility by referring 5 coaches who subscribe to any plan." },
+      { title: "Can a regular Coach become Founder Coach?", text: "Yes, by choosing the annual subscription if spots are still available. Once the 50 spots are filled, coaches can join the Founding Waitlist. Referrals, feedback, and community contribution may be reviewed, but Founder status is never automatic and requires approval." },
       { title: "Who is APEX COACH built for?", text: "The app was built for coaches who need stronger technical structure, faster execution, and greater consistency in client follow-up, whether they work in performance, health, body composition, or hybrid coaching environments." },
       { title: "Can I work with unlimited clients?", text: "Yes. The app structure was designed to support the coach's operation without artificial limits on the number of clients, allowing the business to grow without losing clarity or control." },
       { title: "Can the app track external client activities?", text: "Yes. The coach can log relevant activity performed outside the main session, creating stronger context for load management, recovery interpretation, accumulated volume, and decision-making." },
@@ -737,7 +895,7 @@ function ClientValueCard({ title, text }) {
   );
 }
 
-function PricingCard({ label, title, monthly, yearly, note, benefits = [], monthlyLabel = "Monthly", yearlyLabel = "Yearly", equivalentLabel = "Equivalent", spotsBadge, accent = false }) {
+function PricingCard({ label, title, monthly, yearly, note, benefits = [], monthlyLabel = "Monthly", yearlyLabel = "Yearly", equivalentLabel = "Equivalent", spotsBadge, annualNote, saving, accent = false }) {
   return (
     <div className={`rounded-[18px] border p-4 shadow-[var(--shadow-soft)] sm:p-6 ${accent ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-white"}`}>
       <div className="flex flex-wrap items-center gap-2">
@@ -758,6 +916,7 @@ function PricingCard({ label, title, monthly, yearly, note, benefits = [], month
           <p className="mt-2 text-[11px] font-medium leading-5 text-[var(--text-muted)] sm:text-xs">
             {equivalentLabel}: {monthly}
           </p>
+          {saving ? <p className="mt-3 inline-flex rounded-full bg-[rgba(57,185,138,0.12)] px-3 py-1 text-[11px] font-semibold leading-5 text-[var(--accent-strong)]">{saving}</p> : null}
         </div>
       ) : (
         <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2">
@@ -768,6 +927,7 @@ function PricingCard({ label, title, monthly, yearly, note, benefits = [], month
           <div className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-3 sm:px-4 sm:py-4">
             <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{yearlyLabel}</p>
             <p className="mt-1.5 text-2xl font-semibold text-[var(--text)] sm:mt-2 sm:text-3xl">{yearly}</p>
+            {annualNote ? <p className="mt-2 text-[11px] leading-5 text-[var(--text-muted)]">{annualNote}</p> : null}
           </div>
         </div>
       )}
@@ -788,6 +948,163 @@ function PricingCard({ label, title, monthly, yearly, note, benefits = [], month
   );
 }
 
+function FoundingProgramSection({ t }) {
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-16 lg:px-8">
+      <div className="overflow-hidden rounded-[28px] border border-[var(--accent)]/25 bg-[linear-gradient(135deg,rgba(232,255,244,0.95),rgba(255,255,255,0.96)_48%,rgba(235,243,255,0.88))] p-5 shadow-[var(--shadow-soft)] sm:rounded-[36px] sm:p-8 lg:p-10">
+        <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+          <div>
+            <SectionLabel>{t.foundingProgramTag}</SectionLabel>
+            <h2 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
+              {renderBrandText(t.foundingProgramTitle)}
+            </h2>
+            <p className="mt-3 max-w-2xl text-lg font-semibold leading-7 text-[var(--text)] sm:text-2xl sm:leading-9">
+              {renderBrandText(t.foundingProgramSubtitle)}
+            </p>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--text-muted)] sm:text-base sm:leading-8">
+              {renderBrandText(t.foundingProgramText)}
+            </p>
+            <div className="mt-6 inline-flex rounded-full border border-[var(--accent)]/25 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
+              {t.foundingScarcity}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-[24px] border border-[var(--border)] bg-white/82 p-5">
+              <h3 className="text-lg font-semibold text-[var(--text)]">{t.foundingRequirementsTitle}</h3>
+              <div className="mt-4 grid gap-3">
+                {t.foundingRequirements.map((item) => (
+                  <FeatureItem key={item}>{item}</FeatureItem>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-[24px] border border-[var(--accent)]/25 bg-white p-5 shadow-[0_20px_60px_rgba(57,185,138,0.12)]">
+              <h3 className="text-lg font-semibold text-[var(--text)]">{t.foundingBenefitsTitle}</h3>
+              <div className="mt-4 grid gap-2.5">
+                {t.foundingBenefitsDetailed.map((item) => (
+                  <div key={item} className="flex items-start gap-2.5 text-sm leading-6 text-[var(--text-muted)]">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)]">
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-[24px] border border-[var(--border)] bg-white/84 p-5">
+            <h3 className="text-lg font-semibold text-[var(--text)]">{t.foundingWaitlistTitle}</h3>
+            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{renderBrandText(t.foundingWaitlistText)}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {t.foundingWaitlistExamples.map((item) => (
+                <span key={item} className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)]">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <p className="mt-4 rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-xs font-medium leading-6 text-[var(--text-muted)]">
+              {t.foundingApprovalNote}
+            </p>
+          </div>
+
+          <div className="rounded-[24px] border border-[var(--border)] bg-white/84 p-5">
+            <h3 className="text-lg font-semibold text-[var(--text)]">{t.referralProgramTitle}</h3>
+            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{t.referralProgramText}</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
+                <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">{t.referralNormalLabel}</p>
+                <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.referralNormalTrial}</p>
+              </div>
+              <div className="rounded-[18px] border border-[var(--accent)]/25 bg-[var(--accent-soft)] p-4">
+                <p className="text-xs uppercase tracking-[0.14em] text-[var(--accent-strong)]">{t.referralFounderLabel}</p>
+                <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.referralFounderTrial}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FoundingWallSection({ t }) {
+  const [activeProfileIndex, setActiveProfileIndex] = useState(0);
+  const profiles = t.foundingWallProfiles || [];
+  const activeProfile = profiles[activeProfileIndex] || profiles[0];
+
+  if (!activeProfile) return null;
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-16 lg:px-8">
+      <div className="grid gap-6 rounded-[28px] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-soft)] sm:rounded-[36px] sm:p-8 lg:grid-cols-[1fr_0.85fr] lg:p-10">
+        <div>
+          <SectionLabel>{t.foundingWallTag}</SectionLabel>
+          <h2 className="mt-4 max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl">
+            {renderBrandText(t.foundingWallTitle)}
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--text-muted)] sm:text-base sm:leading-8">
+            {renderBrandText(t.foundingWallText)}
+          </p>
+          <p className="mt-4 inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2 text-xs font-medium text-[var(--text-muted)]">
+            {t.foundingWallConsent}
+          </p>
+
+          <div className="relative mt-6 min-h-[320px] overflow-hidden rounded-[28px] border border-[var(--border)] bg-[radial-gradient(circle_at_20%_15%,rgba(57,185,138,0.16),transparent_28%),linear-gradient(145deg,#f7fbf9,#eef6f8)]">
+            <div className="absolute left-1/2 top-1/2 h-[250px] w-[118px] -translate-x-1/2 -translate-y-1/2 rounded-[52%_48%_50%_46%] bg-[linear-gradient(180deg,rgba(57,185,138,0.2),rgba(67,144,211,0.18))] shadow-[inset_0_0_0_1px_rgba(57,185,138,0.18)]" />
+            <div className="absolute inset-x-6 top-6 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              <span>Portugal</span>
+              <span>{t.foundingScarcity}</span>
+            </div>
+            {profiles.map((profile, index) => (
+              <button
+                key={`${profile.number}-${index}`}
+                type="button"
+                onClick={() => setActiveProfileIndex(index)}
+                className={`absolute flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border text-xs font-semibold shadow-[0_12px_30px_rgba(21,30,34,0.12)] transition ${activeProfileIndex === index ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-white bg-white text-[var(--accent-strong)] hover:border-[var(--accent)]/45"}`}
+                style={{ left: profile.x, top: profile.y }}
+              >
+                {profile.number}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
+          <div className="flex items-center gap-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent),#4390d3)] text-lg font-bold text-white">
+              {activeProfile.number}
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.16em] text-[var(--accent-strong)]">{t.foundingWallTag}</p>
+              <h3 className="mt-1 text-xl font-semibold text-[var(--text)]">{activeProfile.name}</h3>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-3">
+            <div className="rounded-[18px] border border-[var(--border)] bg-white p-4">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">District / City</p>
+              <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.city}</p>
+            </div>
+            <div className="rounded-[18px] border border-[var(--border)] bg-white p-4">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">Active since</p>
+              <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.activeSince}</p>
+            </div>
+            <div className="rounded-[18px] border border-[var(--border)] bg-white p-4">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">Active clients</p>
+              <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.clients}</p>
+            </div>
+            <blockquote className="rounded-[18px] border border-[var(--accent)]/20 bg-white p-4 text-sm leading-7 text-[var(--text-muted)]">
+              "{activeProfile.quote}"
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ProductMatrix({ lang = "en" }) {
   const isPt = lang === "pt";
   const headers = isPt
@@ -796,7 +1113,7 @@ function ProductMatrix({ lang = "en" }) {
 
   const rows = isPt
     ? [
-        ["Preço base", "$9/mês", "$19,90/mês", "Grátis / $19/mês", "33 EUR/mês", "199 EUR/ano", "29,90 EUR/mês"],
+        ["Preço base", "$9/mês", "$19,90/mês", "Grátis / $19/mês", "33 EUR/mês", "199,90 EUR/ano", "29,90 EUR/mês"],
         ["Registar clients", "yes", "yes", "yes", "yes", "yes", "yes"],
         ["Registar assessments", "partial", "yes", "partial", "yes", "yes", "yes"],
         ["Criar treinos", "yes", "yes", "yes", "yes", "yes", "yes"],
@@ -814,7 +1131,7 @@ function ProductMatrix({ lang = "en" }) {
         ["Automatismos", "partial", "yes", "yes", "no", "partial", "yes"],
       ]
     : [
-        ["Entry price", "$9/mo", "$19.90/mo", "Free / $19/mo", "€33/mo", "€199/year", "€29.90/mo"],
+        ["Entry price", "$9/mo", "$19.90/mo", "Free / $19/mo", "€33/mo", "€199.90/year", "€29.90/mo"],
         ["Register clients", "yes", "yes", "yes", "yes", "yes", "yes"],
         ["Register assessments", "partial", "yes", "partial", "yes", "yes", "yes"],
         ["Create training", "yes", "yes", "yes", "yes", "yes", "yes"],
@@ -1259,6 +1576,7 @@ export default function App() {
                 note={t.foundationNote}
                 benefits={t.foundationBenefits}
                 spotsBadge={t.founderSpotsBadge}
+                saving={t.foundationSaving}
                 accent
               />
               <PricingCard
@@ -1268,12 +1586,16 @@ export default function App() {
                 yearly={t.regularYearly}
                 monthlyLabel={t.monthlyLabel}
                 yearlyLabel={t.yearlyLabel}
+                annualNote={t.regularAnnualNote}
                 note={t.regularNote}
                 benefits={t.regularBenefits}
               />
             </div>
           </div>
         </section>
+
+        <FoundingProgramSection t={t} />
+        <FoundingWallSection t={t} />
 
         <section id="product" className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.sectionProduct}</SectionLabel>
