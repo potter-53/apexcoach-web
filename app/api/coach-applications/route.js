@@ -198,6 +198,8 @@ async function markFounderSubscription(application) {
 export async function POST(request) {
   try {
     const payload = await request.json().catch(() => ({}));
+    const submittedAt = new Date().toISOString();
+    const foundingPublicProfileConsent = Boolean(payload.foundingPublicProfileConsent);
     const application = {
       fullName: cleanText(payload.fullName, 120),
       email: cleanEmail(payload.email),
@@ -211,9 +213,11 @@ export async function POST(request) {
         access_tier: FOUNDER_ACCESS_TIER,
         subscription_category: FOUNDER_SUBSCRIPTION_CATEGORY,
         founder_access_requested: true,
+        founding_public_profile_consent: foundingPublicProfileConsent,
+        founding_public_profile_consent_at: foundingPublicProfileConsent ? submittedAt : null,
         user_agent: request.headers.get("user-agent") || "",
         referer: request.headers.get("referer") || "",
-        submitted_at: new Date().toISOString(),
+        submitted_at: submittedAt,
       },
     };
 

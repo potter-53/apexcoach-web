@@ -243,9 +243,9 @@ const copy = {
       "Mais controlo sobre o que foi feito, o que mudou e o que vem a seguir",
     ],
     pricingTag: "Planos",
-    pricingTitle: "Duas modalidades. Um plano normal e uma oportunidade limitada para Coach Fundador.",
+    pricingTitle: "Escolhe como queres entrar na APEX COACH.",
     pricingText:
-      "O coach pode entrar pela subscrição normal ou garantir uma das 50 vagas Coach Fundador com subscrição anual. Ser Fundador é participar no crescimento da APEX COACH, ganhar estatuto desde o início e acompanhar a evolução da app por dentro.",
+      "Dois caminhos simples: usar a app como Coach ou entrar como Coach Fundador e participar mais de perto na construção do projeto.",
     foundationLabel: "Coach Fundador",
     foundationTitle: "50 vagas para os coaches que querem crescer com a APEX COACH",
     founderSpotsBadge: "50 vagas",
@@ -257,14 +257,11 @@ const copy = {
     foundationSaving: "Poupa 100 EUR todos os anos face ao plano anual Coach.",
     foundationNote: "Disponível apenas através do plano anual. Não existe subscrição mensal para Coach Fundador.",
     foundationBenefits: [
-      "Badge exclusivo de Coach Fundador",
-      "Número de Coach Fundador (#1, #2, #3...)",
+      "Badge e número exclusivo de Coach Fundador",
       "Preço Founder vitalício: 199,90 EUR/ano",
-      "Acesso aos updates primeiro",
-      "Comunidade privada de Coaches Fundadores",
-      "Suporte prioritário e influência no roadmap",
-      "Referral code com trial de 21 dias para coaches convidados",
-      "Certificado digital de Coach Fundador",
+      "Early access, comunidade privada e suporte prioritário",
+      "Influência no roadmap e certificado digital",
+      "Referral Premium: trial de 21 dias para coaches convidados",
     ],
     regularLabel: "Coach",
     regularTitle: "Subscrição normal da APEX COACH",
@@ -278,12 +275,10 @@ const copy = {
       "Clients ilimitados e ferramentas de sessão",
       "Possibilidade de entrar como Fundador se cumprir os requisitos",
     ],
-    pricingBullets: [
-      "Coach Fundador: limitado a apenas 50 coaches",
-      "Coach normal: 29,90 EUR/mês ou 299,90 EUR/ano",
-      "Coach Fundador: 199,90 EUR/ano enquanto mantiver a subscrição ativa",
-      "Referral normal: 14 dias de trial. Referral Founder: 21 dias de trial",
-    ],
+    pricingBullets: [],
+    founderCardRequirements: "Requer plano anual e subscrição ativa. Limitado a apenas 50 Coaches Fundadores.",
+    founderCardWaitlist: "Quando as 50 vagas estiverem preenchidas, novas candidaturas entram em waitlist e são avaliadas pela contribuição para o ecossistema APEX COACH.",
+    founderCardApproval: "Referrals ajudam, mas o estatuto Founder nunca é automático: cada candidatura requer aprovação.",
     foundingProgramTag: "Programa Founder",
     foundingProgramTitle: "Become one of the 50 Founding Coaches.",
     foundingProgramSubtitle: "Help build the future of coaching while unlocking exclusive lifetime benefits.",
@@ -326,6 +321,8 @@ const copy = {
     foundingWallText:
       "A wall foi pensada para valorizar Coaches Fundadores, mostrar o crescimento da comunidade e dar prestígio a quem decide participar desde cedo.",
     foundingWallConsent: "Perfis públicos só aparecem após consentimento opcional do coach.",
+    foundingWallEmpty: "A primeira lista pública será apresentada assim que existirem Coaches Fundadores ativos com consentimento.",
+    foundingWallActiveTitle: "Coaches Fundadores ativos",
     foundingWallProfiles: [
       {
         number: "#01",
@@ -623,9 +620,9 @@ const copy = {
       "More control over what happened, what changed, and what comes next",
     ],
     pricingTag: "Pricing",
-    pricingTitle: "Two modalities. A regular Coach plan and a limited Founder Coach opportunity.",
+    pricingTitle: "Choose how you want to join APEX COACH.",
     pricingText:
-      "Coaches can enter through the regular subscription or secure one of 50 Founder Coach spots with an annual subscription. Being a Founder means taking part in the growth of APEX COACH, gaining status from the beginning, and following the app's evolution from the inside.",
+      "Two simple paths: use the app as a Coach or join as a Founder Coach and take part more closely in building the project.",
     foundationLabel: "Founder Coach",
     foundationTitle: "50 spots for coaches who want to grow with APEX COACH",
     founderSpotsBadge: "50 spots",
@@ -637,14 +634,11 @@ const copy = {
     foundationSaving: "Save EUR 100 every year compared with the regular annual Coach plan.",
     foundationNote: "Available only through the annual plan. There is no monthly subscription for Founder Coaches.",
     foundationBenefits: [
-      "Exclusive Founder Coach badge",
-      "Founder Coach number (#1, #2, #3...)",
+      "Exclusive Founder Coach badge and number",
       "Lifetime Founder pricing: EUR 199.90/year",
-      "Early access to updates",
-      "Private Founder Coach community",
-      "Priority support and roadmap influence",
-      "Referral code with a 21-day trial for invited coaches",
-      "Digital Founder Coach Certificate",
+      "Early access, private community, and priority support",
+      "Roadmap influence and digital certificate",
+      "Referral Premium: 21-day trial for invited coaches",
     ],
     regularLabel: "Coach",
     regularTitle: "Regular APEX COACH subscription",
@@ -658,12 +652,10 @@ const copy = {
       "Unlimited clients and session tools",
       "Possibility to join Founder if requirements are met",
     ],
-    pricingBullets: [
-      "Founder Coach: limited to only 50 coaches",
-      "Regular Coach: EUR 29.90/month or EUR 299.90/year",
-      "Founder Coach: EUR 199.90/year while the subscription stays active",
-      "Regular referral: 14-day trial. Founder referral: 21-day trial",
-    ],
+    pricingBullets: [],
+    founderCardRequirements: "Requires the annual plan and an active subscription. Limited to only 50 Founder Coaches.",
+    founderCardWaitlist: "Once the 50 spots are filled, new applications join the waitlist and are reviewed based on contribution to the APEX COACH ecosystem.",
+    founderCardApproval: "Referrals help, but Founder status is never automatic: every application requires approval.",
     foundingProgramTag: "Founder Program",
     foundingProgramTitle: "Become one of the 50 Founding Coaches.",
     foundingProgramSubtitle: "Help build the future of coaching while unlocking exclusive lifetime benefits.",
@@ -706,6 +698,8 @@ const copy = {
     foundingWallText:
       "The wall is designed to reward Founder Coaches, show community growth, and create prestige around joining early.",
     foundingWallConsent: "Public profiles only appear after optional coach consent.",
+    foundingWallEmpty: "The first public list will appear as soon as active Founder Coaches with consent are available.",
+    foundingWallActiveTitle: "Active Founder Coaches",
     foundingWallProfiles: [
       {
         number: "#01",
@@ -895,7 +889,7 @@ function ClientValueCard({ title, text }) {
   );
 }
 
-function PricingCard({ label, title, monthly, yearly, note, benefits = [], monthlyLabel = "Monthly", yearlyLabel = "Yearly", equivalentLabel = "Equivalent", spotsBadge, annualNote, saving, accent = false }) {
+function PricingCard({ label, title, monthly, yearly, note, benefits = [], monthlyLabel = "Monthly", yearlyLabel = "Yearly", equivalentLabel = "Equivalent", spotsBadge, annualNote, saving, children, accent = false }) {
   return (
     <div className={`rounded-[18px] border p-4 shadow-[var(--shadow-soft)] sm:p-6 ${accent ? "border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-white"}`}>
       <div className="flex flex-wrap items-center gap-2">
@@ -944,164 +938,118 @@ function PricingCard({ label, title, monthly, yearly, note, benefits = [], month
           ))}
         </div>
       ) : null}
+      {children ? <div className="mt-5">{children}</div> : null}
     </div>
   );
 }
 
-function FoundingProgramSection({ t }) {
-  return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-16 lg:px-8">
-      <div className="overflow-hidden rounded-[28px] border border-[var(--accent)]/25 bg-[linear-gradient(135deg,rgba(232,255,244,0.95),rgba(255,255,255,0.96)_48%,rgba(235,243,255,0.88))] p-5 shadow-[var(--shadow-soft)] sm:rounded-[36px] sm:p-8 lg:p-10">
-        <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-          <div>
-            <SectionLabel>{t.foundingProgramTag}</SectionLabel>
-            <h2 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
-              {renderBrandText(t.foundingProgramTitle)}
-            </h2>
-            <p className="mt-3 max-w-2xl text-lg font-semibold leading-7 text-[var(--text)] sm:text-2xl sm:leading-9">
-              {renderBrandText(t.foundingProgramSubtitle)}
-            </p>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--text-muted)] sm:text-base sm:leading-8">
-              {renderBrandText(t.foundingProgramText)}
-            </p>
-            <div className="mt-6 inline-flex rounded-full border border-[var(--accent)]/25 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent-strong)]">
-              {t.foundingScarcity}
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[24px] border border-[var(--border)] bg-white/82 p-5">
-              <h3 className="text-lg font-semibold text-[var(--text)]">{t.foundingRequirementsTitle}</h3>
-              <div className="mt-4 grid gap-3">
-                {t.foundingRequirements.map((item) => (
-                  <FeatureItem key={item}>{item}</FeatureItem>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-[24px] border border-[var(--accent)]/25 bg-white p-5 shadow-[0_20px_60px_rgba(57,185,138,0.12)]">
-              <h3 className="text-lg font-semibold text-[var(--text)]">{t.foundingBenefitsTitle}</h3>
-              <div className="mt-4 grid gap-2.5">
-                {t.foundingBenefitsDetailed.map((item) => (
-                  <div key={item} className="flex items-start gap-2.5 text-sm leading-6 text-[var(--text-muted)]">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)]">
-                      <Check size={12} strokeWidth={3} />
-                    </span>
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[24px] border border-[var(--border)] bg-white/84 p-5">
-            <h3 className="text-lg font-semibold text-[var(--text)]">{t.foundingWaitlistTitle}</h3>
-            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{renderBrandText(t.foundingWaitlistText)}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {t.foundingWaitlistExamples.map((item) => (
-                <span key={item} className="rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)]">
-                  {item}
-                </span>
-              ))}
-            </div>
-            <p className="mt-4 rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-xs font-medium leading-6 text-[var(--text-muted)]">
-              {t.foundingApprovalNote}
-            </p>
-          </div>
-
-          <div className="rounded-[24px] border border-[var(--border)] bg-white/84 p-5">
-            <h3 className="text-lg font-semibold text-[var(--text)]">{t.referralProgramTitle}</h3>
-            <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{t.referralProgramText}</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
-                <p className="text-xs uppercase tracking-[0.14em] text-[var(--text-muted)]">{t.referralNormalLabel}</p>
-                <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.referralNormalTrial}</p>
-              </div>
-              <div className="rounded-[18px] border border-[var(--accent)]/25 bg-[var(--accent-soft)] p-4">
-                <p className="text-xs uppercase tracking-[0.14em] text-[var(--accent-strong)]">{t.referralFounderLabel}</p>
-                <p className="mt-2 text-xl font-semibold text-[var(--text)]">{t.referralFounderTrial}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FoundingWallSection({ t }) {
+function FounderMiniWall({ t }) {
   const [activeProfileIndex, setActiveProfileIndex] = useState(0);
-  const profiles = t.foundingWallProfiles || [];
+  const [remoteProfiles, setRemoteProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const profiles = remoteProfiles;
   const activeProfile = profiles[activeProfileIndex] || profiles[0];
 
-  if (!activeProfile) return null;
+  useEffect(() => {
+    let active = true;
+
+    async function loadFounderProfiles() {
+      try {
+        const response = await fetch("/api/founding-coaches", { cache: "no-store" });
+        const payload = await response.json().catch(() => ({}));
+        if (active && Array.isArray(payload?.coaches)) {
+          setRemoteProfiles(payload.coaches);
+          setActiveProfileIndex(0);
+        }
+      } catch {
+        if (active) setRemoteProfiles([]);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadFounderProfiles();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const hasRealProfiles = remoteProfiles.length > 0;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-16 lg:px-8">
-      <div className="grid gap-6 rounded-[28px] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-soft)] sm:rounded-[36px] sm:p-8 lg:grid-cols-[1fr_0.85fr] lg:p-10">
+    <div className="rounded-[22px] border border-[var(--accent)]/20 bg-white/82 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <SectionLabel>{t.foundingWallTag}</SectionLabel>
-          <h2 className="mt-4 max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl">
-            {renderBrandText(t.foundingWallTitle)}
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--text-muted)] sm:text-base sm:leading-8">
-            {renderBrandText(t.foundingWallText)}
-          </p>
-          <p className="mt-4 inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2 text-xs font-medium text-[var(--text-muted)]">
-            {t.foundingWallConsent}
-          </p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">{t.foundingWallTag}</p>
+          <h4 className="mt-1 text-base font-semibold text-[var(--text)]">{t.foundingWallActiveTitle}</h4>
+        </div>
+        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          {hasRealProfiles ? `${remoteProfiles.length} live` : t.founderSpotsBadge}
+        </span>
+      </div>
 
-          <div className="relative mt-6 min-h-[320px] overflow-hidden rounded-[28px] border border-[var(--border)] bg-[radial-gradient(circle_at_20%_15%,rgba(57,185,138,0.16),transparent_28%),linear-gradient(145deg,#f7fbf9,#eef6f8)]">
-            <div className="absolute left-1/2 top-1/2 h-[250px] w-[118px] -translate-x-1/2 -translate-y-1/2 rounded-[52%_48%_50%_46%] bg-[linear-gradient(180deg,rgba(57,185,138,0.2),rgba(67,144,211,0.18))] shadow-[inset_0_0_0_1px_rgba(57,185,138,0.18)]" />
-            <div className="absolute inset-x-6 top-6 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
-              <span>Portugal</span>
-              <span>{t.foundingScarcity}</span>
-            </div>
-            {profiles.map((profile, index) => (
-              <button
-                key={`${profile.number}-${index}`}
-                type="button"
-                onClick={() => setActiveProfileIndex(index)}
-                className={`absolute flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border text-xs font-semibold shadow-[0_12px_30px_rgba(21,30,34,0.12)] transition ${activeProfileIndex === index ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-white bg-white text-[var(--accent-strong)] hover:border-[var(--accent)]/45"}`}
-                style={{ left: profile.x, top: profile.y }}
-              >
-                {profile.number}
-              </button>
-            ))}
+      <div className="mt-4 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="relative min-h-[220px] overflow-hidden rounded-[20px] border border-[var(--border)] bg-[radial-gradient(circle_at_18%_12%,rgba(57,185,138,0.18),transparent_30%),linear-gradient(145deg,#f8fbf9,#eef6f8)]">
+          <div
+            className="absolute left-1/2 top-1/2 h-[178px] w-[78px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(180deg,rgba(57,185,138,0.32),rgba(67,144,211,0.22))] shadow-[inset_0_0_0_1px_rgba(57,185,138,0.22),0_18px_50px_rgba(57,185,138,0.12)]"
+            style={{ clipPath: "polygon(42% 0%, 70% 6%, 63% 19%, 78% 32%, 58% 46%, 70% 61%, 50% 76%, 54% 100%, 28% 92%, 31% 73%, 20% 54%, 34% 38%, 24% 20%)" }}
+          />
+          <div className="absolute inset-x-4 top-4 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            <span>Portugal</span>
+            <span>{loading ? "..." : t.foundingScarcity}</span>
           </div>
+          {profiles.map((profile, index) => (
+            <button
+              key={`${profile.number}-${index}`}
+              type="button"
+              onClick={() => setActiveProfileIndex(index)}
+              className={`absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border text-[10px] font-semibold shadow-[0_12px_30px_rgba(21,30,34,0.12)] transition ${activeProfileIndex === index ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-white bg-white text-[var(--accent-strong)] hover:border-[var(--accent)]/45"}`}
+              style={{ left: profile.x, top: profile.y }}
+            >
+              {profile.number}
+            </button>
+          ))}
         </div>
 
-        <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent),#4390d3)] text-lg font-bold text-white">
-              {activeProfile.number}
-            </div>
+        <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
+          {activeProfile ? (
+            <>
+              <div className="flex items-center gap-3">
+                {activeProfile.photoUrl ? (
+                  <img src={activeProfile.photoUrl} alt={activeProfile.name} className="h-12 w-12 rounded-2xl object-cover" />
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent),#4390d3)] text-sm font-bold text-white">
+                    {activeProfile.number}
+                  </div>
+                )}
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--accent-strong)]">{activeProfile.number}</p>
+                  <h5 className="text-sm font-semibold text-[var(--text)]">{activeProfile.name}</h5>
+                  <p className="text-xs text-[var(--text-muted)]">{activeProfile.city}</p>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-[14px] bg-white px-3 py-2">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">Active since</p>
+                  <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.activeSince}</p>
+                </div>
+                <div className="rounded-[14px] bg-white px-3 py-2">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">Clients</p>
+                  <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.clients}</p>
+                </div>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">"{activeProfile.quote}"</p>
+            </>
+          ) : (
             <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-[var(--accent-strong)]">{t.foundingWallTag}</p>
-              <h3 className="mt-1 text-xl font-semibold text-[var(--text)]">{activeProfile.name}</h3>
+              <p className="text-sm font-semibold text-[var(--text)]">{t.foundingWallActiveTitle}</p>
+              <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">{t.foundingWallEmpty}</p>
             </div>
-          </div>
-          <div className="mt-5 grid gap-3">
-            <div className="rounded-[18px] border border-[var(--border)] bg-white p-4">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">District / City</p>
-              <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.city}</p>
-            </div>
-            <div className="rounded-[18px] border border-[var(--border)] bg-white p-4">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">Active since</p>
-              <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.activeSince}</p>
-            </div>
-            <div className="rounded-[18px] border border-[var(--border)] bg-white p-4">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)]">Active clients</p>
-              <p className="mt-1 font-semibold text-[var(--text)]">{activeProfile.clients}</p>
-            </div>
-            <blockquote className="rounded-[18px] border border-[var(--accent)]/20 bg-white p-4 text-sm leading-7 text-[var(--text-muted)]">
-              "{activeProfile.quote}"
-            </blockquote>
-          </div>
+          )}
         </div>
       </div>
-    </section>
+      <p className="mt-3 text-[11px] leading-5 text-[var(--text-muted)]">{t.foundingWallConsent}</p>
+    </div>
   );
 }
 
@@ -1544,9 +1492,8 @@ export default function App() {
               <h2 className="max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.pricingTitle)}</h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
               <div className="mt-8 hidden gap-3 sm:grid">
-                {t.pricingBullets.map((item) => (
-                  <FeatureItem key={item}>{item}</FeatureItem>
-                ))}
+                <FeatureItem>{t.founderCardRequirements}</FeatureItem>
+                <FeatureItem>{t.founderCardApproval}</FeatureItem>
               </div>
               <div className="mt-6 hidden flex-col gap-3 sm:mt-8 sm:flex sm:flex-row">
                 <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(57,185,138,0.2)] sm:px-6 sm:py-4 sm:text-base">
@@ -1578,7 +1525,16 @@ export default function App() {
                 spotsBadge={t.founderSpotsBadge}
                 saving={t.foundationSaving}
                 accent
-              />
+              >
+                <div className="grid gap-3">
+                  <div className="rounded-[18px] border border-[var(--accent)]/20 bg-white/80 px-4 py-3 text-xs leading-6 text-[var(--text-muted)]">
+                    <p className="font-semibold text-[var(--text)]">{t.founderCardRequirements}</p>
+                    <p className="mt-1">{t.founderCardWaitlist}</p>
+                    <p className="mt-1 font-medium text-[var(--accent-strong)]">{t.founderCardApproval}</p>
+                  </div>
+                  <FounderMiniWall t={t} />
+                </div>
+              </PricingCard>
               <PricingCard
                 label={t.regularLabel}
                 title={t.regularTitle}
@@ -1593,9 +1549,6 @@ export default function App() {
             </div>
           </div>
         </section>
-
-        <FoundingProgramSection t={t} />
-        <FoundingWallSection t={t} />
 
         <section id="product" className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.sectionProduct}</SectionLabel>
