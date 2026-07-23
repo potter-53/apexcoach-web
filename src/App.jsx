@@ -977,7 +977,7 @@ function FounderMiniWall({ t }) {
   const hasRealProfiles = remoteProfiles.length > 0;
 
   return (
-    <div className="rounded-[22px] border border-[var(--accent)]/20 bg-white/82 p-4">
+      <div className="rounded-[22px] border border-[var(--accent)]/20 bg-white/82 p-4 shadow-[0_18px_45px_rgba(21,30,34,0.06)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">{t.foundingWallTag}</p>
@@ -990,6 +990,7 @@ function FounderMiniWall({ t }) {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="relative min-h-[220px] overflow-hidden rounded-[20px] border border-[var(--border)] bg-[radial-gradient(circle_at_18%_12%,rgba(57,185,138,0.18),transparent_30%),linear-gradient(145deg,#f8fbf9,#eef6f8)]">
+          <div className="absolute inset-0 opacity-50 [background-image:linear-gradient(rgba(21,30,34,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(21,30,34,0.04)_1px,transparent_1px)] [background-size:28px_28px]" />
           <div
             className="absolute left-1/2 top-1/2 h-[178px] w-[78px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(180deg,rgba(57,185,138,0.32),rgba(67,144,211,0.22))] shadow-[inset_0_0_0_1px_rgba(57,185,138,0.22),0_18px_50px_rgba(57,185,138,0.12)]"
             style={{ clipPath: "polygon(42% 0%, 70% 6%, 63% 19%, 78% 32%, 58% 46%, 70% 61%, 50% 76%, 54% 100%, 28% 92%, 31% 73%, 20% 54%, 34% 38%, 24% 20%)" }}
@@ -1491,10 +1492,6 @@ export default function App() {
             <div>
               <h2 className="max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{renderBrandText(t.pricingTitle)}</h2>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{renderBrandText(t.pricingText)}</p>
-              <div className="mt-8 hidden gap-3 sm:grid">
-                <FeatureItem>{t.founderCardRequirements}</FeatureItem>
-                <FeatureItem>{t.founderCardApproval}</FeatureItem>
-              </div>
               <div className="mt-6 hidden flex-col gap-3 sm:mt-8 sm:flex sm:flex-row">
                 <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-[16px] bg-[var(--accent)] px-5 py-3.5 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(57,185,138,0.2)] sm:px-6 sm:py-4 sm:text-base">
                   {t.primaryCta}
