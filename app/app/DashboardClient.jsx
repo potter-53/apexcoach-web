@@ -10,7 +10,6 @@ import AgendaWorkspace from "./AgendaWorkspace";
 import ClientWorkspace from "./ClientWorkspace";
 import AssessmentBuilderWorkspace from "./AssessmentBuilderWorkspace";
 import TrainingBuilderWorkspace from "./TrainingBuilderWorkspace";
-import CookieSettingsButton from "../../src/components/CookieSettingsButton";
 
 const DEFAULT_BOOKING_TYPES = [
   { name: "Treino 30min", category: "pt_session", duration_minutes: 30, price_eur: 0 },
@@ -1452,9 +1451,9 @@ export default function DashboardClient() {
               <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p>
             </div>
 
-            <div className="mt-4 flex min-h-0 flex-1 flex-col">
+            <div className="mt-3 flex min-h-0 flex-1 flex-col">
               <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">Workspace</p>
-              <nav className="mt-2 grid gap-1.5 overflow-y-auto pr-1">
+              <nav className="mt-2 grid gap-1">
                 {appTabs.map(({ id, label, icon: Icon }) => {
                   const active = activeTab === id;
                   const emphasized = id === "agenda";
@@ -1462,9 +1461,9 @@ export default function DashboardClient() {
                     <button
                       key={id}
                       onClick={() => startTransition(() => setActiveTab(id))}
-                      className={`group flex items-center gap-2.5 rounded-[16px] border px-3 py-2.5 text-left text-sm transition ${active ? "border-[var(--accent)] bg-[var(--accent)] text-[#081014] shadow-[0_10px_22px_rgba(42,208,125,0.18)]" : emphasized ? "border-[var(--accent)]/25 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))] text-[var(--text)]" : "border-transparent bg-transparent text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-white hover:text-[var(--text)]"}`}
+                      className={`group flex items-center gap-2.5 rounded-[15px] border px-3 py-2 text-left text-sm transition ${active ? "border-[var(--accent)] bg-[var(--accent)] text-[#081014] shadow-[0_10px_22px_rgba(42,208,125,0.18)]" : emphasized ? "border-[var(--accent)]/25 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))] text-[var(--text)]" : "border-transparent bg-transparent text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-white hover:text-[var(--text)]"}`}
                     >
-                      <span className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${active ? "bg-white/22" : "bg-white text-[var(--text-muted)] group-hover:text-[var(--text)]"}`}>
+                      <span className={`flex h-7 w-7 items-center justify-center rounded-xl transition ${active ? "bg-white/22" : "bg-white text-[var(--text-muted)] group-hover:text-[var(--text)]"}`}>
                         <Icon size={14} />
                       </span>
                       <span className="font-medium">{label}</span>
@@ -1474,7 +1473,7 @@ export default function DashboardClient() {
               </nav>
             </div>
 
-            <div className="mt-3 grid gap-2 border-t border-[var(--border)] pt-3">
+            <div className="mt-auto grid gap-2 border-t border-[var(--border)] pt-3">
               <button onClick={openBookingModal} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-3.5 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
                 <Plus size={14} />
                 {copy.newBooking}
@@ -1483,19 +1482,6 @@ export default function DashboardClient() {
                 {signingOut ? <LoaderCircle size={14} className="animate-spin" /> : <LogOut size={14} />}
                 {copy.signOut}
               </button>
-            </div>
-
-            <div className="mt-auto border-t border-[var(--border)] pt-3">
-              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] text-[var(--text-muted)]">
-                <Link href="/legal/privacy" className="rounded-lg px-2 py-1 hover:bg-white hover:text-[var(--text)]">Privacy</Link>
-                <Link href="/legal/cookies" className="rounded-lg px-2 py-1 hover:bg-white hover:text-[var(--text)]">Cookies</Link>
-                <Link href="/legal/terms" className="rounded-lg px-2 py-1 hover:bg-white hover:text-[var(--text)]">Terms</Link>
-                <Link href="/legal/consumer" className="rounded-lg px-2 py-1 hover:bg-white hover:text-[var(--text)]">Consumer</Link>
-              </div>
-              <div className="mt-2 grid gap-1.5">
-                <CookieSettingsButton className="rounded-xl px-2 py-1.5 text-left text-[11px] text-[var(--text-muted)] hover:bg-white hover:text-[var(--text)]">Cookie settings</CookieSettingsButton>
-                <Link href="/" className="rounded-xl px-2 py-1.5 text-left text-[11px] text-[var(--text-muted)] hover:bg-white hover:text-[var(--text)]">{copy.backToLanding}</Link>
-              </div>
             </div>
           </aside>
           <section className="grid min-w-0 gap-3"><header className="rounded-[20px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] px-4 py-3 shadow-[var(--shadow-panel)]"><div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"><div><h1 className="text-xl font-semibold tracking-tight text-[var(--text)] sm:text-[1.7rem]">{appTabs.find((tab) => tab.id === activeTab)?.label || copy.tabs.dashboard}</h1><p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{activeTab === "dashboard" ? copy.agendaSubhead : copy.fastWorkspace}</p></div><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link></div></header>{workspaceError ? <div className="rounded-[20px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
