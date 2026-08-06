@@ -192,6 +192,12 @@ function inputDateValue(date) {
   return `${value.getFullYear()}-${`${value.getMonth() + 1}`.padStart(2, "0")}-${`${value.getDate()}`.padStart(2, "0")}`;
 }
 
+const COMPACT_DAY_START_HOUR = 6;
+const COMPACT_DAY_END_HOUR = 22;
+const COMPACT_HOUR_HEIGHT = 42;
+const COMPACT_HEADER_HEIGHT = 44;
+const COMPACT_HOURS = Array.from({ length: COMPACT_DAY_END_HOUR - COMPACT_DAY_START_HOUR + 1 }, (_, index) => COMPACT_DAY_START_HOUR + index);
+
 export default function AgendaWorkspace({ currentUser, compact = false, onOpenCreateBooking, locale = "en" }) {
   const copy = getCopy(locale);
   const [mode, setMode] = useState("week");
@@ -307,6 +313,19 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       };
     });
   }, [items, locale, mode, weekDays]);
+
+  const compactNow = new Date();
+  const showCompactNow = compact && mode === "week" && compactNow >= range.start && compactNow < range.end;
+  const compactNowTop = COMPACT_HEADER_HEIGHT + ((compactNow.getHours() + compactNow.getMinutes() / 60 - COMPACT_DAY_START_HOUR) * COMPACT_HOUR_HEIGHT);
+
+  function compactItemStyle(item) {
+    const hourValue = item.scheduledAt.getHours() + item.scheduledAt.getMinutes() / 60;
+    const top = COMPACT_HEADER_HEIGHT + Math.max(0, hourValue - COMPACT_DAY_START_HOUR) * COMPACT_HOUR_HEIGHT;
+    return {
+      top: `${top}px`,
+      minHeight: "34px",
+    };
+  }
 
   function moveRange(direction) {
     const updated = new Date(anchorDate);
@@ -469,47 +488,47 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       ) : null}
 
       <div className="grid gap-6">
-        <section className="overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <section className={`${compact ? "h-[560px] p-3" : "p-4"} overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)]`}>
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--accent)]">{copy.agenda}</p>
-              <h2 className="mt-1 text-lg font-semibold text-[var(--text)]">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.agenda}</p>
+              <h2 className={`${compact ? "text-base" : "text-lg"} mt-1 font-semibold text-[var(--text)]`}>
                 {compact ? copy.weeklyCalendar || copy.weeklyMonthly : copy.liveScheduling}
               </h2>
-              <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p>
+              {!compact ? <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">{copy.dailySubtitle || copy.liveScheduling}</p> : null}
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               <div className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1">
                 {["week", "month"].map((value) => (
                   <button
                     key={value}
                     onClick={() => setMode(value)}
-                    className={`rounded-full px-4 py-2 text-sm font-medium ${mode === value ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}
+                    className={`rounded-full px-3 py-1.5 text-xs font-medium ${mode === value ? "bg-[var(--accent)] text-[var(--accent-foreground)]" : "text-[var(--text-muted)]"}`}
                   >
                     {value === "week" ? copy.week : copy.month}
                   </button>
                 ))}
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2">
-                <button onClick={() => moveRange(-1)} className="rounded-full p-2 text-[var(--text-muted)]">
-                  <ChevronLeft size={16} />
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2 py-1.5">
+                <button onClick={() => moveRange(-1)} className="rounded-full p-1.5 text-[var(--text-muted)]">
+                  <ChevronLeft size={14} />
                 </button>
-                <span className="text-sm font-medium text-[var(--text)]">
+                <span className="text-xs font-medium text-[var(--text)]">
                   {mode === "month"
                     ? formatDate(range.start, locale, { month: "long", year: "numeric" })
                     : `${formatDate(range.start, locale, { day: "2-digit", month: "short" })} - ${formatDate(new Date(range.end.getTime() - 86400000), locale, { day: "2-digit", month: "short" })}`}
                 </span>
-                <button onClick={() => moveRange(1)} className="rounded-full p-2 text-[var(--text-muted)]">
-                  <ChevronRight size={16} />
+                <button onClick={() => moveRange(1)} className="rounded-full p-1.5 text-[var(--text-muted)]">
+                  <ChevronRight size={14} />
                 </button>
               </div>
-              <button onClick={jumpToToday} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--text)]">
-                <CalendarDays size={16} />
+              <button onClick={jumpToToday} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-3 py-2 text-xs font-medium text-[var(--text)]">
+                <CalendarDays size={14} />
                 {copy.today || "Today"}
               </button>
-              <button onClick={() => handleOpenCreateBooking()} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
-                <Plus size={16} />
+              <button onClick={() => handleOpenCreateBooking()} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-3 py-2 text-xs font-semibold text-[var(--accent-strong)]">
+                <Plus size={14} />
                 {copy.newBooking}
               </button>
             </div>
@@ -518,7 +537,87 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           {error ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
           {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAgenda}</div> : null}
 
-          {mode === "week" ? (
+          {mode === "week" && compact ? (
+            <div className="mt-3 h-[448px] overflow-hidden rounded-[18px] border border-[var(--border)] bg-white">
+              <div className="relative grid h-full grid-cols-[48px_repeat(7,minmax(0,1fr))] grid-rows-[44px_1fr] overflow-hidden">
+                <div className="border-r border-[var(--border)] bg-[var(--surface-muted)]" />
+                {weekDays.map((day) => {
+                  const isToday = day.toDateString() === new Date().toDateString();
+                  return (
+                    <div key={`head-${day.toISOString()}`} className={`border-r border-[var(--border)] px-2 py-2 last:border-r-0 ${isToday ? "bg-[var(--accent-soft)]" : "bg-[var(--surface-muted)]"}`}>
+                      <div className="flex items-start justify-between gap-1">
+                        <div className="min-w-0">
+                          <p className="truncate text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                          <p className={`text-sm font-semibold ${isToday ? "text-[var(--accent-strong)]" : "text-[var(--text)]"}`}>{formatDate(day, locale, { day: "2-digit" })}</p>
+                        </div>
+                        <button onClick={() => handleOpenCreateBooking(day)} className="rounded-full border border-[var(--border)] bg-white p-1 text-[var(--accent-strong)] shadow-sm" aria-label={copy.newBooking}>
+                          <Plus size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div className="relative col-span-8 grid h-full grid-cols-[48px_repeat(7,minmax(0,1fr))] overflow-y-auto" style={{ minHeight: `${COMPACT_HOURS.length * COMPACT_HOUR_HEIGHT}px` }}>
+                  <div className="relative border-r border-[var(--border)] bg-[var(--surface-muted)]">
+                    {COMPACT_HOURS.map((hour) => (
+                      <div key={hour} className="border-b border-[var(--border)] pr-1 text-right text-[10px] leading-none text-[var(--text-muted)]" style={{ height: `${COMPACT_HOUR_HEIGHT}px` }}>
+                        <span className="-translate-y-1.5 inline-block">{`${hour}`.padStart(2, "0")}:00</span>
+                      </div>
+                    ))}
+                  </div>
+                  {weekDays.map((day) => {
+                    const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
+                    return (
+                      <div
+                        key={day.toISOString()}
+                        onDragOver={(event) => event.preventDefault()}
+                        onDrop={async (event) => {
+                          const id = event.dataTransfer.getData("text/plain");
+                          const item = items.find((entry) => entry.id === id);
+                          if (!item) return;
+                          try {
+                            await rescheduleItem(item, day);
+                          } catch (moveError) {
+                            setError(moveError?.message || copy.moveBookingError);
+                          }
+                        }}
+                        className="relative min-w-0 border-r border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,249,249,0.98))] last:border-r-0"
+                      >
+                        {COMPACT_HOURS.map((hour) => <div key={hour} className="border-b border-[var(--border)]" style={{ height: `${COMPACT_HOUR_HEIGHT}px` }} />)}
+                        {dayItems.map((item) => (
+                          <button
+                            key={item.id}
+                            draggable
+                            onDragStart={(event) => event.dataTransfer.setData("text/plain", item.id)}
+                            onClick={() =>
+                              setEditingItem({
+                                id: item.id,
+                                date: item.scheduledAt.toISOString().slice(0, 10),
+                                time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`,
+                                notes: item.notes || "",
+                              })
+                            }
+                            className="absolute left-1 right-1 overflow-hidden rounded-xl border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-2 py-1 text-left shadow-sm"
+                            style={compactItemStyle(item)}
+                          >
+                            <p className="truncate text-[10px] font-semibold leading-4 text-[var(--text)]">{formatTime(item.scheduledAt, locale)} {item.studentName}</p>
+                            <p className="truncate text-[9px] uppercase tracking-[0.08em] text-[var(--text-muted)]">{item.bookingName}</p>
+                          </button>
+                        ))}
+                      </div>
+                    );
+                  })}
+                  {showCompactNow ? (
+                    <div className="pointer-events-none absolute left-12 right-0 z-10 flex items-center" style={{ top: `${compactNowTop - COMPACT_HEADER_HEIGHT}px` }}>
+                      <span className="h-2 w-2 rounded-full bg-rose-500" />
+                      <span className="h-px flex-1 bg-rose-500" />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ) : mode === "week" ? (
             <div className="mt-5 min-w-0">
               <div className={`${compact ? "grid-cols-7 gap-2" : "gap-3 xl:grid-cols-7"} grid min-w-0`}>
                 {weekDays.map((day) => {
@@ -557,29 +656,30 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
               </div>
             </div>
           ) : (
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <div className={`${compact ? "mt-3 grid-cols-7 gap-2" : "mt-5 gap-3 sm:grid-cols-2 xl:grid-cols-5"} grid`}>
               {monthDays.map((day) => {
                 const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
                 const inMonth = day.getMonth() === anchorDate.getMonth();
+                const isToday = day.toDateString() === new Date().toDateString();
 
                 return (
-                  <div key={day.toISOString()} className={`rounded-[18px] border p-3 ${inMonth ? "border-[var(--border)] bg-white" : "border-[var(--border)] bg-[var(--surface-muted)] opacity-60"}`}>
+                  <div key={day.toISOString()} className={`${compact ? "h-[68px] rounded-[14px] p-2" : "rounded-[18px] p-3"} overflow-hidden border ${isToday ? "border-[var(--accent)] bg-[var(--accent-soft)]" : inMonth ? "border-[var(--border)] bg-white" : "border-[var(--border)] bg-[var(--surface-muted)] opacity-60"}`}>
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
-                        <p className="mt-1.5 text-base font-semibold text-[var(--text)]">{day.getDate()}</p>
+                      <div className="min-w-0">
+                        <p className={`${compact ? "text-[9px] tracking-[0.08em]" : "text-[10px] tracking-[0.14em]"} truncate uppercase text-[var(--text-muted)]`}>{formatDate(day, locale, { weekday: "short" })}</p>
+                        <p className={`${compact ? "mt-0.5 text-sm" : "mt-1.5 text-base"} font-semibold ${isToday ? "text-[var(--accent-strong)]" : "text-[var(--text)]"}`}>{day.getDate()}</p>
                       </div>
-                      <button onClick={() => handleOpenCreateBooking(day)} className="rounded-full border border-[var(--border)] bg-white p-1.5 text-[var(--accent-strong)] shadow-sm" aria-label={copy.newBooking}>
+                      <button onClick={() => handleOpenCreateBooking(day)} className={`${compact ? "p-1" : "p-1.5"} rounded-full border border-[var(--border)] bg-white text-[var(--accent-strong)] shadow-sm`} aria-label={copy.newBooking}>
                         <Plus size={13} />
                       </button>
                     </div>
-                    <div className="mt-2.5 grid gap-2">
+                    <div className={`${compact ? "mt-1 gap-1" : "mt-2.5 gap-2"} grid`}>
                       {dayItems.slice(0, 3).map((item) => (
-                        <button key={item.id} onClick={() => setEditingItem({ id: item.id, date: item.scheduledAt.toISOString().slice(0, 10), time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`, notes: item.notes || "" })} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-left text-sm text-[var(--text-muted)]">
+                        <button key={item.id} onClick={() => setEditingItem({ id: item.id, date: item.scheduledAt.toISOString().slice(0, 10), time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`, notes: item.notes || "" })} className={`${compact ? "rounded-lg px-1.5 py-1 text-[10px]" : "rounded-2xl px-3 py-2 text-sm"} truncate border border-[var(--border)] bg-[var(--surface-muted)] text-left text-[var(--text-muted)]`}>
                           {formatTime(item.scheduledAt, locale)} - {item.studentName}
                         </button>
                       ))}
-                      {dayItems.length === 0 ? <p className="text-sm text-[var(--text-muted)]">{copy.noBookings}</p> : null}
+                      {dayItems.length === 0 && !compact ? <p className="text-sm text-[var(--text-muted)]">{copy.noBookings}</p> : null}
                     </div>
                   </div>
                 );
