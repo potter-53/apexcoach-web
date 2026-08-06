@@ -2,7 +2,7 @@ import LoginClient from "./LoginClient";
 
 export const metadata = {
   title: "Login | APEX COACH",
-  description: "Modo PC da APEX COACH em preparação. Para já, o foco é a app mobile para coaches.",
+  description: "Acesso reservado ao modo PC da APEX COACH para testes internos.",
 };
 
 export default function LoginPage() {

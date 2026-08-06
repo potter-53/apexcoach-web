@@ -17,7 +17,7 @@ import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getCoachLocaleFromUser, getInitialBrowserLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
-const BROWSER_WORKSPACE_ENABLED = process.env.NEXT_PUBLIC_BROWSER_WORKSPACE_ENABLED === "true";
+const BROWSER_WORKSPACE_ENABLED = true;
 
 const copy = {
   en: {
