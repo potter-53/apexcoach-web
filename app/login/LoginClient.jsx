@@ -17,6 +17,8 @@ import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getCoachLocaleFromUser, getInitialBrowserLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 
+const BROWSER_WORKSPACE_ENABLED = process.env.NEXT_PUBLIC_BROWSER_WORKSPACE_ENABLED === "true";
+
 const copy = {
   en: {
     highlights: [
@@ -172,6 +174,38 @@ export default function LoginClient() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const t = copy[locale] || copy.en;
+  const locked = locale === "pt"
+    ? {
+        viewDemo: "Ver modo PC",
+        badge: "Modo PC em preparação",
+        title: "O workspace browser ainda não está aberto.",
+        text: "Para já, a APEX COACH está focada na app mobile que o coach usa no terreno. O futuro modo PC vai apoiar a prescrição, a avaliação e o registo dos clientes num ecrã maior.",
+        highlights: [
+          "A app mobile continua a ser a ferramenta diária no terreno",
+          "O modo PC está a ser preparado para prescrição, avaliação e registo",
+          "A conta coach já fica alinhada com a futura experiência browser",
+        ],
+        cardTitle: "Acesso browser temporariamente fechado",
+        cardText: "Usa a APK para trabalhar hoje com a APEX COACH. O modo PC está a ser desenvolvido para organizar prescrição de treino, avaliações e registos de clientes com mais espaço visual.",
+        download: "Download APK",
+        trial: "Trial grátis 14 dias",
+      }
+    : {
+        viewDemo: "View PC mode",
+        badge: "PC mode in preparation",
+        title: "The browser workspace is not open yet.",
+        text: "For now, APEX COACH is focused on the mobile app coaches use in the field. The future PC mode will support prescription, assessment, and client record workflows on a larger screen.",
+        highlights: [
+          "The mobile app remains the daily field tool",
+          "PC mode is being prepared for prescription, assessment, and records",
+          "Coach accounts are already aligned with the future browser experience",
+        ],
+        cardTitle: "Browser access is temporarily closed",
+        cardText: "Use the APK to work with APEX COACH today. PC mode is being built to organize training prescription, assessments, and client records with more screen space.",
+        download: "Download APK",
+        trial: "Start 14-day free trial",
+      };
+  const pageCopy = BROWSER_WORKSPACE_ENABLED ? t : { ...t, ...locked };
 
   useEffect(() => {
     const nextLocale = getInitialBrowserLocale();
@@ -182,6 +216,12 @@ export default function LoginClient() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    if (!BROWSER_WORKSPACE_ENABLED) {
+      setErrorMessage(locked.cardText);
+      trackEvent("landing_login_blocked", { reason: "browser_workspace_closed", locale });
+      return;
+    }
 
     if (!configured) {
       setErrorMessage(t.missingVars);
@@ -244,7 +284,7 @@ export default function LoginClient() {
             onClick={() => trackEvent("landing_login_demo_click", { locale })}
             className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
           >
-            {t.viewDemo}
+            {pageCopy.viewDemo}
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -252,19 +292,19 @@ export default function LoginClient() {
         <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[0.95fr_1.05fr]">
           <section className="max-w-xl">
             <div className="inline-flex rounded-full border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-4 py-2 text-sm font-medium text-[var(--accent-strong)]">
-              {t.badge}
+              {pageCopy.badge}
             </div>
 
             <h1 className="mt-8 text-5xl font-semibold leading-[1.02] text-[var(--text)] sm:text-6xl">
-              {t.title}
+              {pageCopy.title}
             </h1>
 
             <p className="mt-6 text-lg leading-8 text-[var(--text-muted)]">
-              {t.text}
+              {pageCopy.text}
             </p>
 
             <div className="mt-10 grid gap-4">
-              {t.highlights.map((item) => (
+              {pageCopy.highlights.map((item) => (
                 <div
                   key={item}
                   className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-4 shadow-[var(--shadow-soft)]"
@@ -288,7 +328,17 @@ export default function LoginClient() {
                 </div>
               </div>
 
-              {!configured && (
+              {!BROWSER_WORKSPACE_ENABLED && (
+                <div className="mb-5 flex items-start gap-3 rounded-2xl border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-4 py-4 text-[var(--accent-strong)]">
+                  <ShieldCheck size={18} className="mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold">{locked.cardTitle}</p>
+                    <p className="mt-1 text-sm leading-7">{locked.cardText}</p>
+                  </div>
+                </div>
+              )}
+
+              {BROWSER_WORKSPACE_ENABLED && !configured && (
                 <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-4 text-amber-100">
                   <AlertCircle size={18} className="mt-0.5 shrink-0" />
                   <p className="text-sm leading-7">
@@ -304,7 +354,7 @@ export default function LoginClient() {
                 </div>
               )}
 
-              <form className="grid gap-4" onSubmit={handleSubmit}>
+              {BROWSER_WORKSPACE_ENABLED ? <form className="grid gap-4" onSubmit={handleSubmit}>
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{t.email}</span>
                   <input
@@ -371,7 +421,26 @@ export default function LoginClient() {
                 >
                   {t.createAccount}
                 </Link>
-              </form>
+              </form> : (
+                <div className="grid gap-3">
+                  <a
+                    href="/download/apk"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-4 font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.22)]"
+                  >
+                    {locked.download}
+                    <ArrowRight size={18} />
+                  </a>
+                  <Link
+                    href="/signup"
+                    onClick={() => trackEvent("landing_login_to_signup_click", { locale })}
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-5 py-4 text-center font-semibold text-[var(--text)]"
+                  >
+                    {locked.trial}
+                  </Link>
+                </div>
+              )}
 
               <div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
                 <div className="flex items-center gap-3">
