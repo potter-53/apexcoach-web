@@ -187,6 +187,11 @@ function groupWeekItems(items, locale) {
   }));
 }
 
+function inputDateValue(date) {
+  const value = new Date(date);
+  return `${value.getFullYear()}-${`${value.getMonth() + 1}`.padStart(2, "0")}-${`${value.getDate()}`.padStart(2, "0")}`;
+}
+
 export default function AgendaWorkspace({ currentUser, compact = false, onOpenCreateBooking, locale = "en" }) {
   const copy = getCopy(locale);
   const [mode, setMode] = useState("week");
@@ -198,8 +203,8 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
   const [error, setError] = useState("");
   const [editingItem, setEditingItem] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
-  const handleOpenCreateBooking = () => {
-    if (typeof onOpenCreateBooking === "function") onOpenCreateBooking();
+  const handleOpenCreateBooking = (date) => {
+    if (typeof onOpenCreateBooking === "function") onOpenCreateBooking(date ? { scheduledDate: inputDateValue(date) } : undefined);
   };
 
   const range = useMemo(() => {
@@ -503,7 +508,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                 <CalendarDays size={16} />
                 {copy.today || "Today"}
               </button>
-              <button onClick={handleOpenCreateBooking} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
+              <button onClick={() => handleOpenCreateBooking()} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
                 <Plus size={16} />
                 {copy.newBooking}
               </button>
@@ -534,8 +539,15 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                       }}
                       className={`rounded-[18px] border p-3 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-[linear-gradient(180deg,rgba(233,251,241,0.95),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
                     >
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
-                      <p className="mt-1 text-sm font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                          <p className="mt-1 text-sm font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
+                        </div>
+                        <button onClick={() => handleOpenCreateBooking(day)} className="rounded-full border border-[var(--border)] bg-white p-1.5 text-[var(--accent-strong)] shadow-sm" aria-label={copy.newBooking}>
+                          <Plus size={13} />
+                        </button>
+                      </div>
                       <div className="mt-2.5 grid gap-2">
                         {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">{copy.dropHere}</p>}
                       </div>
@@ -552,8 +564,15 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
 
                 return (
                   <div key={day.toISOString()} className={`rounded-[18px] border p-3 ${inMonth ? "border-[var(--border)] bg-white" : "border-[var(--border)] bg-[var(--surface-muted)] opacity-60"}`}>
-                    <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
-                    <p className="mt-1.5 text-base font-semibold text-[var(--text)]">{day.getDate()}</p>
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
+                        <p className="mt-1.5 text-base font-semibold text-[var(--text)]">{day.getDate()}</p>
+                      </div>
+                      <button onClick={() => handleOpenCreateBooking(day)} className="rounded-full border border-[var(--border)] bg-white p-1.5 text-[var(--accent-strong)] shadow-sm" aria-label={copy.newBooking}>
+                        <Plus size={13} />
+                      </button>
+                    </div>
                     <div className="mt-2.5 grid gap-2">
                       {dayItems.slice(0, 3).map((item) => (
                         <button key={item.id} onClick={() => setEditingItem({ id: item.id, date: item.scheduledAt.toISOString().slice(0, 10), time: `${`${item.scheduledAt.getHours()}`.padStart(2, "0")}:${`${item.scheduledAt.getMinutes()}`.padStart(2, "0")}`, notes: item.notes || "" })} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2 text-left text-sm text-[var(--text-muted)]">
@@ -569,7 +588,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           )}
         </section>
 
-        <div className={`grid gap-4 ${compact ? "xl:grid-cols-2" : "xl:grid-cols-[0.9fr_1.1fr]"}`}>
+        {!compact ? <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
           <section className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
             <div className="flex items-center gap-3">
               <CalendarDays size={18} className="text-[var(--accent)]" />
@@ -589,7 +608,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
               {nextItems.length > 0 ? nextItems.slice(0, 5).map((item) => renderCard(item, false)) : <EmptyState title={copy.noUpcoming} text={copy.noUpcomingText} />}
             </div>
           </section>
-        </div>
+        </div> : null}
       </div>
     </>
   );

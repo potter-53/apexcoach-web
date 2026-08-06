@@ -1201,11 +1201,6 @@ function TrainingWorkspace({ items, loading, copy, locale, currentUser, onItemsC
   );
 }
 
-function AgendaCards({ items, onCreate, locale }) {
-  const copy = getCopy(locale);
-  return <SectionCard eyebrow={copy.agendaSpotlight} title={copy.tabs.agenda} description={null} action={<button onClick={onCreate} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-3.5 py-2 text-sm font-semibold text-[var(--accent-foreground)]"><Plus size={14} />{copy.newBooking}</button>}>{items.length > 0 ? <div className="grid gap-3 xl:grid-cols-[1.1fr_0.9fr]">{items.slice(0, 1).map((item) => <div key={item.id} className="rounded-[20px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3.5"><div className="flex items-start justify-between gap-4"><div><p className="text-[10px] uppercase tracking-[0.14em] text-[var(--accent)]">{formatDate(item.scheduled_at, true, locale)}</p><p className="mt-1 text-2xl font-semibold text-[var(--text)]">{formatTime(item.scheduled_at, locale)}</p></div><span className="rounded-full border border-[var(--border)] bg-white px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{prettifyStatus(item.status)}</span></div><div className="mt-4 flex items-center gap-2.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: colorDot(item.students?.client_color_hex) }} /><p className="font-semibold text-[var(--text)]">{item.students?.full_name || copy.client}</p></div><p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{item.booking_types?.name || item.item_type || copy.bookingType}</p>{item.notes ? <p className="mt-2 line-clamp-2 text-sm leading-5 text-[var(--text-muted)]">{item.notes}</p> : null}</div>)}<div className="grid gap-2.5">{items.slice(1, 5).map((item) => <div key={item.id} className="rounded-[16px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,248,247,0.96))] p-3"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.14em] text-[var(--accent)]">{formatDate(item.scheduled_at, true, locale)}</p><p className="mt-1 text-lg font-semibold text-[var(--text)]">{formatTime(item.scheduled_at, locale)}</p></div><span className="rounded-full border border-[var(--border)] bg-white px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{prettifyStatus(item.status)}</span></div><div className="mt-2.5 flex items-center gap-2.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: colorDot(item.students?.client_color_hex) }} /><p className="font-medium text-[var(--text)]">{item.students?.full_name || copy.client}</p></div><p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{item.booking_types?.name || item.item_type || copy.bookingType}</p></div>)}</div></div> : <EmptyState title={copy.noUpcomingTitle} text={copy.noUpcomingText} />}</SectionCard>;
-}
-
 export default function DashboardClient() {
   const router = useRouter();
   const configured = useMemo(() => isSupabaseConfigured(), []);
@@ -1358,13 +1353,19 @@ export default function DashboardClient() {
     }
   }
 
-  async function openBookingModal(prefilledStudentId = "") {
+  async function openBookingModal(prefill = "") {
+    const prefilledStudentId = typeof prefill === "string" ? prefill : prefill?.studentId || "";
+    const prefilledDate = typeof prefill === "object" && prefill?.scheduledDate ? prefill.scheduledDate : "";
     setBookingOpen(true);
     setBookingError("");
+    if (prefilledDate) {
+      setBookingForm((current) => ({ ...current, scheduledDate: prefilledDate }));
+    }
     if (!currentUser || loadingBookingResources) return;
     if (bookingResources.students.length > 0 && bookingResources.bookingTypes.length > 0) {
       setBookingForm((current) => ({
         ...current,
+        scheduledDate: prefilledDate || current.scheduledDate,
         studentId: prefilledStudentId || current.studentId || bookingResources.students[0]?.id || "",
         bookingTypeId: current.bookingTypeId || bookingResources.bookingTypes[0]?.id || "",
       }));
@@ -1381,6 +1382,7 @@ export default function DashboardClient() {
       setBookingResources({ students, bookingTypes });
       setBookingForm((current) => ({
         ...current,
+        scheduledDate: prefilledDate || current.scheduledDate,
         studentId: prefilledStudentId || current.studentId || students[0]?.id || "",
         bookingTypeId: current.bookingTypeId || bookingTypes[0]?.id || "",
       }));
@@ -1582,7 +1584,7 @@ export default function DashboardClient() {
               </div>
 
               <div className="grid gap-3 xl:grid-cols-[1.35fr_0.65fr]">
-                <AgendaCards items={core.upcomingAgenda.slice(0, 5)} onCreate={openBookingModal} locale={activeLocale} />
+                <AgendaWorkspace currentUser={currentUser} compact onOpenCreateBooking={openBookingModal} locale={activeLocale} />
                 <SectionCard eyebrow={copy.attentionBoard} title={copy.attentionBoard} description={null}>
                   <div className="grid gap-3">
                     {core.business.attention.length > 0 ? (
