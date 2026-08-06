@@ -400,20 +400,20 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
             notes: item.notes || "",
           })
         }
-        className="w-full rounded-[18px] border border-[var(--border)] bg-white p-3 text-left shadow-[var(--shadow-soft)]"
+        className={`${compact ? "min-w-0 rounded-[14px] p-2" : "rounded-[18px] p-3"} w-full overflow-hidden border border-[var(--border)] bg-white text-left shadow-[var(--shadow-soft)]`}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2">
-            {draggable ? <GripVertical size={16} className="text-[var(--text-muted)]" /> : null}
-            <span className="h-3 w-3 rounded-full" style={{ background: item.clientColor }} />
-            <span className="text-xs uppercase tracking-[0.16em] text-[var(--text-muted)]">{statusLabel(item.status)}</span>
+        <div className="flex min-w-0 items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
+            {draggable ? <GripVertical size={compact ? 12 : 16} className="shrink-0 text-[var(--text-muted)]" /> : null}
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: item.clientColor }} />
+            <span className={`${compact ? "text-[9px] tracking-[0.1em]" : "text-xs tracking-[0.16em]"} min-w-0 truncate uppercase text-[var(--text-muted)]`}>{statusLabel(item.status)}</span>
           </div>
-          <PencilLine size={16} className="text-[var(--text-muted)]" />
+          {!compact ? <PencilLine size={16} className="shrink-0 text-[var(--text-muted)]" /> : null}
         </div>
-        <p className="mt-3 text-base font-semibold text-[var(--text)]">{item.studentName}</p>
-        <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{item.bookingName}</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">{formatTime(item.scheduledAt, locale)}</p>
-        {item.notes ? <p className="mt-2 line-clamp-2 text-sm text-[var(--text-muted)]">{item.notes}</p> : null}
+        <p className={`${compact ? "mt-2 text-sm" : "mt-3 text-base"} truncate font-semibold text-[var(--text)]`}>{item.studentName}</p>
+        <p className={`${compact ? "text-[10px] tracking-[0.1em]" : "text-[11px] tracking-[0.14em]"} mt-1 truncate uppercase text-[var(--text-muted)]`}>{item.bookingName}</p>
+        <p className={`${compact ? "text-xs" : "text-sm"} mt-1 text-[var(--text-muted)]`}>{formatTime(item.scheduledAt, locale)}</p>
+        {!compact && item.notes ? <p className="mt-2 line-clamp-2 text-sm text-[var(--text-muted)]">{item.notes}</p> : null}
       </button>
     );
   }
@@ -469,7 +469,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       ) : null}
 
       <div className="grid gap-6">
-        <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
+        <section className="overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 shadow-[var(--shadow-soft)]">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--accent)]">{copy.agenda}</p>
@@ -519,8 +519,8 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAgenda}</div> : null}
 
           {mode === "week" ? (
-            <div className="mt-5 grid gap-3">
-              <div className="grid gap-3 xl:grid-cols-7">
+            <div className="mt-5 min-w-0">
+              <div className={`${compact ? "grid-cols-7 gap-2" : "gap-3 xl:grid-cols-7"} grid min-w-0`}>
                 {weekDays.map((day) => {
                   const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
                   return (
@@ -537,19 +537,19 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                           setError(moveError?.message || copy.moveBookingError);
                         }
                       }}
-                      className={`rounded-[18px] border p-3 ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-[linear-gradient(180deg,rgba(233,251,241,0.95),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
+                      className={`${compact ? "min-w-0 rounded-[16px] p-2" : "rounded-[18px] p-3"} border ${day.toDateString() === new Date().toDateString() ? "border-[var(--accent)] bg-[linear-gradient(180deg,rgba(233,251,241,0.95),rgba(255,255,255,0.98))]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
-                          <p className="mt-1 text-sm font-semibold text-[var(--text)]">{formatDate(day, locale, { day: "2-digit", month: "short" })}</p>
+                        <div className="min-w-0">
+                          <p className={`${compact ? "text-[9px] tracking-[0.1em]" : "text-[10px] tracking-[0.14em]"} truncate uppercase text-[var(--text-muted)]`}>{formatDate(day, locale, { weekday: "short" })}</p>
+                          <p className={`${compact ? "text-xs" : "mt-1 text-sm"} font-semibold text-[var(--text)]`}>{formatDate(day, locale, compact ? { day: "2-digit" } : { day: "2-digit", month: "short" })}</p>
                         </div>
                         <button onClick={() => handleOpenCreateBooking(day)} className="rounded-full border border-[var(--border)] bg-white p-1.5 text-[var(--accent-strong)] shadow-sm" aria-label={copy.newBooking}>
                           <Plus size={13} />
                         </button>
                       </div>
-                      <div className="mt-2.5 grid gap-2">
-                        {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className="text-sm text-[var(--text-muted)]">{copy.dropHere}</p>}
+                      <div className={`${compact ? "mt-2 gap-1.5" : "mt-2.5 gap-2"} grid min-w-0`}>
+                        {dayItems.length > 0 ? dayItems.map((item) => renderCard(item, true)) : <p className={`${compact ? "text-xs" : "text-sm"} leading-5 text-[var(--text-muted)]`}>{copy.dropHere}</p>}
                       </div>
                     </div>
                   );
