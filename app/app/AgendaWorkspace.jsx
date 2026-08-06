@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock3, GripVertical, LoaderCircle, PencilLine, Plus } from "lucide-react";
 
 import { getSupabaseBrowserClient } from "../../src/lib/supabase-browser";
@@ -167,13 +167,19 @@ function withSameTime(baseDate, sourceDate) {
 }
 
 function normalizeAgendaRows(rows, copy) {
-  return rows.map((row) => ({
+  return rows.filter(isCoachAgendaItem).map((row) => ({
     ...row,
     scheduledAt: new Date(row.scheduled_at),
     studentName: row.students?.full_name || copy.clientFallback,
     clientColor: row.students?.client_color_hex || "#2ad07d",
     bookingName: row.booking_types?.name || row.item_type || copy.bookingFallback,
   }));
+}
+
+function isCoachAgendaItem(row) {
+  const type = String(row.item_type || "").toLowerCase();
+  if (!type) return true;
+  return !["activity", "external", "health", "solo", "client_activity", "imported"].some((blocked) => type.includes(blocked));
 }
 
 function statusLabel(value) {
@@ -209,6 +215,8 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
   const [error, setError] = useState("");
   const [editingItem, setEditingItem] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [now, setNow] = useState(new Date());
+  const compactCalendarRef = useRef(null);
   const handleOpenCreateBooking = (date) => {
     if (typeof onOpenCreateBooking === "function") onOpenCreateBooking(date ? { scheduledDate: inputDateValue(date) } : undefined);
   };
@@ -314,9 +322,9 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
     });
   }, [items, locale, mode, weekDays]);
 
-  const compactNow = new Date();
-  const showCompactNow = compact && mode === "week" && compactNow >= range.start && compactNow < range.end;
-  const compactNowTop = COMPACT_HEADER_HEIGHT + ((compactNow.getHours() + compactNow.getMinutes() / 60 - COMPACT_DAY_START_HOUR) * COMPACT_HOUR_HEIGHT);
+  const compactNowHour = now.getHours() + now.getMinutes() / 60;
+  const showCompactNow = compact && mode === "week" && now >= range.start && now < range.end && compactNowHour >= COMPACT_DAY_START_HOUR && compactNowHour <= COMPACT_DAY_END_HOUR;
+  const compactNowTop = (compactNowHour - COMPACT_DAY_START_HOUR) * COMPACT_HOUR_HEIGHT;
 
   function compactItemStyle(item) {
     const hourValue = item.scheduledAt.getHours() + item.scheduledAt.getMinutes() / 60;
@@ -326,6 +334,21 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       minHeight: "34px",
     };
   }
+
+  useEffect(() => {
+    if (!compact || mode !== "week" || !compactCalendarRef.current) return;
+    if (!showCompactNow) {
+      compactCalendarRef.current.scrollTop = Math.max(0, (8 - COMPACT_DAY_START_HOUR) * COMPACT_HOUR_HEIGHT);
+      return;
+    }
+    compactCalendarRef.current.scrollTop = Math.max(0, compactNowTop - 120);
+  }, [compact, compactNowTop, mode, showCompactNow]);
+
+  useEffect(() => {
+    if (!compact) return undefined;
+    const timer = window.setInterval(() => setNow(new Date()), 60000);
+    return () => window.clearInterval(timer);
+  }, [compact]);
 
   function moveRange(direction) {
     const updated = new Date(anchorDate);
@@ -558,7 +581,8 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                   );
                 })}
 
-                <div className="relative col-span-8 grid h-full grid-cols-[48px_repeat(7,minmax(0,1fr))] overflow-y-auto" style={{ minHeight: `${COMPACT_HOURS.length * COMPACT_HOUR_HEIGHT}px` }}>
+                <div ref={compactCalendarRef} className="relative col-span-8 h-full overflow-y-auto overscroll-contain">
+                  <div className="relative grid grid-cols-[48px_repeat(7,minmax(0,1fr))]" style={{ minHeight: `${COMPACT_HOURS.length * COMPACT_HOUR_HEIGHT}px` }}>
                   <div className="relative border-r border-[var(--border)] bg-[var(--surface-muted)]">
                     {COMPACT_HOURS.map((hour) => (
                       <div key={hour} className="border-b border-[var(--border)] pr-1 text-right text-[10px] leading-none text-[var(--text-muted)]" style={{ height: `${COMPACT_HOUR_HEIGHT}px` }}>
@@ -609,11 +633,13 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                     );
                   })}
                   {showCompactNow ? (
-                    <div className="pointer-events-none absolute left-12 right-0 z-10 flex items-center" style={{ top: `${compactNowTop - COMPACT_HEADER_HEIGHT}px` }}>
+                    <div className="pointer-events-none absolute left-12 right-0 z-10 flex items-center" style={{ top: `${compactNowTop}px` }}>
                       <span className="h-2 w-2 rounded-full bg-rose-500" />
+                      <span className="mr-1 rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em] text-white">agora</span>
                       <span className="h-px flex-1 bg-rose-500" />
                     </div>
                   ) : null}
+                  </div>
                 </div>
               </div>
             </div>

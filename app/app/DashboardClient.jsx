@@ -513,6 +513,12 @@ function colorDot(colorHex) {
   return colorHex || "linear-gradient(135deg, #2ad07d 0%, #7c4dff 100%)";
 }
 
+function isCoachAgendaItem(row) {
+  const type = String(row.item_type || "").toLowerCase();
+  if (!type) return true;
+  return !["activity", "external", "health", "solo", "client_activity", "imported"].some((blocked) => type.includes(blocked));
+}
+
 function missingColumn(error) {
   const message = error?.message?.toLowerCase?.() ?? error?.toString?.().toLowerCase?.() ?? "";
   return message.includes("client_color_hex") && (message.includes("42703") || message.includes("column"));
@@ -732,8 +738,9 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now =
     }
   }
 
+  const attentionPriority = { billing_pending: 3, weekly_shortfall: 2, pack_low: 1 };
   const attention = [...reminders, ...billingAlerts]
-    .sort((a, b) => b.attentionCount - a.attentionCount || a.studentName.localeCompare(b.studentName))
+    .sort((a, b) => (attentionPriority[b.type] || 0) - (attentionPriority[a.type] || 0) || b.attentionCount - a.attentionCount || a.studentName.localeCompare(b.studentName))
     .slice(0, 6);
 
   return {
@@ -797,13 +804,14 @@ async function loadCore(supabase, user) {
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
   const students = responses[2].data ?? [];
+  const upcomingAgenda = (responses[6].data ?? []).filter(isCoachAgendaItem);
   const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students);
   return {
     profile: responses[0].data,
     subscription: responses[1].data,
     metrics: { clients: students.length, agendaToday: responses[3].count ?? 0, assessments: responses[4].count ?? 0, trainings: responses[5].count ?? 0 },
     business,
-    upcomingAgenda: responses[6].data ?? [],
+    upcomingAgenda,
   };
 }
 
@@ -938,10 +946,10 @@ function DashboardHero({ coachName, core, copy, locale, onCreate }) {
   );
 }
 
-function AttentionRow({ item, copy }) {
+function AttentionRow({ item, copy, onClick }) {
   const label = item.type === "pack_low" ? copy.actionPack : item.type === "billing_pending" ? copy.actionBilling : copy.actionMissing;
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[16px] border border-[var(--border)] bg-white px-3.5 py-3">
+    <button onClick={onClick} className="flex w-full items-center justify-between gap-3 rounded-[14px] border border-[var(--border)] bg-white px-3 py-2.5 text-left transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-soft)]">
       <div className="flex min-w-0 items-center gap-3">
         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorDot(item.clientColorHex) }} />
         <div className="min-w-0">
@@ -950,7 +958,7 @@ function AttentionRow({ item, copy }) {
         </div>
       </div>
       <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text)]">{item.attentionCount}</span>
-    </div>
+    </button>
   );
 }
 
@@ -1588,7 +1596,14 @@ export default function DashboardClient() {
                 <SectionCard eyebrow={copy.attentionBoard} title={copy.attentionBoard} description={null}>
                   <div className="grid gap-3">
                     {core.business.attention.length > 0 ? (
-                      core.business.attention.slice(0, 5).map((item) => <AttentionRow key={item.id} item={item} copy={copy} />)
+                      core.business.attention.slice(0, 5).map((item) => (
+                        <AttentionRow
+                          key={item.id}
+                          item={item}
+                          copy={copy}
+                          onClick={() => startTransition(() => setActiveTab(item.type === "billing_pending" ? "coach" : item.type === "pack_low" ? "clients" : "agenda"))}
+                        />
+                      ))
                     ) : (
                       <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noAttention}</div>
                     )}
