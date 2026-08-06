@@ -3,7 +3,7 @@
 import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, BadgeEuro, CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, Package2, Plus, ShieldCheck, TimerReset, Users, X } from "lucide-react";
+import { AlertTriangle, CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, Package2, Plus, ShieldCheck, TimerReset, Users, X } from "lucide-react";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getStoredCoachLocale, guessCoachLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import AgendaWorkspace from "./AgendaWorkspace";
@@ -844,9 +844,28 @@ function EmptyState({ title, text }) {
   return <div className="rounded-[20px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-6 text-center"><p className="text-base font-semibold text-[var(--text)]">{title}</p><p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{text}</p></div>;
 }
 
-function MetricCard({ label, value, Icon, hint, onClick }) {
+function DashboardFocusCard({ label, value, detail, Icon, tone = "neutral", onClick }) {
   const Component = onClick ? "button" : "div";
-  return <Component onClick={onClick} className={`rounded-[20px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,247,0.98))] p-3.5 text-left shadow-[var(--shadow-soft)] ${onClick ? "transition hover:-translate-y-0.5 hover:border-[var(--accent)]" : ""}`}><div className="flex items-start justify-between gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent)]/12"><Icon size={16} className="text-[var(--accent)]" /></div><span className="rounded-full border border-[var(--border)] bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</span></div><p className="mt-3 text-2xl font-semibold text-[var(--text)]">{value}</p><p className="mt-1.5 text-sm leading-5 text-[var(--text-muted)]">{hint}</p></Component>;
+  const toneClass = tone === "warning"
+    ? "border-amber-200 bg-amber-50/70"
+    : tone === "danger"
+      ? "border-rose-200 bg-rose-50/70"
+      : tone === "accent"
+        ? "border-[var(--accent)]/35 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]"
+        : "border-[var(--border)] bg-white";
+
+  return (
+    <Component onClick={onClick} className={`group rounded-[20px] border p-3 text-left shadow-[var(--shadow-soft)] transition ${toneClass} ${onClick ? "hover:-translate-y-0.5 hover:border-[var(--accent)]" : ""}`}>
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-white text-[var(--accent-strong)] shadow-sm">
+          <Icon size={15} />
+        </span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[var(--text-muted)]">{label}</span>
+      </div>
+      <p className="mt-3 text-2xl font-semibold leading-none text-[var(--text)]">{value}</p>
+      {detail ? <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--text-muted)]">{detail}</p> : null}
+    </Component>
+  );
 }
 
 function AttentionRow({ item, copy }) {
@@ -1418,13 +1437,11 @@ export default function DashboardClient() {
     { id: "trainings", label: copy.tabs.trainings, icon: Dumbbell },
     { id: "coach", label: copy.tabs.coach, icon: ShieldCheck },
   ];
-  const operationalMetrics = [
-    { label: copy.monthlyBilling, value: formatCurrency(core.business.monthlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.businessPulseText, onClick: () => startTransition(() => setActiveTab("coach")) },
-    { label: copy.yearlyBilling, value: formatCurrency(core.business.yearlyRevenue, activeLocale), Icon: BadgeEuro, hint: copy.financeOverviewText, onClick: () => startTransition(() => setActiveTab("coach")) },
-    { label: copy.deliveredSessions, value: core.business.deliveredTrainings, Icon: Dumbbell, hint: copy.trainingsHint, onClick: () => startTransition(() => setActiveTab("trainings")) },
-    { label: copy.missingBookings, value: core.business.missingBookings, Icon: TimerReset, hint: copy.attentionBoardText, onClick: () => startTransition(() => setActiveTab("agenda")) },
-    { label: copy.pendingBilling, value: core.business.pendingBillingCount, Icon: AlertTriangle, hint: copy.pendingAmount, onClick: () => startTransition(() => setActiveTab("coach")) },
-    { label: copy.expiringPacks, value: core.business.expiringPacks, Icon: Package2, hint: copy.attentionBoardText, onClick: () => startTransition(() => setActiveTab("clients")) },
+  const dashboardFocusCards = [
+    { label: copy.agendaSpotlight, value: core.upcomingAgenda.length, detail: copy.noUpcomingText, Icon: CalendarDays, tone: "accent", onClick: () => startTransition(() => setActiveTab("agenda")) },
+    { label: copy.missingBookings, value: core.business.missingBookings, detail: copy.actionMissing, Icon: TimerReset, tone: core.business.missingBookings > 0 ? "warning" : "neutral", onClick: () => startTransition(() => setActiveTab("agenda")) },
+    { label: copy.pendingBilling, value: formatCurrency(core.business.pendingBillingAmount, activeLocale), detail: copy.pendingAmount, Icon: AlertTriangle, tone: core.business.pendingBillingAmount > 0 ? "danger" : "neutral", onClick: () => startTransition(() => setActiveTab("coach")) },
+    { label: copy.expiringPacks, value: core.business.expiringPacks, detail: copy.actionPack, Icon: Package2, tone: core.business.expiringPacks > 0 ? "warning" : "neutral", onClick: () => startTransition(() => setActiveTab("clients")) },
   ];
 
   return (
@@ -1432,10 +1449,10 @@ export default function DashboardClient() {
       {languageOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[28px] border border-[var(--border-strong)] bg-white p-5 shadow-[var(--shadow-panel)] sm:p-6"><div className="flex items-start gap-4"><div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]"><Globe2 size={20} /></div><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.languageSetup}</p><h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.chooseLanguage}</h2><p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.chooseLanguageText}</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => { setPreferredLanguage(option.value); setActiveLocale(option.value); applyCoachLocale(option.value); }} className={`flex items-center justify-between rounded-[20px] border px-4 py-3 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}><div className="flex items-center gap-3"><span className="text-2xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p></div></div>{active ? <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]"><Check size={15} /></span> : null}</button>; })}</div>{languageError ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end"><button onClick={handleSaveLanguage} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}{copy.saveLanguage}</button></div></div></div> : null}
       {bookingOpen ? <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[28px] border border-[var(--border-strong)] bg-white p-5 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.bookingTitle}</p><h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.bookingHeading}</h2><p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.bookingText}</p></div><button onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-3 text-[var(--text-muted)]"><X size={18} /></button></div>{loadingBookingResources ? <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingBooking}</div> : <form onSubmit={handleCreateBooking} className="mt-6 grid gap-4"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.client}</span><select value={bookingForm.studentId} onChange={(event) => updateBookingField("studentId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none"><option value="">{copy.selectClient}</option>{bookingResources.students.map((student) => <option key={student.id} value={student.id}>{student.full_name}</option>)}</select></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.bookingType}</span><select value={bookingForm.bookingTypeId} onChange={(event) => updateBookingField("bookingTypeId", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none"><option value="">{copy.selectType}</option>{bookingResources.bookingTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.date}</span><input type="date" value={bookingForm.scheduledDate} onChange={(event) => updateBookingField("scheduledDate", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none" /></label><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.time}</span><input type="time" value={bookingForm.scheduledTime} onChange={(event) => updateBookingField("scheduledTime", event.target.value)} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none" /></label></div><label className="grid gap-2"><span className="text-sm font-medium text-[var(--text)]">{copy.notes}</span><textarea value={bookingForm.notes} onChange={(event) => updateBookingField("notes", event.target.value)} rows={4} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text)] outline-none" placeholder={copy.notesPlaceholder} /></label>{bookingError ? <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{bookingError}</div> : null}<div className="flex flex-col gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={closeBookingModal} className="rounded-2xl border border-[var(--border)] bg-white px-5 py-3 text-sm font-medium text-[var(--text-muted)]">{copy.cancel}</button><button type="submit" disabled={creatingBooking} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{creatingBooking ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}{copy.createBooking}</button></div></form>}</div></div> : null}
 
-      <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <main className="min-h-screen bg-[var(--bg)] text-[var(--text)] lg:h-screen lg:overflow-hidden">
         <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_20%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_48%,#f2f4f3_100%)]" />
-        <div className="mx-auto grid min-h-screen max-w-[1600px] gap-3 px-4 py-4 lg:grid-cols-[240px_minmax(0,1fr)] lg:px-5">
-          <aside className="rounded-[24px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-3 shadow-[var(--shadow-panel)] lg:sticky lg:top-3 lg:flex lg:h-[calc(100vh-1.5rem)] lg:flex-col">
+        <div className="mx-auto grid min-h-screen max-w-[1600px] gap-3 px-4 py-4 lg:h-screen lg:min-h-0 lg:grid-cols-[240px_minmax(0,1fr)] lg:px-5">
+          <aside className="rounded-[24px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-3 shadow-[var(--shadow-panel)] lg:sticky lg:top-4 lg:flex lg:h-[calc(100vh-2rem)] lg:flex-col">
             <div className="flex items-center gap-2.5 px-1">
               <div className="rounded-2xl border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-2">
                 <LayoutDashboard size={16} className="text-[var(--accent-strong)]" />
@@ -1484,85 +1501,80 @@ export default function DashboardClient() {
               </button>
             </div>
           </aside>
-          <section className="grid min-w-0 gap-3"><header className="rounded-[20px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] px-4 py-3 shadow-[var(--shadow-panel)]"><div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"><div><h1 className="text-xl font-semibold tracking-tight text-[var(--text)] sm:text-[1.7rem]">{appTabs.find((tab) => tab.id === activeTab)?.label || copy.tabs.dashboard}</h1><p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{activeTab === "dashboard" ? copy.agendaSubhead : copy.fastWorkspace}</p></div><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link></div></header>{workspaceError ? <div className="rounded-[20px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
+          <section className="grid min-w-0 gap-3 lg:h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-2"><header className="rounded-[20px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] px-4 py-3 shadow-[var(--shadow-panel)]"><div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"><div><h1 className="text-xl font-semibold tracking-tight text-[var(--text)] sm:text-[1.7rem]">{appTabs.find((tab) => tab.id === activeTab)?.label || copy.tabs.dashboard}</h1><p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{activeTab === "dashboard" ? copy.agendaSubhead : copy.fastWorkspace}</p></div><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link></div></header>{workspaceError ? <div className="rounded-[20px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
           {activeTab === "dashboard" ? (
-            <div className="grid gap-4">
-              <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
-                <AgendaCards items={core.upcomingAgenda.slice(0, 5)} onCreate={openBookingModal} locale={activeLocale} />
-                <SectionCard
-                  eyebrow={copy.businessPulseTitle}
-                  title={copy.operationsBoard}
-                  description={null}
-                  action={
-                    <button onClick={openBookingModal} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-3.5 py-2 text-sm font-semibold text-[var(--accent-foreground)]">
-                      <Plus size={14} />
-                      {copy.createNow}
-                    </button>
-                  }
-                >
-                  <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-2">
-                    {operationalMetrics.map((metric) => (
-                      <MetricCard key={metric.label} {...metric} />
-                    ))}
-                  </div>
-                </SectionCard>
+            <div className="grid gap-3">
+              <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+                {dashboardFocusCards.map((card) => (
+                  <DashboardFocusCard key={card.label} {...card} />
+                ))}
               </div>
 
-              <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-                <SectionCard eyebrow={copy.financeOverview} title={copy.financeOverview} description={null}>
-                  <div className="grid gap-3">
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.monthlyBilling}</p>
-                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{formatCurrency(core.business.monthlyRevenue, activeLocale)}</p>
-                      </div>
-                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.yearlyBilling}</p>
-                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{formatCurrency(core.business.yearlyRevenue, activeLocale)}</p>
-                      </div>
-                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.pendingAmount}</p>
-                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{formatCurrency(core.business.pendingBillingAmount, activeLocale)}</p>
-                      </div>
-                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.overdueBilling}</p>
-                        <p className="mt-2 text-xl font-semibold text-[var(--text)]">{core.business.overdueBillingCount}</p>
-                      </div>
-                    </div>
-
-                    <div className="rounded-[20px] border border-[var(--border)] bg-white p-3.5">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.dueProfiles}</p>
-                        </div>
-                        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                          {core.business.pendingBillingCount}
-                        </span>
-                      </div>
-                      <div className="mt-3 grid gap-2">
-                        {core.business.dueProfiles.length > 0 ? (
-                          core.business.dueProfiles.map((item) => <BillingProfileRow key={`${item.student_id}-${item.next_due_at || item.status}`} item={item} locale={activeLocale} />)
-                        ) : (
-                          <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noDueProfiles}</div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </SectionCard>
-
+              <div className="grid gap-3 xl:grid-cols-[1.35fr_0.65fr]">
+                <AgendaCards items={core.upcomingAgenda.slice(0, 5)} onCreate={openBookingModal} locale={activeLocale} />
                 <SectionCard eyebrow={copy.attentionBoard} title={copy.attentionBoard} description={null}>
                   <div className="grid gap-3">
-                    <div className="grid gap-2">
-                      {core.business.attention.length > 0 ? (
-                        core.business.attention.map((item) => <AttentionRow key={item.id} item={item} copy={copy} />)
-                      ) : (
-                        <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noAttention}</div>
-                      )}
-                    </div>
+                    {core.business.attention.length > 0 ? (
+                      core.business.attention.slice(0, 5).map((item) => <AttentionRow key={item.id} item={item} copy={copy} />)
+                    ) : (
+                      <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noAttention}</div>
+                    )}
                   </div>
                 </SectionCard>
               </div>
-            </div>
+
+              <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
+                <SectionCard eyebrow={copy.financeOverview} title={copy.financeOverview} description={null}>
+                  <div className="grid gap-2 sm:grid-cols-4">
+                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.monthlyBilling}</p>
+                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatCurrency(core.business.monthlyRevenue, activeLocale)}</p>
+                    </div>
+                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.yearlyBilling}</p>
+                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatCurrency(core.business.yearlyRevenue, activeLocale)}</p>
+                    </div>
+                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.deliveredSessions}</p>
+                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{core.business.deliveredTrainings}</p>
+                    </div>
+                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.overdueBilling}</p>
+                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{core.business.overdueBillingCount}</p>
+                    </div>
+                  </div>
+                </SectionCard>
+
+                <SectionCard eyebrow={copy.pendingBilling} title={copy.dueProfiles} description={null}>
+                  <div className="grid gap-2">
+                    {core.business.dueProfiles.length > 0 ? (
+                      core.business.dueProfiles.slice(0, 4).map((item) => <BillingProfileRow key={`${item.student_id}-${item.next_due_at || item.status}`} item={item} locale={activeLocale} />)
+                    ) : (
+                      <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noDueProfiles}</div>
+                    )}
+                  </div>
+                </SectionCard>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <button onClick={openBookingModal} className="rounded-[20px] border border-[var(--accent)] bg-[var(--accent)] px-4 py-3 text-left font-semibold text-[var(--accent-foreground)] shadow-[var(--shadow-soft)]">
+                  <span className="inline-flex items-center gap-2 text-sm"><Plus size={15} />{copy.newBooking}</span>
+                  <span className="mt-2 block text-xs font-medium opacity-75">{copy.createNowHint}</span>
+                </button>
+                <button onClick={() => startTransition(() => setActiveTab("clients"))} className="rounded-[20px] border border-[var(--border)] bg-white px-4 py-3 text-left shadow-[var(--shadow-soft)]">
+                  <span className="text-sm font-semibold text-[var(--text)]">{copy.tabs.clients}</span>
+                  <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{copy.activeClientsHint}</span>
+                </button>
+                <button onClick={() => startTransition(() => setActiveTab("assessments"))} className="rounded-[20px] border border-[var(--border)] bg-white px-4 py-3 text-left shadow-[var(--shadow-soft)]">
+                  <span className="text-sm font-semibold text-[var(--text)]">{copy.tabs.assessments}</span>
+                  <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{copy.assessmentsHint}</span>
+                </button>
+                <button onClick={() => startTransition(() => setActiveTab("trainings"))} className="rounded-[20px] border border-[var(--border)] bg-white px-4 py-3 text-left shadow-[var(--shadow-soft)]">
+                  <span className="text-sm font-semibold text-[var(--text)]">{copy.tabs.trainings}</span>
+                  <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{copy.trainingsHint}</span>
+                </button>
+              </div>
+                    </div>
           ) : null}
           {activeTab === "clients" ? <ClientWorkspace currentUser={currentUser} onOpenCreateBooking={openBookingModal} onOpenAssessments={openAssessmentsForStudent} onOpenTrainings={openTrainingsForStudent} locale={activeLocale} /> : null}
           {activeTab === "assessments" ? <AssessmentBuilderWorkspace items={lists.recentAssessments} loading={loadingTabs.assessments} copy={copy} locale={activeLocale} currentUser={currentUser} onItemsChange={(updater) => setLists((current) => ({ ...current, recentAssessments: typeof updater === "function" ? updater(current.recentAssessments) : updater }))} /> : null}
