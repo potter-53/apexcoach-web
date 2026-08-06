@@ -868,6 +868,76 @@ function DashboardFocusCard({ label, value, detail, Icon, tone = "neutral", onCl
   );
 }
 
+function DashboardHero({ coachName, core, copy, locale, onCreate }) {
+  const nextBooking = core.upcomingAgenda[0];
+  const welcome = locale === "pt"
+    ? `Bem-vindo, ${coachName}`
+    : locale === "es"
+      ? `Bienvenido, ${coachName}`
+      : locale === "fr"
+        ? `Bienvenue, ${coachName}`
+        : `Welcome, ${coachName}`;
+  const headline = locale === "pt"
+    ? "A tua operação do dia, pronta para agir."
+    : locale === "es"
+      ? "Tu operación del día, lista para actuar."
+      : locale === "fr"
+        ? "Ton opération du jour, prête à piloter."
+        : "Your coaching day, ready to act on.";
+  const nextLabel = locale === "pt" ? "Próximo agendamento" : locale === "es" ? "Próxima reserva" : locale === "fr" ? "Prochain rendez-vous" : "Next booking";
+  const noNext = locale === "pt" ? "Sem próximos agendamentos" : locale === "es" ? "Sin próximas reservas" : locale === "fr" ? "Aucun rendez-vous à venir" : "No upcoming bookings";
+
+  const heroStats = [
+    { label: copy.tabs.clients, value: core.metrics.clients },
+    { label: copy.deliveredSessions, value: core.business.deliveredTrainings },
+    { label: copy.monthlyBilling, value: formatCurrency(core.business.monthlyRevenue, locale) },
+    { label: copy.agendaSpotlight, value: core.upcomingAgenda.length },
+  ];
+
+  return (
+    <section className="overflow-hidden rounded-[26px] border border-[var(--border-strong)] bg-[linear-gradient(135deg,rgba(218,251,234,0.95),rgba(255,255,255,0.98)_42%,rgba(239,235,255,0.82))] p-4 shadow-[var(--shadow-panel)] sm:p-5">
+      <div className="grid gap-4 xl:grid-cols-[1fr_380px] xl:items-stretch">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">{copy.coachPulse}</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--text)] sm:text-3xl">{welcome}</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">{headline}</p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-4">
+            {heroStats.map((item) => (
+              <div key={item.label} className="rounded-[18px] border border-white/70 bg-white/72 px-3 py-3 shadow-sm">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[var(--text-muted)]">{item.label}</p>
+                <p className="mt-2 text-xl font-semibold text-[var(--text)]">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-[22px] border border-white/80 bg-white/78 p-3.5 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-muted)]">{nextLabel}</p>
+            <button onClick={onCreate} className="inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-3 py-2 text-xs font-semibold text-[var(--accent-foreground)]">
+              <Plus size={13} />
+              {copy.newBooking}
+            </button>
+          </div>
+          {nextBooking ? (
+            <div className="mt-4 rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">{formatDate(nextBooking.scheduled_at, true, locale)}</p>
+              <p className="mt-1 text-2xl font-semibold text-[var(--text)]">{formatTime(nextBooking.scheduled_at, locale)}</p>
+              <div className="mt-3 flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: colorDot(nextBooking.students?.client_color_hex) }} />
+                <p className="font-semibold text-[var(--text)]">{nextBooking.students?.full_name || copy.client}</p>
+              </div>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{nextBooking.booking_types?.name || nextBooking.item_type || copy.bookingType}</p>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-[18px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-6 text-sm text-[var(--text-muted)]">{noNext}</div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function AttentionRow({ item, copy }) {
   const label = item.type === "pack_low" ? copy.actionPack : item.type === "billing_pending" ? copy.actionBilling : copy.actionMissing;
   return (
@@ -1438,7 +1508,6 @@ export default function DashboardClient() {
     { id: "coach", label: copy.tabs.coach, icon: ShieldCheck },
   ];
   const dashboardFocusCards = [
-    { label: copy.agendaSpotlight, value: core.upcomingAgenda.length, detail: copy.noUpcomingText, Icon: CalendarDays, tone: "accent", onClick: () => startTransition(() => setActiveTab("agenda")) },
     { label: copy.missingBookings, value: core.business.missingBookings, detail: copy.actionMissing, Icon: TimerReset, tone: core.business.missingBookings > 0 ? "warning" : "neutral", onClick: () => startTransition(() => setActiveTab("agenda")) },
     { label: copy.pendingBilling, value: formatCurrency(core.business.pendingBillingAmount, activeLocale), detail: copy.pendingAmount, Icon: AlertTriangle, tone: core.business.pendingBillingAmount > 0 ? "danger" : "neutral", onClick: () => startTransition(() => setActiveTab("coach")) },
     { label: copy.expiringPacks, value: core.business.expiringPacks, detail: copy.actionPack, Icon: Package2, tone: core.business.expiringPacks > 0 ? "warning" : "neutral", onClick: () => startTransition(() => setActiveTab("clients")) },
@@ -1501,10 +1570,12 @@ export default function DashboardClient() {
               </button>
             </div>
           </aside>
-          <section className="grid min-w-0 gap-3 lg:h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-2"><header className="rounded-[20px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] px-4 py-3 shadow-[var(--shadow-panel)]"><div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"><div><h1 className="text-xl font-semibold tracking-tight text-[var(--text)] sm:text-[1.7rem]">{appTabs.find((tab) => tab.id === activeTab)?.label || copy.tabs.dashboard}</h1><p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{activeTab === "dashboard" ? copy.agendaSubhead : copy.fastWorkspace}</p></div><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link></div></header>{workspaceError ? <div className="rounded-[20px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
+          <section className="grid min-w-0 gap-3 lg:h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-2">{activeTab !== "dashboard" ? <header className="rounded-[20px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] px-4 py-3 shadow-[var(--shadow-panel)]"><div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between"><div><h1 className="text-xl font-semibold tracking-tight text-[var(--text)] sm:text-[1.7rem]">{appTabs.find((tab) => tab.id === activeTab)?.label || copy.tabs.dashboard}</h1><p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{copy.fastWorkspace}</p></div><Link href="/login" className="inline-flex items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[var(--text)]">{copy.switchAccount}</Link></div></header> : null}{workspaceError ? <div className="rounded-[20px] border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700 shadow-[var(--shadow-soft)]">{workspaceError}</div> : null}{loadingCore ? <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3 shadow-[var(--shadow-soft)]"><LoaderCircle size={18} className="animate-spin text-[var(--accent)]" />{copy.loadingCore}</div> : null}<div className="flex gap-3 overflow-x-auto pb-1 lg:hidden">{appTabs.map(({ id, label }) => <button key={id} onClick={() => startTransition(() => setActiveTab(id))} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${activeTab === id ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{label}</button>)}</div>
           {activeTab === "dashboard" ? (
             <div className="grid gap-3">
-              <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+              <DashboardHero coachName={coachName} core={core} copy={copy} locale={activeLocale} onCreate={openBookingModal} />
+
+              <div className="grid gap-2.5 sm:grid-cols-3">
                 {dashboardFocusCards.map((card) => (
                   <DashboardFocusCard key={card.label} {...card} />
                 ))}
