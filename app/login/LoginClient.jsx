@@ -352,9 +352,18 @@ export default function LoginClient() {
               )}
 
               {errorMessage && (
-                <div className="mb-5 flex items-start gap-3 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-4 text-rose-100">
-                  <AlertCircle size={18} className="mt-0.5 shrink-0" />
-                  <p className="text-sm leading-7">{errorMessage}</p>
+                <div className="mb-5 rounded-[22px] border border-rose-200 bg-rose-50 px-4 py-4 text-rose-800 shadow-[0_14px_32px_rgba(225,29,72,0.08)]">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl bg-white text-rose-600 shadow-[0_8px_20px_rgba(225,29,72,0.10)]">
+                      <AlertCircle size={17} />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-rose-900">
+                        {locale === "pt" ? "Não foi possível entrar" : "Could not sign in"}
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-rose-700">{errorMessage}</p>
+                    </div>
+                  </div>
                 </div>
               )}
 
