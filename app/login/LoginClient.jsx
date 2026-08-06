@@ -189,6 +189,8 @@ export default function LoginClient() {
         cardText: "Usa a APK para trabalhar hoje com a APEX COACH. O modo PC está a ser desenvolvido para organizar prescrição de treino, avaliações e registos de clientes com mais espaço visual.",
         download: "Download APK",
         trial: "Trial grátis 14 dias",
+        identityTitle: "Identidade única do coach",
+        identityText: "A mesma identidade será usada na app de terreno e no futuro modo PC, quando esta experiência for aberta.",
       }
     : {
         viewDemo: "View PC mode",
@@ -204,6 +206,8 @@ export default function LoginClient() {
         cardText: "Use the APK to work with APEX COACH today. PC mode is being built to organize training prescription, assessments, and client records with more screen space.",
         download: "Download APK",
         trial: "Start 14-day free trial",
+        identityTitle: "Single coach identity",
+        identityText: "The same identity will be used in the field app and the future PC mode when this experience opens.",
       };
   const pageCopy = BROWSER_WORKSPACE_ENABLED ? t : { ...t, ...locked };
 
@@ -445,10 +449,10 @@ export default function LoginClient() {
               <div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
                 <div className="flex items-center gap-3">
                   <ShieldCheck size={18} className="text-[var(--accent-strong)]" />
-                  <p className="font-medium text-[var(--text)]">{t.identityTitle}</p>
+                  <p className="font-medium text-[var(--text)]">{pageCopy.identityTitle}</p>
                 </div>
                 <p className="text-sm leading-7 text-[var(--text-muted)]">
-                  {t.identityText}
+                  {pageCopy.identityText}
                 </p>
               </div>
             </div>
