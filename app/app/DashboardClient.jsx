@@ -754,6 +754,7 @@ function getBillingCopy(locale) {
       pending: "Pendente",
       clients: "Clientes",
       period: "Período",
+      viewInvoices: "Ver faturas",
     };
   }
   return {
@@ -766,6 +767,7 @@ function getBillingCopy(locale) {
     pending: "Pending",
     clients: "Clients",
     period: "Period",
+    viewInvoices: "View invoices",
   };
 }
 
@@ -1583,6 +1585,112 @@ function BillingOverviewSection({ business, copy, locale }) {
   );
 }
 
+function CompactBillingInvoiceRow({ invoice, locale }) {
+  const status = prettifyStatus(invoice.status);
+  const paid = invoice.paid;
+  return (
+    <div className="flex min-h-[42px] items-center justify-between gap-3 rounded-[14px] border border-slate-100 bg-white px-2.5 py-2 shadow-[0_5px_14px_rgba(15,23,42,0.03)]">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colorDot(invoice.clientColorHex) }} />
+        <div className="min-w-0">
+          <p className="truncate text-[13px] font-semibold leading-4 text-[var(--text)]">{invoice.studentName}</p>
+          <p className="truncate text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{invoice.invoiceNumber ? `#${invoice.invoiceNumber}` : invoice.billingCycle}</p>
+        </div>
+      </div>
+      <div className="flex shrink-0 items-center gap-2 text-right">
+        <span className={`inline-flex rounded-full px-2 py-0.5 text-[8px] font-semibold uppercase tracking-[0.08em] ${paid ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+          {status}
+        </span>
+        <p className="min-w-[68px] text-sm font-semibold text-[var(--text)]">{formatCurrency(invoice.totalCents / 100, locale)}</p>
+      </div>
+    </div>
+  );
+}
+
+function CompactBillingMonthCard({ month, locale, labels, featured = false }) {
+  const hasInvoices = month.invoices.length > 0;
+  const monthLabel = month.date.toLocaleDateString(localeTag(locale), { month: "long", year: "numeric" });
+
+  if (!featured) {
+    return (
+      <details className="group rounded-[16px] border border-slate-200 bg-slate-50/80 px-3 py-2.5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold capitalize text-[var(--text)]">{monthLabel}</p>
+            <p className="mt-0.5 text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{month.invoices.length} {labels.clients}</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-3 text-right">
+            <div>
+              <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{labels.total}</p>
+              <p className="text-sm font-semibold text-[var(--text)]">{formatCurrency(month.totalCents / 100, locale)}</p>
+            </div>
+            <div>
+              <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{labels.pending}</p>
+              <p className="text-sm font-semibold text-amber-700">{formatCurrency(month.pendingCents / 100, locale)}</p>
+            </div>
+            <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)] group-open:hidden">{labels.viewInvoices}</span>
+          </div>
+        </summary>
+        <div className="mt-2 grid max-h-[180px] gap-1.5 overflow-y-auto pr-1">
+          {hasInvoices ? month.invoices.map((invoice) => <CompactBillingInvoiceRow key={invoice.id} invoice={invoice} locale={locale} />) : <div className="rounded-[14px] border border-dashed border-slate-200 bg-white px-3 py-3 text-xs text-[var(--text-muted)]">{labels.noInvoices}</div>}
+        </div>
+      </details>
+    );
+  }
+
+  return (
+    <div className="rounded-[22px] border border-[var(--accent)]/20 bg-[linear-gradient(135deg,rgba(47,211,132,0.1),rgba(255,255,255,0.96))] p-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--accent)]">{labels.currentMonth}</p>
+          <h3 className="mt-1 text-lg font-semibold capitalize text-[var(--text)]">{monthLabel}</h3>
+          <p className="mt-1 text-xs text-[var(--text-muted)]">{month.invoices.length} {labels.clients}</p>
+        </div>
+        <div className="grid min-w-[260px] flex-1 grid-cols-3 gap-2 text-right sm:flex-none">
+          <div className="rounded-[14px] border border-white/70 bg-white/70 px-2.5 py-2">
+            <p className="text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{labels.total}</p>
+            <p className="text-sm font-semibold text-[var(--text)]">{formatCurrency(month.totalCents / 100, locale)}</p>
+          </div>
+          <div className="rounded-[14px] border border-white/70 bg-white/70 px-2.5 py-2">
+            <p className="text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{labels.paid}</p>
+            <p className="text-sm font-semibold text-emerald-700">{formatCurrency(month.paidCents / 100, locale)}</p>
+          </div>
+          <div className="rounded-[14px] border border-white/70 bg-white/70 px-2.5 py-2">
+            <p className="text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{labels.pending}</p>
+            <p className="text-sm font-semibold text-amber-700">{formatCurrency(month.pendingCents / 100, locale)}</p>
+          </div>
+        </div>
+      </div>
+      <div className="mt-2 grid max-h-[220px] gap-1.5 overflow-y-auto pr-1">
+        {hasInvoices ? month.invoices.map((invoice) => <CompactBillingInvoiceRow key={invoice.id} invoice={invoice} locale={locale} />) : <div className="rounded-[14px] border border-dashed border-slate-200 bg-white px-3 py-3 text-xs text-[var(--text-muted)]">{labels.noInvoices}</div>}
+      </div>
+    </div>
+  );
+}
+
+function CompactBillingOverviewSection({ business, copy, locale }) {
+  const labels = getBillingCopy(locale);
+  const months = business.billingMonths || {};
+  const previousMonths = months.previousMonths || [];
+
+  return (
+    <SectionCard eyebrow={copy.financeOverview} title={copy.financeOverview} description={copy.financeOverviewText}>
+      <div className="grid gap-2.5">
+        <CompactBillingMonthCard month={months.currentMonth || { date: startOfMonth(new Date()), invoices: [], totalCents: 0, paidCents: 0, pendingCents: 0 }} locale={locale} labels={labels} featured />
+        <div className="rounded-[18px] border border-slate-200 bg-white p-2.5">
+          <div className="mb-2 flex items-center justify-between gap-3 px-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{labels.previousMonths}</p>
+            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-[var(--text-muted)]">{previousMonths.length}</span>
+          </div>
+          <div className="grid gap-1.5">
+            {previousMonths.length > 0 ? previousMonths.map((month) => <CompactBillingMonthCard key={month.key} month={month} locale={locale} labels={labels} />) : <div className="rounded-[14px] border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-xs text-[var(--text-muted)]">{labels.noInvoices}</div>}
+          </div>
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
+
 function PersonRow({ name, detail, meta, colorHex, locale = "en" }) {
   const copy = getCopy(locale);
   return <div className="flex items-center justify-between gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-4"><div className="flex min-w-0 items-center gap-3"><span className="h-3 w-3 shrink-0 rounded-full" style={{ background: colorDot(colorHex) }} /><div className="min-w-0"><p className="truncate font-medium text-[var(--text)]">{name || copy.client}</p><p className="truncate text-sm text-[var(--text-muted)]">{detail || copy.noDetail}</p></div></div>{meta ? <p className="shrink-0 text-sm text-[var(--text-muted)]">{meta}</p> : null}</div>;
@@ -2193,7 +2301,7 @@ export default function DashboardClient() {
                 />
               </div>
 
-              <BillingOverviewSection business={core.business} copy={copy} locale={activeLocale} />
+              <CompactBillingOverviewSection business={core.business} copy={copy} locale={activeLocale} />
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <button onClick={openBookingModal} className="rounded-[20px] border border-[var(--accent)] bg-[var(--accent)] px-4 py-3 text-left font-semibold text-[var(--accent-foreground)] shadow-[var(--shadow-soft)]">
