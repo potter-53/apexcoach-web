@@ -847,6 +847,7 @@ function buildBillingMonths(invoices = [], students = [], now = new Date()) {
       periodStart: invoice.period_start,
       periodEnd: invoice.period_end,
       paidAt: invoice.paid_at,
+      receiptId: invoice.receipt_id || null,
       billingCycle: invoice.billing_cycle || "monthly",
     });
     month.totalCents += totalCents;
@@ -1140,7 +1141,7 @@ async function loadCore(supabase, user) {
     supabase.from("agenda_items").select("id, student_id, item_type, status, scheduled_at, booking_types(price_eur, name)").eq("coach_id", user.id).gte("scheduled_at", yearStartIso).lt("scheduled_at", nowIso).neq("status", "canceled").order("scheduled_at", { ascending: false }),
     optionalResource(() => supabase.from("athlete_invites").select("student_id, status, created_at").order("created_at", { ascending: false }).limit(80), "athlete_invites"),
     optionalResource(() => supabase.from("agenda_items").select("id, student_id, item_type, scheduled_at, status, notes, requested_by_role").eq("coach_id", user.id).order("scheduled_at", { ascending: false }).limit(80), "agenda_items"),
-    optionalResource(() => supabase.from("coach_invoices").select("id, student_id, invoice_number, status, billing_cycle, subtotal_cents, discount_type, discount_value, offered_sessions_count, total_cents, period_start, period_end, paid_at, created_at").eq("coach_id", user.id).gte("period_start", yearStartIso.slice(0, 10)).order("period_start", { ascending: false }).limit(120), "coach_invoices"),
+    optionalResource(() => supabase.from("coach_invoices").select("id, student_id, invoice_number, status, billing_cycle, subtotal_cents, discount_type, discount_value, offered_sessions_count, total_cents, period_start, period_end, paid_at, receipt_id, created_at").eq("coach_id", user.id).gte("period_start", yearStartIso.slice(0, 10)).order("period_start", { ascending: false }).limit(120), "coach_invoices"),
   ]);
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
