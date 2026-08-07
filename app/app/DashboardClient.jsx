@@ -3,7 +3,7 @@
 import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, ArrowLeft, CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, MessageCircle, Package2, Plus, Send, ShieldCheck, TimerReset, Users, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, MessageCircle, Plus, Send, ShieldCheck, Users, X } from "lucide-react";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getStoredCoachLocale, guessCoachLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import AgendaWorkspace from "./AgendaWorkspace";
@@ -1028,30 +1028,6 @@ function EmptyState({ title, text }) {
   return <div className="rounded-[20px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-6 text-center"><p className="text-base font-semibold text-[var(--text)]">{title}</p><p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{text}</p></div>;
 }
 
-function DashboardFocusCard({ label, value, detail, Icon, tone = "neutral", onClick }) {
-  const Component = onClick ? "button" : "div";
-  const toneClass = tone === "warning"
-    ? "border-amber-200 bg-amber-50/70"
-    : tone === "danger"
-      ? "border-rose-200 bg-rose-50/70"
-      : tone === "accent"
-        ? "border-[var(--accent)]/35 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.06))]"
-        : "border-[var(--border)] bg-white";
-
-  return (
-    <Component onClick={onClick} className={`group rounded-[20px] border p-3 text-left shadow-[var(--shadow-soft)] transition ${toneClass} ${onClick ? "hover:-translate-y-0.5 hover:border-[var(--accent)]" : ""}`}>
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-white text-[var(--accent-strong)] shadow-sm">
-          <Icon size={15} />
-        </span>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.13em] text-[var(--text-muted)]">{label}</span>
-      </div>
-      <p className="mt-3 text-2xl font-semibold leading-none text-[var(--text)]">{value}</p>
-      {detail ? <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--text-muted)]">{detail}</p> : null}
-    </Component>
-  );
-}
-
 function DashboardHero({ coachName, core, copy, locale, onCreate }) {
   const nextBooking = core.upcomingAgenda[0];
   const welcome = locale === "pt"
@@ -1172,6 +1148,7 @@ function buildInboxConversations(attentionItems, copy) {
     const key = item.studentId || item.studentName || item.id;
     const current = conversations.get(key) || {
       id: key,
+      studentId: item.studentId,
       studentName: item.studentName,
       clientColorHex: item.clientColorHex,
       unread: 0,
@@ -1200,8 +1177,41 @@ function buildInboxConversations(attentionItems, copy) {
     });
 }
 
-function AttentionRow({ conversation, selected, copy, onClick }) {
-  const initials = (conversation.studentName || copy.client)
+function ClientAvatar({ studentId, name, colorHex, size = 40 }) {
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    const supabaseId = String(studentId || "").trim();
+    if (!supabaseId) {
+      setAvatarUrl("");
+      return () => {
+        mounted = false;
+      };
+    }
+
+    async function loadAvatar() {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data, error } = await supabase.storage.from("student-photos").createSignedUrl(`${supabaseId}/avatar.jpg`, 60 * 60);
+        if (error) throw error;
+        if (mounted) setAvatarUrl(data?.signedUrl || "");
+      } catch {
+        if (mounted) setAvatarUrl("");
+      }
+    }
+
+    loadAvatar();
+    return () => {
+      mounted = false;
+    };
+  }, [studentId]);
+
+  if (avatarUrl) {
+    return <img src={avatarUrl} alt={name || "Client"} className="shrink-0 rounded-full border border-white/80 object-cover shadow-sm" style={{ width: size, height: size }} />;
+  }
+
+  const initials = (name || "Client")
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
@@ -1210,11 +1220,17 @@ function AttentionRow({ conversation, selected, copy, onClick }) {
     .toUpperCase();
 
   return (
+    <span className="flex shrink-0 items-center justify-center rounded-full border border-white/70 text-xs font-semibold text-[var(--text)] shadow-sm" style={{ width: size, height: size, background: colorDot(colorHex) }}>
+      {initials || "C"}
+    </span>
+  );
+}
+
+function AttentionRow({ conversation, selected, copy, onClick }) {
+  return (
     <button onClick={onClick} className={`flex w-full items-center justify-between gap-3 rounded-[16px] border px-3 py-3 text-left transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-soft)] ${selected ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-white"}`}>
       <div className="flex min-w-0 items-center gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/70 text-xs font-semibold text-[var(--text)] shadow-sm" style={{ background: colorDot(conversation.clientColorHex) }}>
-          {initials || "C"}
-        </span>
+        <ClientAvatar studentId={conversation.studentId} name={conversation.studentName} colorHex={conversation.clientColorHex} size={42} />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <p className="truncate text-sm font-semibold text-[var(--text)]">{conversation.studentName}</p>
@@ -1238,9 +1254,12 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
           <ArrowLeft size={13} />
           {copy.inboxBack}
         </button>
-        <div className="min-w-0 text-right">
-          <p className="truncate text-sm font-semibold text-[var(--text)]">{conversation.studentName}</p>
-          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--accent)]">{copy.inboxPendingThread}</p>
+        <div className="flex min-w-0 items-center gap-2 text-right">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-[var(--text)]">{conversation.studentName}</p>
+            <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--accent)]">{copy.inboxPendingThread}</p>
+          </div>
+          <ClientAvatar studentId={conversation.studentId} name={conversation.studentName} colorHex={conversation.clientColorHex} size={38} />
         </div>
       </div>
 
@@ -1875,12 +1894,6 @@ export default function DashboardClient() {
     { id: "trainings", label: copy.tabs.trainings, icon: Dumbbell },
     { id: "coach", label: copy.tabs.coach, icon: ShieldCheck },
   ];
-  const dashboardFocusCards = [
-    { label: copy.missingBookings, value: core.business.missingBookings, detail: copy.actionMissing, Icon: TimerReset, tone: core.business.missingBookings > 0 ? "warning" : "neutral", onClick: () => startTransition(() => setActiveTab("agenda")) },
-    { label: copy.pendingBilling, value: formatCurrency(core.business.pendingBillingAmount, activeLocale), detail: copy.pendingAmount, Icon: AlertTriangle, tone: core.business.pendingBillingAmount > 0 ? "danger" : "neutral", onClick: () => startTransition(() => setActiveTab("coach")) },
-    { label: copy.expiringPacks, value: core.business.expiringPacks, detail: copy.actionPack, Icon: Package2, tone: core.business.expiringPacks > 0 ? "warning" : "neutral", onClick: () => startTransition(() => setActiveTab("clients")) },
-  ];
-
   return (
     <>
       {languageOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"><div className="w-full max-w-2xl rounded-[28px] border border-[var(--border-strong)] bg-white p-5 shadow-[var(--shadow-panel)] sm:p-6"><div className="flex items-start gap-4"><div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]"><Globe2 size={20} /></div><div><p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">{copy.languageSetup}</p><h2 className="mt-2 text-2xl font-semibold text-[var(--text)]">{copy.chooseLanguage}</h2><p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{copy.chooseLanguageText}</p></div></div><div className="mt-6 grid gap-3 sm:grid-cols-2">{LANGUAGE_OPTIONS.map((option) => { const active = preferredLanguage === option.value; return <button key={option.value} onClick={() => { setPreferredLanguage(option.value); setActiveLocale(option.value); applyCoachLocale(option.value); }} className={`flex items-center justify-between rounded-[20px] border px-4 py-3 text-left transition ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:bg-white"}`}><div className="flex items-center gap-3"><span className="text-2xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{option.flag}</span><div><p className="font-semibold text-[var(--text)]">{option.label}</p></div></div>{active ? <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)]"><Check size={15} /></span> : null}</button>; })}</div>{languageError ? <div className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{languageError}</div> : null}<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end"><button onClick={handleSaveLanguage} disabled={savingLanguage} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--accent-foreground)] disabled:opacity-60">{savingLanguage ? <LoaderCircle size={16} className="animate-spin" /> : <Check size={16} />}{copy.saveLanguage}</button></div></div></div> : null}
@@ -1943,13 +1956,7 @@ export default function DashboardClient() {
             <div className="grid gap-3">
               <DashboardHero coachName={coachName} core={core} copy={copy} locale={activeLocale} onCreate={openBookingModal} />
 
-              <div className="grid gap-2.5 sm:grid-cols-3">
-                {dashboardFocusCards.map((card) => (
-                  <DashboardFocusCard key={card.label} {...card} />
-                ))}
-              </div>
-
-              <div className="grid gap-3 xl:grid-cols-[1.35fr_0.65fr]">
+              <div className="grid gap-3 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.7fr)]">
                 <AgendaWorkspace currentUser={currentUser} compact onOpenCreateBooking={openBookingModal} locale={activeLocale} />
                 <CoachHubCard
                   copy={copy}

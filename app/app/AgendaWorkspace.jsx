@@ -511,7 +511,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       ) : null}
 
       <div className="grid gap-6">
-        <section className={`${compact ? "h-[560px] p-3" : "p-4"} overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)]`}>
+        <section className={`${compact ? "h-[680px] p-3" : "p-4"} overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)]`}>
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.agenda}</p>
