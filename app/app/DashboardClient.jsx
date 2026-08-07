@@ -641,7 +641,11 @@ async function colorFallback(builder) {
 
 async function optionalResource(builder, resource) {
   try {
-    return await builder();
+    const response = await builder();
+    if (response?.error && (missingResource(response.error, resource) || missingColumn(response.error))) {
+      return { data: [], error: null };
+    }
+    return response;
   } catch (error) {
     if (!missingResource(error, resource) && !missingColumn(error)) throw error;
     return { data: [], error: null };
@@ -676,6 +680,10 @@ function addMonths(date, months) {
 
 function addYears(date, years) {
   return new Date(date.getFullYear() + years, 0, 1);
+}
+
+function monthKey(date) {
+  return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, "0")}`;
 }
 
 function weeksInclusive(start, end) {
@@ -734,6 +742,33 @@ function fallbackPeriodEndExclusive(start, billingCycle) {
   return billingCycle === "weekly" ? new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000) : addMonths(startOfMonth(start), 1);
 }
 
+function getBillingCopy(locale) {
+  if (locale === "pt") {
+    return {
+      currentMonth: "Mês atual",
+      previousMonths: "Meses anteriores",
+      invoices: "Faturas dos clientes",
+      noInvoices: "Ainda não existem faturas neste período.",
+      total: "Total",
+      paid: "Pago",
+      pending: "Pendente",
+      clients: "Clientes",
+      period: "Período",
+    };
+  }
+  return {
+    currentMonth: "Current month",
+    previousMonths: "Previous months",
+    invoices: "Client invoices",
+    noInvoices: "No invoices for this period yet.",
+    total: "Total",
+    paid: "Paid",
+    pending: "Pending",
+    clients: "Clients",
+    period: "Period",
+  };
+}
+
 function isPackPlan(plan) {
   const mode = String(plan?.plan_mode || "").toLowerCase();
   return mode.includes("pack") || numericValue(plan?.pack_sessions_count) > 0;
@@ -749,7 +784,64 @@ function firstName(value, fallback = "Client") {
   return parts[0] || fallback;
 }
 
-function summarizeBusiness(rows, billingProfiles, trainingPlans, students, inviteRows = [], portalAgendaRows = [], now = new Date()) {
+function buildBillingMonths(invoices = [], students = [], now = new Date()) {
+  const studentsById = Object.fromEntries((students || []).map((student) => [student.id, student]));
+  const months = new Map();
+
+  for (const invoice of invoices || []) {
+    const status = String(invoice.status || "").toLowerCase();
+    if (status === "void") continue;
+
+    const periodStart = new Date(invoice.period_start || invoice.created_at || now);
+    if (Number.isNaN(periodStart.getTime())) continue;
+
+    const key = monthKey(periodStart);
+    const totalCents = numericValue(invoice.total_cents);
+    const paid = status === "paid";
+    const month = months.get(key) || {
+      key,
+      date: startOfMonth(periodStart),
+      invoices: [],
+      totalCents: 0,
+      paidCents: 0,
+      pendingCents: 0,
+    };
+
+    month.invoices.push({
+      id: invoice.id,
+      studentId: invoice.student_id,
+      studentName: studentsById[invoice.student_id]?.full_name || "Client",
+      clientColorHex: studentsById[invoice.student_id]?.client_color_hex || null,
+      invoiceNumber: invoice.invoice_number,
+      status,
+      totalCents,
+      paid,
+      periodStart: invoice.period_start,
+      periodEnd: invoice.period_end,
+      paidAt: invoice.paid_at,
+      billingCycle: invoice.billing_cycle || "monthly",
+    });
+    month.totalCents += totalCents;
+    month.paidCents += paid ? totalCents : 0;
+    month.pendingCents += paid ? 0 : totalCents;
+    months.set(key, month);
+  }
+
+  const ordered = [...months.values()]
+    .map((month) => ({
+      ...month,
+      invoices: [...month.invoices].sort((a, b) => Number(a.paid) - Number(b.paid) || b.totalCents - a.totalCents || a.studentName.localeCompare(b.studentName)),
+    }))
+    .sort((a, b) => b.date - a.date);
+  const currentKey = monthKey(now);
+
+  return {
+    currentMonth: ordered.find((month) => month.key === currentKey) || { key: currentKey, date: startOfMonth(now), invoices: [], totalCents: 0, paidCents: 0, pendingCents: 0 },
+    previousMonths: ordered.filter((month) => month.key !== currentKey).slice(0, 6),
+  };
+}
+
+function summarizeBusiness(rows, billingProfiles, trainingPlans, students, inviteRows = [], portalAgendaRows = [], invoiceRows = [], now = new Date()) {
   const monthStart = startOfMonth(now);
   const yearStart = startOfYear(now);
   const studentsById = Object.fromEntries((students || []).map((student) => [student.id, student]));
@@ -934,6 +1026,7 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, invit
     overdueBillingCount,
     expiringPacks: reminders.filter((item) => item.type === "pack_low").length,
     attention,
+    billingMonths: buildBillingMonths(invoiceRows, students, now),
     dueProfiles: pendingProfiles.slice(0, 5).map((profile) => ({
       ...profile,
       studentName: studentsById[profile.student_id]?.full_name || "Client",
@@ -1019,12 +1112,13 @@ async function loadCore(supabase, user) {
     supabase.from("agenda_items").select("id, student_id, item_type, status, scheduled_at, booking_types(price_eur, name)").eq("coach_id", user.id).gte("scheduled_at", yearStartIso).lt("scheduled_at", nowIso).neq("status", "canceled").order("scheduled_at", { ascending: false }),
     optionalResource(() => supabase.from("athlete_invites").select("student_id, status, created_at").order("created_at", { ascending: false }).limit(80), "athlete_invites"),
     optionalResource(() => supabase.from("agenda_items").select("id, student_id, item_type, scheduled_at, status, notes, requested_by_role").eq("coach_id", user.id).order("scheduled_at", { ascending: false }).limit(80), "agenda_items"),
+    optionalResource(() => supabase.from("coach_invoices").select("id, student_id, invoice_number, status, billing_cycle, total_cents, period_start, period_end, paid_at, created_at").eq("coach_id", user.id).gte("period_start", yearStartIso.slice(0, 10)).order("period_start", { ascending: false }).limit(120), "coach_invoices"),
   ]);
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
   const students = responses[2].data ?? [];
   const upcomingAgenda = (responses[6].data ?? []).filter(isCoachAgendaItem);
-  const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students, responses[10].data ?? [], responses[11].data ?? []);
+  const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students, responses[10].data ?? [], responses[11].data ?? [], responses[12].data ?? []);
   return {
     profile: responses[0].data,
     subscription: responses[1].data,
@@ -1404,6 +1498,88 @@ function BillingProfileRow({ item, locale = "en" }) {
         {item.next_due_at ? <p className="text-xs text-[var(--text-muted)]">{formatDate(item.next_due_at, true, locale)}</p> : null}
       </div>
     </div>
+  );
+}
+
+function BillingInvoiceRow({ invoice, locale }) {
+  const status = prettifyStatus(invoice.status);
+  const paid = invoice.paid;
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-[16px] border border-slate-100 bg-white px-3 py-2.5 shadow-[0_8px_20px_rgba(15,23,42,0.035)]">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorDot(invoice.clientColorHex) }} />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-[var(--text)]">{invoice.studentName}</p>
+          <p className="truncate text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            {invoice.invoiceNumber ? `#${invoice.invoiceNumber}` : invoice.billingCycle} · {status}
+          </p>
+        </div>
+      </div>
+      <div className="shrink-0 text-right">
+        <p className="text-sm font-semibold text-[var(--text)]">{formatCurrency(invoice.totalCents / 100, locale)}</p>
+        <span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] ${paid ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+          {status}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function BillingMonthCard({ month, locale, labels, featured = false }) {
+  const hasInvoices = month.invoices.length > 0;
+  return (
+    <div className={`${featured ? "rounded-[24px] border border-[var(--accent)]/20 bg-[linear-gradient(135deg,rgba(47,211,132,0.1),rgba(255,255,255,0.96))] p-4" : "rounded-[20px] border border-slate-200 bg-slate-50/70 p-3"}`}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--accent)]">{featured ? labels.currentMonth : labels.period}</p>
+          <h3 className={`${featured ? "text-xl" : "text-base"} mt-1 font-semibold text-[var(--text)]`}>
+            {month.date.toLocaleDateString(localeTag(locale), { month: "long", year: "numeric" })}
+          </h3>
+          <p className="mt-1 text-xs text-[var(--text-muted)]">{month.invoices.length} {labels.clients}</p>
+        </div>
+        <div className="grid min-w-[180px] grid-cols-3 gap-2 text-right">
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{labels.total}</p>
+            <p className="text-sm font-semibold text-[var(--text)]">{formatCurrency(month.totalCents / 100, locale)}</p>
+          </div>
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{labels.paid}</p>
+            <p className="text-sm font-semibold text-emerald-700">{formatCurrency(month.paidCents / 100, locale)}</p>
+          </div>
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{labels.pending}</p>
+            <p className="text-sm font-semibold text-amber-700">{formatCurrency(month.pendingCents / 100, locale)}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2">
+        {hasInvoices ? month.invoices.map((invoice) => <BillingInvoiceRow key={invoice.id} invoice={invoice} locale={locale} />) : <div className="rounded-[16px] border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-[var(--text-muted)]">{labels.noInvoices}</div>}
+      </div>
+    </div>
+  );
+}
+
+function BillingOverviewSection({ business, copy, locale }) {
+  const labels = getBillingCopy(locale);
+  const months = business.billingMonths || {};
+  const previousMonths = months.previousMonths || [];
+
+  return (
+    <SectionCard eyebrow={copy.financeOverview} title={copy.financeOverview} description={copy.financeOverviewText}>
+      <div className="grid gap-3">
+        <BillingMonthCard month={months.currentMonth || { date: startOfMonth(new Date()), invoices: [], totalCents: 0, paidCents: 0, pendingCents: 0 }} locale={locale} labels={labels} featured />
+        <div className="rounded-[22px] border border-slate-200 bg-white p-3">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{labels.previousMonths}</p>
+            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-[var(--text-muted)]">{previousMonths.length}</span>
+          </div>
+          <div className="grid gap-2 xl:grid-cols-2">
+            {previousMonths.length > 0 ? previousMonths.map((month) => <BillingMonthCard key={month.key} month={month} locale={locale} labels={labels} />) : <div className="rounded-[16px] border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-[var(--text-muted)]">{labels.noInvoices}</div>}
+          </div>
+        </div>
+      </div>
+    </SectionCard>
   );
 }
 
@@ -2017,38 +2193,7 @@ export default function DashboardClient() {
                 />
               </div>
 
-              <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
-                <SectionCard eyebrow={copy.financeOverview} title={copy.financeOverview} description={null}>
-                  <div className="grid gap-2 sm:grid-cols-4">
-                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.monthlyBilling}</p>
-                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatCurrency(core.business.monthlyRevenue, activeLocale)}</p>
-                    </div>
-                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.yearlyBilling}</p>
-                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{formatCurrency(core.business.yearlyRevenue, activeLocale)}</p>
-                    </div>
-                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.deliveredSessions}</p>
-                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{core.business.deliveredTrainings}</p>
-                    </div>
-                    <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.overdueBilling}</p>
-                      <p className="mt-2 text-lg font-semibold text-[var(--text)]">{core.business.overdueBillingCount}</p>
-                    </div>
-                  </div>
-                </SectionCard>
-
-                <SectionCard eyebrow={copy.pendingBilling} title={copy.dueProfiles} description={null}>
-                  <div className="grid gap-2">
-                    {core.business.dueProfiles.length > 0 ? (
-                      core.business.dueProfiles.slice(0, 4).map((item) => <BillingProfileRow key={`${item.student_id}-${item.next_due_at || item.status}`} item={item} locale={activeLocale} />)
-                    ) : (
-                      <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noDueProfiles}</div>
-                    )}
-                  </div>
-                </SectionCard>
-              </div>
+              <BillingOverviewSection business={core.business} copy={copy} locale={activeLocale} />
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <button onClick={openBookingModal} className="rounded-[20px] border border-[var(--accent)] bg-[var(--accent)] px-4 py-3 text-left font-semibold text-[var(--accent-foreground)] shadow-[var(--shadow-soft)]">
