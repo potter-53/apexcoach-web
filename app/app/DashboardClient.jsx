@@ -1271,18 +1271,18 @@ function ClientAvatar({ studentId, name, colorHex, size = 40 }) {
 
 function AttentionRow({ conversation, selected, copy, onClick }) {
   return (
-    <button onClick={onClick} className={`flex w-full items-center justify-between gap-3 rounded-[16px] border px-3 py-3 text-left transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-soft)] ${selected ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-white"}`}>
-      <div className="flex min-w-0 items-center gap-3">
-        <ClientAvatar studentId={conversation.studentId} name={conversation.studentName} colorHex={conversation.clientColorHex} size={42} />
+    <button onClick={onClick} className={`flex w-full items-center justify-between gap-2.5 rounded-[14px] border px-2.5 py-2 text-left transition hover:border-[var(--accent)] ${selected ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-white"}`}>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <ClientAvatar studentId={conversation.studentId} name={conversation.studentName} colorHex={conversation.clientColorHex} size={34} />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <p className="truncate text-sm font-semibold text-[var(--text)]">{conversation.studentName}</p>
             {conversation.priority >= 3 ? <span className="h-2 w-2 shrink-0 rounded-full bg-rose-400" /> : null}
           </div>
-          <p className="truncate text-xs text-[var(--text-muted)]">{conversation.preview}</p>
+          <p className="truncate text-[11px] leading-4 text-[var(--text-muted)]">{conversation.preview}</p>
         </div>
       </div>
-      <span className={`flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full border px-2 text-[11px] font-semibold ${conversation.unread > 0 ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)]"}`}>
+      <span className={`flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full border px-1.5 text-[10px] font-semibold ${conversation.unread > 0 ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)]"}`}>
         {conversation.unread > 0 ? conversation.unread : <Check size={13} />}
       </span>
     </button>
@@ -1291,9 +1291,9 @@ function AttentionRow({ conversation, selected, copy, onClick }) {
 
 function CoachHubThread({ conversation, copy, locale, onBack }) {
   return (
-    <div className="grid min-h-[390px] min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden rounded-[20px] border border-[var(--border)] bg-white">
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-muted)] px-3 py-3">
-        <button onClick={onBack} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
+    <div className="grid h-full min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[20px] border border-[var(--border)] bg-white">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2.5">
+        <button onClick={onBack} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
           <ArrowLeft size={13} />
           {copy.inboxBack}
         </button>
@@ -1302,21 +1302,21 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
             <p className="truncate text-sm font-semibold text-[var(--text)]">{conversation.studentName}</p>
             <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--accent)]">{copy.inboxPendingThread}</p>
           </div>
-          <ClientAvatar studentId={conversation.studentId} name={conversation.studentName} colorHex={conversation.clientColorHex} size={38} />
+          <ClientAvatar studentId={conversation.studentId} name={conversation.studentName} colorHex={conversation.clientColorHex} size={34} />
         </div>
       </div>
 
-      <div className="grid min-w-0 content-start gap-3 overflow-y-auto overflow-x-hidden px-3 py-4">
+      <div className="grid min-w-0 content-start gap-2 overflow-y-auto overflow-x-hidden px-3 py-3">
         {conversation.items.map((item) => {
           const fromCoach = item.sender === "coach";
           const fromClient = item.sender === "client";
           return (
-            <div key={item.id} className={`min-w-0 max-w-[92%] overflow-hidden rounded-[18px] border px-3.5 py-3 [overflow-wrap:anywhere] ${fromCoach ? "ml-auto rounded-tr-md border-[var(--accent)]/20 bg-[var(--accent-soft)]" : fromClient ? "rounded-tl-md border-[var(--border)] bg-white" : "mx-auto rounded-t-md border-[var(--border)] bg-[var(--surface-muted)]"}`}>
+            <div key={item.id} className={`min-w-0 max-w-[86%] overflow-hidden rounded-[14px] border px-3 py-2 [overflow-wrap:anywhere] ${fromCoach ? "ml-auto rounded-br-sm border-emerald-200 bg-emerald-50" : fromClient ? "rounded-bl-sm border-sky-200 bg-sky-50" : "mx-auto max-w-[78%] rounded-b-sm border-slate-200 bg-slate-50"}`}>
               <div className="flex items-center justify-between gap-3">
-                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">{attentionAuthor(item, copy)}</p>
-                {item.requiresAction ? <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
+                <p className={`truncate text-[9px] font-semibold uppercase tracking-[0.14em] ${fromCoach ? "text-emerald-700" : fromClient ? "text-sky-700" : "text-slate-500"}`}>{attentionAuthor(item, copy)}</p>
+                {item.requiresAction ? <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
               </div>
-              <p className="mt-2 break-words text-sm leading-5 text-[var(--text)]">{attentionMessage(item, copy, locale)}</p>
+              <p className="mt-1.5 break-words text-[12px] leading-5 text-[var(--text)]">{attentionMessage(item, copy, locale)}</p>
               <div className="mt-2 flex items-center justify-between gap-3">
                 <p className="text-[10px] text-[var(--text-muted)]">{item.time ? `${formatDate(item.time, false, locale)} · ${formatTime(item.time, locale)}` : ""}</p>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">{attentionLabel(item, copy)}</p>
@@ -1325,16 +1325,16 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
           );
         })}
 
-        <div className="ml-auto min-w-0 max-w-[88%] overflow-hidden rounded-[18px] rounded-tr-md bg-[var(--accent)] px-3.5 py-3 text-[var(--accent-foreground)] [overflow-wrap:anywhere]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] opacity-75">{copy.inboxSuggestedAction}</p>
-          <p className="mt-1 break-words text-sm font-semibold">{attentionAction(conversation.items[0], copy)}</p>
+        <div className="ml-auto min-w-0 max-w-[84%] overflow-hidden rounded-[14px] rounded-br-sm bg-[var(--accent)] px-3 py-2 text-[var(--accent-foreground)] [overflow-wrap:anywhere]">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.12em] opacity-75">{copy.inboxSuggestedAction}</p>
+          <p className="mt-1 break-words text-[12px] font-semibold leading-5">{attentionAction(conversation.items[0], copy)}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-t border-[var(--border)] bg-white px-3 py-3">
-        <input disabled placeholder={copy.inboxReplyPlaceholder} className="min-w-0 flex-1 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2.5 text-sm text-[var(--text-muted)] outline-none" />
-        <button disabled className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)] opacity-50">
-          <Send size={15} />
+      <div className="flex items-center gap-2 border-t border-[var(--border)] bg-white px-3 py-2.5">
+        <input disabled placeholder={copy.inboxReplyPlaceholder} className="min-w-0 flex-1 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-2 text-xs text-[var(--text-muted)] outline-none" />
+        <button disabled className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)] opacity-50">
+          <Send size={14} />
         </button>
       </div>
     </div>
@@ -1353,32 +1353,41 @@ function CoachHubCard({ copy, attentionItems, locale }) {
   }, [selectedConversationId, selectedConversation]);
 
   return (
-    <SectionCard
-      eyebrow={copy.coachHub}
-      title="Coach HUB"
-      description={selectedConversation ? copy.inboxOpenThread : copy.attentionBoardText}
-      action={<span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]"><MessageCircle size={12} />{conversations.length}</span>}
-    >
-      {selectedConversation ? (
-        <CoachHubThread conversation={selectedConversation} copy={copy} locale={locale} onBack={() => setSelectedConversationId("")} />
-      ) : (
-        <div className="grid gap-2">
-          {conversations.length > 0 ? (
-            conversations.map((conversation) => (
-              <AttentionRow
-                key={conversation.id}
-                conversation={conversation}
-                selected={conversation.id === selectedConversationId}
-                copy={copy}
-                onClick={() => setSelectedConversationId(conversation.id)}
-              />
-            ))
-          ) : (
-            <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-white px-3 py-5 text-sm leading-6 text-[var(--text-muted)]">{copy.noAttention}</div>
-          )}
+    <section className="grid h-[680px] min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-3.5 shadow-[var(--shadow-soft)] sm:p-4">
+      <div className="flex min-w-0 items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--accent)]">{copy.coachHub}</p>
+          <h2 className="mt-1 text-xl font-semibold text-[var(--text)]">Coach HUB</h2>
+          <p className="mt-1 truncate text-xs text-[var(--text-muted)]">{selectedConversation ? copy.inboxOpenThread : copy.attentionBoardText}</p>
         </div>
-      )}
-    </SectionCard>
+        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+          <MessageCircle size={12} />
+          {conversations.length}
+        </span>
+      </div>
+
+      <div className="mt-3 min-h-0 overflow-hidden">
+        {selectedConversation ? (
+          <CoachHubThread conversation={selectedConversation} copy={copy} locale={locale} onBack={() => setSelectedConversationId("")} />
+        ) : (
+          <div className="grid h-full content-start gap-1.5 overflow-y-auto overflow-x-hidden pr-1">
+            {conversations.length > 0 ? (
+              conversations.map((conversation) => (
+                <AttentionRow
+                  key={conversation.id}
+                  conversation={conversation}
+                  selected={conversation.id === selectedConversationId}
+                  copy={copy}
+                  onClick={() => setSelectedConversationId(conversation.id)}
+                />
+              ))
+            ) : (
+              <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-white px-3 py-5 text-sm leading-6 text-[var(--text-muted)]">{copy.noAttention}</div>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 
