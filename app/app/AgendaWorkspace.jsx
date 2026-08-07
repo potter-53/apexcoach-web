@@ -511,7 +511,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       ) : null}
 
       <div className="grid gap-6">
-        <section className={`${compact ? "h-[680px] p-3" : "p-4"} overflow-hidden rounded-[28px] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.9))] shadow-[0_24px_70px_rgba(15,23,42,0.07)]`}>
+        <section className={`${compact ? "grid h-[640px] grid-rows-[auto_minmax(0,1fr)] p-3" : "p-4"} overflow-hidden rounded-[26px] border border-slate-200/80 bg-white shadow-[0_18px_48px_rgba(15,23,42,0.045)]`}>
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.agenda}</p>
@@ -561,7 +561,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAgenda}</div> : null}
 
           {mode === "week" && compact ? (
-            <div className="mt-3 h-[448px] overflow-hidden rounded-[22px] border border-slate-200/70 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+            <div className="mt-3 min-h-0 overflow-hidden rounded-[20px] border border-slate-200/70 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
               <div className="relative grid h-full grid-cols-[48px_repeat(7,minmax(0,1fr))] grid-rows-[44px_1fr] overflow-hidden">
                 <div className="border-r border-slate-100 bg-slate-50/80" />
                 {weekDays.map((day) => {
@@ -622,7 +622,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                                 notes: item.notes || "",
                               })
                             }
-                            className="absolute left-1 right-1 overflow-hidden rounded-xl bg-[var(--accent-soft)] px-2 py-1 text-left shadow-[0_8px_18px_rgba(15,23,42,0.08)] ring-1 ring-[var(--accent)]/15"
+                            className="absolute left-1 right-1 overflow-hidden rounded-xl bg-emerald-50 px-2 py-1 text-left shadow-[0_8px_18px_rgba(15,23,42,0.07)] ring-1 ring-emerald-200/80"
                             style={compactItemStyle(item)}
                           >
                             <p className="truncate text-[10px] font-semibold leading-4 text-[var(--text)]">{formatTime(item.scheduledAt, locale)} {item.studentName}</p>
