@@ -3,7 +3,7 @@
 import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, Package2, Plus, ShieldCheck, TimerReset, Users, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CalendarDays, Check, ClipboardList, Dumbbell, Globe2, LayoutDashboard, LoaderCircle, LogOut, MessageCircle, Package2, Plus, Send, ShieldCheck, TimerReset, Users, X } from "lucide-react";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getStoredCoachLocale, guessCoachLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import AgendaWorkspace from "./AgendaWorkspace";
@@ -147,7 +147,7 @@ const DASHBOARD_COPY = {
     financeOverview: "Billing overview",
     financeOverviewText: "What is billed, what is pending, and where the coach needs to act next.",
     attentionBoard: "Client inbox",
-    attentionBoardText: "Pending client actions grouped by priority.",
+    attentionBoardText: "Recent client conversations with pending actions first.",
     noAttention: "No pending client actions right now.",
     pendingAmount: "Pending amount",
     dueProfiles: "Clients awaiting billing follow-up",
@@ -155,6 +155,16 @@ const DASHBOARD_COPY = {
     actionMissing: "bookings missing",
     actionPack: "pack sessions left",
     actionBilling: "billing pending",
+    inboxOpenThread: "Open client thread",
+    inboxBack: "Back to inbox",
+    inboxReplyPlaceholder: "Write a note or follow-up...",
+    inboxPendingThread: "Pending thread",
+    inboxSuggestedAction: "Suggested next action",
+    inboxAutoMessage: "APEX Coach detected this pending client action.",
+    inboxBillingAction: "Review billing status and follow up with the client.",
+    inboxScheduleAction: "Review the plan and add the missing booking.",
+    inboxPackAction: "Confirm the pack renewal or create the next package.",
+    inboxNoConversation: "Select a client to open the thread inside the Coach HUB.",
   },
   pt: {
     tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Avaliações", agenda: "Agenda", trainings: "Treinos", coach: "Coach" },
@@ -254,7 +264,7 @@ const DASHBOARD_COPY = {
     financeOverview: "Visão de faturação",
     financeOverviewText: "O que está a entrar, o que falta regularizar e onde o coach precisa de agir.",
     attentionBoard: "Inbox de clientes",
-    attentionBoardText: "Pendências dos clientes organizadas por prioridade.",
+    attentionBoardText: "Conversas recentes com clientes, com pendências no topo.",
     noAttention: "Não existem pendências de clientes neste momento.",
     pendingAmount: "Valor pendente",
     dueProfiles: "Clientes à espera de seguimento de cobrança",
@@ -262,6 +272,16 @@ const DASHBOARD_COPY = {
     actionMissing: "marcações em falta",
     actionPack: "sessões de pack restantes",
     actionBilling: "cobrança pendente",
+    inboxOpenThread: "Abrir conversa do cliente",
+    inboxBack: "Voltar à inbox",
+    inboxReplyPlaceholder: "Escrever nota ou seguimento...",
+    inboxPendingThread: "Conversa pendente",
+    inboxSuggestedAction: "Próxima ação sugerida",
+    inboxAutoMessage: "A APEX Coach detetou esta pendência do cliente.",
+    inboxBillingAction: "Revê o estado da cobrança e faz seguimento com o cliente.",
+    inboxScheduleAction: "Revê o plano e adiciona a marcação em falta.",
+    inboxPackAction: "Confirma a renovação do pack ou cria o próximo pacote.",
+    inboxNoConversation: "Seleciona um cliente para abrir a conversa dentro do Coach HUB.",
   },
   es: {
     tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Evaluaciones", agenda: "Agenda", trainings: "Entrenamientos", coach: "Coach" },
@@ -361,7 +381,7 @@ const DASHBOARD_COPY = {
     financeOverview: "Resumen de facturación",
     financeOverviewText: "Lo que entra, lo que falta regularizar y dónde el coach debe actuar.",
     attentionBoard: "Inbox de clientes",
-    attentionBoardText: "Pendientes de clientes organizados por prioridad.",
+    attentionBoardText: "Conversaciones recientes con clientes, con pendientes arriba.",
     noAttention: "No hay pendientes de clientes ahora mismo.",
     pendingAmount: "Importe pendiente",
     dueProfiles: "Clientes pendientes de seguimiento de cobro",
@@ -369,6 +389,16 @@ const DASHBOARD_COPY = {
     actionMissing: "reservas pendientes",
     actionPack: "sesiones de pack restantes",
     actionBilling: "cobro pendiente",
+    inboxOpenThread: "Abrir conversación del cliente",
+    inboxBack: "Volver a la inbox",
+    inboxReplyPlaceholder: "Escribir nota o seguimiento...",
+    inboxPendingThread: "Conversación pendiente",
+    inboxSuggestedAction: "Siguiente acción sugerida",
+    inboxAutoMessage: "APEX Coach detectó esta acción pendiente del cliente.",
+    inboxBillingAction: "Revisa el estado de cobro y haz seguimiento con el cliente.",
+    inboxScheduleAction: "Revisa el plan y añade la reserva pendiente.",
+    inboxPackAction: "Confirma la renovación del pack o crea el próximo paquete.",
+    inboxNoConversation: "Selecciona un cliente para abrir la conversación dentro del Coach HUB.",
   },
   fr: {
     tabs: { dashboard: "Dashboard", clients: "Clients", assessments: "Évaluations", agenda: "Agenda", trainings: "Entraînements", coach: "Coach" },
@@ -468,7 +498,7 @@ const DASHBOARD_COPY = {
     financeOverview: "Vue facturation",
     financeOverviewText: "Ce qui entre, ce qui reste à régulariser et où le coach doit agir.",
     attentionBoard: "Inbox clients",
-    attentionBoardText: "Actions clients en attente, organisées par priorité.",
+    attentionBoardText: "Conversations clients récentes, avec les actions en attente en haut.",
     noAttention: "Aucune action client en attente pour le moment.",
     pendingAmount: "Montant en attente",
     dueProfiles: "Clients en attente de suivi de facturation",
@@ -476,6 +506,16 @@ const DASHBOARD_COPY = {
     actionMissing: "rendez-vous manquants",
     actionPack: "séances pack restantes",
     actionBilling: "facturation en attente",
+    inboxOpenThread: "Ouvrir la conversation client",
+    inboxBack: "Retour à l'inbox",
+    inboxReplyPlaceholder: "Écrire une note ou un suivi...",
+    inboxPendingThread: "Conversation en attente",
+    inboxSuggestedAction: "Prochaine action suggérée",
+    inboxAutoMessage: "APEX Coach a détecté cette action client en attente.",
+    inboxBillingAction: "Vérifie l'état de facturation et fais le suivi avec le client.",
+    inboxScheduleAction: "Vérifie le plan et ajoute le rendez-vous manquant.",
+    inboxPackAction: "Confirme le renouvellement du pack ou crée le prochain forfait.",
+    inboxNoConversation: "Sélectionne un client pour ouvrir la conversation dans le Coach HUB.",
   },
 };
 
@@ -680,6 +720,7 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now =
   const billingAlerts = pendingProfiles.map((profile) => ({
     id: `billing-${profile.student_id}`,
     type: "billing_pending",
+    studentId: profile.student_id,
     studentName: studentsById[profile.student_id]?.full_name || "Client",
     clientColorHex: studentsById[profile.student_id]?.client_color_hex || null,
     attentionCount: 1,
@@ -707,6 +748,7 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now =
         reminders.push({
           id: `pack-${studentId}`,
           type: "pack_low",
+          studentId,
           studentName: studentsById[studentId]?.full_name || "Client",
           clientColorHex: studentsById[studentId]?.client_color_hex || null,
           attentionCount: remaining,
@@ -731,6 +773,7 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now =
       reminders.push({
         id: `schedule-${studentId}`,
         type: "weekly_shortfall",
+        studentId,
         studentName: studentsById[studentId]?.full_name || "Client",
         clientColorHex: studentsById[studentId]?.client_color_hex || null,
         attentionCount: missingCount,
@@ -946,57 +989,148 @@ function DashboardHero({ coachName, core, copy, locale, onCreate }) {
   );
 }
 
-function AttentionRow({ item, copy, onClick }) {
-  const label = item.type === "pack_low" ? copy.actionPack : item.type === "billing_pending" ? copy.actionBilling : copy.actionMissing;
+function attentionLabel(item, copy) {
+  return item.type === "pack_low" ? copy.actionPack : item.type === "billing_pending" ? copy.actionBilling : copy.actionMissing;
+}
+
+function attentionAction(item, copy) {
+  if (item.type === "pack_low") return copy.inboxPackAction;
+  if (item.type === "billing_pending") return copy.inboxBillingAction;
+  return copy.inboxScheduleAction;
+}
+
+function buildInboxConversations(attentionItems, copy) {
+  const conversations = new Map();
+  for (const item of attentionItems) {
+    const key = item.studentId || item.studentName || item.id;
+    const current = conversations.get(key) || {
+      id: key,
+      studentName: item.studentName,
+      clientColorHex: item.clientColorHex,
+      unread: 0,
+      priority: 0,
+      items: [],
+    };
+    const priority = item.type === "billing_pending" ? 3 : item.type === "weekly_shortfall" ? 2 : 1;
+    current.unread += 1;
+    current.priority = Math.max(current.priority, priority);
+    current.items.push(item);
+    conversations.set(key, current);
+  }
+
+  return [...conversations.values()]
+    .map((conversation) => ({
+      ...conversation,
+      preview: attentionLabel(conversation.items[0], copy),
+      totalActions: conversation.items.reduce((sum, item) => sum + Math.max(1, item.attentionCount || 1), 0),
+    }))
+    .sort((a, b) => b.priority - a.priority || b.totalActions - a.totalActions || a.studentName.localeCompare(b.studentName));
+}
+
+function AttentionRow({ conversation, selected, copy, onClick }) {
+  const initials = (conversation.studentName || copy.client)
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
   return (
-    <button onClick={onClick} className="flex w-full items-center justify-between gap-3 rounded-[14px] border border-[var(--border)] bg-white px-3 py-2.5 text-left transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-soft)]">
+    <button onClick={onClick} className={`flex w-full items-center justify-between gap-3 rounded-[16px] border px-3 py-3 text-left transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-soft)] ${selected ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-white"}`}>
       <div className="flex min-w-0 items-center gap-3">
-        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colorDot(item.clientColorHex) }} />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/70 text-xs font-semibold text-[var(--text)] shadow-sm" style={{ background: colorDot(conversation.clientColorHex) }}>
+          {initials || "C"}
+        </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-[var(--text)]">{item.studentName}</p>
-          <p className="truncate text-xs text-[var(--text-muted)]">{label}</p>
+          <div className="flex items-center gap-2">
+            <p className="truncate text-sm font-semibold text-[var(--text)]">{conversation.studentName}</p>
+            {conversation.priority >= 3 ? <span className="h-2 w-2 shrink-0 rounded-full bg-rose-400" /> : null}
+          </div>
+          <p className="truncate text-xs text-[var(--text-muted)]">{conversation.preview}</p>
         </div>
       </div>
-      <span className="rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text)]">{item.attentionCount}</span>
+      <span className="flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2 text-[11px] font-semibold text-[var(--text)]">{conversation.unread}</span>
     </button>
   );
 }
 
-function CoachHubCard({ copy, attentionItems, onOpenCoach, onOpenClients, onOpenAgenda }) {
-  const billingCount = attentionItems.filter((item) => item.type === "billing_pending").length;
-  const scheduleCount = attentionItems.filter((item) => item.type === "weekly_shortfall").length;
-  const packCount = attentionItems.filter((item) => item.type === "pack_low").length;
+function CoachHubThread({ conversation, copy, onBack }) {
+  return (
+    <div className="grid min-h-[390px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[20px] border border-[var(--border)] bg-white">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-muted)] px-3 py-3">
+        <button onClick={onBack} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
+          <ArrowLeft size={13} />
+          {copy.inboxBack}
+        </button>
+        <div className="min-w-0 text-right">
+          <p className="truncate text-sm font-semibold text-[var(--text)]">{conversation.studentName}</p>
+          <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--accent)]">{copy.inboxPendingThread}</p>
+        </div>
+      </div>
+
+      <div className="grid content-start gap-3 overflow-y-auto px-3 py-4">
+        {conversation.items.map((item) => (
+          <div key={item.id} className="max-w-[92%] rounded-[18px] rounded-tl-md border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">{attentionLabel(item, copy)}</p>
+            <p className="mt-2 text-sm leading-5 text-[var(--text)]">{copy.inboxAutoMessage}</p>
+            <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">{attentionAction(item, copy)}</p>
+          </div>
+        ))}
+
+        <div className="ml-auto max-w-[88%] rounded-[18px] rounded-tr-md bg-[var(--accent)] px-3.5 py-3 text-[var(--accent-foreground)]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] opacity-75">{copy.inboxSuggestedAction}</p>
+          <p className="mt-1 text-sm font-semibold">{attentionAction(conversation.items[0], copy)}</p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 border-t border-[var(--border)] bg-white px-3 py-3">
+        <input disabled placeholder={copy.inboxReplyPlaceholder} className="min-w-0 flex-1 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2.5 text-sm text-[var(--text-muted)] outline-none" />
+        <button disabled className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)] opacity-50">
+          <Send size={15} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CoachHubCard({ copy, attentionItems }) {
+  const [selectedConversationId, setSelectedConversationId] = useState("");
+  const conversations = useMemo(() => buildInboxConversations(attentionItems, copy), [attentionItems, copy]);
+  const selectedConversation = conversations.find((conversation) => conversation.id === selectedConversationId) || null;
+
+  useEffect(() => {
+    if (selectedConversationId && !selectedConversation) {
+      setSelectedConversationId("");
+    }
+  }, [selectedConversationId, selectedConversation]);
+
   return (
     <SectionCard
       eyebrow={copy.coachHub}
       title="Coach HUB"
-      description={copy.attentionBoardText}
-      action={<span className="rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{attentionItems.length}</span>}
+      description={selectedConversation ? copy.inboxOpenThread : copy.attentionBoardText}
+      action={<span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]"><MessageCircle size={12} />{conversations.length}</span>}
     >
-      <div className="grid gap-2.5">
-        <div className="grid grid-cols-3 gap-2">
-          <button onClick={onOpenCoach} className="rounded-[14px] border border-[var(--border)] bg-white px-2.5 py-2 text-left transition hover:border-[var(--accent)]">
-            <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{copy.pendingBilling}</p>
-            <p className="mt-1 text-base font-semibold text-[var(--text)]">{billingCount}</p>
-          </button>
-          <button onClick={onOpenAgenda} className="rounded-[14px] border border-[var(--border)] bg-white px-2.5 py-2 text-left transition hover:border-[var(--accent)]">
-            <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{copy.missingBookings}</p>
-            <p className="mt-1 text-base font-semibold text-[var(--text)]">{scheduleCount}</p>
-          </button>
-          <button onClick={onOpenClients} className="rounded-[14px] border border-[var(--border)] bg-white px-2.5 py-2 text-left transition hover:border-[var(--accent)]">
-            <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{copy.expiringPacks}</p>
-            <p className="mt-1 text-base font-semibold text-[var(--text)]">{packCount}</p>
-          </button>
-        </div>
-
+      {selectedConversation ? (
+        <CoachHubThread conversation={selectedConversation} copy={copy} onBack={() => setSelectedConversationId("")} />
+      ) : (
         <div className="grid gap-2">
-          {attentionItems.length > 0 ? (
-            attentionItems.slice(0, 6).map((item) => <AttentionRow key={item.id} item={item} copy={copy} onClick={item.type === "billing_pending" ? onOpenCoach : item.type === "pack_low" ? onOpenClients : onOpenAgenda} />)
+          {conversations.length > 0 ? (
+            conversations.map((conversation) => (
+              <AttentionRow
+                key={conversation.id}
+                conversation={conversation}
+                selected={conversation.id === selectedConversationId}
+                copy={copy}
+                onClick={() => setSelectedConversationId(conversation.id)}
+              />
+            ))
           ) : (
-            <div className="rounded-[14px] border border-dashed border-[var(--border)] bg-white px-3 py-3 text-xs leading-5 text-[var(--text-muted)]">{copy.noAttention}</div>
+            <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-white px-3 py-5 text-sm leading-6 text-[var(--text-muted)]">{copy.noAttention}</div>
           )}
         </div>
-      </div>
+      )}
     </SectionCard>
   );
 }
@@ -1635,9 +1769,6 @@ export default function DashboardClient() {
                 <CoachHubCard
                   copy={copy}
                   attentionItems={core.business.attention}
-                  onOpenCoach={() => startTransition(() => setActiveTab("coach"))}
-                  onOpenClients={() => startTransition(() => setActiveTab("clients"))}
-                  onOpenAgenda={() => startTransition(() => setActiveTab("agenda"))}
                 />
               </div>
 
