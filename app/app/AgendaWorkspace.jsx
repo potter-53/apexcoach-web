@@ -511,7 +511,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
       ) : null}
 
       <div className="grid gap-6">
-        <section className={`${compact ? "h-[680px] p-3" : "p-4"} overflow-hidden rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)]`}>
+        <section className={`${compact ? "h-[680px] p-3" : "p-4"} overflow-hidden rounded-[28px] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.9))] shadow-[0_24px_70px_rgba(15,23,42,0.07)]`}>
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--accent)]">{copy.agenda}</p>
@@ -561,13 +561,13 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
           {loading ? <div className="mt-5 inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--text-muted)]"><LoaderCircle size={16} className="animate-spin text-[var(--accent)]" />{copy.loadingAgenda}</div> : null}
 
           {mode === "week" && compact ? (
-            <div className="mt-3 h-[448px] overflow-hidden rounded-[18px] border border-[var(--border)] bg-white">
+            <div className="mt-3 h-[448px] overflow-hidden rounded-[22px] border border-slate-200/70 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
               <div className="relative grid h-full grid-cols-[48px_repeat(7,minmax(0,1fr))] grid-rows-[44px_1fr] overflow-hidden">
-                <div className="border-r border-[var(--border)] bg-[var(--surface-muted)]" />
+                <div className="border-r border-slate-100 bg-slate-50/80" />
                 {weekDays.map((day) => {
                   const isToday = day.toDateString() === new Date().toDateString();
                   return (
-                    <div key={`head-${day.toISOString()}`} className={`border-r border-[var(--border)] px-2 py-2 last:border-r-0 ${isToday ? "bg-[var(--accent-soft)]" : "bg-[var(--surface-muted)]"}`}>
+                    <div key={`head-${day.toISOString()}`} className={`border-r border-slate-100 px-2 py-2 last:border-r-0 ${isToday ? "bg-[var(--accent-soft)]" : "bg-slate-50/80"}`}>
                       <div className="flex items-start justify-between gap-1">
                         <div className="min-w-0">
                           <p className="truncate text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{formatDate(day, locale, { weekday: "short" })}</p>
@@ -583,9 +583,9 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
 
                 <div ref={compactCalendarRef} className="relative col-span-8 h-full overflow-y-auto overscroll-contain">
                   <div className="relative grid grid-cols-[48px_repeat(7,minmax(0,1fr))]" style={{ minHeight: `${COMPACT_HOURS.length * COMPACT_HOUR_HEIGHT}px` }}>
-                  <div className="relative border-r border-[var(--border)] bg-[var(--surface-muted)]">
+                  <div className="relative border-r border-slate-100 bg-slate-50/80">
                     {COMPACT_HOURS.map((hour) => (
-                      <div key={hour} className="border-b border-[var(--border)] pr-1 text-right text-[10px] leading-none text-[var(--text-muted)]" style={{ height: `${COMPACT_HOUR_HEIGHT}px` }}>
+                      <div key={hour} className="border-b border-slate-100 pr-1 text-right text-[10px] leading-none text-[var(--text-muted)]" style={{ height: `${COMPACT_HOUR_HEIGHT}px` }}>
                         <span className="-translate-y-1.5 inline-block">{`${hour}`.padStart(2, "0")}:00</span>
                       </div>
                     ))}
@@ -606,9 +606,9 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                             setError(moveError?.message || copy.moveBookingError);
                           }
                         }}
-                        className="relative min-w-0 border-r border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,249,249,0.98))] last:border-r-0"
+                        className="relative min-w-0 border-r border-slate-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(249,250,251,0.72))] last:border-r-0"
                       >
-                        {COMPACT_HOURS.map((hour) => <div key={hour} className="border-b border-[var(--border)]" style={{ height: `${COMPACT_HOUR_HEIGHT}px` }} />)}
+                        {COMPACT_HOURS.map((hour) => <div key={hour} className="border-b border-slate-100" style={{ height: `${COMPACT_HOUR_HEIGHT}px` }} />)}
                         {dayItems.map((item) => (
                           <button
                             key={item.id}
@@ -622,7 +622,7 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
                                 notes: item.notes || "",
                               })
                             }
-                            className="absolute left-1 right-1 overflow-hidden rounded-xl border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-2 py-1 text-left shadow-sm"
+                            className="absolute left-1 right-1 overflow-hidden rounded-xl bg-[var(--accent-soft)] px-2 py-1 text-left shadow-[0_8px_18px_rgba(15,23,42,0.08)] ring-1 ring-[var(--accent)]/15"
                             style={compactItemStyle(item)}
                           >
                             <p className="truncate text-[10px] font-semibold leading-4 text-[var(--text)]">{formatTime(item.scheduledAt, locale)} {item.studentName}</p>

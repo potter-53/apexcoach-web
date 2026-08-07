@@ -1291,9 +1291,9 @@ function AttentionRow({ conversation, selected, copy, onClick }) {
 
 function CoachHubThread({ conversation, copy, locale, onBack }) {
   return (
-    <div className="grid h-full min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[20px] border border-[var(--border)] bg-white">
-      <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2.5">
-        <button onClick={onBack} className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
+    <div className="grid h-full min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[22px] border border-slate-200/70 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.92))] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 bg-white/70 px-3 py-2.5 backdrop-blur">
+        <button onClick={onBack} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:text-[var(--text)]">
           <ArrowLeft size={13} />
           {copy.inboxBack}
         </button>
@@ -1306,15 +1306,15 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
         </div>
       </div>
 
-      <div className="grid min-w-0 content-start gap-2 overflow-y-auto overflow-x-hidden px-3 py-3">
+      <div className="grid min-w-0 content-start gap-2.5 overflow-y-auto overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(47,211,132,0.08),transparent_32%),linear-gradient(180deg,rgba(248,250,252,0.58),rgba(255,255,255,0.86))] px-3 py-3">
         {conversation.items.map((item) => {
           const fromCoach = item.sender === "coach";
           const fromClient = item.sender === "client";
           return (
-            <div key={item.id} className={`min-w-0 max-w-[86%] overflow-hidden rounded-[14px] border px-3 py-2 [overflow-wrap:anywhere] ${fromCoach ? "ml-auto rounded-br-sm border-emerald-200 bg-emerald-50" : fromClient ? "rounded-bl-sm border-sky-200 bg-sky-50" : "mx-auto max-w-[78%] rounded-b-sm border-slate-200 bg-slate-50"}`}>
+            <div key={item.id} className={`min-w-0 max-w-[90%] overflow-hidden rounded-[16px] px-3 py-2.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] ring-1 [overflow-wrap:anywhere] ${fromCoach ? "ml-auto rounded-br-sm bg-emerald-50/95 ring-emerald-100" : fromClient ? "rounded-bl-sm bg-sky-50/95 ring-sky-100" : "mx-auto max-w-[82%] rounded-b-sm bg-white/95 ring-slate-100"}`}>
               <div className="flex items-center justify-between gap-3">
                 <p className={`truncate text-[9px] font-semibold uppercase tracking-[0.14em] ${fromCoach ? "text-emerald-700" : fromClient ? "text-sky-700" : "text-slate-500"}`}>{attentionAuthor(item, copy)}</p>
-                {item.requiresAction ? <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
+                {item.requiresAction ? <span className="rounded-full bg-amber-100/90 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
               </div>
               <p className="mt-1.5 break-words text-[12px] leading-5 text-[var(--text)]">{attentionMessage(item, copy, locale)}</p>
               <div className="mt-2 flex items-center justify-between gap-3">
@@ -1325,14 +1325,14 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
           );
         })}
 
-        <div className="ml-auto min-w-0 max-w-[84%] overflow-hidden rounded-[14px] rounded-br-sm bg-[var(--accent)] px-3 py-2 text-[var(--accent-foreground)] [overflow-wrap:anywhere]">
+        <div className="ml-auto min-w-0 max-w-[88%] overflow-hidden rounded-[16px] rounded-br-sm bg-[var(--accent)] px-3 py-2.5 text-[var(--accent-foreground)] shadow-[0_14px_30px_rgba(47,211,132,0.22)] [overflow-wrap:anywhere]">
           <p className="text-[9px] font-semibold uppercase tracking-[0.12em] opacity-75">{copy.inboxSuggestedAction}</p>
           <p className="mt-1 break-words text-[12px] font-semibold leading-5">{attentionAction(conversation.items[0], copy)}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-t border-[var(--border)] bg-white px-3 py-2.5">
-        <input disabled placeholder={copy.inboxReplyPlaceholder} className="min-w-0 flex-1 rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-2 text-xs text-[var(--text-muted)] outline-none" />
+      <div className="flex items-center gap-2 border-t border-slate-100 bg-white/90 px-3 py-2.5">
+        <input disabled placeholder={copy.inboxReplyPlaceholder} className="min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-[var(--text-muted)] outline-none" />
         <button disabled className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--accent-foreground)] opacity-50">
           <Send size={14} />
         </button>
@@ -1353,14 +1353,14 @@ function CoachHubCard({ copy, attentionItems, locale }) {
   }, [selectedConversationId, selectedConversation]);
 
   return (
-    <section className="grid h-[680px] min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-3.5 shadow-[var(--shadow-soft)] sm:p-4">
+    <section className="grid h-[680px] min-w-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden rounded-[28px] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.9))] p-3.5 shadow-[0_24px_70px_rgba(15,23,42,0.07)] sm:p-4">
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--accent)]">{copy.coachHub}</p>
           <h2 className="mt-1 text-xl font-semibold text-[var(--text)]">Coach HUB</h2>
           <p className="mt-1 truncate text-xs text-[var(--text-muted)]">{selectedConversation ? copy.inboxOpenThread : copy.attentionBoardText}</p>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)] shadow-sm">
           <MessageCircle size={12} />
           {conversations.length}
         </span>
@@ -1370,7 +1370,7 @@ function CoachHubCard({ copy, attentionItems, locale }) {
         {selectedConversation ? (
           <CoachHubThread conversation={selectedConversation} copy={copy} locale={locale} onBack={() => setSelectedConversationId("")} />
         ) : (
-          <div className="grid h-full content-start gap-1.5 overflow-y-auto overflow-x-hidden pr-1">
+          <div className="grid h-full content-start gap-1.5 overflow-y-auto overflow-x-hidden pr-1.5">
             {conversations.length > 0 ? (
               conversations.map((conversation) => (
                 <AttentionRow
