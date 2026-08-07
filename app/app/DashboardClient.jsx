@@ -1306,18 +1306,18 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
         </div>
       </div>
 
-      <div className="grid min-w-0 content-start gap-2 overflow-y-auto overflow-x-hidden bg-[linear-gradient(180deg,rgba(248,250,252,0.72),rgba(255,255,255,0.9))] px-3 py-3">
+      <div className="min-w-0 space-y-2.5 overflow-y-auto overflow-x-hidden bg-[linear-gradient(180deg,rgba(248,250,252,0.72),rgba(255,255,255,0.9))] px-3 py-3">
         {conversation.items.map((item) => {
           const fromCoach = item.sender === "coach";
           const fromClient = item.sender === "client";
           return (
-            <div key={item.id} className={`min-w-0 overflow-hidden rounded-[14px] border border-slate-100 bg-white/92 px-3 py-2 shadow-[0_8px_22px_rgba(15,23,42,0.04)] [overflow-wrap:anywhere] ${fromCoach ? "border-l-4 border-l-emerald-400" : fromClient ? "border-l-4 border-l-sky-400" : "border-l-4 border-l-slate-300"}`}>
-              <div className="flex items-center justify-between gap-3">
-                <p className={`truncate text-[9px] font-semibold uppercase tracking-[0.14em] ${fromCoach ? "text-emerald-700" : fromClient ? "text-sky-700" : "text-slate-500"}`}>{attentionAuthor(item, copy)}</p>
-                {item.requiresAction ? <span className="rounded-full bg-amber-100/90 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
+            <div key={item.id} className={`relative min-w-0 rounded-[15px] border border-slate-100 bg-white px-3 py-2.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)] [overflow-wrap:anywhere] ${fromCoach ? "border-l-[5px] border-l-emerald-400" : fromClient ? "border-l-[5px] border-l-sky-400" : "border-l-[5px] border-l-slate-300"}`}>
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+                <p className={`text-[9px] font-semibold uppercase tracking-[0.14em] ${fromCoach ? "text-emerald-700" : fromClient ? "text-sky-700" : "text-slate-500"}`}>{attentionAuthor(item, copy)}</p>
+                {item.requiresAction ? <span className="shrink-0 rounded-full bg-amber-100/90 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
               </div>
               <p className="mt-1.5 break-words text-[12px] leading-5 text-[var(--text)]">{attentionMessage(item, copy, locale)}</p>
-              <div className="mt-2 flex items-center justify-between gap-3">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                 <p className="text-[10px] text-[var(--text-muted)]">{item.time ? `${formatDate(item.time, false, locale)} · ${formatTime(item.time, locale)}` : ""}</p>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">{attentionLabel(item, copy)}</p>
               </div>
@@ -1325,7 +1325,7 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
           );
         })}
 
-        <div className="min-w-0 overflow-hidden rounded-[14px] bg-slate-950 px-3 py-2.5 text-white shadow-[0_14px_32px_rgba(15,23,42,0.16)] [overflow-wrap:anywhere]">
+        <div className="min-w-0 rounded-[15px] bg-slate-950 px-3 py-2.5 text-white shadow-[0_14px_32px_rgba(15,23,42,0.16)] [overflow-wrap:anywhere]">
           <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-emerald-300">{copy.inboxSuggestedAction}</p>
           <p className="mt-1 break-words text-[12px] font-semibold leading-5">{attentionAction(conversation.items[0], copy)}</p>
         </div>
