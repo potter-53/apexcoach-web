@@ -962,6 +962,67 @@ function AttentionRow({ item, copy, onClick }) {
   );
 }
 
+function CoachHubCard({ coachName, core, copy, locale, attentionItems, onOpenCoach, onOpenClients, onOpenAgenda }) {
+  const activeLanguage = LANGUAGE_OPTIONS.find((option) => option.value === locale);
+  return (
+    <SectionCard
+      eyebrow={copy.coachHub}
+      title="Coach HUB"
+      description={null}
+      action={
+        <button onClick={onOpenCoach} className="rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs font-semibold text-[var(--text)]">
+          {copy.tabs.coach}
+        </button>
+      }
+    >
+      <div className="grid gap-3">
+        <div className="rounded-[18px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-[var(--text)]">{coachName}</p>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p>
+            </div>
+            <ShieldCheck size={17} className="shrink-0 text-[var(--accent-strong)]" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button onClick={onOpenClients} className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-2 text-left transition hover:border-[var(--accent)]">
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.clients}</p>
+            <p className="mt-1 text-lg font-semibold text-[var(--text)]">{core.metrics.clients}</p>
+          </button>
+          <button onClick={onOpenAgenda} className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-2 text-left transition hover:border-[var(--accent)]">
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.agendaSpotlight}</p>
+            <p className="mt-1 text-lg font-semibold text-[var(--text)]">{core.upcomingAgenda.length}</p>
+          </button>
+        </div>
+
+        <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2.5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.activeLanguage}</p>
+              <p className="mt-1 text-sm font-semibold text-[var(--text)]">{activeLanguage?.label || locale.toUpperCase()}</p>
+            </div>
+            <span className="text-xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{activeLanguage?.flag || "🌐"}</span>
+          </div>
+        </div>
+
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.attentionBoard}</p>
+            <span className="rounded-full border border-[var(--border)] bg-white px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">{attentionItems.length}</span>
+          </div>
+          {attentionItems.length > 0 ? (
+            attentionItems.slice(0, 3).map((item) => <AttentionRow key={item.id} item={item} copy={copy} onClick={item.type === "billing_pending" ? onOpenCoach : item.type === "pack_low" ? onOpenClients : onOpenAgenda} />)
+          ) : (
+            <div className="rounded-[14px] border border-dashed border-[var(--border)] bg-white px-3 py-3 text-xs leading-5 text-[var(--text-muted)]">{copy.noAttention}</div>
+          )}
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
+
 function BillingProfileRow({ item, locale = "en" }) {
   const currency = item.currency_code || "EUR";
   return (
@@ -1593,22 +1654,16 @@ export default function DashboardClient() {
 
               <div className="grid gap-3 xl:grid-cols-[1.35fr_0.65fr]">
                 <AgendaWorkspace currentUser={currentUser} compact onOpenCreateBooking={openBookingModal} locale={activeLocale} />
-                <SectionCard eyebrow={copy.attentionBoard} title={copy.attentionBoard} description={null}>
-                  <div className="grid gap-3">
-                    {core.business.attention.length > 0 ? (
-                      core.business.attention.slice(0, 5).map((item) => (
-                        <AttentionRow
-                          key={item.id}
-                          item={item}
-                          copy={copy}
-                          onClick={() => startTransition(() => setActiveTab(item.type === "billing_pending" ? "coach" : item.type === "pack_low" ? "clients" : "agenda"))}
-                        />
-                      ))
-                    ) : (
-                      <div className="rounded-[16px] border border-dashed border-[var(--border)] bg-[var(--surface-muted)] px-4 py-5 text-sm text-[var(--text-muted)]">{copy.noAttention}</div>
-                    )}
-                  </div>
-                </SectionCard>
+                <CoachHubCard
+                  coachName={coachName}
+                  core={core}
+                  copy={copy}
+                  locale={activeLocale}
+                  attentionItems={core.business.attention}
+                  onOpenCoach={() => startTransition(() => setActiveTab("coach"))}
+                  onOpenClients={() => startTransition(() => setActiveTab("clients"))}
+                  onOpenAgenda={() => startTransition(() => setActiveTab("agenda"))}
+                />
               </div>
 
               <div className="grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
