@@ -615,6 +615,11 @@ function isCoachAgendaItem(row) {
   return !["activity", "external", "health", "solo", "client_activity", "imported"].some((blocked) => type.includes(blocked));
 }
 
+function isMachinePortalNote(value) {
+  const raw = String(value || "").toLowerCase();
+  return raw.includes("__apex") || raw.includes("raw_metadata") || raw.includes("agenda_dedupe_key") || raw.includes('"source"') || raw.includes('"provider"');
+}
+
 function missingColumn(error) {
   const message = error?.message?.toLowerCase?.() ?? error?.toString?.().toLowerCase?.() ?? "";
   return message.includes("client_color_hex") && (message.includes("42703") || message.includes("column"));
@@ -818,9 +823,11 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, invit
     .map((row) => {
       const studentId = row.student_id;
       if (!studentId) return null;
+      if (!isCoachAgendaItem(row)) return null;
       const status = String(row.status || "").toLowerCase();
       const role = String(row.requested_by_role || "").toLowerCase();
-      const note = String(row.notes || "").trim();
+      if (isMachinePortalNote(row.notes) && role !== "coach") return null;
+      const note = cleanPortalNote(row.notes, "");
       const base = {
         id: `portal-agenda-${row.id || `${studentId}-${row.scheduled_at}-${status}`}`,
         studentId,
@@ -959,6 +966,42 @@ function combineDateTime(dateValue, timeValue) {
   return new Date(year, month - 1, day, hours, minutes, 0, 0);
 }
 
+function cleanPortalNote(value, fallback = "") {
+  const raw = String(value || "").trim();
+  if (!raw) return fallback;
+
+  const extractHumanText = (payload) => {
+    if (!payload || typeof payload !== "object") return "";
+    const preferredKeys = ["title", "name", "label", "activity_name", "activity_type", "sport", "booking_name", "summary"];
+    for (const key of preferredKeys) {
+      const current = payload[key];
+      if (typeof current === "string" && current.trim() && !current.trim().startsWith("{")) return current.trim();
+    }
+    const nested = payload.raw_metadata || payload.metadata || payload.activity || payload.source_data;
+    if (nested && nested !== payload) return extractHumanText(nested);
+    return "";
+  };
+
+  try {
+    const parsed = JSON.parse(raw);
+    const extracted = extractHumanText(parsed);
+    if (extracted) return extracted;
+    const source = parsed.source || parsed.provider || parsed.source_package;
+    return source ? String(source).trim().toUpperCase() : fallback;
+  } catch {
+    // Continue with plain-text cleanup below.
+  }
+
+  if (raw.includes("__apex") || raw.includes("raw_metadata") || raw.includes("agenda_dedupe_key") || raw.includes('"source"')) {
+    const beforeMetadata = raw.split("__apex")[0].trim();
+    if (beforeMetadata && beforeMetadata.length < 90) return beforeMetadata;
+    const sourceMatch = raw.match(/"source"\s*:\s*"([^"]+)"/i) || raw.match(/"provider"\s*:\s*"([^"]+)"/i);
+    return sourceMatch?.[1] ? sourceMatch[1].toUpperCase() : fallback;
+  }
+
+  return raw.length > 80 ? `${raw.slice(0, 77).trim()}...` : raw;
+}
+
 async function loadCore(supabase, user) {
   const { start, end } = todayBounds();
   const nowIso = new Date().toISOString();
@@ -975,7 +1018,7 @@ async function loadCore(supabase, user) {
     optionalResource(() => supabase.from("client_training_plans").select("student_id, plan_mode, sessions_per_week, pack_sessions_count, created_at").eq("coach_id", user.id), "client_training_plans"),
     supabase.from("agenda_items").select("id, student_id, item_type, status, scheduled_at, booking_types(price_eur, name)").eq("coach_id", user.id).gte("scheduled_at", yearStartIso).lt("scheduled_at", nowIso).neq("status", "canceled").order("scheduled_at", { ascending: false }),
     optionalResource(() => supabase.from("athlete_invites").select("student_id, status, created_at").order("created_at", { ascending: false }).limit(80), "athlete_invites"),
-    optionalResource(() => supabase.from("agenda_items").select("id, student_id, scheduled_at, status, notes, requested_by_role").eq("coach_id", user.id).order("scheduled_at", { ascending: false }).limit(80), "agenda_items"),
+    optionalResource(() => supabase.from("agenda_items").select("id, student_id, item_type, scheduled_at, status, notes, requested_by_role").eq("coach_id", user.id).order("scheduled_at", { ascending: false }).limit(80), "agenda_items"),
   ]);
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
@@ -1248,7 +1291,7 @@ function AttentionRow({ conversation, selected, copy, onClick }) {
 
 function CoachHubThread({ conversation, copy, locale, onBack }) {
   return (
-    <div className="grid min-h-[390px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[20px] border border-[var(--border)] bg-white">
+    <div className="grid min-h-[390px] min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden rounded-[20px] border border-[var(--border)] bg-white">
       <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-muted)] px-3 py-3">
         <button onClick={onBack} className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2 text-xs font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
           <ArrowLeft size={13} />
@@ -1263,17 +1306,17 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
         </div>
       </div>
 
-      <div className="grid content-start gap-3 overflow-y-auto px-3 py-4">
+      <div className="grid min-w-0 content-start gap-3 overflow-y-auto overflow-x-hidden px-3 py-4">
         {conversation.items.map((item) => {
           const fromCoach = item.sender === "coach";
           const fromClient = item.sender === "client";
           return (
-            <div key={item.id} className={`max-w-[92%] rounded-[18px] border px-3.5 py-3 ${fromCoach ? "ml-auto rounded-tr-md border-[var(--accent)]/20 bg-[var(--accent-soft)]" : fromClient ? "rounded-tl-md border-[var(--border)] bg-white" : "mx-auto rounded-t-md border-[var(--border)] bg-[var(--surface-muted)]"}`}>
+            <div key={item.id} className={`min-w-0 max-w-[92%] overflow-hidden rounded-[18px] border px-3.5 py-3 [overflow-wrap:anywhere] ${fromCoach ? "ml-auto rounded-tr-md border-[var(--accent)]/20 bg-[var(--accent-soft)]" : fromClient ? "rounded-tl-md border-[var(--border)] bg-white" : "mx-auto rounded-t-md border-[var(--border)] bg-[var(--surface-muted)]"}`}>
               <div className="flex items-center justify-between gap-3">
                 <p className="truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">{attentionAuthor(item, copy)}</p>
                 {item.requiresAction ? <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
               </div>
-              <p className="mt-2 text-sm leading-5 text-[var(--text)]">{attentionMessage(item, copy, locale)}</p>
+              <p className="mt-2 break-words text-sm leading-5 text-[var(--text)]">{attentionMessage(item, copy, locale)}</p>
               <div className="mt-2 flex items-center justify-between gap-3">
                 <p className="text-[10px] text-[var(--text-muted)]">{item.time ? `${formatDate(item.time, false, locale)} · ${formatTime(item.time, locale)}` : ""}</p>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">{attentionLabel(item, copy)}</p>
@@ -1282,9 +1325,9 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
           );
         })}
 
-        <div className="ml-auto max-w-[88%] rounded-[18px] rounded-tr-md bg-[var(--accent)] px-3.5 py-3 text-[var(--accent-foreground)]">
+        <div className="ml-auto min-w-0 max-w-[88%] overflow-hidden rounded-[18px] rounded-tr-md bg-[var(--accent)] px-3.5 py-3 text-[var(--accent-foreground)] [overflow-wrap:anywhere]">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] opacity-75">{copy.inboxSuggestedAction}</p>
-          <p className="mt-1 text-sm font-semibold">{attentionAction(conversation.items[0], copy)}</p>
+          <p className="mt-1 break-words text-sm font-semibold">{attentionAction(conversation.items[0], copy)}</p>
         </div>
       </div>
 
