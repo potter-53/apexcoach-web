@@ -816,12 +816,14 @@ function buildBillingMonths(invoices = [], students = [], now = new Date()) {
     const status = String(invoice.status || "").toLowerCase();
     if (status === "void") continue;
 
-    const periodStart = new Date(invoice.period_start || invoice.created_at || now);
+    const periodStart = new Date(invoice.period_start || invoice.billing_month || invoice.created_at || now);
     if (Number.isNaN(periodStart.getTime())) continue;
 
     const key = monthKey(periodStart);
     const totalCents = numericValue(invoice.total_cents);
     const paid = status === "paid";
+    const studentId = invoice.student_id;
+    const student = studentsById[studentId] || {};
     const month = months.get(key) || {
       key,
       date: startOfMonth(periodStart),
@@ -832,17 +834,23 @@ function buildBillingMonths(invoices = [], students = [], now = new Date()) {
     };
 
     month.invoices.push({
-      id: invoice.id,
-      studentId: invoice.student_id,
-      studentName: studentsById[invoice.student_id]?.full_name || "Client",
-      clientColorHex: studentsById[invoice.student_id]?.client_color_hex || null,
-      invoiceNumber: invoice.invoice_number,
+      id: invoice.id || invoice.invoice_id,
+      studentId,
+      studentName: invoice.student_name || student.full_name || "Client",
+      clientColorHex: invoice.client_color_hex || student.client_color_hex || null,
+      invoiceNumber: invoice.display_code || invoice.invoice_code || invoice.invoice_number,
       status,
       totalCents,
       subtotalCents: numericValue(invoice.subtotal_cents),
       discountType: invoice.discount_type || "eur",
       discountValue: numericValue(invoice.discount_value),
       offeredSessionsCount: numericValue(invoice.offered_sessions_count),
+      includedItems: numericValue(invoice.included_items),
+      paidItems: numericValue(invoice.paid_items),
+      pendingApprovalItems: numericValue(invoice.pending_approval_items),
+      unpaidItems: numericValue(invoice.unpaid_items),
+      ledgerStatus: invoice.ledger_status || "ok",
+      statusBucket: invoice.status_bucket || (paid ? "paid" : "unpaid"),
       paid,
       periodStart: invoice.period_start,
       periodEnd: invoice.period_end,
@@ -1142,12 +1150,14 @@ async function loadCore(supabase, user) {
     optionalResource(() => supabase.from("athlete_invites").select("student_id, status, created_at").order("created_at", { ascending: false }).limit(80), "athlete_invites"),
     optionalResource(() => supabase.from("agenda_items").select("id, student_id, item_type, scheduled_at, status, notes, requested_by_role").eq("coach_id", user.id).order("scheduled_at", { ascending: false }).limit(80), "agenda_items"),
     optionalResource(() => supabase.from("coach_invoices").select("id, student_id, invoice_number, status, billing_cycle, subtotal_cents, discount_type, discount_value, offered_sessions_count, total_cents, period_start, period_end, paid_at, receipt_id, created_at").eq("coach_id", user.id).gte("period_start", yearStartIso.slice(0, 10)).order("period_start", { ascending: false }).limit(120), "coach_invoices"),
+    optionalResource(() => supabase.from("billing_invoice_ledger").select("invoice_id, student_id, student_name, client_color_hex, invoice_number, invoice_code, display_code, status, status_bucket, billing_cycle, subtotal_cents, included_subtotal_cents, discount_type, discount_value, offered_sessions_count, total_cents, computed_total_cents, total_delta_cents, included_items, paid_items, pending_approval_items, unpaid_items, period_start, period_end, billing_month, paid_at, receipt_id, ledger_status, created_at").eq("coach_id", user.id).gte("billing_month", yearStartIso.slice(0, 10)).order("billing_month", { ascending: false }).limit(160), "billing_invoice_ledger"),
   ]);
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
   const students = responses[2].data ?? [];
   const upcomingAgenda = (responses[6].data ?? []).filter(isCoachAgendaItem);
-  const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students, responses[10].data ?? [], responses[11].data ?? [], responses[12].data ?? []);
+  const invoiceRows = responses[13].data?.length ? responses[13].data : responses[12].data ?? [];
+  const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students, responses[10].data ?? [], responses[11].data ?? [], invoiceRows);
   return {
     profile: responses[0].data,
     subscription: responses[1].data,
@@ -1533,6 +1543,7 @@ function BillingProfileRow({ item, locale = "en" }) {
 function BillingInvoiceRow({ invoice, locale }) {
   const status = prettifyStatus(invoice.status);
   const paid = invoice.paid;
+  const invoiceLabel = invoice.invoiceNumber ? String(invoice.invoiceNumber) : invoice.billingCycle;
   return (
     <div className="flex items-center justify-between gap-3 rounded-[16px] border border-slate-100 bg-white px-3 py-2.5 shadow-[0_8px_20px_rgba(15,23,42,0.035)]">
       <div className="flex min-w-0 items-center gap-2.5">
@@ -1540,7 +1551,7 @@ function BillingInvoiceRow({ invoice, locale }) {
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-[var(--text)]">{invoice.studentName}</p>
           <p className="truncate text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-            {invoice.invoiceNumber ? `#${invoice.invoiceNumber}` : invoice.billingCycle} · {status}
+            {invoiceLabel} · {status}
           </p>
         </div>
       </div>
