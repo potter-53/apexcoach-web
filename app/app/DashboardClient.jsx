@@ -755,6 +755,9 @@ function getBillingCopy(locale) {
       clients: "Clientes",
       period: "Período",
       viewInvoices: "Ver faturas",
+      monthlyInvoice: "Fatura mensal",
+      offeredSessions: "oferta",
+      discount: "desconto",
     };
   }
   return {
@@ -768,6 +771,9 @@ function getBillingCopy(locale) {
     clients: "Clients",
     period: "Period",
     viewInvoices: "View invoices",
+    monthlyInvoice: "Monthly invoice",
+    offeredSessions: "offered",
+    discount: "discount",
   };
 }
 
@@ -776,6 +782,15 @@ function formatBillingMonthLabel(date, locale) {
   const month = date.toLocaleDateString(tag, { month: "long" });
   const year = date.getFullYear();
   return `${month.charAt(0).toUpperCase()}${month.slice(1)} ${year}`;
+}
+
+function formatInvoiceDetail(invoice, labels, locale) {
+  const periodStart = new Date(invoice.periodStart || invoice.createdAt || Date.now());
+  const periodLabel = Number.isNaN(periodStart.getTime()) ? "" : formatBillingMonthLabel(periodStart, locale);
+  const details = [`${labels.monthlyInvoice}${periodLabel ? ` · ${periodLabel}` : ""}`];
+  if (invoice.offeredSessionsCount > 0) details.push(`${invoice.offeredSessionsCount} ${labels.offeredSessions}`);
+  if (invoice.subtotalCents > invoice.totalCents) details.push(labels.discount);
+  return details.join(" · ");
 }
 
 function isPackPlan(plan) {
@@ -824,6 +839,10 @@ function buildBillingMonths(invoices = [], students = [], now = new Date()) {
       invoiceNumber: invoice.invoice_number,
       status,
       totalCents,
+      subtotalCents: numericValue(invoice.subtotal_cents),
+      discountType: invoice.discount_type || "eur",
+      discountValue: numericValue(invoice.discount_value),
+      offeredSessionsCount: numericValue(invoice.offered_sessions_count),
       paid,
       periodStart: invoice.period_start,
       periodEnd: invoice.period_end,
@@ -1121,7 +1140,7 @@ async function loadCore(supabase, user) {
     supabase.from("agenda_items").select("id, student_id, item_type, status, scheduled_at, booking_types(price_eur, name)").eq("coach_id", user.id).gte("scheduled_at", yearStartIso).lt("scheduled_at", nowIso).neq("status", "canceled").order("scheduled_at", { ascending: false }),
     optionalResource(() => supabase.from("athlete_invites").select("student_id, status, created_at").order("created_at", { ascending: false }).limit(80), "athlete_invites"),
     optionalResource(() => supabase.from("agenda_items").select("id, student_id, item_type, scheduled_at, status, notes, requested_by_role").eq("coach_id", user.id).order("scheduled_at", { ascending: false }).limit(80), "agenda_items"),
-    optionalResource(() => supabase.from("coach_invoices").select("id, student_id, invoice_number, status, billing_cycle, total_cents, period_start, period_end, paid_at, created_at").eq("coach_id", user.id).gte("period_start", yearStartIso.slice(0, 10)).order("period_start", { ascending: false }).limit(120), "coach_invoices"),
+    optionalResource(() => supabase.from("coach_invoices").select("id, student_id, invoice_number, status, billing_cycle, subtotal_cents, discount_type, discount_value, offered_sessions_count, total_cents, period_start, period_end, paid_at, created_at").eq("coach_id", user.id).gte("period_start", yearStartIso.slice(0, 10)).order("period_start", { ascending: false }).limit(120), "coach_invoices"),
   ]);
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
@@ -1592,15 +1611,17 @@ function BillingOverviewSection({ business, copy, locale }) {
   );
 }
 
-function CompactBillingInvoiceRow({ invoice, locale }) {
+function CompactBillingInvoiceRow({ invoice, labels, locale }) {
   const status = prettifyStatus(invoice.status);
   const paid = invoice.paid;
+  const detail = formatInvoiceDetail(invoice, labels, locale);
   return (
     <div className="flex min-h-[42px] items-center justify-between gap-3 rounded-[14px] border border-slate-100 bg-white px-2.5 py-2 shadow-[0_5px_14px_rgba(15,23,42,0.03)]">
       <div className="flex min-w-0 items-center gap-2.5">
         <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colorDot(invoice.clientColorHex) }} />
         <div className="min-w-0">
           <p className="truncate text-[13px] font-semibold leading-4 text-[var(--text)]">{invoice.studentName}</p>
+          <p className="truncate text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{detail}</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2 text-right">
@@ -1638,7 +1659,7 @@ function CompactBillingMonthCard({ month, locale, labels, featured = false }) {
           </div>
         </summary>
         <div className="mt-2 grid max-h-[180px] gap-1.5 overflow-y-auto pr-1">
-          {hasInvoices ? month.invoices.map((invoice) => <CompactBillingInvoiceRow key={invoice.id} invoice={invoice} locale={locale} />) : <div className="rounded-[14px] border border-dashed border-slate-200 bg-white px-3 py-3 text-xs text-[var(--text-muted)]">{labels.noInvoices}</div>}
+          {hasInvoices ? month.invoices.map((invoice) => <CompactBillingInvoiceRow key={invoice.id} invoice={invoice} labels={labels} locale={locale} />) : <div className="rounded-[14px] border border-dashed border-slate-200 bg-white px-3 py-3 text-xs text-[var(--text-muted)]">{labels.noInvoices}</div>}
         </div>
       </details>
     );
@@ -1668,7 +1689,7 @@ function CompactBillingMonthCard({ month, locale, labels, featured = false }) {
         </div>
       </div>
       <div className="mt-2 grid max-h-[220px] gap-1.5 overflow-y-auto pr-1">
-        {hasInvoices ? month.invoices.map((invoice) => <CompactBillingInvoiceRow key={invoice.id} invoice={invoice} locale={locale} />) : <div className="rounded-[14px] border border-dashed border-slate-200 bg-white px-3 py-3 text-xs text-[var(--text-muted)]">{labels.noInvoices}</div>}
+        {hasInvoices ? month.invoices.map((invoice) => <CompactBillingInvoiceRow key={invoice.id} invoice={invoice} labels={labels} locale={locale} />) : <div className="rounded-[14px] border border-dashed border-slate-200 bg-white px-3 py-3 text-xs text-[var(--text-muted)]">{labels.noInvoices}</div>}
       </div>
     </div>
   );
