@@ -1311,7 +1311,7 @@ function CoachHubThread({ conversation, copy, locale, onBack }) {
           const fromCoach = item.sender === "coach";
           const fromClient = item.sender === "client";
           return (
-            <div key={item.id} className={`relative min-w-0 rounded-[15px] border border-slate-100 bg-white px-3 py-2.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)] [overflow-wrap:anywhere] ${fromCoach ? "border-l-[5px] border-l-emerald-400" : fromClient ? "border-l-[5px] border-l-sky-400" : "border-l-[5px] border-l-slate-300"}`}>
+            <div key={item.id} className={`relative min-w-0 max-w-[88%] rounded-[15px] border px-3 py-2.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)] [overflow-wrap:anywhere] ${fromCoach ? "ml-auto rounded-br-sm border-emerald-100 bg-emerald-50/80" : fromClient ? "mr-auto rounded-bl-sm border-sky-100 bg-sky-50/80" : "mx-auto max-w-[82%] border-slate-100 bg-white"}`}>
               <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                 <p className={`text-[9px] font-semibold uppercase tracking-[0.14em] ${fromCoach ? "text-emerald-700" : fromClient ? "text-sky-700" : "text-slate-500"}`}>{attentionAuthor(item, copy)}</p>
                 {item.requiresAction ? <span className="shrink-0 rounded-full bg-amber-100/90 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
