@@ -146,9 +146,9 @@ const DASHBOARD_COPY = {
     operationsBoard: "Operations board",
     financeOverview: "Billing overview",
     financeOverviewText: "What is billed, what is pending, and where the coach needs to act next.",
-    attentionBoard: "Coach attention",
-    attentionBoardText: "Clients that need scheduling, billing follow-up, or pack renewal.",
-    noAttention: "No urgent coach alerts right now.",
+    attentionBoard: "Client inbox",
+    attentionBoardText: "Pending client actions grouped by priority.",
+    noAttention: "No pending client actions right now.",
     pendingAmount: "Pending amount",
     dueProfiles: "Clients awaiting billing follow-up",
     noDueProfiles: "No billing profiles need follow-up right now.",
@@ -253,9 +253,9 @@ const DASHBOARD_COPY = {
     operationsBoard: "Painel operacional",
     financeOverview: "Visão de faturação",
     financeOverviewText: "O que está a entrar, o que falta regularizar e onde o coach precisa de agir.",
-    attentionBoard: "Pontos de atenção",
-    attentionBoardText: "Clientes com falhas de agenda, cobrança pendente ou packs a precisar de renovação.",
-    noAttention: "Não existem alertas urgentes para o coach neste momento.",
+    attentionBoard: "Inbox de clientes",
+    attentionBoardText: "Pendências dos clientes organizadas por prioridade.",
+    noAttention: "Não existem pendências de clientes neste momento.",
     pendingAmount: "Valor pendente",
     dueProfiles: "Clientes à espera de seguimento de cobrança",
     noDueProfiles: "Não há perfis de cobrança a precisar de seguimento.",
@@ -360,9 +360,9 @@ const DASHBOARD_COPY = {
     operationsBoard: "Panel operativo",
     financeOverview: "Resumen de facturación",
     financeOverviewText: "Lo que entra, lo que falta regularizar y dónde el coach debe actuar.",
-    attentionBoard: "Atención del coach",
-    attentionBoardText: "Clientes que necesitan programación, seguimiento de cobro o renovación de pack.",
-    noAttention: "No hay alertas urgentes para el coach ahora mismo.",
+    attentionBoard: "Inbox de clientes",
+    attentionBoardText: "Pendientes de clientes organizados por prioridad.",
+    noAttention: "No hay pendientes de clientes ahora mismo.",
     pendingAmount: "Importe pendiente",
     dueProfiles: "Clientes pendientes de seguimiento de cobro",
     noDueProfiles: "No hay perfiles de cobro que necesiten seguimiento ahora.",
@@ -467,9 +467,9 @@ const DASHBOARD_COPY = {
     operationsBoard: "Panneau opérationnel",
     financeOverview: "Vue facturation",
     financeOverviewText: "Ce qui entre, ce qui reste à régulariser et où le coach doit agir.",
-    attentionBoard: "Attention coach",
-    attentionBoardText: "Clients qui ont besoin de planification, de relance de paiement ou de renouvellement de pack.",
-    noAttention: "Aucune alerte urgente pour le coach en ce moment.",
+    attentionBoard: "Inbox clients",
+    attentionBoardText: "Actions clients en attente, organisées par priorité.",
+    noAttention: "Aucune action client en attente pour le moment.",
     pendingAmount: "Montant en attente",
     dueProfiles: "Clients en attente de suivi de facturation",
     noDueProfiles: "Aucun profil de facturation n'a besoin de suivi maintenant.",
@@ -962,58 +962,36 @@ function AttentionRow({ item, copy, onClick }) {
   );
 }
 
-function CoachHubCard({ coachName, core, copy, locale, attentionItems, onOpenCoach, onOpenClients, onOpenAgenda }) {
-  const activeLanguage = LANGUAGE_OPTIONS.find((option) => option.value === locale);
+function CoachHubCard({ copy, attentionItems, onOpenCoach, onOpenClients, onOpenAgenda }) {
+  const billingCount = attentionItems.filter((item) => item.type === "billing_pending").length;
+  const scheduleCount = attentionItems.filter((item) => item.type === "weekly_shortfall").length;
+  const packCount = attentionItems.filter((item) => item.type === "pack_low").length;
   return (
     <SectionCard
       eyebrow={copy.coachHub}
       title="Coach HUB"
-      description={null}
-      action={
-        <button onClick={onOpenCoach} className="rounded-full border border-[var(--border)] bg-white px-3 py-1.5 text-xs font-semibold text-[var(--text)]">
-          {copy.tabs.coach}
-        </button>
-      }
+      description={copy.attentionBoardText}
+      action={<span className="rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">{attentionItems.length}</span>}
     >
-      <div className="grid gap-3">
-        <div className="rounded-[18px] border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[var(--text)]">{coachName}</p>
-              <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{prettifyStatus(core.subscription?.status || "trialing")}</p>
-            </div>
-            <ShieldCheck size={17} className="shrink-0 text-[var(--accent-strong)]" />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <button onClick={onOpenClients} className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-2 text-left transition hover:border-[var(--accent)]">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.tabs.clients}</p>
-            <p className="mt-1 text-lg font-semibold text-[var(--text)]">{core.metrics.clients}</p>
+      <div className="grid gap-2.5">
+        <div className="grid grid-cols-3 gap-2">
+          <button onClick={onOpenCoach} className="rounded-[14px] border border-[var(--border)] bg-white px-2.5 py-2 text-left transition hover:border-[var(--accent)]">
+            <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{copy.pendingBilling}</p>
+            <p className="mt-1 text-base font-semibold text-[var(--text)]">{billingCount}</p>
           </button>
-          <button onClick={onOpenAgenda} className="rounded-[16px] border border-[var(--border)] bg-white px-3 py-2 text-left transition hover:border-[var(--accent)]">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.agendaSpotlight}</p>
-            <p className="mt-1 text-lg font-semibold text-[var(--text)]">{core.upcomingAgenda.length}</p>
+          <button onClick={onOpenAgenda} className="rounded-[14px] border border-[var(--border)] bg-white px-2.5 py-2 text-left transition hover:border-[var(--accent)]">
+            <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{copy.missingBookings}</p>
+            <p className="mt-1 text-base font-semibold text-[var(--text)]">{scheduleCount}</p>
           </button>
-        </div>
-
-        <div className="rounded-[16px] border border-[var(--border)] bg-[var(--surface-muted)] px-3 py-2.5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{copy.activeLanguage}</p>
-              <p className="mt-1 text-sm font-semibold text-[var(--text)]">{activeLanguage?.label || locale.toUpperCase()}</p>
-            </div>
-            <span className="text-xl" style={{ fontFamily: "\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif" }}>{activeLanguage?.flag || "🌐"}</span>
-          </div>
+          <button onClick={onOpenClients} className="rounded-[14px] border border-[var(--border)] bg-white px-2.5 py-2 text-left transition hover:border-[var(--accent)]">
+            <p className="text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{copy.expiringPacks}</p>
+            <p className="mt-1 text-base font-semibold text-[var(--text)]">{packCount}</p>
+          </button>
         </div>
 
         <div className="grid gap-2">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">{copy.attentionBoard}</p>
-            <span className="rounded-full border border-[var(--border)] bg-white px-2 py-0.5 text-[10px] font-semibold text-[var(--text-muted)]">{attentionItems.length}</span>
-          </div>
           {attentionItems.length > 0 ? (
-            attentionItems.slice(0, 3).map((item) => <AttentionRow key={item.id} item={item} copy={copy} onClick={item.type === "billing_pending" ? onOpenCoach : item.type === "pack_low" ? onOpenClients : onOpenAgenda} />)
+            attentionItems.slice(0, 6).map((item) => <AttentionRow key={item.id} item={item} copy={copy} onClick={item.type === "billing_pending" ? onOpenCoach : item.type === "pack_low" ? onOpenClients : onOpenAgenda} />)
           ) : (
             <div className="rounded-[14px] border border-dashed border-[var(--border)] bg-white px-3 py-3 text-xs leading-5 text-[var(--text-muted)]">{copy.noAttention}</div>
           )}
@@ -1655,10 +1633,7 @@ export default function DashboardClient() {
               <div className="grid gap-3 xl:grid-cols-[1.35fr_0.65fr]">
                 <AgendaWorkspace currentUser={currentUser} compact onOpenCreateBooking={openBookingModal} locale={activeLocale} />
                 <CoachHubCard
-                  coachName={coachName}
-                  core={core}
                   copy={copy}
-                  locale={activeLocale}
                   attentionItems={core.business.attention}
                   onOpenCoach={() => startTransition(() => setActiveTab("coach"))}
                   onOpenClients={() => startTransition(() => setActiveTab("clients"))}
