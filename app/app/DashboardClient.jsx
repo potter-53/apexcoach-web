@@ -771,6 +771,13 @@ function getBillingCopy(locale) {
   };
 }
 
+function formatBillingMonthLabel(date, locale) {
+  const tag = localeTag(locale);
+  const month = date.toLocaleDateString(tag, { month: "long" });
+  const year = date.getFullYear();
+  return `${month.charAt(0).toUpperCase()}${month.slice(1)} ${year}`;
+}
+
 function isPackPlan(plan) {
   const mode = String(plan?.plan_mode || "").toLowerCase();
   return mode.includes("pack") || numericValue(plan?.pack_sessions_count) > 0;
@@ -1594,7 +1601,6 @@ function CompactBillingInvoiceRow({ invoice, locale }) {
         <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colorDot(invoice.clientColorHex) }} />
         <div className="min-w-0">
           <p className="truncate text-[13px] font-semibold leading-4 text-[var(--text)]">{invoice.studentName}</p>
-          <p className="truncate text-[9px] uppercase tracking-[0.1em] text-[var(--text-muted)]">{invoice.invoiceNumber ? `#${invoice.invoiceNumber}` : invoice.billingCycle}</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2 text-right">
@@ -1609,7 +1615,7 @@ function CompactBillingInvoiceRow({ invoice, locale }) {
 
 function CompactBillingMonthCard({ month, locale, labels, featured = false }) {
   const hasInvoices = month.invoices.length > 0;
-  const monthLabel = month.date.toLocaleDateString(localeTag(locale), { month: "long", year: "numeric" });
+  const monthLabel = formatBillingMonthLabel(month.date, locale);
 
   if (!featured) {
     return (
