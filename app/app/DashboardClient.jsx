@@ -165,6 +165,20 @@ const DASHBOARD_COPY = {
     inboxScheduleAction: "Review the plan and add the missing booking.",
     inboxPackAction: "Confirm the pack renewal or create the next package.",
     inboxNoConversation: "Select a client to open the thread inside the Coach HUB.",
+    inboxRequiresAction: "Needs action",
+    inboxReviewed: "Reviewed",
+    inboxAuthorCoach: "Coach",
+    inboxAuthorClient: "Client",
+    inboxAuthorSystem: "Apex",
+    inboxInvitePending: "Client invite is pending.",
+    inboxInviteAction: "Manage invite",
+    inboxAgendaCoachScheduled: "Coach scheduled",
+    inboxAgendaClientRequest: "Client requested a booking or change. Coach validation is required.",
+    inboxAgendaCancelRequest: "Client requested cancellation. Coach validation is required.",
+    inboxClientCompleted: "Client completed",
+    inboxValidateSchedule: "Validate schedule",
+    inboxViewSchedule: "View schedule",
+    inboxViewStatus: "View status",
   },
   pt: {
     tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Avaliações", agenda: "Agenda", trainings: "Treinos", coach: "Coach" },
@@ -282,6 +296,20 @@ const DASHBOARD_COPY = {
     inboxScheduleAction: "Revê o plano e adiciona a marcação em falta.",
     inboxPackAction: "Confirma a renovação do pack ou cria o próximo pacote.",
     inboxNoConversation: "Seleciona um cliente para abrir a conversa dentro do Coach HUB.",
+    inboxRequiresAction: "Requer ação",
+    inboxReviewed: "Revisto",
+    inboxAuthorCoach: "Coach",
+    inboxAuthorClient: "Cliente",
+    inboxAuthorSystem: "Apex",
+    inboxInvitePending: "Convite do cliente pendente.",
+    inboxInviteAction: "Gerir convite",
+    inboxAgendaCoachScheduled: "Coach agendou",
+    inboxAgendaClientRequest: "Cliente pediu marcação ou alteração. Requer validação do coach.",
+    inboxAgendaCancelRequest: "Cliente pediu cancelamento. Requer validação do coach.",
+    inboxClientCompleted: "Cliente concluiu",
+    inboxValidateSchedule: "Validar agenda",
+    inboxViewSchedule: "Ver agenda",
+    inboxViewStatus: "Ver status",
   },
   es: {
     tabs: { dashboard: "Dashboard", clients: "Clientes", assessments: "Evaluaciones", agenda: "Agenda", trainings: "Entrenamientos", coach: "Coach" },
@@ -399,6 +427,20 @@ const DASHBOARD_COPY = {
     inboxScheduleAction: "Revisa el plan y añade la reserva pendiente.",
     inboxPackAction: "Confirma la renovación del pack o crea el próximo paquete.",
     inboxNoConversation: "Selecciona un cliente para abrir la conversación dentro del Coach HUB.",
+    inboxRequiresAction: "Requiere acción",
+    inboxReviewed: "Revisado",
+    inboxAuthorCoach: "Coach",
+    inboxAuthorClient: "Cliente",
+    inboxAuthorSystem: "Apex",
+    inboxInvitePending: "La invitación del cliente está pendiente.",
+    inboxInviteAction: "Gestionar invitación",
+    inboxAgendaCoachScheduled: "Coach programó",
+    inboxAgendaClientRequest: "El cliente solicitó una reserva o cambio. Requiere validación del coach.",
+    inboxAgendaCancelRequest: "El cliente solicitó cancelación. Requiere validación del coach.",
+    inboxClientCompleted: "Cliente completó",
+    inboxValidateSchedule: "Validar agenda",
+    inboxViewSchedule: "Ver agenda",
+    inboxViewStatus: "Ver estado",
   },
   fr: {
     tabs: { dashboard: "Dashboard", clients: "Clients", assessments: "Évaluations", agenda: "Agenda", trainings: "Entraînements", coach: "Coach" },
@@ -516,6 +558,20 @@ const DASHBOARD_COPY = {
     inboxScheduleAction: "Vérifie le plan et ajoute le rendez-vous manquant.",
     inboxPackAction: "Confirme le renouvellement du pack ou crée le prochain forfait.",
     inboxNoConversation: "Sélectionne un client pour ouvrir la conversation dans le Coach HUB.",
+    inboxRequiresAction: "Action requise",
+    inboxReviewed: "Revu",
+    inboxAuthorCoach: "Coach",
+    inboxAuthorClient: "Client",
+    inboxAuthorSystem: "Apex",
+    inboxInvitePending: "Invitation client en attente.",
+    inboxInviteAction: "Gérer l'invitation",
+    inboxAgendaCoachScheduled: "Coach a planifié",
+    inboxAgendaClientRequest: "Le client a demandé un rendez-vous ou un changement. Validation coach requise.",
+    inboxAgendaCancelRequest: "Le client a demandé une annulation. Validation coach requise.",
+    inboxClientCompleted: "Client a terminé",
+    inboxValidateSchedule: "Valider l'agenda",
+    inboxViewSchedule: "Voir agenda",
+    inboxViewStatus: "Voir statut",
   },
 };
 
@@ -582,7 +638,7 @@ async function optionalResource(builder, resource) {
   try {
     return await builder();
   } catch (error) {
-    if (!missingResource(error, resource)) throw error;
+    if (!missingResource(error, resource) && !missingColumn(error)) throw error;
     return { data: [], error: null };
   }
 }
@@ -683,7 +739,12 @@ function isPendingBillingStatus(status) {
   return normalized && normalized !== "paid" && normalized !== "not_set";
 }
 
-function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now = new Date()) {
+function firstName(value, fallback = "Client") {
+  const parts = String(value || "").trim().split(/\s+/).filter(Boolean);
+  return parts[0] || fallback;
+}
+
+function summarizeBusiness(rows, billingProfiles, trainingPlans, students, inviteRows = [], portalAgendaRows = [], now = new Date()) {
   const monthStart = startOfMonth(now);
   const yearStart = startOfYear(now);
   const studentsById = Object.fromEntries((students || []).map((student) => [student.id, student]));
@@ -724,7 +785,66 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now =
     studentName: studentsById[profile.student_id]?.full_name || "Client",
     clientColorHex: studentsById[profile.student_id]?.client_color_hex || null,
     attentionCount: 1,
+    time: profile.last_requested_at || profile.next_due_at || now.toISOString(),
+    sender: profile.status === "pending_approval" ? "client" : profile.status === "overdue" ? "system" : "coach",
+    requiresAction: true,
+    actionKey: profile.status === "pending_approval" ? "billing_approval" : profile.status === "overdue" ? "billing_overdue" : "billing",
+    amountCents: numericValue(profile.amount_cents),
+    currencyCode: profile.currency_code || "EUR",
+    status: profile.status,
   }));
+
+  const latestInviteByStudent = new Map();
+  for (const invite of inviteRows || []) {
+    const studentId = invite.student_id;
+    if (!studentId || String(invite.status || "").toLowerCase() !== "pending") continue;
+    if (!latestInviteByStudent.has(studentId)) latestInviteByStudent.set(studentId, invite);
+  }
+
+  const inviteAlerts = [...latestInviteByStudent.entries()].map(([studentId, invite]) => ({
+    id: `invite-${studentId}`,
+    type: "invite_pending",
+    studentId,
+    studentName: studentsById[studentId]?.full_name || "Client",
+    clientColorHex: studentsById[studentId]?.client_color_hex || null,
+    attentionCount: 1,
+    time: invite.created_at || now.toISOString(),
+    sender: "system",
+    requiresAction: true,
+    actionKey: "invite_pending",
+  }));
+
+  const portalAgendaAlerts = (portalAgendaRows || [])
+    .map((row) => {
+      const studentId = row.student_id;
+      if (!studentId) return null;
+      const status = String(row.status || "").toLowerCase();
+      const role = String(row.requested_by_role || "").toLowerCase();
+      const note = String(row.notes || "").trim();
+      const base = {
+        id: `portal-agenda-${row.id || `${studentId}-${row.scheduled_at}-${status}`}`,
+        studentId,
+        studentName: studentsById[studentId]?.full_name || "Client",
+        clientColorHex: studentsById[studentId]?.client_color_hex || null,
+        attentionCount: 1,
+        time: row.scheduled_at || now.toISOString(),
+        note,
+      };
+      if (role === "coach" && status === "scheduled") {
+        return { ...base, type: "agenda_coach_scheduled", sender: "coach", requiresAction: false, actionKey: "status" };
+      }
+      if (role === "athlete" && status === "scheduled") {
+        return { ...base, type: "agenda_request", sender: "client", requiresAction: true, actionKey: "agenda_request" };
+      }
+      if (role === "athlete" && status === "canceled") {
+        return { ...base, type: "agenda_cancel_request", sender: "client", requiresAction: true, actionKey: "agenda_cancel_request" };
+      }
+      if (role !== "coach" && status === "completed") {
+        return { ...base, type: "client_update", sender: "client", requiresAction: true, actionKey: "client_update" };
+      }
+      return null;
+    })
+    .filter(Boolean);
 
   for (const plan of trainingPlans) {
     const studentId = plan.student_id;
@@ -752,6 +872,10 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now =
           studentName: studentsById[studentId]?.full_name || "Client",
           clientColorHex: studentsById[studentId]?.client_color_hex || null,
           attentionCount: remaining,
+          time: now.toISOString(),
+          sender: "system",
+          requiresAction: true,
+          actionKey: "pack_low",
         });
       }
       continue;
@@ -777,14 +901,21 @@ function summarizeBusiness(rows, billingProfiles, trainingPlans, students, now =
         studentName: studentsById[studentId]?.full_name || "Client",
         clientColorHex: studentsById[studentId]?.client_color_hex || null,
         attentionCount: missingCount,
+        time: now.toISOString(),
+        sender: "system",
+        requiresAction: true,
+        actionKey: "weekly_shortfall",
       });
     }
   }
 
-  const attentionPriority = { billing_pending: 3, weekly_shortfall: 2, pack_low: 1 };
-  const attention = [...reminders, ...billingAlerts]
-    .sort((a, b) => (attentionPriority[b.type] || 0) - (attentionPriority[a.type] || 0) || b.attentionCount - a.attentionCount || a.studentName.localeCompare(b.studentName))
-    .slice(0, 6);
+  const attentionPriority = { billing_pending: 4, agenda_request: 4, agenda_cancel_request: 4, client_update: 3, invite_pending: 3, weekly_shortfall: 2, pack_low: 2, agenda_coach_scheduled: 1 };
+  const attention = [...portalAgendaAlerts, ...inviteAlerts, ...reminders, ...billingAlerts]
+    .sort((a, b) => {
+      if (Boolean(a.requiresAction) !== Boolean(b.requiresAction)) return a.requiresAction ? -1 : 1;
+      return (attentionPriority[b.type] || 0) - (attentionPriority[a.type] || 0) || new Date(b.time || 0) - new Date(a.time || 0) || b.attentionCount - a.attentionCount || a.studentName.localeCompare(b.studentName);
+    })
+    .slice(0, 18);
 
   return {
     monthlyRevenue,
@@ -840,15 +971,17 @@ async function loadCore(supabase, user) {
     supabase.from("assessments").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
     supabase.from("training_sessions").select("id", { count: "exact", head: true }).eq("coach_id", user.id),
     colorFallback((includeColor) => supabase.from("agenda_items").select(includeColor ? "id, item_type, notes, scheduled_at, status, students(full_name, client_color_hex), booking_types(name)" : "id, item_type, notes, scheduled_at, status, students(full_name), booking_types(name)").eq("coach_id", user.id).gte("scheduled_at", nowIso).order("scheduled_at", { ascending: true }).limit(8)),
-    optionalResource(() => supabase.from("client_billing_profiles").select("student_id, status, billing_cycle, amount_cents, currency_code, next_due_at, last_paid_at"), "client_billing_profiles"),
+    optionalResource(() => supabase.from("client_billing_profiles").select("student_id, status, billing_cycle, amount_cents, currency_code, next_due_at, last_paid_at, last_requested_at"), "client_billing_profiles"),
     optionalResource(() => supabase.from("client_training_plans").select("student_id, plan_mode, sessions_per_week, pack_sessions_count, created_at").eq("coach_id", user.id), "client_training_plans"),
     supabase.from("agenda_items").select("id, student_id, item_type, status, scheduled_at, booking_types(price_eur, name)").eq("coach_id", user.id).gte("scheduled_at", yearStartIso).lt("scheduled_at", nowIso).neq("status", "canceled").order("scheduled_at", { ascending: false }),
+    optionalResource(() => supabase.from("athlete_invites").select("student_id, status, created_at").order("created_at", { ascending: false }).limit(80), "athlete_invites"),
+    optionalResource(() => supabase.from("agenda_items").select("id, student_id, scheduled_at, status, notes, requested_by_role").eq("coach_id", user.id).order("scheduled_at", { ascending: false }).limit(80), "agenda_items"),
   ]);
   const failed = responses.find((item) => item.error);
   if (failed?.error) throw failed.error;
   const students = responses[2].data ?? [];
   const upcomingAgenda = (responses[6].data ?? []).filter(isCoachAgendaItem);
-  const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students);
+  const business = summarizeBusiness(responses[9].data ?? [], responses[7].data ?? [], responses[8].data ?? [], students, responses[10].data ?? [], responses[11].data ?? []);
   return {
     profile: responses[0].data,
     subscription: responses[1].data,
@@ -990,13 +1123,47 @@ function DashboardHero({ coachName, core, copy, locale, onCreate }) {
 }
 
 function attentionLabel(item, copy) {
-  return item.type === "pack_low" ? copy.actionPack : item.type === "billing_pending" ? copy.actionBilling : copy.actionMissing;
+  if (item.type === "pack_low") return copy.actionPack;
+  if (item.type === "billing_pending") return copy.actionBilling;
+  if (item.type === "invite_pending") return copy.inboxInviteAction;
+  if (item.type === "agenda_request" || item.type === "agenda_cancel_request") return copy.inboxValidateSchedule;
+  if (item.type === "agenda_coach_scheduled") return copy.inboxViewSchedule;
+  if (item.type === "client_update") return copy.inboxViewStatus;
+  return copy.actionMissing;
 }
 
 function attentionAction(item, copy) {
   if (item.type === "pack_low") return copy.inboxPackAction;
   if (item.type === "billing_pending") return copy.inboxBillingAction;
+  if (item.type === "invite_pending") return copy.inboxInviteAction;
+  if (item.type === "agenda_request" || item.type === "agenda_cancel_request") return copy.inboxValidateSchedule;
+  if (item.type === "agenda_coach_scheduled") return copy.inboxViewSchedule;
+  if (item.type === "client_update") return copy.inboxViewStatus;
   return copy.inboxScheduleAction;
+}
+
+function attentionAuthor(item, copy) {
+  if (item.sender === "client") return firstName(item.studentName, copy.inboxAuthorClient);
+  if (item.sender === "coach") return copy.inboxAuthorCoach;
+  return copy.inboxAuthorSystem;
+}
+
+function attentionMessage(item, copy, locale = "en") {
+  const detail = item.note ? `: ${item.note}` : "";
+  if (item.type === "billing_pending") {
+    const amount = item.amountCents ? ` ${formatCurrency(item.amountCents / 100, locale, item.currencyCode)}` : "";
+    if (String(item.status || "").toLowerCase() === "overdue") return locale === "pt" ? `Pagamento em atraso${amount}.` : `Payment is overdue${amount}.`;
+    if (String(item.status || "").toLowerCase() === "pending_approval") return locale === "pt" ? "Cliente pediu validação de pagamento. Requer aprovação do coach." : "Client requested payment validation. Coach approval is required.";
+    return locale === "pt" ? "Coach criou um pedido de pagamento para este ciclo." : "Coach created a payment request for this cycle.";
+  }
+  if (item.type === "invite_pending") return copy.inboxInvitePending;
+  if (item.type === "agenda_coach_scheduled") return `${copy.inboxAgendaCoachScheduled}${detail}.`;
+  if (item.type === "agenda_request") return `${copy.inboxAgendaClientRequest}${detail ? ` ${detail.slice(2)}.` : ""}`;
+  if (item.type === "agenda_cancel_request") return `${copy.inboxAgendaCancelRequest}${detail ? ` ${detail.slice(2)}.` : ""}`;
+  if (item.type === "client_update") return `${copy.inboxClientCompleted}${detail}.`;
+  if (item.type === "pack_low") return `${item.attentionCount} ${copy.actionPack}.`;
+  if (item.type === "weekly_shortfall") return `${item.attentionCount} ${copy.actionMissing}.`;
+  return copy.inboxAutoMessage;
 }
 
 function buildInboxConversations(attentionItems, copy) {
@@ -1011,8 +1178,8 @@ function buildInboxConversations(attentionItems, copy) {
       priority: 0,
       items: [],
     };
-    const priority = item.type === "billing_pending" ? 3 : item.type === "weekly_shortfall" ? 2 : 1;
-    current.unread += 1;
+    const priority = item.type === "billing_pending" || item.type === "agenda_request" || item.type === "agenda_cancel_request" ? 4 : item.type === "client_update" || item.type === "invite_pending" ? 3 : item.type === "weekly_shortfall" || item.type === "pack_low" ? 2 : 1;
+    current.unread += item.requiresAction ? 1 : 0;
     current.priority = Math.max(current.priority, priority);
     current.items.push(item);
     conversations.set(key, current);
@@ -1021,10 +1188,16 @@ function buildInboxConversations(attentionItems, copy) {
   return [...conversations.values()]
     .map((conversation) => ({
       ...conversation,
-      preview: attentionLabel(conversation.items[0], copy),
+      items: [...conversation.items].sort((a, b) => new Date(a.time || 0) - new Date(b.time || 0)),
+      latestTime: Math.max(...conversation.items.map((item) => new Date(item.time || 0).getTime()).filter((value) => !Number.isNaN(value)), 0),
+      preview: attentionMessage([...conversation.items].sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0))[0], copy),
       totalActions: conversation.items.reduce((sum, item) => sum + Math.max(1, item.attentionCount || 1), 0),
+      requiresAction: conversation.items.some((item) => item.requiresAction),
     }))
-    .sort((a, b) => b.priority - a.priority || b.totalActions - a.totalActions || a.studentName.localeCompare(b.studentName));
+    .sort((a, b) => {
+      if (a.requiresAction !== b.requiresAction) return a.requiresAction ? -1 : 1;
+      return b.priority - a.priority || b.latestTime - a.latestTime || b.totalActions - a.totalActions || a.studentName.localeCompare(b.studentName);
+    });
 }
 
 function AttentionRow({ conversation, selected, copy, onClick }) {
@@ -1050,12 +1223,14 @@ function AttentionRow({ conversation, selected, copy, onClick }) {
           <p className="truncate text-xs text-[var(--text-muted)]">{conversation.preview}</p>
         </div>
       </div>
-      <span className="flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-muted)] px-2 text-[11px] font-semibold text-[var(--text)]">{conversation.unread}</span>
+      <span className={`flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full border px-2 text-[11px] font-semibold ${conversation.unread > 0 ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)]"}`}>
+        {conversation.unread > 0 ? conversation.unread : <Check size={13} />}
+      </span>
     </button>
   );
 }
 
-function CoachHubThread({ conversation, copy, onBack }) {
+function CoachHubThread({ conversation, copy, locale, onBack }) {
   return (
     <div className="grid min-h-[390px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[20px] border border-[var(--border)] bg-white">
       <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--surface-muted)] px-3 py-3">
@@ -1070,13 +1245,23 @@ function CoachHubThread({ conversation, copy, onBack }) {
       </div>
 
       <div className="grid content-start gap-3 overflow-y-auto px-3 py-4">
-        {conversation.items.map((item) => (
-          <div key={item.id} className="max-w-[92%] rounded-[18px] rounded-tl-md border border-[var(--border)] bg-[var(--surface-muted)] px-3.5 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">{attentionLabel(item, copy)}</p>
-            <p className="mt-2 text-sm leading-5 text-[var(--text)]">{copy.inboxAutoMessage}</p>
-            <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">{attentionAction(item, copy)}</p>
-          </div>
-        ))}
+        {conversation.items.map((item) => {
+          const fromCoach = item.sender === "coach";
+          const fromClient = item.sender === "client";
+          return (
+            <div key={item.id} className={`max-w-[92%] rounded-[18px] border px-3.5 py-3 ${fromCoach ? "ml-auto rounded-tr-md border-[var(--accent)]/20 bg-[var(--accent-soft)]" : fromClient ? "rounded-tl-md border-[var(--border)] bg-white" : "mx-auto rounded-t-md border-[var(--border)] bg-[var(--surface-muted)]"}`}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">{attentionAuthor(item, copy)}</p>
+                {item.requiresAction ? <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-amber-700">{copy.inboxRequiresAction}</span> : null}
+              </div>
+              <p className="mt-2 text-sm leading-5 text-[var(--text)]">{attentionMessage(item, copy, locale)}</p>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <p className="text-[10px] text-[var(--text-muted)]">{item.time ? `${formatDate(item.time, false, locale)} · ${formatTime(item.time, locale)}` : ""}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--text-muted)]">{attentionLabel(item, copy)}</p>
+              </div>
+            </div>
+          );
+        })}
 
         <div className="ml-auto max-w-[88%] rounded-[18px] rounded-tr-md bg-[var(--accent)] px-3.5 py-3 text-[var(--accent-foreground)]">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] opacity-75">{copy.inboxSuggestedAction}</p>
@@ -1094,7 +1279,7 @@ function CoachHubThread({ conversation, copy, onBack }) {
   );
 }
 
-function CoachHubCard({ copy, attentionItems }) {
+function CoachHubCard({ copy, attentionItems, locale }) {
   const [selectedConversationId, setSelectedConversationId] = useState("");
   const conversations = useMemo(() => buildInboxConversations(attentionItems, copy), [attentionItems, copy]);
   const selectedConversation = conversations.find((conversation) => conversation.id === selectedConversationId) || null;
@@ -1113,7 +1298,7 @@ function CoachHubCard({ copy, attentionItems }) {
       action={<span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]"><MessageCircle size={12} />{conversations.length}</span>}
     >
       {selectedConversation ? (
-        <CoachHubThread conversation={selectedConversation} copy={copy} onBack={() => setSelectedConversationId("")} />
+        <CoachHubThread conversation={selectedConversation} copy={copy} locale={locale} onBack={() => setSelectedConversationId("")} />
       ) : (
         <div className="grid gap-2">
           {conversations.length > 0 ? (
@@ -1769,6 +1954,7 @@ export default function DashboardClient() {
                 <CoachHubCard
                   copy={copy}
                   attentionItems={core.business.attention}
+                  locale={activeLocale}
                 />
               </div>
 
