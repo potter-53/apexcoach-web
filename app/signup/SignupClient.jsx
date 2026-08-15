@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, LoaderCircle, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, MapPinned, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
 
 import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getInitialBrowserLocale } from "../../src/lib/coach-locale";
@@ -240,6 +240,9 @@ export default function SignupClient() {
   const [foundingProfileConsent, setFoundingProfileConsent] = useState(false);
   const [registrationMode, setRegistrationMode] = useState("trial");
   const [founderIntent, setFounderIntent] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState("annual");
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState(null);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [createdAccount, setCreatedAccount] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -258,6 +261,38 @@ export default function SignupClient() {
     applyCoachLocale(nextLocale);
     trackEvent("landing_signup_opened", { locale: nextLocale });
   }, []);
+
+  async function checkEmailAvailability(value = email) {
+    const normalizedEmail = value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setEmailAvailable(null);
+      return false;
+    }
+
+    setEmailChecking(true);
+    try {
+      const response = await fetch("/api/auth/check-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) throw new Error("email_check_failed");
+      setEmailAvailable(!result.exists);
+      if (result.exists) {
+        setErrorMessage(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
+        return false;
+      }
+      setErrorMessage("");
+      return true;
+    } catch {
+      setEmailAvailable(null);
+      setErrorMessage(locale === "pt" ? "Não foi possível validar o email agora. Tenta novamente." : "We could not validate this email right now. Try again.");
+      return false;
+    } finally {
+      setEmailChecking(false);
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -280,12 +315,24 @@ export default function SignupClient() {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
+      if (onboardingStep === 1) {
+        const available = await checkEmailAvailability(normalizedEmail);
+        if (!available) return;
+      }
+
+      if (onboardingStep === 1 && registrationMode === "subscription" && !founderIntent) {
+        const checkoutStatus = await fetch("/api/billing/checkout", { cache: "no-store" });
+        const checkoutConfig = await checkoutStatus.json().catch(() => ({}));
+        if (!checkoutConfig.configured) {
+          throw new Error(locale === "pt" ? "O pagamento online está a ser configurado. A tua conta ainda não foi criada; tenta novamente em breve." : "Online payment is being configured. Your account has not been created yet; try again shortly.");
+        }
+      }
       const submittedAt = createdAccount?.submittedAt || new Date().toISOString();
       const accessTier = founderIntent ? "founder" : "coach";
       const subscriptionCategory = founderIntent
         ? "nlock_founder_annual"
         : registrationMode === "subscription"
-          ? "nlock_coach_subscription"
+          ? selectedPlan === "annual" ? "nlock_coach_annual" : "nlock_coach_monthly"
           : "nlock_coach_trial";
       let userId = createdAccount?.userId || "";
 
@@ -301,6 +348,7 @@ export default function SignupClient() {
               role: "coach",
               founder_access_requested: founderIntent,
               trial_requested: registrationMode === "trial",
+              selected_plan: registrationMode === "subscription" && !founderIntent ? selectedPlan : null,
               registration_mode: registrationMode,
               access_tier: accessTier,
               subscription_category: subscriptionCategory,
@@ -346,12 +394,25 @@ export default function SignupClient() {
             specialty: specialty.trim(),
             professionalLink: professionalLink.trim(),
             publicBio: publicBio.trim(),
+            selectedPlan,
             userId,
           }),
         });
       } catch {}
 
       trackEvent("landing_signup_success", { locale, accessTier, registrationMode });
+
+      if (registrationMode === "subscription" && !founderIntent) {
+        const checkoutResponse = await fetch("/api/billing/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan: selectedPlan, email: normalizedEmail, userId }),
+        });
+        const checkout = await checkoutResponse.json().catch(() => ({}));
+        if (!checkoutResponse.ok || !checkout.url) throw new Error(locale === "pt" ? "A conta foi criada, mas não foi possível abrir o pagamento. Contacta a equipa NLOCK." : "The account was created, but payment could not be opened. Contact NLOCK.");
+        window.location.assign(checkout.url);
+        return;
+      }
 
       setSuccessMessage(
         locale === "pt"
@@ -559,10 +620,10 @@ export default function SignupClient() {
                   <legend className="mb-2 text-sm font-semibold text-[var(--text)]">
                     {locale === "pt" ? "Como queres começar?" : "How do you want to start?"}
                   </legend>
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
                     <button
                       type="button"
-                      onClick={() => { setRegistrationMode("trial"); setFounderIntent(false); }}
+                      onClick={() => { setRegistrationMode("trial"); setFounderIntent(false); setErrorMessage(""); }}
                       className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${registrationMode === "trial" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
                     >
                       <span className="block font-semibold text-[var(--text)]">{locale === "pt" ? "Iniciar trial" : "Start trial"}</span>
@@ -570,14 +631,52 @@ export default function SignupClient() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRegistrationMode("subscription")}
-                      className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${registrationMode === "subscription" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
+                      onClick={() => { setRegistrationMode("subscription"); setFounderIntent(false); setErrorMessage(""); }}
+                      className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${registrationMode === "subscription" && !founderIntent ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
                     >
-                      <span className="block font-semibold text-[var(--text)]">{founderIntent ? "Coach Fundador" : locale === "pt" ? "Subscrever NLOCK" : "Subscribe to NLOCK"}</span>
-                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{founderIntent ? "Candidatura com subscrição anual de 199,90 €." : locale === "pt" ? "Cria a conta e escolhe o teu plano." : "Create your account and choose your plan."}</span>
+                      <span className="block font-semibold text-[var(--text)]">{locale === "pt" ? "Subscrever NLOCK" : "Subscribe to NLOCK"}</span>
+                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Escolhe mensal ou anual e segue para pagamento." : "Choose monthly or annual and continue to payment."}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setRegistrationMode("subscription"); setFounderIntent(true); setSelectedPlan("annual"); setErrorMessage(""); }}
+                      className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${founderIntent ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
+                    >
+                      <span className="block font-semibold text-[var(--text)]">Coach Fundador</span>
+                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Candidata-te a uma das 50 vagas Founder." : "Apply for one of 50 Founder places."}</span>
                     </button>
                   </div>
                 </fieldset>
+
+                {registrationMode === "subscription" && !founderIntent ? (
+                  <div className="mb-2 rounded-[22px] border border-[var(--border)] bg-[var(--surface-muted)] p-4 sm:p-5">
+                    <div className="flex items-start gap-3">
+                      <CreditCard size={20} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
+                      <div>
+                        <p className="font-semibold text-[var(--text)]">{locale === "pt" ? "Escolhe a tua subscrição" : "Choose your subscription"}</p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Depois de criares a conta, continuas para o pagamento seguro." : "After creating the account, you continue to secure payment."}</p>
+                      </div>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <button type="button" onClick={() => setSelectedPlan("monthly")} className={`rounded-2xl border p-3 text-left ${selectedPlan === "monthly" ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}>
+                        <span className="block text-sm font-semibold text-[var(--text)]">Mensal</span>
+                        <span className="mt-1 block text-lg font-semibold text-[var(--text)]">29,90 €<small className="text-xs font-normal text-[var(--text-muted)]">/mês</small></span>
+                      </button>
+                      <button type="button" onClick={() => setSelectedPlan("annual")} className={`relative rounded-2xl border p-3 text-left ${selectedPlan === "annual" ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}>
+                        <span className="block text-sm font-semibold text-[var(--text)]">Anual</span>
+                        <span className="mt-1 block text-lg font-semibold text-[var(--text)]">299,90 €<small className="text-xs font-normal text-[var(--text-muted)]">/ano</small></span>
+                        <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--accent-strong)]">2 meses incluídos</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+
+                {founderIntent ? (
+                  <div className="mb-2 flex items-start gap-3 rounded-[22px] border border-[var(--accent)]/30 bg-[var(--accent-soft)] p-4">
+                    <MapPinned size={20} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
+                    <p className="text-sm leading-6 text-[var(--text-muted)]">A conta é criada primeiro. No passo seguinte pedimos localização, local de trabalho, especialidade, bio e link profissional para construir o teu perfil público no Mural Founder. Nada é publicado sem aprovação e consentimento.</p>
+                  </div>
+                ) : null}
 
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{t.coachName}</span>
@@ -676,12 +775,14 @@ export default function SignupClient() {
                   <input
                     type="email"
                     value={email}
-                    onChange={(event) => setEmail(event.target.value)}
+                    onChange={(event) => { setEmail(event.target.value); setEmailAvailable(null); setErrorMessage(""); }}
+                    onBlur={(event) => checkEmailAvailability(event.target.value)}
                     placeholder="coach@nlock.pt"
                     className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                     autoComplete="email"
                     required
                   />
+                  {emailChecking ? <span className="text-xs text-[var(--text-muted)]">A verificar o email…</span> : emailAvailable === true ? <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--success)]"><CheckCircle2 size={13} /> Email disponível</span> : null}
                 </label>
 
                 <label className="grid gap-2">
@@ -753,6 +854,8 @@ export default function SignupClient() {
                     <>
                       {onboardingStep === 1 && founderIntent
                         ? "Criar conta e continuar"
+                        : onboardingStep === 1 && registrationMode === "subscription"
+                          ? "Criar conta e ir para pagamento"
                         : onboardingStep === 2
                           ? "Guardar perfil e enviar candidatura"
                           : t.createContinue}

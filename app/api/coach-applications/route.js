@@ -223,7 +223,7 @@ export async function POST(request) {
     const foundingPublicProfileConsent = Boolean(payload.foundingPublicProfileConsent);
     const accessTier = payload.accessTier === FOUNDER_ACCESS_TIER ? FOUNDER_ACCESS_TIER : "coach";
     const registrationMode = payload.registrationMode === "subscription" ? "subscription" : "trial";
-    const allowedCategories = new Set(["nlock_founder_annual", "nlock_coach_subscription", "nlock_coach_trial"]);
+    const allowedCategories = new Set(["nlock_founder_annual", "nlock_coach_monthly", "nlock_coach_annual", "nlock_coach_subscription", "nlock_coach_trial"]);
     const requestedCategory = cleanText(payload.subscriptionCategory, 80);
     const subscriptionCategory = allowedCategories.has(requestedCategory)
       ? requestedCategory
@@ -259,6 +259,7 @@ export async function POST(request) {
         public_specialty: cleanText(payload.specialty, 160),
         public_profile_url: cleanPublicUrl(payload.professionalLink),
         public_bio: cleanText(payload.publicBio, 600),
+        selected_plan: payload.selectedPlan === "annual" ? "annual" : payload.selectedPlan === "monthly" ? "monthly" : null,
         user_agent: request.headers.get("user-agent") || "",
         referer: request.headers.get("referer") || "",
         submitted_at: submittedAt,
