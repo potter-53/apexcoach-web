@@ -232,12 +232,15 @@ export default function SignupClient() {
   const [country, setCountry] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [professionalLink, setProfessionalLink] = useState("");
+  const [publicBio, setPublicBio] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [foundingProfileConsent, setFoundingProfileConsent] = useState(false);
   const [registrationMode, setRegistrationMode] = useState("trial");
   const [founderIntent, setFounderIntent] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(1);
+  const [createdAccount, setCreatedAccount] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -264,7 +267,7 @@ export default function SignupClient() {
       return;
     }
 
-    if (!acceptedLegal) {
+    if (onboardingStep === 1 && !acceptedLegal) {
       setErrorMessage(t.acceptRequired);
       trackEvent("landing_signup_blocked", { reason: "legal_not_accepted", locale });
       return;
@@ -275,46 +278,49 @@ export default function SignupClient() {
     setSuccessMessage("");
 
     try {
-      const supabase = getSupabaseBrowserClient();
       const normalizedEmail = email.trim().toLowerCase();
-      const submittedAt = new Date().toISOString();
+      const submittedAt = createdAccount?.submittedAt || new Date().toISOString();
       const accessTier = founderIntent ? "founder" : "coach";
       const subscriptionCategory = founderIntent
         ? "nlock_founder_annual"
         : registrationMode === "subscription"
           ? "nlock_coach_subscription"
           : "nlock_coach_trial";
-      const { data, error } = await supabase.auth.signUp({
-        email: normalizedEmail,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/login?verified=1`,
-          data: {
-            full_name: fullName.trim(),
-            role: "coach",
-            beta_access_requested: true,
-            beta_requested_at: submittedAt,
-            founder_access_requested: founderIntent,
-            trial_requested: registrationMode === "trial",
-            registration_mode: registrationMode,
-            access_tier: accessTier,
-            subscription_category: subscriptionCategory,
-            billing_campaign_key: subscriptionCategory,
-            accepted_terms_at: submittedAt,
-            accepted_privacy_at: submittedAt,
-            accepted_legal_version: "2026-04",
-            founding_public_profile_consent: foundingProfileConsent,
-            founding_public_profile_consent_at: foundingProfileConsent ? submittedAt : null,
-            public_workplace: workplace.trim(),
-            public_location: city.trim(),
-            public_country: country.trim(),
-            public_specialty: specialty.trim(),
-            public_profile_url: professionalLink.trim(),
-          },
-        },
-      });
+      let userId = createdAccount?.userId || "";
 
-      if (error) throw error;
+      if (onboardingStep === 1) {
+        const supabase = getSupabaseBrowserClient();
+        const { data, error } = await supabase.auth.signUp({
+          email: normalizedEmail,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/login?verified=1`,
+            data: {
+              full_name: fullName.trim(),
+              role: "coach",
+              founder_access_requested: founderIntent,
+              trial_requested: registrationMode === "trial",
+              registration_mode: registrationMode,
+              access_tier: accessTier,
+              subscription_category: subscriptionCategory,
+              billing_campaign_key: subscriptionCategory,
+              accepted_terms_at: submittedAt,
+              accepted_privacy_at: submittedAt,
+              accepted_legal_version: "2026-04",
+            },
+          },
+        });
+        if (error) throw error;
+        userId = data?.user?.id || "";
+
+        if (founderIntent) {
+          setCreatedAccount({ userId, submittedAt });
+          setOnboardingStep(2);
+          setSuccessMessage(locale === "pt" ? "Conta criada. Completa agora o perfil público da tua candidatura Founder." : "Account created. Now complete your public Founder profile.");
+          trackEvent("landing_signup_account_created", { locale, accessTier });
+          return;
+        }
+      }
 
       try {
         await fetch("/api/coach-applications", {
@@ -338,12 +344,13 @@ export default function SignupClient() {
             country: country.trim(),
             specialty: specialty.trim(),
             professionalLink: professionalLink.trim(),
-            userId: data?.user?.id || "",
+            publicBio: publicBio.trim(),
+            userId,
           }),
         });
       } catch {}
 
-      trackEvent("landing_signup_success", { locale });
+      trackEvent("landing_signup_success", { locale, accessTier, registrationMode });
 
       setSuccessMessage(
         locale === "pt"
@@ -537,7 +544,10 @@ export default function SignupClient() {
               <div className="mb-8 flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm uppercase tracking-[0.22em] text-[var(--text-muted)]">{t.eyebrow}</p>
-                  <h2 className="mt-3 text-3xl font-semibold text-[var(--text)]">{t.heading}</h2>
+                  <h2 className="mt-3 text-3xl font-semibold text-[var(--text)]">{onboardingStep === 2 ? "Completar perfil Founder" : t.heading}</h2>
+                  <p className="mt-2 text-sm text-[var(--text-muted)]">
+                    {onboardingStep === 1 ? founderIntent ? "Passo 1 de 2 · Conta NLOCK" : "Conta NLOCK" : "Passo 2 de 2 · Perfil Coach Fundador"}
+                  </p>
                 </div>
                 <div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.1))] p-3 text-[var(--electric)]">
                   <UserPlus size={22} />
@@ -566,6 +576,15 @@ export default function SignupClient() {
               )}
 
               <form className="grid gap-4" onSubmit={handleSubmit}>
+                {onboardingStep === 2 ? (
+                  <div className="mb-2 rounded-[22px] border border-[var(--accent)]/30 bg-[var(--accent-soft)] p-5">
+                    <p className="font-semibold text-[var(--text)]">Porque pedimos estes dados?</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">O mural apresenta Coaches Fundadores a potenciais clients. A localização posiciona o teu avatar no mapa; o local de trabalho, especialidade e link ajudam a comunidade a perceber onde trabalhas e como entrar em contacto contigo.</p>
+                    <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">A fotografia será a do teu perfil NLOCK. O mural só será publicado depois da aprovação da candidatura e com o teu consentimento explícito.</p>
+                  </div>
+                ) : null}
+
+                {onboardingStep === 1 ? <>
                 <fieldset className="mb-2 grid gap-3">
                   <legend className="mb-2 text-sm font-semibold text-[var(--text)]">
                     {locale === "pt" ? "Como queres começar?" : "How do you want to start?"}
@@ -602,8 +621,9 @@ export default function SignupClient() {
                     required
                   />
                 </label>
+                </> : null}
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                {onboardingStep === 2 ? <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 sm:col-span-2">
                     <span className="text-sm text-[var(--text-muted)]">{t.workplace}</span>
                     <input
@@ -665,8 +685,22 @@ export default function SignupClient() {
                       autoComplete="url"
                     />
                   </label>
-                </div>
 
+                  <label className="grid gap-2 sm:col-span-2">
+                    <span className="text-sm text-[var(--text-muted)]">Bio profissional</span>
+                    <textarea
+                      value={publicBio}
+                      onChange={(event) => setPublicBio(event.target.value)}
+                      placeholder="Conta em poucas linhas quem ajudas, como trabalhas e o que distingue o teu acompanhamento."
+                      rows={4}
+                      maxLength={600}
+                      className="resize-none rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      required
+                    />
+                  </label>
+                </div> : null}
+
+                {onboardingStep === 1 ? <>
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{t.email}</span>
                   <input
@@ -718,8 +752,9 @@ export default function SignupClient() {
                     </p>
                   </div>
                 </label>
+                </> : null}
 
-                {founderIntent ? <label className="rounded-[20px] border border-[var(--border)] bg-white p-4">
+                {founderIntent && onboardingStep === 2 ? <label className="rounded-[20px] border border-[var(--accent)]/30 bg-white p-4">
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
@@ -736,7 +771,7 @@ export default function SignupClient() {
 
                 <button
                   type="submit"
-                  disabled={submitting || !configured || !acceptedLegal}
+                  disabled={submitting || !configured || (onboardingStep === 1 && !acceptedLegal)}
                   className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-4 font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {submitting ? (
@@ -746,7 +781,11 @@ export default function SignupClient() {
                     </>
                   ) : (
                     <>
-                      {t.createContinue}
+                      {onboardingStep === 1 && founderIntent
+                        ? "Criar conta e continuar"
+                        : onboardingStep === 2
+                          ? "Guardar perfil e enviar candidatura"
+                          : t.createContinue}
                       <ArrowRight size={18} />
                     </>
                   )}

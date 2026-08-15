@@ -11,6 +11,7 @@ const SUPABASE_SERVICE_ROLE_KEY =
 const SUPABASE_READ_KEY = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 
 const FOUNDER_SUBSCRIPTION_CATEGORY = "apex_coach_founder";
+const FOUNDER_APPLICATION_CATEGORIES = [FOUNDER_SUBSCRIPTION_CATEGORY, "nlock_founder_annual"];
 const ACTIVE_SUBSCRIPTION_STATUSES = ["active", "trialing"];
 const PIN_POSITIONS = [
   { x: "47.5%", y: "28%" },
@@ -65,6 +66,7 @@ function publicProfileFromApplication(application, index, clientsCount) {
     specialty: text(metadata.public_specialty || metadata.specialty || metadata.coaching_specialty, "Coach"),
     workplace: text(metadata.public_workplace || metadata.workplace || metadata.gym_name),
     profileUrl: text(metadata.public_profile_url || metadata.profile_url || metadata.website_url),
+    bio: text(metadata.public_bio || metadata.bio),
     latitude: Number(metadata.public_latitude ?? metadata.latitude ?? coordinates.latitude),
     longitude: Number(metadata.public_longitude ?? metadata.longitude ?? coordinates.longitude),
     activeSince: application.created_at
@@ -170,7 +172,7 @@ export async function GET() {
     const { data: applications, error: applicationError } = await supabase
       .from("coach_applications")
       .select("auth_user_id, full_name, status, subscription_category, access_tier, metadata, created_at")
-      .eq("subscription_category", FOUNDER_SUBSCRIPTION_CATEGORY)
+      .in("subscription_category", FOUNDER_APPLICATION_CATEGORIES)
       .eq("access_tier", "founder")
       .order("created_at", { ascending: true })
       .limit(50);

@@ -242,6 +242,7 @@ export async function POST(request) {
       country: cleanText(payload.country, 100),
       specialty: cleanText(payload.specialty, 160),
       professionalLink: cleanPublicUrl(payload.professionalLink),
+      publicBio: cleanText(payload.publicBio, 600),
       accessTier,
       subscriptionCategory,
       metadata: {
@@ -257,6 +258,7 @@ export async function POST(request) {
         public_country: cleanText(payload.country, 100),
         public_specialty: cleanText(payload.specialty, 160),
         public_profile_url: cleanPublicUrl(payload.professionalLink),
+        public_bio: cleanText(payload.publicBio, 600),
         user_agent: request.headers.get("user-agent") || "",
         referer: request.headers.get("referer") || "",
         submitted_at: submittedAt,
