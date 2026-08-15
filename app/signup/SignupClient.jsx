@@ -244,7 +244,6 @@ export default function SignupClient() {
   const [emailChecking, setEmailChecking] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState(null);
   const [onboardingStep, setOnboardingStep] = useState(1);
-  const [createdAccount, setCreatedAccount] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -324,60 +323,53 @@ export default function SignupClient() {
         if (!available) return;
       }
 
-      if (onboardingStep === 1 && registrationMode === "subscription" && !founderIntent) {
-        const checkoutStatus = await fetch("/api/billing/checkout", { cache: "no-store" });
+      if (onboardingStep === 1 && registrationMode === "subscription") {
+        const checkoutPlan = founderIntent ? "founder" : selectedPlan;
+        const checkoutStatus = await fetch(`/api/billing/checkout?plan=${checkoutPlan}`, { cache: "no-store" });
         const checkoutConfig = await checkoutStatus.json().catch(() => ({}));
         if (!checkoutConfig.configured) {
           throw new Error(locale === "pt" ? "O pagamento online está a ser configurado. A tua conta ainda não foi criada; tenta novamente em breve." : "Online payment is being configured. Your account has not been created yet; try again shortly.");
         }
+        setOnboardingStep(2);
+        trackEvent("landing_signup_payment_step_opened", { locale, founderIntent, plan: checkoutPlan });
+        return;
       }
-      const submittedAt = createdAccount?.submittedAt || new Date().toISOString();
+
+      const submittedAt = new Date().toISOString();
       const accessTier = founderIntent ? "founder" : "coach";
       const subscriptionCategory = founderIntent
         ? "nlock_founder_annual"
         : registrationMode === "subscription"
           ? selectedPlan === "annual" ? "nlock_coach_annual" : "nlock_coach_monthly"
           : "nlock_coach_trial";
-      let userId = createdAccount?.userId || "";
-
-      if (onboardingStep === 1) {
-        const supabase = getSupabaseBrowserClient();
-        const { data, error } = await supabase.auth.signUp({
-          email: normalizedEmail,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/login?verified=1`,
-            data: {
-              full_name: fullName.trim(),
-              role: "coach",
-              founder_access_requested: founderIntent,
-              trial_requested: registrationMode === "trial",
-              selected_plan: registrationMode === "subscription" && !founderIntent ? selectedPlan : null,
-              registration_mode: registrationMode,
-              access_tier: accessTier,
-              subscription_category: subscriptionCategory,
-              billing_campaign_key: subscriptionCategory,
-              accepted_terms_at: submittedAt,
-              accepted_privacy_at: submittedAt,
-              accepted_legal_version: "2026-04",
-            },
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login?verified=1`,
+          data: {
+            full_name: fullName.trim(),
+            role: "coach",
+            founder_access_requested: founderIntent,
+            trial_requested: registrationMode === "trial",
+            selected_plan: registrationMode === "subscription" ? founderIntent ? "founder" : selectedPlan : null,
+            registration_mode: registrationMode,
+            access_tier: accessTier,
+            subscription_category: subscriptionCategory,
+            billing_campaign_key: subscriptionCategory,
+            accepted_terms_at: submittedAt,
+            accepted_privacy_at: submittedAt,
+            accepted_legal_version: "2026-04",
           },
-        });
-        if (error) throw error;
-        if (Array.isArray(data?.user?.identities) && data.user.identities.length === 0) {
-          setEmailAvailable(false);
-          throw new Error(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
-        }
-        userId = data?.user?.id || "";
-
-        if (founderIntent) {
-          setCreatedAccount({ userId, submittedAt });
-          setOnboardingStep(2);
-          setSuccessMessage(locale === "pt" ? "Conta criada. Completa agora o perfil público da tua candidatura Founder." : "Account created. Now complete your public Founder profile.");
-          trackEvent("landing_signup_account_created", { locale, accessTier });
-          return;
-        }
+        },
+      });
+      if (error) throw error;
+      if (Array.isArray(data?.user?.identities) && data.user.identities.length === 0) {
+        setEmailAvailable(false);
+        throw new Error(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
       }
+      const userId = data?.user?.id || "";
 
       try {
         await fetch("/api/coach-applications", {
@@ -410,11 +402,12 @@ export default function SignupClient() {
 
       trackEvent("landing_signup_success", { locale, accessTier, registrationMode });
 
-      if (registrationMode === "subscription" && !founderIntent) {
+      if (registrationMode === "subscription") {
+        const checkoutPlan = founderIntent ? "founder" : selectedPlan;
         const checkoutResponse = await fetch("/api/billing/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: selectedPlan, email: normalizedEmail, userId }),
+          body: JSON.stringify({ plan: checkoutPlan, email: normalizedEmail, userId }),
         });
         const checkout = await checkoutResponse.json().catch(() => ({}));
         if (!checkoutResponse.ok || !checkout.url) throw new Error(locale === "pt" ? "A conta foi criada, mas não foi possível abrir o pagamento. Contacta a equipa NLOCK." : "The account was created, but payment could not be opened. Contact NLOCK.");
@@ -576,9 +569,9 @@ export default function SignupClient() {
               <div className="mb-6 flex items-start justify-between gap-4 sm:mb-8">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-strong)]">{t.eyebrow}</p>
-                  <h2 className="mt-2 text-[2rem] font-semibold leading-tight tracking-[-0.035em] text-[var(--text)] sm:text-4xl">{onboardingStep === 2 ? "Completar perfil Founder" : t.heading}</h2>
+                  <h2 className="mt-2 text-[2rem] font-semibold leading-tight tracking-[-0.035em] text-[var(--text)] sm:text-4xl">{onboardingStep === 2 ? "Pagamento" : t.heading}</h2>
                   <p className="mt-2 text-xs font-medium text-[var(--text-muted)] sm:text-sm">
-                    {onboardingStep === 1 ? founderIntent ? "Passo 1 de 2 · Conta NLOCK" : "Conta NLOCK" : "Passo 2 de 2 · Perfil Coach Fundador"}
+                    {onboardingStep === 1 ? registrationMode === "subscription" ? "Passo 1 de 2 · Registo e modalidade" : "Conta NLOCK" : "Passo 2 de 2 · Confirmar e pagar"}
                   </p>
                 </div>
                 <div className="shrink-0 rounded-2xl border border-[var(--accent)]/20 bg-[var(--accent-soft)] p-3 text-[var(--accent-strong)]">
@@ -586,7 +579,7 @@ export default function SignupClient() {
                 </div>
               </div>
 
-              {founderIntent && (
+              {registrationMode === "subscription" && (
                 <div className="mb-6 flex gap-2" aria-label="Progresso do registo">
                   <span className="h-1.5 flex-1 rounded-full bg-[var(--accent)]" />
                   <span className={`h-1.5 flex-1 rounded-full ${onboardingStep === 2 ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`} />
@@ -698,7 +691,7 @@ export default function SignupClient() {
                 </label>
                 </> : null}
 
-                {onboardingStep === 2 ? <div className="rounded-[24px] border border-[var(--accent)]/35 bg-[var(--surface-muted)] p-4 sm:p-5">
+                {founderIntent && onboardingStep === 1 ? <div className="rounded-[24px] border border-[var(--accent)]/35 bg-[var(--surface-muted)] p-4 sm:p-5">
                   <div className="mb-5 flex items-start gap-3 border-b border-[var(--border)] pb-5">
                     <MapPinned size={21} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
                     <div>
@@ -785,6 +778,30 @@ export default function SignupClient() {
                   </div>
                 </div> : null}
 
+                {onboardingStep === 2 ? (
+                  <div className="rounded-[24px] border border-[var(--accent)]/35 bg-[var(--surface-muted)] p-5 sm:p-6">
+                    <div className="flex items-start gap-3 border-b border-[var(--border)] pb-5">
+                      <CreditCard size={22} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Resumo da subscrição</p>
+                        <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">{founderIntent ? "Coach Fundador" : selectedPlan === "annual" ? "NLOCK anual" : "NLOCK mensal"}</h3>
+                        <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Confirma os dados e segue para o checkout seguro. A conta NLOCK é criada quando avançares para o pagamento.</p>
+                      </div>
+                    </div>
+                    <div className="mt-5 flex items-end justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] p-4">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">Total</p>
+                        <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[var(--text)]">{founderIntent ? "199,90 €" : selectedPlan === "annual" ? "299,90 €" : "29,90 €"}</p>
+                      </div>
+                      <p className="pb-1 text-sm text-[var(--text-muted)]">/{founderIntent || selectedPlan === "annual" ? "ano" : "mês"}</p>
+                    </div>
+                    {founderIntent ? <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">O preço e o estatuto Coach Fundador mantêm-se enquanto a subscrição anual permanecer ativa, sujeitos à aprovação da candidatura.</p> : null}
+                    <button type="button" onClick={() => { setOnboardingStep(1); setErrorMessage(""); }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
+                      <ArrowLeft size={15} /> Alterar dados ou modalidade
+                    </button>
+                  </div>
+                ) : null}
+
                 {onboardingStep === 1 ? <>
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{t.email}</span>
@@ -841,7 +858,7 @@ export default function SignupClient() {
                 </label>
                 </> : null}
 
-                {founderIntent && onboardingStep === 2 ? <label className="rounded-[20px] border border-[var(--accent)]/30 bg-[var(--surface-solid)] p-4">
+                {founderIntent && onboardingStep === 1 ? <label className="rounded-[20px] border border-[var(--accent)]/30 bg-[var(--surface-solid)] p-4">
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
@@ -868,12 +885,10 @@ export default function SignupClient() {
                     </>
                   ) : (
                     <>
-                      {onboardingStep === 1 && founderIntent
-                        ? "Criar conta e continuar"
-                        : onboardingStep === 1 && registrationMode === "subscription"
-                          ? "Criar conta e ir para pagamento"
+                      {onboardingStep === 1 && registrationMode === "subscription"
+                        ? "Continuar para pagamento"
                         : onboardingStep === 2
-                          ? "Guardar perfil e enviar candidatura"
+                          ? founderIntent ? "Criar conta e pagar candidatura" : "Criar conta e pagar subscrição"
                           : t.createContinue}
                       <ArrowRight size={18} />
                     </>

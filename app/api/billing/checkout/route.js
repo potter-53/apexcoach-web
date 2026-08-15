@@ -4,23 +4,28 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 const PRICE_IDS = {
   monthly: process.env.STRIPE_PRICE_MONTHLY || "",
   annual: process.env.STRIPE_PRICE_ANNUAL || "",
+  founder: process.env.STRIPE_PRICE_FOUNDER || "",
 };
 
-function configured() {
-  return Boolean(STRIPE_SECRET_KEY && PRICE_IDS.monthly && PRICE_IDS.annual);
+function normalizePlan(value) {
+  return value === "founder" || value === "annual" ? value : "monthly";
 }
 
-export async function GET() {
-  return NextResponse.json({ ok: true, configured: configured() });
+function configured(plan) {
+  return Boolean(STRIPE_SECRET_KEY && PRICE_IDS[plan]);
+}
+
+export async function GET(request) {
+  const plan = normalizePlan(new URL(request.url).searchParams.get("plan"));
+  return NextResponse.json({ ok: true, configured: configured(plan), plan });
 }
 
 export async function POST(request) {
-  if (!configured()) {
+  const payload = await request.json().catch(() => ({}));
+  const plan = normalizePlan(payload.plan);
+  if (!configured(plan)) {
     return NextResponse.json({ ok: false, error: "checkout_not_configured" }, { status: 503 });
   }
-
-  const payload = await request.json().catch(() => ({}));
-  const plan = payload.plan === "annual" ? "annual" : "monthly";
   const email = String(payload.email || "").trim().toLowerCase().slice(0, 254);
   const userId = String(payload.userId || "").trim().slice(0, 80);
   const origin = new URL(request.url).origin;
@@ -36,7 +41,7 @@ export async function POST(request) {
   params.set("allow_promotion_codes", "true");
   params.set("billing_address_collection", "auto");
   params.set("success_url", `${origin}/signup?payment=success&session_id={CHECKOUT_SESSION_ID}`);
-  params.set("cancel_url", `${origin}/signup?mode=subscription&payment=cancelled`);
+  params.set("cancel_url", `${origin}/signup?mode=subscription${plan === "founder" ? "&founder=1" : ""}&payment=cancelled`);
 
   const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
