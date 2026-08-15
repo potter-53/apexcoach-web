@@ -251,6 +251,7 @@ export async function POST(request) {
         registration_mode: registrationMode,
         trial_requested: registrationMode === "trial",
         founder_access_requested: accessTier === FOUNDER_ACCESS_TIER,
+        founder_profile_status: accessTier === FOUNDER_ACCESS_TIER ? "required" : null,
         founding_public_profile_consent: foundingPublicProfileConsent,
         founding_public_profile_consent_at: foundingPublicProfileConsent ? submittedAt : null,
         public_workplace: cleanText(payload.workplace, 160),

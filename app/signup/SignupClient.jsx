@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, MapPinned, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
 
 import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getInitialBrowserLocale } from "../../src/lib/coach-locale";
@@ -228,16 +228,9 @@ export default function SignupClient() {
   const configured = useMemo(() => isSupabaseConfigured(), []);
   const [locale, setLocale] = useState("en");
   const [fullName, setFullName] = useState("");
-  const [workplace, setWorkplace] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [specialty, setSpecialty] = useState("");
-  const [professionalLink, setProfessionalLink] = useState("");
-  const [publicBio, setPublicBio] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
-  const [foundingProfileConsent, setFoundingProfileConsent] = useState(false);
   const [registrationMode, setRegistrationMode] = useState("trial");
   const [founderIntent, setFounderIntent] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("annual");
@@ -352,6 +345,7 @@ export default function SignupClient() {
             full_name: fullName.trim(),
             role: "coach",
             founder_access_requested: founderIntent,
+            founder_profile_onboarding_required: founderIntent,
             trial_requested: registrationMode === "trial",
             selected_plan: registrationMode === "subscription" ? founderIntent ? "founder" : selectedPlan : null,
             registration_mode: registrationMode,
@@ -386,14 +380,8 @@ export default function SignupClient() {
             accessTier,
             registrationMode,
             subscriptionCategory,
-            foundingPublicProfileConsent: foundingProfileConsent,
-            foundingPublicProfileConsentAt: foundingProfileConsent ? submittedAt : null,
-            workplace: workplace.trim(),
-            city: city.trim(),
-            country: country.trim(),
-            specialty: specialty.trim(),
-            professionalLink: professionalLink.trim(),
-            publicBio: publicBio.trim(),
+            foundingPublicProfileConsent: false,
+            foundingPublicProfileConsentAt: null,
             selectedPlan,
             userId,
           }),
@@ -674,6 +662,7 @@ export default function SignupClient() {
                       <CheckCircle2 size={22} className="mt-1 shrink-0 text-[var(--accent-strong)]" />
                     </div>
                     <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">Preço Founder exclusivo, equivalente a cerca de 16,66 €/mês. Manténs este preço e o estatuto Coach Fundador enquanto a subscrição anual permanecer ativa.</p>
+                    <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">No primeiro login na app completas o perfil do Mural: fotografia, localização, especialidade, bio e contacto profissional.</p>
                   </div>
                 ) : null}
 
@@ -690,93 +679,6 @@ export default function SignupClient() {
                   />
                 </label>
                 </> : null}
-
-                {founderIntent && onboardingStep === 1 ? <div className="rounded-[24px] border border-[var(--accent)]/35 bg-[var(--surface-muted)] p-4 sm:p-5">
-                  <div className="mb-5 flex items-start gap-3 border-b border-[var(--border)] pb-5">
-                    <MapPinned size={21} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
-                    <div>
-                      <p className="font-semibold text-[var(--text)]">Dados para o teu perfil Founder</p>
-                      <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Pedimos estes dados para te apresentar no Mural a potenciais clients: a localização coloca o teu perfil no mapa e o local de trabalho, especialidade, bio e link ajudam a perceber onde trabalhas e como contactar-te.</p>
-                      <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">A fotografia será a associada ao teu perfil NLOCK. Nada será publicado antes da aprovação da candidatura e sem o teu consentimento.</p>
-                    </div>
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-2 sm:col-span-2">
-                    <span className="text-sm text-[var(--text-muted)]">{t.workplace}</span>
-                    <input
-                      type="text"
-                      value={workplace}
-                      onChange={(event) => setWorkplace(event.target.value)}
-                      placeholder={t.workplacePlaceholder}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
-                      autoComplete="organization"
-                    />
-                  </label>
-
-                  <label className="grid gap-2">
-                    <span className="text-sm text-[var(--text-muted)]">{t.city}</span>
-                    <input
-                      type="text"
-                      value={city}
-                      onChange={(event) => setCity(event.target.value)}
-                      placeholder={locale === "pt" ? "Lisboa" : "City"}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
-                      autoComplete="address-level2"
-                      required
-                    />
-                  </label>
-
-                  <label className="grid gap-2">
-                    <span className="text-sm text-[var(--text-muted)]">{t.country}</span>
-                    <input
-                      type="text"
-                      value={country}
-                      onChange={(event) => setCountry(event.target.value)}
-                      placeholder={locale === "pt" ? "Portugal" : "Country"}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
-                      autoComplete="country-name"
-                      required
-                    />
-                  </label>
-
-                  <label className="grid gap-2 sm:col-span-2">
-                    <span className="text-sm text-[var(--text-muted)]">{t.specialty}</span>
-                    <input
-                      type="text"
-                      value={specialty}
-                      onChange={(event) => setSpecialty(event.target.value)}
-                      placeholder={locale === "pt" ? "Força, perda de peso, reabilitação…" : "Strength, weight loss, rehabilitation…"}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
-                      required
-                    />
-                  </label>
-
-                  <label className="grid gap-2 sm:col-span-2">
-                    <span className="text-sm text-[var(--text-muted)]">{t.professionalLink}</span>
-                    <input
-                      type="url"
-                      value={professionalLink}
-                      onChange={(event) => setProfessionalLink(event.target.value)}
-                      placeholder="https://instagram.com/coach ou https://meusite.pt"
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
-                      autoComplete="url"
-                    />
-                  </label>
-
-                  <label className="grid gap-2 sm:col-span-2">
-                    <span className="text-sm text-[var(--text-muted)]">Bio profissional</span>
-                    <textarea
-                      value={publicBio}
-                      onChange={(event) => setPublicBio(event.target.value)}
-                      placeholder="Conta em poucas linhas quem ajudas, como trabalhas e o que distingue o teu acompanhamento."
-                      rows={4}
-                      maxLength={600}
-                      className="resize-none rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
-                      required
-                    />
-                  </label>
-                  </div>
-                </div> : null}
 
                 {onboardingStep === 2 ? (
                   <div className="rounded-[24px] border border-[var(--accent)]/35 bg-[var(--surface-muted)] p-5 sm:p-6">
@@ -857,21 +759,6 @@ export default function SignupClient() {
                   </div>
                 </label>
                 </> : null}
-
-                {founderIntent && onboardingStep === 1 ? <label className="rounded-[20px] border border-[var(--accent)]/30 bg-[var(--surface-solid)] p-4">
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={foundingProfileConsent}
-                      onChange={(event) => setFoundingProfileConsent(event.target.checked)}
-                      className="mt-1 h-4 w-4 shrink-0 accent-[var(--accent)]"
-                    />
-                    <div>
-                      <p className="text-sm leading-6 text-[var(--text-muted)]">{t.foundingProfileConsent}</p>
-                      <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{t.foundingProfileConsentHelp}</p>
-                    </div>
-                  </div>
-                </label> : null}
 
                 <button
                   type="submit"
