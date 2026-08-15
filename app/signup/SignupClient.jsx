@@ -615,14 +615,6 @@ export default function SignupClient() {
               )}
 
               <form className="grid gap-4" onSubmit={handleSubmit}>
-                {onboardingStep === 2 ? (
-                  <div className="mb-2 rounded-[22px] border border-[var(--accent)]/30 bg-[var(--accent-soft)] p-5">
-                    <p className="font-semibold text-[var(--text)]">Porque pedimos estes dados?</p>
-                    <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">O mural apresenta Coaches Fundadores a potenciais clients. A localização posiciona o teu avatar no mapa; o local de trabalho, especialidade e link ajudam a comunidade a perceber onde trabalhas e como entrar em contacto contigo.</p>
-                    <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">A fotografia será a do teu perfil NLOCK. O mural só será publicado depois da aprovação da candidatura e com o teu consentimento explícito.</p>
-                  </div>
-                ) : null}
-
                 {onboardingStep === 1 ? <>
                 <fieldset className="mb-2 grid gap-3">
                   <legend className="mb-2 text-sm font-semibold text-[var(--text)]">
@@ -679,10 +671,16 @@ export default function SignupClient() {
                   </div>
                 ) : null}
 
-                {founderIntent ? (
-                  <div className="mb-2 flex items-start gap-3 rounded-[22px] border border-[var(--accent)]/30 bg-[var(--accent-soft)] p-4">
-                    <MapPinned size={20} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
-                    <p className="text-sm leading-6 text-[var(--text-muted)]">A conta é criada primeiro. No passo seguinte pedimos localização, local de trabalho, especialidade, bio e link profissional para construir o teu perfil público no Mural Founder. Nada é publicado sem aprovação e consentimento.</p>
+                {founderIntent && onboardingStep === 1 ? (
+                  <div className="mb-2 rounded-[22px] border border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),transparent)] p-4 sm:p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Coach Fundador · 50 vagas</p>
+                        <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[var(--text)]">199,90 €<small className="ml-1 text-sm font-normal tracking-normal text-[var(--text-muted)]">/ano</small></p>
+                      </div>
+                      <CheckCircle2 size={22} className="mt-1 shrink-0 text-[var(--accent-strong)]" />
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">Preço Founder exclusivo, equivalente a cerca de 16,66 €/mês. Manténs este preço e o estatuto Coach Fundador enquanto a subscrição anual permanecer ativa.</p>
                   </div>
                 ) : null}
 
@@ -700,7 +698,16 @@ export default function SignupClient() {
                 </label>
                 </> : null}
 
-                {onboardingStep === 2 ? <div className="grid gap-4 sm:grid-cols-2">
+                {onboardingStep === 2 ? <div className="rounded-[24px] border border-[var(--accent)]/35 bg-[var(--surface-muted)] p-4 sm:p-5">
+                  <div className="mb-5 flex items-start gap-3 border-b border-[var(--border)] pb-5">
+                    <MapPinned size={21} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
+                    <div>
+                      <p className="font-semibold text-[var(--text)]">Dados para o teu perfil Founder</p>
+                      <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Pedimos estes dados para te apresentar no Mural a potenciais clients: a localização coloca o teu perfil no mapa e o local de trabalho, especialidade, bio e link ajudam a perceber onde trabalhas e como contactar-te.</p>
+                      <p className="mt-2 text-xs leading-5 text-[var(--text-muted)]">A fotografia será a associada ao teu perfil NLOCK. Nada será publicado antes da aprovação da candidatura e sem o teu consentimento.</p>
+                    </div>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 sm:col-span-2">
                     <span className="text-sm text-[var(--text-muted)]">{t.workplace}</span>
                     <input
@@ -775,6 +782,7 @@ export default function SignupClient() {
                       required
                     />
                   </label>
+                  </div>
                 </div> : null}
 
                 {onboardingStep === 1 ? <>
