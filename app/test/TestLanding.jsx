@@ -176,7 +176,7 @@ export default function TestLanding() {
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle language="pt" className="!border-white/10 !bg-white/5 !text-white" />
-            <Link href="/signup" className="hidden min-h-11 items-center rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-5 text-sm font-semibold text-[#03130e] sm:inline-flex">
+            <Link href="/signup?mode=trial" className="hidden min-h-11 items-center rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-5 text-sm font-semibold text-[#03130e] sm:inline-flex">
               Experimentar
             </Link>
             <button type="button" onClick={() => setMenuOpen((value) => !value)} className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-white/10 lg:hidden" aria-label="Abrir navegação">
@@ -190,7 +190,7 @@ export default function TestLanding() {
             <a href="#system" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">O sistema</a>
             <a href="#community" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Comunidade</a>
             <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Planos</a>
-            <Link href="/signup" className="rounded-xl bg-[image:var(--brand-gradient)] px-4 py-3 text-center font-semibold text-[#03130e]">Experimentar</Link>
+            <Link href="/signup?mode=trial" className="rounded-xl bg-[image:var(--brand-gradient)] px-4 py-3 text-center font-semibold text-[#03130e]">Experimentar</Link>
           </nav>
         ) : null}
       </header>
@@ -210,7 +210,7 @@ export default function TestLanding() {
               <p className="mt-5 bg-[image:var(--brand-gradient)] bg-clip-text text-[clamp(1.5rem,3vw,2.75rem)] font-semibold tracking-[-0.04em] text-transparent">AND YOUR CLIENTS’</p>
               <p className="mt-8 max-w-xl text-lg leading-8 text-white/65">A ferramenta que acompanha o coach antes, durante e depois de cada sessão.</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link href="/signup" className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-6 font-semibold text-[#03130e] shadow-[var(--shadow-accent)]">
+                <Link href="/signup?mode=trial" className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-6 font-semibold text-[#03130e] shadow-[var(--shadow-accent)]">
                   Começar agora <ArrowRight size={18} />
                 </Link>
                 <a href="#moments" className="inline-flex min-h-[52px] items-center justify-center rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-6 font-semibold text-white backdrop-blur">Ver em ação</a>
@@ -316,7 +316,7 @@ export default function TestLanding() {
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] border border-white/10 bg-white/5 text-[var(--brand-mint)] lg:mx-0"><Users size={26} /></div>
                     <h3 className="mt-6 text-2xl font-semibold">O mural está pronto.</h3>
                     <p className="mt-3 text-sm leading-6 text-white/45">O primeiro Coach Fundador com perfil público ativa o mapa e inaugura a comunidade.</p>
-                    <Link href="/apply" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-5 font-semibold text-[#03130e]">Ser Coach Fundador <ArrowRight size={16} /></Link>
+                    <Link href="/signup?mode=subscription&founder=1" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-5 font-semibold text-[#03130e]">Ser Coach Fundador <ArrowRight size={16} /></Link>
                   </div>
                 )}
               </aside>
@@ -344,7 +344,7 @@ export default function TestLanding() {
                 <ul className="mt-9 grid gap-4 text-sm text-white/65">
                   {["14 dias de trial grátis", "Clients ilimitados", "Treino, avaliações, agenda e PSE", "Packs, pagamentos e automatismos"].map((item) => <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[var(--brand-mint)]" />{item}</li>)}
                 </ul>
-                <Link href="/signup" className="mt-10 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-6 font-semibold text-white">Experimentar 14 dias <ArrowRight size={18} /></Link>
+                <Link href="/signup?mode=trial" className="mt-10 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-6 font-semibold text-white">Experimentar 14 dias <ArrowRight size={18} /></Link>
               </article>
 
               <article className="nlock-founder-plan relative flex flex-col overflow-hidden rounded-[28px] border border-[var(--brand-mint)]/40 bg-[linear-gradient(145deg,rgba(53,211,138,0.14),rgba(12,19,29,0.98)_42%)] p-7 text-white shadow-[var(--shadow-accent)] sm:p-10">
@@ -357,7 +357,7 @@ export default function TestLanding() {
                   <ul className="mt-9 grid gap-4 text-sm text-white/65">
                     {["Tudo do plano Coach", "Badge e número exclusivo", "Early access e comunidade privada", "Participação na evolução do produto e suporte prioritário"].map((item) => <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[var(--brand-mint)]" />{item}</li>)}
                   </ul>
-                  <Link href="/apply" className="mt-10 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-6 font-semibold text-[#03130e]">Candidatar-me <ArrowRight size={18} /></Link>
+                  <Link href="/signup?mode=subscription&founder=1" className="mt-10 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-6 font-semibold text-[#03130e]">Candidatar-me <ArrowRight size={18} /></Link>
                 </div>
               </article>
             </div>
@@ -371,7 +371,7 @@ export default function TestLanding() {
             <NlockBrand />
             <h2 className="mt-10 text-[clamp(3rem,8vw,7rem)] font-semibold leading-[0.9] tracking-[-0.065em]">UNLOCK YOUR<br />FULL POTENTIAL.</h2>
             <p className="mt-5 bg-[image:var(--brand-gradient)] bg-clip-text text-2xl font-semibold text-transparent sm:text-4xl">AND YOUR CLIENTS’.</p>
-            <Link href="/signup" className="mt-10 inline-flex min-h-[54px] items-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-7 font-semibold text-[#03130e] shadow-[var(--shadow-accent)]">Experimentar NLOCK <ArrowRight size={18} /></Link>
+            <Link href="/signup?mode=trial" className="mt-10 inline-flex min-h-[54px] items-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-7 font-semibold text-[#03130e] shadow-[var(--shadow-accent)]">Experimentar NLOCK <ArrowRight size={18} /></Link>
           </div>
         </section>
       </main>

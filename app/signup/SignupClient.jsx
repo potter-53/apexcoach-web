@@ -22,7 +22,7 @@ const copy = {
     haveAccount: "I already have an account",
     downloadNow: "Download APK",
     badge: "Create your coach account",
-    title: "Create your account for APEX COACH.",
+    title: "Create your NLOCK coach account.",
     text: "This is the single front door for the coach: same account, same logic, mobile app in the field and premium browser on desktop.",
     eyebrow: "Coach signup",
     heading: "Create account",
@@ -66,7 +66,7 @@ const copy = {
     haveAccount: "Já tenho conta",
     downloadNow: "Download APK",
     badge: "Cria a tua conta coach",
-    title: "Cria a tua conta para APEX COACH.",
+    title: "Cria a tua conta de coach NLOCK.",
     text: "Esta é a entrada única do coach: mesma conta, mesma lógica, app mobile no terreno e browser premium no desktop.",
     eyebrow: "Registo do coach",
     heading: "Criar conta",
@@ -87,7 +87,7 @@ const copy = {
     acceptPrivacy: "Política de Privacidade",
     acceptLegalSuffix: ".",
     acceptRequired: "Tens de aceitar os Termos e a Política de Privacidade para criar conta.",
-    foundingProfileConsent: "Aceito que o meu perfil público de Coach Fundador (foto, nome, localização, testemunho e informação profissional selecionada) possa ser apresentado pela APEX COACH.",
+    foundingProfileConsent: "Aceito que o meu perfil público de Coach Fundador (foto, nome, localização, testemunho e informação profissional selecionada) possa ser apresentado pela NLOCK.",
     foundingProfileConsentHelp: "Opcional. Esta preferência poderá ser editada mais tarde nas definições da tua conta coach.",
     creating: "A criar conta...",
     createContinue: "Criar conta e continuar",
@@ -236,6 +236,8 @@ export default function SignupClient() {
   const [password, setPassword] = useState("");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [foundingProfileConsent, setFoundingProfileConsent] = useState(false);
+  const [registrationMode, setRegistrationMode] = useState("trial");
+  const [founderIntent, setFounderIntent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -244,6 +246,10 @@ export default function SignupClient() {
 
   useEffect(() => {
     const nextLocale = getInitialBrowserLocale();
+    const params = new URLSearchParams(window.location.search);
+    const requestedFounder = params.get("founder") === "1";
+    setRegistrationMode(params.get("mode") === "subscription" || requestedFounder ? "subscription" : "trial");
+    setFounderIntent(requestedFounder);
     setLocale(nextLocale);
     applyCoachLocale(nextLocale);
     trackEvent("landing_signup_opened", { locale: nextLocale });
@@ -272,6 +278,12 @@ export default function SignupClient() {
       const supabase = getSupabaseBrowserClient();
       const normalizedEmail = email.trim().toLowerCase();
       const submittedAt = new Date().toISOString();
+      const accessTier = founderIntent ? "founder" : "coach";
+      const subscriptionCategory = founderIntent
+        ? "nlock_founder_annual"
+        : registrationMode === "subscription"
+          ? "nlock_coach_subscription"
+          : "nlock_coach_trial";
       const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
@@ -282,10 +294,12 @@ export default function SignupClient() {
             role: "coach",
             beta_access_requested: true,
             beta_requested_at: submittedAt,
-            founder_access_requested: true,
-            access_tier: "founder",
-            subscription_category: "apex_coach_founder",
-            billing_campaign_key: "apex_coach_founder",
+            founder_access_requested: founderIntent,
+            trial_requested: registrationMode === "trial",
+            registration_mode: registrationMode,
+            access_tier: accessTier,
+            subscription_category: subscriptionCategory,
+            billing_campaign_key: subscriptionCategory,
             accepted_terms_at: submittedAt,
             accepted_privacy_at: submittedAt,
             accepted_legal_version: "2026-04",
@@ -313,9 +327,10 @@ export default function SignupClient() {
             email: normalizedEmail,
             focus: "",
             locale,
-            source: "apexcoach-signup-page",
-            accessTier: "founder",
-            subscriptionCategory: "apex_coach_founder",
+            source: "nlock-signup-page",
+            accessTier,
+            registrationMode,
+            subscriptionCategory,
             foundingPublicProfileConsent: foundingProfileConsent,
             foundingPublicProfileConsentAt: foundingProfileConsent ? submittedAt : null,
             workplace: workplace.trim(),
@@ -332,7 +347,7 @@ export default function SignupClient() {
 
       setSuccessMessage(
         locale === "pt"
-          ? "Conta criada. Enviámos um email de validação APEX COACH. Podes iniciar o download da APK e confirmar o email antes de iniciar sessão."
+          ? "Conta NLOCK criada. Enviámos um email de validação. Confirma o email antes de iniciares sessão."
           : locale === "es"
             ? "Cuenta creada. Enviamos un email de validación APEX COACH. Confirma tu email antes de iniciar sesión."
             : locale === "fr"
@@ -356,7 +371,7 @@ export default function SignupClient() {
           <div className="w-full max-w-md rounded-[28px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">APEX COACH</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">NLOCK</p>
                 <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">
                   {t.modalTitle}
                 </h3>
@@ -551,6 +566,30 @@ export default function SignupClient() {
               )}
 
               <form className="grid gap-4" onSubmit={handleSubmit}>
+                <fieldset className="mb-2 grid gap-3">
+                  <legend className="mb-2 text-sm font-semibold text-[var(--text)]">
+                    {locale === "pt" ? "Como queres começar?" : "How do you want to start?"}
+                  </legend>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => { setRegistrationMode("trial"); setFounderIntent(false); }}
+                      className={`rounded-[20px] border p-4 text-left transition ${registrationMode === "trial" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-white"}`}
+                    >
+                      <span className="block font-semibold text-[var(--text)]">{locale === "pt" ? "Iniciar trial" : "Start trial"}</span>
+                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "14 dias grátis. Sem compromisso." : "14 days free. No commitment."}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRegistrationMode("subscription")}
+                      className={`rounded-[20px] border p-4 text-left transition ${registrationMode === "subscription" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-white"}`}
+                    >
+                      <span className="block font-semibold text-[var(--text)]">{founderIntent ? "Coach Fundador" : locale === "pt" ? "Subscrever NLOCK" : "Subscribe to NLOCK"}</span>
+                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{founderIntent ? "Candidatura com subscrição anual de 199,90 €." : locale === "pt" ? "Cria a conta e escolhe o teu plano." : "Create your account and choose your plan."}</span>
+                    </button>
+                  </div>
+                </fieldset>
+
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{t.coachName}</span>
                   <input
@@ -634,7 +673,7 @@ export default function SignupClient() {
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="coach@apexcoach.pt"
+                    placeholder="coach@nlock.pt"
                     className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
                     autoComplete="email"
                     required
@@ -680,7 +719,7 @@ export default function SignupClient() {
                   </div>
                 </label>
 
-                <label className="rounded-[20px] border border-[var(--border)] bg-white p-4">
+                {founderIntent ? <label className="rounded-[20px] border border-[var(--border)] bg-white p-4">
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
@@ -693,7 +732,7 @@ export default function SignupClient() {
                       <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{t.foundingProfileConsentHelp}</p>
                     </div>
                   </div>
-                </label>
+                </label> : null}
 
                 <button
                   type="submit"

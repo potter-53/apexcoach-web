@@ -49,18 +49,28 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;");
 }
 
-function candidateEmailHtml({ fullName, locale }) {
+function candidateEmailHtml({ fullName, locale, accessTier, metadata }) {
   const isPt = locale === "pt";
   const title = isPt
-    ? "A tua conta APEX COACH foi criada."
-    : "Your APEX COACH account was created.";
+    ? "A tua conta NLOCK foi criada."
+    : "Your NLOCK account was created.";
   const text = isPt
-    ? "A tua identidade APEX COACH foi criada. Valida o email que acabaste de receber e depois entra na app com as tuas credenciais."
-    : "Your APEX COACH identity has been created. Verify the email you just received and then sign into the app with your credentials.";
+    ? "A tua identidade NLOCK foi criada. Valida o email que acabaste de receber e depois entra na app com as tuas credenciais."
+    : "Your NLOCK identity has been created. Verify the email you just received and then sign into the app with your credentials.";
   const next = isPt ? "Proximo passo" : "Next step";
+  const isFounder = accessTier === FOUNDER_ACCESS_TIER;
+  const isTrial = metadata?.registration_mode === "trial";
   const nextText = isPt
-    ? "Confirma o email, instala a APK quando estiveres pronto e começa a explorar a experiência APEX COACH. A tua conta ficou associada às condições Founder."
-    : "Confirm your email, install the APK when ready, and start exploring the APEX COACH app experience. Your account is associated with Founder conditions.";
+    ? isFounder
+      ? "Confirma o email. A tua candidatura a Coach Fundador ficou registada e será analisada pela equipa NLOCK."
+      : isTrial
+        ? "Confirma o email e inicia os teus 14 dias de trial NLOCK."
+        : "Confirma o email para continuares para a escolha e ativação da subscrição NLOCK."
+    : isFounder
+      ? "Confirm your email. Your Founding Coach application is now registered for review."
+      : isTrial
+        ? "Confirm your email and start your 14-day NLOCK trial."
+        : "Confirm your email to continue to NLOCK plan selection and activation.";
 
   return `<!doctype html>
 <html>
@@ -71,7 +81,7 @@ function candidateEmailHtml({ fullName, locale }) {
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;width:100%;background:#ffffff;border:1px solid #d8dfda;border-radius:28px;overflow:hidden;box-shadow:0 18px 48px rgba(14,17,16,0.08);">
             <tr>
               <td style="padding:28px 28px 10px 28px;">
-                <div style="font-size:13px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#127a58;">APEX COACH</div>
+                <div style="font-size:13px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#127a58;">NLOCK</div>
                 <h1 style="margin:28px 0 0 0;font-size:34px;line-height:1.08;color:#080a09;">${title}</h1>
                 <p style="margin:18px 0 0 0;font-size:17px;line-height:1.7;color:#5f6863;">${text}</p>
               </td>
@@ -87,7 +97,7 @@ function candidateEmailHtml({ fullName, locale }) {
             <tr>
               <td style="background:#080a09;padding:22px 28px;">
                 <p style="margin:0;font-size:13px;line-height:1.7;color:#d9e2dc;">Build your apex. Elevate theirs.</p>
-                <p style="margin:8px 0 0 0;font-size:12px;line-height:1.6;color:#8fa099;">${escapeHtml(fullName || "Coach")}, obrigado por entrares nesta fase da APEX COACH.</p>
+                <p style="margin:8px 0 0 0;font-size:12px;line-height:1.6;color:#8fa099;">${escapeHtml(fullName || "Coach")}, obrigado por começares com a NLOCK.</p>
               </td>
             </tr>
           </table>
@@ -211,6 +221,15 @@ export async function POST(request) {
     const payload = await request.json().catch(() => ({}));
     const submittedAt = new Date().toISOString();
     const foundingPublicProfileConsent = Boolean(payload.foundingPublicProfileConsent);
+    const accessTier = payload.accessTier === FOUNDER_ACCESS_TIER ? FOUNDER_ACCESS_TIER : "coach";
+    const registrationMode = payload.registrationMode === "subscription" ? "subscription" : "trial";
+    const allowedCategories = new Set(["nlock_founder_annual", "nlock_coach_subscription", "nlock_coach_trial"]);
+    const requestedCategory = cleanText(payload.subscriptionCategory, 80);
+    const subscriptionCategory = allowedCategories.has(requestedCategory)
+      ? requestedCategory
+      : registrationMode === "subscription"
+        ? "nlock_coach_subscription"
+        : "nlock_coach_trial";
     const application = {
       fullName: cleanText(payload.fullName, 120),
       email: cleanEmail(payload.email),
@@ -223,12 +242,14 @@ export async function POST(request) {
       country: cleanText(payload.country, 100),
       specialty: cleanText(payload.specialty, 160),
       professionalLink: cleanPublicUrl(payload.professionalLink),
-      accessTier: FOUNDER_ACCESS_TIER,
-      subscriptionCategory: FOUNDER_SUBSCRIPTION_CATEGORY,
+      accessTier,
+      subscriptionCategory,
       metadata: {
-        access_tier: FOUNDER_ACCESS_TIER,
-        subscription_category: FOUNDER_SUBSCRIPTION_CATEGORY,
-        founder_access_requested: true,
+        access_tier: accessTier,
+        subscription_category: subscriptionCategory,
+        registration_mode: registrationMode,
+        trial_requested: registrationMode === "trial",
+        founder_access_requested: accessTier === FOUNDER_ACCESS_TIER,
         founding_public_profile_consent: foundingPublicProfileConsent,
         founding_public_profile_consent_at: foundingPublicProfileConsent ? submittedAt : null,
         public_workplace: cleanText(payload.workplace, 160),
@@ -259,7 +280,9 @@ export async function POST(request) {
 
     let founderSubscription;
     try {
-      founderSubscription = await markFounderSubscription(application);
+      founderSubscription = application.accessTier === FOUNDER_ACCESS_TIER
+        ? await markFounderSubscription(application)
+        : { skipped: true, reason: "not_founder_application" };
     } catch (subscriptionError) {
       console.error("founder subscription update failed", subscriptionError);
       founderSubscription = { skipped: true, reason: "subscription_update_failed" };
@@ -271,8 +294,8 @@ export async function POST(request) {
         to: application.email,
         subject:
           application.locale === "pt"
-            ? "A tua conta APEX COACH foi criada"
-            : "Your APEX COACH account was created",
+            ? "A tua conta NLOCK foi criada"
+            : "Your NLOCK account was created",
         html: candidateEmailHtml(application),
       });
     } catch (emailError) {
@@ -284,7 +307,7 @@ export async function POST(request) {
     try {
       internalEmail = await sendEmail({
         to: APPLICATIONS_EMAIL,
-        subject: `New APEX COACH application: ${application.fullName}`,
+        subject: `New NLOCK coach registration: ${application.fullName}`,
         html: internalEmailHtml(application),
       });
     } catch (emailError) {

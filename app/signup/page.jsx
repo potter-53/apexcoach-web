@@ -1,8 +1,8 @@
 import SignupClient from "./SignupClient";
 
 export const metadata = {
-  title: "Criar Conta | APEX COACH",
-  description: "Criar conta de coach para iniciar o trial grátis de 14 dias na APEX COACH.",
+  title: "Registo de Coach | NLOCK",
+  description: "Cria a tua conta de coach NLOCK e escolhe entre iniciar o trial grátis ou subscrever.",
 };
 
 export default function SignupPage() {
