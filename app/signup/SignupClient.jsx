@@ -277,6 +277,10 @@ export default function SignupClient() {
         body: JSON.stringify({ email: normalizedEmail }),
       });
       const result = await response.json().catch(() => ({}));
+      if (response.status === 503 && result.error === "email_check_unavailable") {
+        setEmailAvailable(null);
+        return true;
+      }
       if (!response.ok || !result.ok) throw new Error("email_check_failed");
       setEmailAvailable(!result.exists);
       if (result.exists) {
@@ -360,6 +364,10 @@ export default function SignupClient() {
           },
         });
         if (error) throw error;
+        if (Array.isArray(data?.user?.identities) && data.user.identities.length === 0) {
+          setEmailAvailable(false);
+          throw new Error(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
+        }
         userId = data?.user?.id || "";
 
         if (founderIntent) {
