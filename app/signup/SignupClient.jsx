@@ -8,6 +8,7 @@ import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, LoaderCircle, ShieldC
 import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getInitialBrowserLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
+import ThemeToggle from "../../src/components/ThemeToggle";
 
 const APK_DOWNLOAD_URL = "/download/apk";
 
@@ -43,7 +44,7 @@ const copy = {
     acceptPrivacy: "Privacy Policy",
     acceptLegalSuffix: ".",
     acceptRequired: "You need to accept the Terms and Privacy Policy to create an account.",
-    foundingProfileConsent: "I agree that my public Founding Coach profile (photo, name, location, testimonial and selected professional information) may be displayed by APEX Coach.",
+    foundingProfileConsent: "I agree that my public Founding Coach profile (photo, name, location, bio and selected professional information) may be displayed by NLOCK.",
     foundingProfileConsentHelp: "Optional. This preference can be edited later in your coach settings.",
     creating: "Creating account...",
     createContinue: "Create account and continue",
@@ -110,7 +111,7 @@ const copy = {
     haveAccount: "Ya tengo cuenta",
     downloadNow: "Download APK",
     badge: "Crea tu cuenta coach",
-    title: "Crea tu cuenta para APEX COACH.",
+    title: "Crea tu cuenta coach NLOCK.",
     text: "Esta es la entrada única del coach: misma cuenta, misma lógica, app móvil en el campo y navegador premium en escritorio.",
     eyebrow: "Registro del coach",
     heading: "Crear cuenta",
@@ -131,7 +132,7 @@ const copy = {
     acceptPrivacy: "Política de Privacidad",
     acceptLegalSuffix: ".",
     acceptRequired: "Debes aceptar los Términos y la Política de Privacidad para crear la cuenta.",
-    foundingProfileConsent: "Acepto que mi perfil público de Founder Coach (foto, nombre, ubicación, testimonio e información profesional seleccionada) pueda ser mostrado por APEX COACH.",
+    foundingProfileConsent: "Acepto que mi perfil público de Founder Coach (foto, nombre, ubicación, bio e información profesional seleccionada) pueda ser mostrado por NLOCK.",
     foundingProfileConsentHelp: "Opcional. Esta preferencia podrá editarse más tarde en la configuración de tu cuenta coach.",
     creating: "Creando cuenta...",
     createContinue: "Crear cuenta y continuar",
@@ -154,7 +155,7 @@ const copy = {
     haveAccount: "J'ai déjà un compte",
     downloadNow: "Download APK",
     badge: "Crée ton compte coach",
-    title: "Crée ton compte pour APEX COACH.",
+    title: "Crée ton compte coach NLOCK.",
     text: "C'est l'entrée unique du coach : même compte, même logique, app mobile sur le terrain et navigateur premium sur desktop.",
     eyebrow: "Inscription coach",
     heading: "Créer un compte",
@@ -175,7 +176,7 @@ const copy = {
     acceptPrivacy: "Politique de Confidentialité",
     acceptLegalSuffix: ".",
     acceptRequired: "Tu dois accepter les conditions et la politique de confidentialité pour créer le compte.",
-    foundingProfileConsent: "J'accepte que mon profil public de Founder Coach (photo, nom, localisation, témoignage et informations professionnelles sélectionnées) puisse être affiché par APEX COACH.",
+    foundingProfileConsent: "J'accepte que mon profil public de Founder Coach (photo, nom, localisation, bio et informations professionnelles sélectionnées) puisse être affiché par NLOCK.",
     foundingProfileConsentHelp: "Optionnel. Cette préférence pourra être modifiée plus tard dans les paramètres de ton compte coach.",
     creating: "Création du compte...",
     createContinue: "Créer le compte et continuer",
@@ -356,10 +357,10 @@ export default function SignupClient() {
         locale === "pt"
           ? "Conta NLOCK criada. Enviámos um email de validação. Confirma o email antes de iniciares sessão."
           : locale === "es"
-            ? "Cuenta creada. Enviamos un email de validación APEX COACH. Confirma tu email antes de iniciar sesión."
+            ? "Cuenta NLOCK creada. Enviamos un email de validación. Confirma tu email antes de iniciar sesión."
             : locale === "fr"
-              ? "Compte créé. Nous avons envoyé un email de validation APEX COACH. Confirme ton email avant de te connecter."
-              : "Account created. We sent an APEX COACH verification email. You can start downloading the APK and confirm your email before signing in.",
+              ? "Compte NLOCK créé. Nous avons envoyé un email de validation. Confirme ton email avant de te connecter."
+              : "NLOCK account created. We sent a verification email. Confirm it before signing in.",
       );
       setDownloadModalOpen(true);
     } catch (error) {
@@ -372,10 +373,10 @@ export default function SignupClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <main className="min-h-screen bg-[var(--page-gradient)] text-[var(--text)]">
       {downloadModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4 py-6 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-[28px] border border-[var(--border-strong)] bg-white p-6 shadow-[var(--shadow-panel)]">
+          <div className="w-full max-w-md rounded-[28px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">NLOCK</p>
@@ -446,113 +447,82 @@ export default function SignupClient() {
           </div>
         </div>
       )}
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(42,208,125,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(124,77,255,0.08),transparent_22%),linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_52%,#f2f4f3_100%)]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_5%,rgba(8,185,197,0.11),transparent_26%),radial-gradient(circle_at_92%_90%,rgba(185,237,40,0.08),transparent_25%)]" />
 
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-5 py-8 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="relative mx-auto flex min-h-screen max-w-[1440px] flex-col px-4 pb-6 pt-4 sm:px-6 sm:pb-8 sm:pt-6 lg:px-8">
+        <header className="flex items-center justify-between gap-3 rounded-full border border-[var(--border)] bg-[var(--header-bg)] p-1.5 pl-2 shadow-[var(--shadow-soft)] backdrop-blur-xl sm:pl-3">
           <Link
             href="/"
             onClick={() => trackEvent("landing_signup_back_click", { locale })}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm text-[var(--text-muted)] transition hover:bg-white hover:text-[var(--text)]"
+            className="inline-flex h-10 items-center gap-2 rounded-full px-2 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-muted)] sm:px-3"
           >
             <ArrowLeft size={16} />
-            {t.backToLanding}
+            <span className="hidden sm:inline">{t.backToLanding}</span>
+            <span className="sm:hidden">NLOCK</span>
           </Link>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={APK_DOWNLOAD_URL}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => trackEvent("landing_signup_top_download_click", { locale })}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-solid)]"
-            >
-              <Smartphone size={16} />
-              {t.downloadNow}
-            </a>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ThemeToggle language={locale} className="shrink-0" />
             <Link
               href="/login"
               onClick={() => trackEvent("landing_signup_to_login_click", { locale })}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)]"
+              className="inline-flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-3 text-sm font-semibold text-[var(--accent-foreground)] sm:px-4"
             >
               {t.haveAccount}
-              <ArrowRight size={16} />
+              <ArrowRight size={15} className="hidden sm:block" />
             </Link>
           </div>
-        </div>
+        </header>
 
-        <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="max-w-xl">
-            <div className="inline-flex rounded-full border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] px-4 py-2 text-sm font-medium text-[var(--accent-strong)]">
+        <div className="grid flex-1 items-start gap-5 py-5 sm:py-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,0.75fr)] lg:items-stretch lg:gap-6">
+          <section className="relative hidden min-h-[720px] overflow-hidden rounded-[36px] border border-white/10 bg-[#071019] p-10 text-white shadow-[var(--shadow-panel)] lg:flex lg:flex-col xl:p-14">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(8,185,197,0.26),transparent_30%),radial-gradient(circle_at_90%_90%,rgba(185,237,40,0.15),transparent_30%)]" />
+            <div className="relative inline-flex w-fit rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#53e4cb]">
               {t.badge}
             </div>
 
-            <h1 className="mt-8 text-5xl font-semibold leading-[1.02] text-[var(--text)] sm:text-6xl">
+            <h1 className="relative mt-10 max-w-2xl text-5xl font-semibold leading-[0.98] tracking-[-0.045em] text-white xl:text-6xl">
               {t.title}
             </h1>
 
-            <p className="mt-6 text-lg leading-8 text-[var(--text-muted)]">
+            <p className="relative mt-6 max-w-xl text-lg leading-8 text-white/60">
               {t.text}
             </p>
 
-            <div className="mt-10 grid gap-4">
+            <div className="relative mt-auto grid gap-3 pt-12">
               {t.highlights.map((item) => (
                 <div
                   key={item}
-                  className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-4 shadow-[var(--shadow-soft)]"
+                  className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-4"
                 >
-                  <CheckCircle2 size={18} className="mt-0.5 text-[var(--accent-strong)]" />
-                  <p className="text-[var(--text-muted)]">{item}</p>
+                  <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-[#53e4cb]" />
+                  <p className="text-sm leading-6 text-white/70">{item}</p>
                 </div>
               ))}
             </div>
-
-            <div className="mt-8 rounded-[24px] border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-soft)]">
-              <div className="flex items-start gap-3">
-                <div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.08))] p-3 text-[var(--accent-strong)]">
-                  <Smartphone size={18} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-[var(--text)]">{t.downloadNow}</h3>
-                  <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">{t.downloadHint}</p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
-                    <a
-                      href={APK_DOWNLOAD_URL}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => trackEvent("landing_signup_side_download_click", { locale })}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--border-strong)] hover:bg-white"
-                    >
-                      <Smartphone size={16} />
-                      {t.downloadNow}
-                    </a>
-                    <Link
-                      href="/login"
-                      onClick={() => trackEvent("landing_signup_side_login_click", { locale })}
-                      className="text-sm font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]"
-                    >
-                      {t.alreadyHaveAccount}
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
           </section>
 
-          <section className="rounded-[36px] border border-[var(--border-strong)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(245,245,245,0.95))] p-6 shadow-[var(--shadow-panel)] sm:p-8">
-            <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface-solid)] p-6 sm:p-8">
-              <div className="mb-8 flex items-start justify-between gap-4">
+          <section className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-panel)] backdrop-blur-xl sm:rounded-[34px] sm:p-7 lg:p-8">
+            <div className="mx-auto max-w-xl">
+              <div className="mb-6 flex items-start justify-between gap-4 sm:mb-8">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.22em] text-[var(--text-muted)]">{t.eyebrow}</p>
-                  <h2 className="mt-3 text-3xl font-semibold text-[var(--text)]">{onboardingStep === 2 ? "Completar perfil Founder" : t.heading}</h2>
-                  <p className="mt-2 text-sm text-[var(--text-muted)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-strong)]">{t.eyebrow}</p>
+                  <h2 className="mt-2 text-[2rem] font-semibold leading-tight tracking-[-0.035em] text-[var(--text)] sm:text-4xl">{onboardingStep === 2 ? "Completar perfil Founder" : t.heading}</h2>
+                  <p className="mt-2 text-xs font-medium text-[var(--text-muted)] sm:text-sm">
                     {onboardingStep === 1 ? founderIntent ? "Passo 1 de 2 · Conta NLOCK" : "Conta NLOCK" : "Passo 2 de 2 · Perfil Coach Fundador"}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-[var(--accent)]/20 bg-[linear-gradient(135deg,var(--accent-soft),rgba(124,77,255,0.1))] p-3 text-[var(--electric)]">
+                <div className="shrink-0 rounded-2xl border border-[var(--accent)]/20 bg-[var(--accent-soft)] p-3 text-[var(--accent-strong)]">
                   <UserPlus size={22} />
                 </div>
               </div>
+
+              {founderIntent && (
+                <div className="mb-6 flex gap-2" aria-label="Progresso do registo">
+                  <span className="h-1.5 flex-1 rounded-full bg-[var(--accent)]" />
+                  <span className={`h-1.5 flex-1 rounded-full ${onboardingStep === 2 ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`} />
+                </div>
+              )}
 
               {!configured && (
                 <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-amber-700">
@@ -589,11 +559,11 @@ export default function SignupClient() {
                   <legend className="mb-2 text-sm font-semibold text-[var(--text)]">
                     {locale === "pt" ? "Como queres começar?" : "How do you want to start?"}
                   </legend>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     <button
                       type="button"
                       onClick={() => { setRegistrationMode("trial"); setFounderIntent(false); }}
-                      className={`rounded-[20px] border p-4 text-left transition ${registrationMode === "trial" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-white"}`}
+                      className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${registrationMode === "trial" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
                     >
                       <span className="block font-semibold text-[var(--text)]">{locale === "pt" ? "Iniciar trial" : "Start trial"}</span>
                       <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "14 dias grátis. Sem compromisso." : "14 days free. No commitment."}</span>
@@ -601,7 +571,7 @@ export default function SignupClient() {
                     <button
                       type="button"
                       onClick={() => setRegistrationMode("subscription")}
-                      className={`rounded-[20px] border p-4 text-left transition ${registrationMode === "subscription" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-white"}`}
+                      className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${registrationMode === "subscription" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
                     >
                       <span className="block font-semibold text-[var(--text)]">{founderIntent ? "Coach Fundador" : locale === "pt" ? "Subscrever NLOCK" : "Subscribe to NLOCK"}</span>
                       <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{founderIntent ? "Candidatura com subscrição anual de 199,90 €." : locale === "pt" ? "Cria a conta e escolhe o teu plano." : "Create your account and choose your plan."}</span>
@@ -616,7 +586,7 @@ export default function SignupClient() {
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
                     placeholder={locale === "pt" ? "Nome" : locale === "es" ? "Nombre" : locale === "fr" ? "Nom" : "Name"}
-                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                    className="min-h-[52px] rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                     autoComplete="name"
                     required
                   />
@@ -631,7 +601,7 @@ export default function SignupClient() {
                       value={workplace}
                       onChange={(event) => setWorkplace(event.target.value)}
                       placeholder={t.workplacePlaceholder}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                       autoComplete="organization"
                     />
                   </label>
@@ -643,7 +613,7 @@ export default function SignupClient() {
                       value={city}
                       onChange={(event) => setCity(event.target.value)}
                       placeholder={locale === "pt" ? "Lisboa" : "City"}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                       autoComplete="address-level2"
                       required
                     />
@@ -656,7 +626,7 @@ export default function SignupClient() {
                       value={country}
                       onChange={(event) => setCountry(event.target.value)}
                       placeholder={locale === "pt" ? "Portugal" : "Country"}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                       autoComplete="country-name"
                       required
                     />
@@ -669,7 +639,7 @@ export default function SignupClient() {
                       value={specialty}
                       onChange={(event) => setSpecialty(event.target.value)}
                       placeholder={locale === "pt" ? "Força, perda de peso, reabilitação…" : "Strength, weight loss, rehabilitation…"}
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                       required
                     />
                   </label>
@@ -681,7 +651,7 @@ export default function SignupClient() {
                       value={professionalLink}
                       onChange={(event) => setProfessionalLink(event.target.value)}
                       placeholder="https://instagram.com/coach ou https://meusite.pt"
-                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                       autoComplete="url"
                     />
                   </label>
@@ -694,7 +664,7 @@ export default function SignupClient() {
                       placeholder="Conta em poucas linhas quem ajudas, como trabalhas e o que distingue o teu acompanhamento."
                       rows={4}
                       maxLength={600}
-                      className="resize-none rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      className="resize-none rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                       required
                     />
                   </label>
@@ -708,7 +678,7 @@ export default function SignupClient() {
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="coach@nlock.pt"
-                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                     autoComplete="email"
                     required
                   />
@@ -721,7 +691,7 @@ export default function SignupClient() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     placeholder={t.passwordPlaceholder}
-                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                     autoComplete="new-password"
                     required
                   />
@@ -754,7 +724,7 @@ export default function SignupClient() {
                 </label>
                 </> : null}
 
-                {founderIntent && onboardingStep === 2 ? <label className="rounded-[20px] border border-[var(--accent)]/30 bg-white p-4">
+                {founderIntent && onboardingStep === 2 ? <label className="rounded-[20px] border border-[var(--accent)]/30 bg-[var(--surface-solid)] p-4">
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
@@ -772,7 +742,7 @@ export default function SignupClient() {
                 <button
                   type="submit"
                   disabled={submitting || !configured || (onboardingStep === 1 && !acceptedLegal)}
-                  className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-5 py-4 font-semibold text-[var(--accent-foreground)] shadow-[0_18px_60px_rgba(42,208,125,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="mt-2 inline-flex min-h-[54px] items-center justify-center gap-2 rounded-2xl bg-[var(--brand-gradient)] px-5 py-4 font-semibold text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                 >
                   {submitting ? (
                     <>
@@ -792,7 +762,7 @@ export default function SignupClient() {
                 </button>
               </form>
 
-              <div className="mt-8 grid gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4">
+              <div className="mt-6 hidden gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-muted)] p-4 sm:grid">
                 <div className="flex items-center gap-3">
                   <ShieldCheck size={18} className="text-[var(--accent-strong)]" />
                   <p className="font-medium text-[var(--text)]">{t.identityTitle}</p>
