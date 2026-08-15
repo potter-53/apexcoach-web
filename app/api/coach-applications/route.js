@@ -26,6 +26,17 @@ function cleanEmail(value) {
   return String(value || "").trim().toLowerCase().slice(0, 254);
 }
 
+function cleanPublicUrl(value) {
+  const candidate = cleanText(value, 500);
+  if (!candidate) return "";
+  try {
+    const parsed = new URL(candidate);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.toString() : "";
+  } catch {
+    return "";
+  }
+}
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -207,6 +218,11 @@ export async function POST(request) {
       locale: cleanText(payload.locale, 8) || "pt",
       source: cleanText(payload.source, 80) || "coach-application",
       userId: cleanText(payload.userId, 80),
+      workplace: cleanText(payload.workplace, 160),
+      city: cleanText(payload.city, 100),
+      country: cleanText(payload.country, 100),
+      specialty: cleanText(payload.specialty, 160),
+      professionalLink: cleanPublicUrl(payload.professionalLink),
       accessTier: FOUNDER_ACCESS_TIER,
       subscriptionCategory: FOUNDER_SUBSCRIPTION_CATEGORY,
       metadata: {
@@ -215,6 +231,11 @@ export async function POST(request) {
         founder_access_requested: true,
         founding_public_profile_consent: foundingPublicProfileConsent,
         founding_public_profile_consent_at: foundingPublicProfileConsent ? submittedAt : null,
+        public_workplace: cleanText(payload.workplace, 160),
+        public_location: cleanText(payload.city, 100),
+        public_country: cleanText(payload.country, 100),
+        public_specialty: cleanText(payload.specialty, 160),
+        public_profile_url: cleanPublicUrl(payload.professionalLink),
         user_agent: request.headers.get("user-agent") || "",
         referer: request.headers.get("referer") || "",
         submitted_at: submittedAt,

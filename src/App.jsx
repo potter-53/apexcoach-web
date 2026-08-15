@@ -5,11 +5,12 @@ import { ArrowRight, Check, ChevronDown, CircleDashed, Clock3, CreditCard, Menu,
 import { trackEvent } from "./lib/analytics";
 import { COACH_LANGUAGE_OPTIONS, applyCoachLocale, getInitialBrowserLocale } from "./lib/coach-locale";
 import CookieSettingsButton from "./components/CookieSettingsButton";
+import ThemeToggle from "./components/ThemeToggle";
 
 const appPreviewScreens = [
-  { src: "/screenshot_1.jpeg", alt: "APEX COACH sessions screen" },
-  { src: "/screenshot_3.jpeg", alt: "APEX COACH client session history screen" },
-  { src: "/screenshot_2.jpeg", alt: "APEX COACH client progress screen" },
+  { src: "/screenshot_1.jpeg", alt: "NLOCK sessions screen" },
+  { src: "/screenshot_3.jpeg", alt: "NLOCK client session history screen" },
+  { src: "/screenshot_2.jpeg", alt: "NLOCK client progress screen" },
 ];
 const APK_DOWNLOAD_URL = "/download/apk";
 
@@ -770,36 +771,46 @@ const copy = {
   },
 };
 
+// Transitional copy adapter: keeps the existing commercial content intact while
+// the product naming is migrated. Remove when the source copy is rewritten natively.
+const nlockCopy = JSON.parse(
+  JSON.stringify(copy)
+    .replaceAll("APEX COACH", "NLOCK")
+    .replaceAll("apexcoach.pt", "nlock.pt"),
+);
+
 function SectionLabel({ children }) {
   return <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--accent)] sm:text-xs sm:tracking-[0.28em]">{children}</p>;
 }
 
 function BrandLogoIcon({ className = "h-8 w-auto sm:h-10" }) {
-  return (
-    <img src="/main_logo_white.png" alt="" aria-hidden="true" className={className} />
-  );
+  return <span aria-hidden="true" className={`nlock-placeholder-mark ${className}`}>N</span>;
 }
 
 function BrandMark({ neutralClass = "text-[var(--text)]", sizeClass = "text-inherit", compact = false }) {
   return (
-    <span className={`inline-flex items-baseline ${compact ? "gap-1.5" : "gap-2.5"} italic ${sizeClass}`}>
-      <span className={`text-current ${neutralClass}`}>APEX</span>
-      <span className="inline-block bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">COACH</span>
+    <span className={`inline-flex items-baseline not-italic ${compact ? "gap-0" : "gap-0"} ${sizeClass}`}>
+      <span className={`nlock-wordmark ${neutralClass}`}>NLOCK</span>
     </span>
   );
 }
 
 function BrandLockup() {
   return (
-    <span className="inline-flex h-10 items-center rounded-full border border-[var(--border)] bg-white px-2.5 shadow-[var(--shadow-soft)] sm:h-[52px] sm:px-4">
-      <img src="/main_logo_white.png" alt="APEX COACH" className="h-7 w-auto max-w-[128px] object-contain sm:h-9 sm:max-w-[178px]" />
+    <span className="inline-flex h-11 items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface-solid)] px-2.5 shadow-[var(--shadow-soft)] sm:h-[52px] sm:px-3">
+      <BrandLogoIcon className="h-7 w-7 sm:h-8 sm:w-8" />
+      <span className="nlock-wordmark text-sm text-[var(--text)] sm:text-base">NLOCK</span>
+      <span className="sr-only">NLOCK</span>
     </span>
   );
 }
 
 function renderBrandText(text) {
   if (typeof text !== "string") return text;
-  const normalized = text.replace(/\*APEX COACH\*/g, "APEX COACH");
+  const normalized = text
+    .replace(/\*APEX COACH\*/g, "APEX COACH")
+    .replace(/NLOCK/g, "APEX COACH")
+    .replace(/apexcoach\.pt/g, "nlock.pt");
   const parts = normalized.split("APEX COACH");
   return parts.flatMap((part, index) => (index === parts.length - 1 ? [part] : [part, <BrandMark key={`brand-${index}`} compact sizeClass="text-inherit" />]));
 }
@@ -1057,8 +1068,8 @@ function FounderMiniWall({ t }) {
 function ProductMatrix({ lang = "en" }) {
   const isPt = lang === "pt";
   const headers = isPt
-    ? ["Função", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [beta]", "APEX COACH [final]"]
-    : ["Function", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "APEX COACH [beta]", "APEX COACH [final]"];
+    ? ["Função", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "NLOCK [beta]", "NLOCK [final]"]
+    : ["Function", "Trainerize", "PT Distinction", "Everfit", "EliteTrainer", "NLOCK [beta]", "NLOCK [final]"];
 
   const rows = isPt
     ? [
@@ -1209,7 +1220,10 @@ function PhoneMock({ screens = appPreviewScreens }) {
           ))}
         </div>
         <div className="app-launch-overlay absolute inset-0 flex flex-col items-center justify-center bg-white px-8 text-center">
-          <img src="/main_logo_white.png" alt="APEX COACH" className="h-auto w-44 object-contain" />
+          <div className="flex flex-col items-center gap-3" aria-label="NLOCK">
+            <BrandLogoIcon className="h-14 w-14" />
+            <BrandMark sizeClass="text-xl" />
+          </div>
           <p className="mt-3 text-xs font-medium text-[var(--text-muted)]">Coach workspace ready</p>
           <div className="mt-7 h-1.5 w-28 overflow-hidden rounded-full bg-[var(--surface-muted)]">
             <div className="app-launch-progress h-full rounded-full bg-[var(--accent)]" />
@@ -1278,6 +1292,75 @@ function PremiumExperiencePanel({ moments = [] }) {
   );
 }
 
+const coachActionStory = {
+  pt: {
+    label: "NLOCK em ação",
+    title: "Cada interação devolve tempo e contexto ao coach.",
+    text: "Não mostramos funcionalidades isoladas. Mostramos os momentos em que a NLOCK evita procura, repetição e decisões sem informação.",
+    benefit: "Ganho",
+    items: [
+      { time: "Antes da sessão", title: "Saber imediatamente quem vem a seguir.", text: "Consulta agenda, contexto e pendentes sem procurar em mensagens ou folhas separadas.", gain: "Entrar preparado", image: "/story/coach-in-session.webp", screen: "/screenshot_1.jpeg", alt: "Coach a consultar o próximo compromisso na NLOCK" },
+      { time: "Ao começar", title: "Ver as cargas certas no momento certo.", text: "O plano e o histórico acompanham a sessão para que o coach decida com contexto, não de memória.", gain: "Decidir mais rápido", image: "/story/coach-in-session.webp", screen: "/screenshot_3.jpeg", alt: "Coach a consultar cargas e histórico na NLOCK" },
+      { time: "Durante o treino", title: "Registar execução, cargas e notas sem quebrar o ritmo.", text: "A informação essencial fica guardada enquanto o coach mantém a atenção no client.", gain: "Menos trabalho depois", image: "/story/coach-in-session.webp", screen: "/screenshot_2.jpeg", alt: "Coach a registar o treino realizado na NLOCK" },
+      { time: "Entre sessões", title: "Avaliar e prescrever com todo o histórico disponível.", text: "Avaliações, evolução e planos deixam de viver em ferramentas diferentes e passam a sustentar o próximo passo.", gain: "Continuidade real", image: "/story/coach-prescribing.webp", screen: "/screenshot_2.jpeg", alt: "Coach a prescrever um plano e registar uma avaliação na NLOCK" },
+      { time: "No fecho", title: "Pedir e acompanhar pagamentos sem perder o controlo.", text: "Packs, pedidos e pendentes financeiros ficam ligados ao client e ao trabalho que já foi entregue.", gain: "Operação organizada", image: "/story/coach-business.webp", screen: "/screenshot_1.jpeg", alt: "Coach a acompanhar pedidos de pagamento na NLOCK" },
+    ],
+  },
+  en: {
+    label: "NLOCK in action",
+    title: "Every interaction gives the coach time and context back.",
+    text: "We do not show isolated features. We show the moments where NLOCK removes searching, repetition, and decisions made without context.",
+    benefit: "Gain",
+    items: [
+      { time: "Before the session", title: "Know immediately who is next.", text: "Check the schedule, context, and pending actions without searching through messages or separate sheets.", gain: "Arrive prepared", image: "/story/coach-in-session.webp", screen: "/screenshot_1.jpeg", alt: "Coach checking the next appointment in NLOCK" },
+      { time: "At the start", title: "See the right loads at the right moment.", text: "The plan and training history follow the session so every decision has context.", gain: "Decide faster", image: "/story/coach-in-session.webp", screen: "/screenshot_3.jpeg", alt: "Coach checking loads and training history in NLOCK" },
+      { time: "During training", title: "Record execution, loads, and notes without breaking the flow.", text: "Essential information is saved while the coach keeps their attention on the client.", gain: "Less work later", image: "/story/coach-in-session.webp", screen: "/screenshot_2.jpeg", alt: "Coach recording a completed workout in NLOCK" },
+      { time: "Between sessions", title: "Assess and prescribe with the full history available.", text: "Assessments, progress, and plans stop living in separate tools and support the next step together.", gain: "Real continuity", image: "/story/coach-prescribing.webp", screen: "/screenshot_2.jpeg", alt: "Coach prescribing a plan and recording an assessment in NLOCK" },
+      { time: "At closing", title: "Request and follow up payments without losing control.", text: "Packs, requests, and outstanding payments stay connected to the client and the work delivered.", gain: "Organized operation", image: "/story/coach-business.webp", screen: "/screenshot_1.jpeg", alt: "Coach following payment requests in NLOCK" },
+    ],
+  },
+};
+
+function CoachActionStory({ lang }) {
+  const story = coachActionStory[lang] || coachActionStory.en;
+
+  return (
+    <section id="story" className="mx-auto">
+      <div className="max-w-3xl">
+        <SectionLabel>{story.label}</SectionLabel>
+        <h2 className="mt-4 font-semibold text-[var(--text)]">{story.title}</h2>
+        <p className="mt-5 text-[length:var(--text-lead)] leading-[var(--leading-body)] text-[var(--text-muted)]">{story.text}</p>
+      </div>
+
+      <div className="mt-10 grid gap-5 sm:mt-14 lg:gap-8">
+        {story.items.map((item, index) => (
+          <article key={item.title} className={`nlock-story-card grid overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)] lg:grid-cols-2 ${index % 2 ? "lg:[&>*:first-child]:order-2" : ""}`}>
+            <div className="relative min-h-[310px] overflow-hidden sm:min-h-[420px]">
+              <img src={item.image} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_35%,rgba(5,9,15,0.78)_100%)]" />
+              <div className="absolute bottom-4 right-4 w-[116px] overflow-hidden rounded-[22px] border border-white/20 bg-[#05090f] p-1.5 shadow-[var(--shadow-panel)] sm:bottom-6 sm:right-6 sm:w-[148px]">
+                <div className="overflow-hidden rounded-[17px] bg-[var(--surface-muted)]">
+                  <img src={item.screen} alt={item.alt} loading="lazy" className="aspect-[9/19] h-auto w-full object-cover object-top" />
+                </div>
+              </div>
+              <span className="absolute left-4 top-4 rounded-[var(--radius-pill)] border border-white/15 bg-black/55 px-3 py-1.5 text-[length:var(--text-label)] font-semibold uppercase tracking-[var(--tracking-label)] text-white backdrop-blur sm:left-6 sm:top-6">{item.time}</span>
+            </div>
+            <div className="flex flex-col justify-center p-[var(--card-padding)] sm:min-h-[420px]">
+              <span className="text-sm font-semibold text-[var(--accent-strong)]">0{index + 1}</span>
+              <h3 className="mt-4 text-[length:var(--text-h3)] font-semibold leading-[var(--leading-heading)] text-[var(--text)]">{item.title}</h3>
+              <p className="mt-4 max-w-xl text-base leading-[var(--leading-body)] text-[var(--text-muted)]">{item.text}</p>
+              <div className="mt-7 inline-flex w-fit items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--accent)]/25 bg-[var(--accent-soft)] px-4 py-2 text-sm text-[var(--accent-strong)]">
+                <Check size={16} aria-hidden="true" />
+                <span><strong>{story.benefit}:</strong> {item.gain}</span>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Modal({ open, onClose, title, text, copy }) {
   if (!open) return null;
 
@@ -1311,11 +1394,11 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(-1);
 
-  const t = copy[lang] || copy.en;
+  const t = nlockCopy[lang] || nlockCopy.en;
 
   useEffect(() => {
     const nextLocale = getInitialBrowserLocale();
-    const resolved = nextLocale in copy ? nextLocale : "en";
+    const resolved = nextLocale in nlockCopy ? nextLocale : "en";
     setLang(resolved);
     applyCoachLocale(resolved);
     trackEvent("landing_view", { locale: resolved });
@@ -1331,13 +1414,13 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div className="nlock-landing min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={t.modalTitle} text={t.modalText} copy={t} />
 
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,#fbfbfb_0%,#f5f5f5_46%,#f2f4f3_100%)]" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-[image:var(--page-gradient)]" />
 
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-[rgba(216,223,218,0.58)] bg-[rgba(255,255,255,0.72)] shadow-[0_8px_26px_rgba(14,17,16,0.035)] backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-4 lg:px-8">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--border)] bg-[var(--header-bg)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[var(--content-max)] items-center justify-between gap-3 px-[var(--page-gutter)] py-2.5 sm:py-4">
           <a href="#top" className="flex min-w-0 items-center gap-3 sm:gap-4">
             <BrandLockup />
           </a>
@@ -1351,6 +1434,7 @@ export default function App() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <ThemeToggle language={lang} />
             <div className="hidden rounded-full border border-[var(--border)] bg-[var(--surface-muted)] p-1 sm:flex">
               {COACH_LANGUAGE_OPTIONS.filter((option) => option.value === "en" || option.value === "pt").map((option) => (
                 <button
@@ -1417,12 +1501,12 @@ export default function App() {
       </header>
 
       <main id="top" className="overflow-x-hidden pt-[62px] sm:pt-[84px]">
-        <section className="mx-auto grid max-w-7xl gap-6 px-4 pb-8 pt-5 sm:gap-14 sm:px-5 sm:pb-20 sm:pt-16 lg:grid-cols-[1fr_1fr] lg:items-center lg:px-8 lg:pb-20 lg:pt-16">
+        <section className="nlock-hero mx-auto grid max-w-[var(--content-max)] gap-6 px-[var(--page-gutter)] pb-8 pt-5 sm:gap-14 sm:pb-20 sm:pt-16 lg:grid-cols-[1fr_1fr] lg:items-center lg:pb-20 lg:pt-16">
           <div className="max-w-3xl">
             <div className="inline-flex max-w-full rounded-full border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-3 py-2 text-[10px] font-semibold leading-5 text-[var(--accent-strong)] sm:px-4 sm:text-sm sm:leading-6">
               {renderBrandText(t.badge)}
             </div>
-            <h1 className="mt-4 text-[2.35rem] font-semibold leading-[0.98] text-[var(--text)] min-[380px]:text-[2.62rem] sm:mt-8 sm:text-5xl xl:text-7xl">
+            <h1 className="mt-4 font-display text-[length:var(--text-h1)] font-semibold leading-[var(--leading-display)] tracking-[var(--tracking-display)] text-[var(--text)] sm:mt-8">
               <span className="block">{renderBrandText(t.titleA)}</span>
               <span className="block text-[var(--text)]">{renderBrandText(t.titleB)}</span>
               <span className="block bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">{renderBrandText(t.titleC)}</span>
@@ -1462,7 +1546,7 @@ export default function App() {
 
           </div>
 
-          <div className="relative hidden items-center justify-center lg:flex lg:-translate-y-40 xl:-translate-y-52 2xl:-translate-y-56">
+          <div className="relative hidden items-center justify-center lg:flex lg:-translate-y-8 xl:-translate-y-12">
             <div className="hero-phone-glow absolute inset-x-0 top-0 mx-auto h-[360px] max-w-[360px] rounded-full bg-[radial-gradient(circle,rgba(57,185,138,0.18),rgba(77,135,199,0.10)_42%,transparent_68%)] blur-2xl sm:h-[520px] sm:max-w-[520px]" />
             <PhoneMock />
             <div className="floating-proof-card absolute left-0 top-4 z-20 hidden rounded-[16px] border border-[var(--border)] bg-[rgba(255,255,255,0.92)] px-4 py-3 shadow-[var(--shadow-soft)] backdrop-blur md:block lg:left-3 xl:left-8">
@@ -1485,6 +1569,8 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        <CoachActionStory lang={lang} />
 
         <section id="pricing" className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.pricingTag}</SectionLabel>
@@ -1652,13 +1738,13 @@ export default function App() {
               <div className="min-w-0">
                 <h2 className="max-w-4xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-5xl">
                   {lang === "pt"
-                    ? "O que a APEX COACH faz hoje na beta e como a versão final fecha o sistema."
-                    : "What APEX COACH does today in beta and how the final version closes the system."}
+                    ? "O que a NLOCK faz hoje na beta e como a versão final fecha o sistema."
+                    : "What NLOCK does today in beta and how the final version closes the system."}
                 </h2>
                 <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">
                   {lang === "pt"
-                    ? "Uma única matriz, sem ruído, para mostrar o que já está disponível na beta, onde a concorrência responde melhor ou pior, e como a visão completa da APEX COACH fica consolidada na versão final."
-                    : "A single matrix, without extra noise, to show what is already available in beta, where competitors respond better or worse, and how the complete APEX COACH vision is consolidated in the final version."}
+                    ? "Uma única matriz, sem ruído, para mostrar o que já está disponível na beta, onde a concorrência responde melhor ou pior, e como a visão completa da NLOCK fica consolidada na versão final."
+                    : "A single matrix, without extra noise, to show what is already available in beta, where competitors respond better or worse, and how the complete NLOCK vision is consolidated in the final version."}
                 </p>
                 <p className="mt-3 hidden text-sm leading-7 text-[var(--text-muted)] sm:block">
                   {lang === "pt"
@@ -1775,4 +1861,3 @@ export default function App() {
     </div>
   );
 }
-

@@ -28,6 +28,12 @@ const copy = {
     heading: "Create account",
     missingVars: "`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` still need to be configured.",
     coachName: "Coach name",
+    workplace: "Where do you coach?",
+    workplacePlaceholder: "Gym, studio, club or online",
+    city: "City",
+    country: "Country",
+    specialty: "Main specialty",
+    professionalLink: "Professional link (optional)",
     email: "Email",
     password: "Password",
     passwordPlaceholder: "minimum 8 characters",
@@ -66,6 +72,12 @@ const copy = {
     heading: "Criar conta",
     missingVars: "`NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` ainda precisam de ser configurados.",
     coachName: "Nome do coach",
+    workplace: "Onde trabalhas?",
+    workplacePlaceholder: "Ginásio, estúdio, clube ou online",
+    city: "Cidade",
+    country: "País",
+    specialty: "Especialidade principal",
+    professionalLink: "Link profissional (opcional)",
     email: "Email",
     password: "Palavra-passe",
     passwordPlaceholder: "mínimo 8 caracteres",
@@ -104,6 +116,12 @@ const copy = {
     heading: "Crear cuenta",
     missingVars: "`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` todavía deben configurarse.",
     coachName: "Nombre del coach",
+    workplace: "¿Dónde trabajas?",
+    workplacePlaceholder: "Gimnasio, estudio, club u online",
+    city: "Ciudad",
+    country: "País",
+    specialty: "Especialidad principal",
+    professionalLink: "Enlace profesional (opcional)",
     email: "Email",
     password: "Contraseña",
     passwordPlaceholder: "mínimo 8 caracteres",
@@ -142,6 +160,12 @@ const copy = {
     heading: "Créer un compte",
     missingVars: "`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` doivent encore être configurés.",
     coachName: "Nom du coach",
+    workplace: "Où exerces-tu ?",
+    workplacePlaceholder: "Salle, studio, club ou en ligne",
+    city: "Ville",
+    country: "Pays",
+    specialty: "Spécialité principale",
+    professionalLink: "Lien professionnel (optionnel)",
     email: "Email",
     password: "Mot de passe",
     passwordPlaceholder: "minimum 8 caractères",
@@ -203,6 +227,11 @@ export default function SignupClient() {
   const configured = useMemo(() => isSupabaseConfigured(), []);
   const [locale, setLocale] = useState("en");
   const [fullName, setFullName] = useState("");
+  const [workplace, setWorkplace] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [specialty, setSpecialty] = useState("");
+  const [professionalLink, setProfessionalLink] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
@@ -262,6 +291,11 @@ export default function SignupClient() {
             accepted_legal_version: "2026-04",
             founding_public_profile_consent: foundingProfileConsent,
             founding_public_profile_consent_at: foundingProfileConsent ? submittedAt : null,
+            public_workplace: workplace.trim(),
+            public_location: city.trim(),
+            public_country: country.trim(),
+            public_specialty: specialty.trim(),
+            public_profile_url: professionalLink.trim(),
           },
         },
       });
@@ -284,6 +318,11 @@ export default function SignupClient() {
             subscriptionCategory: "apex_coach_founder",
             foundingPublicProfileConsent: foundingProfileConsent,
             foundingPublicProfileConsentAt: foundingProfileConsent ? submittedAt : null,
+            workplace: workplace.trim(),
+            city: city.trim(),
+            country: country.trim(),
+            specialty: specialty.trim(),
+            professionalLink: professionalLink.trim(),
             userId: data?.user?.id || "",
           }),
         });
@@ -524,6 +563,70 @@ export default function SignupClient() {
                     required
                   />
                 </label>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="grid gap-2 sm:col-span-2">
+                    <span className="text-sm text-[var(--text-muted)]">{t.workplace}</span>
+                    <input
+                      type="text"
+                      value={workplace}
+                      onChange={(event) => setWorkplace(event.target.value)}
+                      placeholder={t.workplacePlaceholder}
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      autoComplete="organization"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm text-[var(--text-muted)]">{t.city}</span>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(event) => setCity(event.target.value)}
+                      placeholder={locale === "pt" ? "Lisboa" : "City"}
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      autoComplete="address-level2"
+                      required
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm text-[var(--text-muted)]">{t.country}</span>
+                    <input
+                      type="text"
+                      value={country}
+                      onChange={(event) => setCountry(event.target.value)}
+                      placeholder={locale === "pt" ? "Portugal" : "Country"}
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      autoComplete="country-name"
+                      required
+                    />
+                  </label>
+
+                  <label className="grid gap-2 sm:col-span-2">
+                    <span className="text-sm text-[var(--text-muted)]">{t.specialty}</span>
+                    <input
+                      type="text"
+                      value={specialty}
+                      onChange={(event) => setSpecialty(event.target.value)}
+                      placeholder={locale === "pt" ? "Força, perda de peso, reabilitação…" : "Strength, weight loss, rehabilitation…"}
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      required
+                    />
+                  </label>
+
+                  <label className="grid gap-2 sm:col-span-2">
+                    <span className="text-sm text-[var(--text-muted)]">{t.professionalLink}</span>
+                    <input
+                      type="url"
+                      value={professionalLink}
+                      onChange={(event) => setProfessionalLink(event.target.value)}
+                      placeholder="https://instagram.com/coach ou https://meusite.pt"
+                      className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
+                      autoComplete="url"
+                    />
+                  </label>
+                </div>
 
                 <label className="grid gap-2">
                   <span className="text-sm text-[var(--text-muted)]">{t.email}</span>

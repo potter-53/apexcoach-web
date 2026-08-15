@@ -1,10 +1,10 @@
 export const LEGAL_CONFIG = {
-  brandName: "APEX COACH",
-  websiteUrl: "https://apexcoach.pt",
+  brandName: "NLOCK",
+  websiteUrl: "https://nlock.pt",
   supportEmail: "privacy@apexcoach.pt",
   privacyEmail: "privacy@apexcoach.pt",
   legalEmail: "legal@apexcoach.pt",
-  controllerName: "APEX COACH",
+  controllerName: "NLOCK",
   controllerAddress: "[Preencher antes de produção] Morada completa da entidade responsável pelo tratamento",
   controllerVat: "[Preencher antes de produção] NIF / VAT",
   complaintsBookUrl: "https://www.livroreclamacoes.pt",

@@ -1,5 +1,19 @@
+import "../src/styles/nlock-tokens.css";
 import "../src/index.css";
 import CookieBanner from "../src/components/CookieBanner";
+
+const themeBootstrapScript = `
+  (() => {
+    try {
+      const stored = localStorage.getItem("nlock-theme");
+      const theme = stored === "light" || stored === "dark"
+        ? stored
+        : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    } catch (_) {}
+  })();
+`;
 
 export const metadata = {
   metadataBase: new URL("https://apexcoach.pt"),
@@ -26,7 +40,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+      </head>
       <body>
         {children}
         <CookieBanner />

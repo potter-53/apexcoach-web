@@ -2,30 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-  --bg: #f5f5f5;
-  --bg-strong: #ffffff;
-  --surface: rgba(255, 255, 255, 0.84);
-  --surface-solid: #ffffff;
-  --surface-muted: #f8f8f8;
-  --border: #e6e6e6;
-  --border-strong: #d8dfda;
-  --text: #080a09;
-  --text-muted: #666666;
-  --accent: #39b98a;
-  --accent-strong: #127a58;
-  --accent-soft: #e7f6ef;
-  --accent-foreground: #06291d;
-  --brand-mid: #22aa76;
-  --brand-soft-blue: #4d87c7;
-  --brand-gradient: linear-gradient(90deg, var(--accent-strong) 0%, var(--brand-mid) 46%, var(--brand-soft-blue) 100%);
-  --electric: #2c6f7f;
-  --electric-soft: rgba(57, 185, 138, 0.08);
-  --shadow-soft: 0 8px 24px rgba(14, 17, 16, 0.04);
-  --shadow-panel: 0 14px 38px rgba(14, 17, 16, 0.07);
-}
-
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -35,10 +11,87 @@ body {
   margin: 0;
   min-width: 320px;
   overflow-x: hidden;
-  background: linear-gradient(180deg, #fbfbfb 0%, #f5f5f5 42%, #f2f4f3 100%);
+  background: var(--page-gradient);
   color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
+}
+
+body,
+button,
+a,
+input,
+textarea,
+select {
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+:root[data-theme="dark"] .bg-white,
+:root[data-theme="dark"] .bg-white\/80,
+:root[data-theme="dark"] .bg-white\/92,
+:root[data-theme="dark"] .bg-white\/94 {
+  background-color: var(--surface-solid) !important;
+}
+
+:root[data-theme="dark"] [class*="bg-[rgba(255,255,255"] {
+  background-color: var(--floating-bg) !important;
+}
+
+:root[data-theme="dark"] [class*="linear-gradient(180deg,#fbfbfb"],
+:root[data-theme="dark"] [class*="linear-gradient(145deg,#ffffff"],
+:root[data-theme="dark"] [class*="linear-gradient(135deg,var(--accent-soft),rgba(255,255,255"] {
+  background-image: var(--page-gradient) !important;
+}
+
+/* NLOCK product app shell. These rules isolate the app migration from the public website. */
+.nlock-app > .pointer-events-none.fixed {
+  background-image: var(--app-background) !important;
+}
+
+.nlock-app aside {
+  background: var(--app-sidebar) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius-xl) !important;
+}
+
+.nlock-app aside > div:first-child > div:last-child > p:first-child {
+  font-size: 0;
+}
+
+.nlock-app aside > div:first-child > div:last-child > p:first-child::after {
+  content: "NLOCK";
+  font-size: 0.875rem;
+  letter-spacing: 0.22em;
+}
+
+.nlock-app section > header {
+  background: var(--app-header) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  backdrop-filter: blur(18px);
+}
+
+.nlock-app [class*="rgba(124,77,255"] {
+  background-image: linear-gradient(135deg, var(--accent-soft), var(--electric-soft)) !important;
+}
+
+.nlock-app [class~="bg-white"] {
+  background-color: var(--surface-solid) !important;
+}
+
+.nlock-app h1,
+.nlock-app h2,
+.nlock-app h3 {
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+
+.nlock-app button:focus-visible,
+.nlock-app a:focus-visible,
+.nlock-app input:focus-visible,
+.nlock-app select:focus-visible,
+.nlock-app textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 a {
@@ -65,6 +118,180 @@ input {
 ::selection {
   background: rgba(57, 185, 138, 0.24);
   color: var(--text);
+}
+
+/* Experimental NLOCK landing: map skin and complete light-mode translation. */
+.nlock-test .leaflet-container {
+  z-index: 0;
+  background: #071019;
+  font-family: var(--font-sans);
+}
+
+.nlock-test .nlock-map-tiles {
+  filter: grayscale(0.25) saturate(0.65) brightness(0.55) contrast(1.12);
+}
+
+.nlock-founder-marker {
+  box-sizing: border-box;
+  border: 2px solid var(--brand-mint);
+  border-radius: 999px;
+  background: var(--brand-gradient);
+  object-fit: cover;
+  box-shadow: 0 0 22px rgba(53, 211, 138, 0.42);
+}
+
+.nlock-founder-marker.is-active {
+  border-color: var(--brand-lime);
+  box-shadow: 0 0 32px rgba(185, 237, 40, 0.58);
+}
+
+.nlock-test .leaflet-bar a,
+.nlock-test .leaflet-control-attribution {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(5, 9, 15, 0.82);
+  color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+}
+
+.nlock-test .leaflet-control-attribution a {
+  color: var(--brand-mint);
+}
+
+:root[data-theme="light"] .nlock-test {
+  background: #f3f7f5 !important;
+  color: #07110d;
+}
+
+:root[data-theme="light"] .nlock-test > header,
+:root[data-theme="light"] .nlock-test > header nav {
+  border-color: rgba(7, 17, 13, 0.1) !important;
+  background-color: rgba(243, 247, 245, 0.88) !important;
+}
+
+:root[data-theme="light"] .nlock-test .nlock-wordmark,
+:root[data-theme="light"] .nlock-test > header nav,
+:root[data-theme="light"] .nlock-test > header button {
+  color: #07110d !important;
+}
+
+:root[data-theme="light"] .nlock-test [class*="bg-[#05090f]"],
+:root[data-theme="light"] .nlock-test [class*="bg-[#080d14]"] {
+  background-color: #f3f7f5 !important;
+}
+
+:root[data-theme="light"] .nlock-test [class*="bg-[#0c131d]"] {
+  background-color: #ffffff !important;
+}
+
+:root[data-theme="light"] .nlock-test [class*="border-white/"] {
+  border-color: rgba(7, 17, 13, 0.12) !important;
+}
+
+:root[data-theme="light"] .nlock-test [class*="text-white/"] {
+  color: rgba(7, 17, 13, 0.58) !important;
+}
+
+:root[data-theme="light"] .nlock-test .nlock-test-hero,
+:root[data-theme="light"] .nlock-test .nlock-test-hero [class*="text-white/"],
+:root[data-theme="light"] .nlock-test .nlock-test-hero .text-white {
+  color: white !important;
+}
+
+:root[data-theme="light"] .nlock-test .nlock-hero-status {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(12, 19, 29, 0.88) !important;
+  color: white !important;
+}
+
+:root[data-theme="light"] .nlock-test .nlock-hero-status [class*="text-white/"] {
+  color: rgba(255, 255, 255, 0.58) !important;
+}
+
+:root[data-theme="light"] .nlock-test .nlock-founder-plan,
+:root[data-theme="light"] .nlock-test .nlock-founder-plan h3,
+:root[data-theme="light"] .nlock-test .nlock-founder-plan strong {
+  color: white !important;
+}
+
+:root[data-theme="light"] .nlock-test .nlock-founder-plan [class*="text-white/"] {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+:root[data-theme="light"] .nlock-test .leaflet-container {
+  background: #dce8e2;
+}
+
+:root[data-theme="light"] .nlock-test .nlock-map-tiles {
+  filter: grayscale(0.12) saturate(0.78) brightness(1.03) contrast(0.94);
+}
+
+:root[data-theme="light"] .nlock-test .leaflet-bar a,
+:root[data-theme="light"] .nlock-test .leaflet-control-attribution {
+  border-color: rgba(7, 17, 13, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  color: rgba(7, 17, 13, 0.68);
+}
+
+/* Temporary NLOCK identity. Replace only these selectors when official assets arrive. */
+.nlock-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.nlock-placeholder-mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--brand-gradient);
+  color: #03130e;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: var(--shadow-accent);
+}
+
+.nlock-landing main > section:not(.nlock-hero) {
+  max-width: var(--content-max);
+  padding-left: var(--page-gutter);
+  padding-right: var(--page-gutter);
+  padding-top: calc(var(--section-space) * 0.65);
+  padding-bottom: calc(var(--section-space) * 0.65);
+}
+
+.nlock-landing h1,
+.nlock-landing h2,
+.nlock-landing h3 {
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+
+.nlock-landing main > section h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-heading);
+}
+
+.nlock-landing :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.nlock-landing a[href="/signup"] {
+  background-image: var(--brand-gradient);
+}
+
+@media (min-width: 640px) {
+  .nlock-landing main > section:not(.nlock-hero) {
+    padding-top: var(--section-space);
+    padding-bottom: var(--section-space);
+  }
 }
 
 .app-launch-overlay {
