@@ -188,7 +188,7 @@ export default function LoginClient() {
         cardTitle: "Acesso browser temporariamente fechado",
         cardText: "Usa a APK para trabalhar hoje com a APEX COACH. O modo PC está a ser desenvolvido para organizar prescrição de treino, avaliações e registos de clientes com mais espaço visual.",
         download: "Download APK",
-        trial: "Trial grátis 14 dias",
+        trial: "Trial grátis 30 dias",
         identityTitle: "Identidade única do coach",
         identityText: "A mesma identidade será usada na app de terreno e no futuro modo PC, quando esta experiência for aberta.",
       }
@@ -205,7 +205,7 @@ export default function LoginClient() {
         cardTitle: "Browser access is temporarily closed",
         cardText: "Use the APK to work with APEX COACH today. PC mode is being built to organize training prescription, assessments, and client records with more screen space.",
         download: "Download APK",
-        trial: "Start 14-day free trial",
+        trial: "Start 30-day free trial",
         identityTitle: "Single coach identity",
         identityText: "The same identity will be used in the field app and the future PC mode when this experience opens.",
       };

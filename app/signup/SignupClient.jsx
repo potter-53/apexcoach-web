@@ -16,7 +16,7 @@ const copy = {
   en: {
     highlights: [
       "Create one identity for both app and browser",
-      "Start with a 14-day free trial from onboarding",
+      "Start with a 30-day free trial from onboarding",
       "Keep clients, agenda, and operations in the same account",
     ],
     backToLanding: "Back to landing",
@@ -60,7 +60,7 @@ const copy = {
   pt: {
     highlights: [
       "Cria uma identidade única para app e browser",
-      "Começa com trial grátis de 14 dias desde o onboarding",
+      "Começa com trial grátis de 30 dias desde o onboarding",
       "Mantém clientes, agenda e operação na mesma conta",
     ],
     backToLanding: "Voltar à landing",
@@ -566,7 +566,7 @@ export default function SignupClient() {
                       className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${registrationMode === "trial" ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
                     >
                       <span className="block font-semibold text-[var(--text)]">{locale === "pt" ? "Iniciar trial" : "Start trial"}</span>
-                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "14 dias grátis. Sem compromisso." : "14 days free. No commitment."}</span>
+                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "30 dias grátis. Sem compromisso." : "30 days free. No commitment."}</span>
                     </button>
                     <button
                       type="button"
@@ -742,7 +742,7 @@ export default function SignupClient() {
                 <button
                   type="submit"
                   disabled={submitting || !configured || (onboardingStep === 1 && !acceptedLegal)}
-                  className="mt-2 inline-flex min-h-[54px] items-center justify-center gap-2 rounded-2xl bg-[var(--brand-gradient)] px-5 py-4 font-semibold text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                  className="mt-2 inline-flex min-h-[54px] items-center justify-center gap-2 rounded-2xl [background:var(--brand-gradient)] px-5 py-4 font-semibold text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                 >
                   {submitting ? (
                     <>

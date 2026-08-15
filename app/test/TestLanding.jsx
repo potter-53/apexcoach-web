@@ -332,7 +332,7 @@ export default function TestLanding() {
             <div className="mx-auto max-w-3xl text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand-mint)]">Planos NLOCK</p>
               <h2 className="mt-5 text-[clamp(2.7rem,6vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.055em]">Começa sem risco.<br /><span className="text-white/38">Cresce sem limites artificiais.</span></h2>
-              <p className="mt-7 text-lg leading-8 text-white/55">14 dias para perceberes quanto tempo a tua operação pode devolver-te.</p>
+              <p className="mt-7 text-lg leading-8 text-white/55">30 dias para perceberes quanto tempo a tua operação pode devolver-te.</p>
             </div>
 
             <div className="mx-auto mt-14 grid max-w-5xl gap-6 lg:grid-cols-2">
@@ -342,9 +342,9 @@ export default function TestLanding() {
                 <div className="mt-8 flex items-end gap-2"><strong className="text-5xl tracking-[-0.055em]">29,90 €</strong><span className="pb-1 text-white/45">/mês</span></div>
                 <p className="mt-3 text-sm text-white/40">ou 299,90 €/ano · equivalente a 10 meses</p>
                 <ul className="mt-9 grid gap-4 text-sm text-white/65">
-                  {["14 dias de trial grátis", "Clients ilimitados", "Treino, avaliações, agenda e PSE", "Packs, pagamentos e automatismos"].map((item) => <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[var(--brand-mint)]" />{item}</li>)}
+                  {["30 dias de trial grátis", "Clients ilimitados", "Treino, avaliações, agenda e PSE", "Packs, pagamentos e automatismos"].map((item) => <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[var(--brand-mint)]" />{item}</li>)}
                 </ul>
-                <Link href="/signup?mode=trial" className="mt-10 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-6 font-semibold text-white">Experimentar 14 dias <ArrowRight size={18} /></Link>
+                <Link href="/signup?mode=trial" className="mt-10 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-6 font-semibold text-white">Experimentar 30 dias <ArrowRight size={18} /></Link>
               </article>
 
               <article className="nlock-founder-plan relative flex flex-col overflow-hidden rounded-[28px] border border-[var(--brand-mint)]/40 bg-[linear-gradient(145deg,rgba(53,211,138,0.14),rgba(12,19,29,0.98)_42%)] p-7 text-white shadow-[var(--shadow-accent)] sm:p-10">

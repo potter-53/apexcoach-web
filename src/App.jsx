@@ -27,7 +27,7 @@ const copy = {
     titleC: "ter o teu trabalho na palma da mão.",
     subtitle:
       "A APEX COACH foi criada para acompanhar o coach durante o dia real de trabalho: no ginásio, na sessão, entre marcações e no contacto direto com o client. Não é um software de PC adaptado ao mobile. É uma app para gerir clients, sessões, treino, avaliações, PSE, pagamentos e alertas diretamente no smartphone.",
-    primaryCta: "Trial grátis 14 dias",
+    primaryCta: "Trial grátis 30 dias",
     secondaryCta: "Criar conta",
     downloadCta: "Download APK",
     trust1: "Clients ilimitados",
@@ -314,7 +314,7 @@ const copy = {
     referralProgramText:
       "Todos os coaches podem convidar outros coaches. A diferença é que um Coach Fundador oferece uma experiência de entrada mais forte ao seu convite.",
     referralNormalLabel: "Coach",
-    referralNormalTrial: "14 dias de trial",
+    referralNormalTrial: "30 dias de trial",
     referralFounderLabel: "Coach Fundador",
     referralFounderTrial: "21 dias de trial",
     foundingWallTag: "Founding Coach Wall",
@@ -404,7 +404,7 @@ const copy = {
     titleC: "keep your work in your hand.",
     subtitle:
       "APEX COACH was built to follow the coach through the real working day: in the gym, inside the session, between bookings, and in direct contact with the client. It is not desktop software squeezed into mobile. It is a smartphone app for managing clients, sessions, training, assessments, RPE, payments, and alerts in the palm of your hand.",
-    primaryCta: "Start 14-day free trial",
+    primaryCta: "Start 30-day free trial",
     secondaryCta: "Create account",
     downloadCta: "Download APK",
     trust1: "Unlimited clients",
@@ -691,7 +691,7 @@ const copy = {
     referralProgramText:
       "Every coach can invite other coaches. The difference is that a Founder Coach gives their invitees a stronger entry experience.",
     referralNormalLabel: "Coach",
-    referralNormalTrial: "14-day trial",
+    referralNormalTrial: "30-day trial",
     referralFounderLabel: "Founder Coach",
     referralFounderTrial: "21-day trial",
     foundingWallTag: "Founding Coach Wall",
@@ -1462,7 +1462,7 @@ export default function App() {
                 {t.downloadCta}
               </a>
               <Link href="/signup" onClick={() => trackEvent("landing_header_signup_click", { locale: lang })} className="whitespace-nowrap rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] shadow-[0_10px_24px_rgba(57,185,138,0.18)]">
-                {lang === "pt" ? "Trial grátis 14 dias" : "14-day free trial"}
+                {lang === "pt" ? "Trial grátis 30 dias" : "30-day free trial"}
               </Link>
             </div>
 
@@ -1844,7 +1844,7 @@ export default function App() {
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border)] bg-white/94 px-4 py-3 shadow-[0_-12px_40px_rgba(14,17,16,0.08)] backdrop-blur md:hidden">
         <div className="mx-auto grid max-w-md grid-cols-[1fr_auto] gap-2">
           <Link href="/signup" onClick={() => trackEvent("landing_mobile_sticky_signup_click", { locale: lang })} className="inline-flex items-center justify-center rounded-[14px] bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]">
-            {lang === "pt" ? "Trial grátis 14 dias" : "14-day free trial"}
+            {lang === "pt" ? "Trial grátis 30 dias" : "30-day free trial"}
           </Link>
           <a
             href={APK_DOWNLOAD_URL}

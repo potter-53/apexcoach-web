@@ -64,12 +64,12 @@ function candidateEmailHtml({ fullName, locale, accessTier, metadata }) {
     ? isFounder
       ? "Confirma o email. A tua candidatura a Coach Fundador ficou registada e será analisada pela equipa NLOCK."
       : isTrial
-        ? "Confirma o email e inicia os teus 14 dias de trial NLOCK."
+        ? "Confirma o email e inicia os teus 30 dias de trial NLOCK."
         : "Confirma o email para continuares para a escolha e ativação da subscrição NLOCK."
     : isFounder
       ? "Confirm your email. Your Founding Coach application is now registered for review."
       : isTrial
-        ? "Confirm your email and start your 14-day NLOCK trial."
+        ? "Confirm your email and start your 30-day NLOCK trial."
         : "Confirm your email to continue to NLOCK plan selection and activation.";
 
   return `<!doctype html>

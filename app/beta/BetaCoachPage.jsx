@@ -29,13 +29,13 @@ const copy = {
   pt: {
     navLogin: "Login",
     navSignup: "Criar conta",
-    badge: "Trial grátis 14 dias para coaches",
+    badge: "Trial grátis 30 dias para coaches",
     title: "Começa a operar com a APEX COACH.",
     subtitle:
       "Uma entrada mais limpa, mais premium e sem ruido: crias a tua identidade de coach, validas o email e começas a usar a APEX COACH no terreno.",
-    primary: "Começar trial grátis 14 dias",
+    primary: "Começar trial grátis 30 dias",
     secondary: "Ver APK",
-    proof: ["Trial grátis 14 dias", "Email validado antes do uso", "Conta única para app e browser"],
+    proof: ["Trial grátis 30 dias", "Email validado antes do uso", "Conta única para app e browser"],
     panelEyebrow: "Processo de entrada",
     panelTitle: "Como funciona",
     steps: [
@@ -91,7 +91,7 @@ const copy = {
     ],
     formTitle: "Criar conta coach",
     formText:
-      "Usa o email que queres associar à tua operação de coach. Este email será usado para validar a conta e iniciar o trial grátis de 14 dias.",
+      "Usa o email que queres associar à tua operação de coach. Este email será usado para validar a conta e iniciar o trial grátis de 30 dias.",
     name: "Nome do coach",
     email: "Email profissional",
     password: "Password",
@@ -114,13 +114,13 @@ const copy = {
   en: {
     navLogin: "Login",
     navSignup: "Create account",
-    badge: "14-day free trial for coaches",
+    badge: "30-day free trial for coaches",
     title: "Start operating with APEX COACH.",
     subtitle:
       "A cleaner, more premium entry point: create your coach identity, verify your email, and start using APEX COACH in the field.",
-    primary: "Start 14-day free trial",
+    primary: "Start 30-day free trial",
     secondary: "View APK",
-    proof: ["14-day free trial", "Email verified before use", "One account for app and browser"],
+    proof: ["30-day free trial", "Email verified before use", "One account for app and browser"],
     panelEyebrow: "Entry process",
     panelTitle: "How it works",
     steps: [
