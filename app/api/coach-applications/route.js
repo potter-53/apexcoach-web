@@ -15,7 +15,7 @@ const APPLICATIONS_EMAIL =
   "hello@apexcoach.pt";
 const FROM_EMAIL =
   process.env.APEX_FROM_EMAIL || "APEX COACH <hello@apexcoach.pt>";
-const FOUNDER_SUBSCRIPTION_CATEGORY = "apex_coach_founder";
+const FOUNDER_SUBSCRIPTION_CATEGORY = "nlock_founder_annual";
 const FOUNDER_ACCESS_TIER = "founder";
 
 function cleanText(value, maxLength = 500) {

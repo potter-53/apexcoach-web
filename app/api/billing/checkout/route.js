@@ -16,6 +16,24 @@ function configured(plan) {
   return Boolean(STRIPE_SECRET_KEY && PRICE_IDS[plan]);
 }
 
+function stripeMetadata(plan, userId) {
+  const yearly = plan === "annual" || plan === "founder";
+  const subscriptionCategory = plan === "founder"
+    ? "nlock_founder_annual"
+    : yearly
+      ? "nlock_coach_annual"
+      : "nlock_coach_monthly";
+
+  return {
+    coach_id: userId,
+    nlock_user_id: userId,
+    plan: yearly ? "yearly" : "monthly",
+    nlock_plan: plan,
+    subscription_category: subscriptionCategory,
+    access_tier: plan === "founder" ? "founder" : "coach",
+  };
+}
+
 export async function GET(request) {
   const plan = normalizePlan(new URL(request.url).searchParams.get("plan"));
   return NextResponse.json({ ok: true, configured: configured(plan), plan });
@@ -29,7 +47,11 @@ export async function POST(request) {
   }
   const email = String(payload.email || "").trim().toLowerCase().slice(0, 254);
   const userId = String(payload.userId || "").trim().slice(0, 80);
+  if (!email || !userId) {
+    return NextResponse.json({ ok: false, error: "missing_checkout_identity" }, { status: 400 });
+  }
   const origin = new URL(request.url).origin;
+  const metadata = stripeMetadata(plan, userId);
 
   try {
     const stripe = new Stripe(STRIPE_SECRET_KEY);
@@ -38,8 +60,8 @@ export async function POST(request) {
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       customer_email: email,
       client_reference_id: userId,
-      metadata: { nlock_user_id: userId, nlock_plan: plan },
-      subscription_data: { metadata: { nlock_user_id: userId, nlock_plan: plan } },
+      metadata,
+      subscription_data: { metadata },
       allow_promotion_codes: true,
       billing_address_collection: "auto",
       success_url: `${origin}/signup?payment=success&session_id={CHECKOUT_SESSION_ID}`,

@@ -365,29 +365,6 @@ export default function SignupClient() {
       }
       const userId = data?.user?.id || "";
 
-      try {
-        await fetch("/api/coach-applications", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fullName: fullName.trim(),
-            email: normalizedEmail,
-            focus: "",
-            locale,
-            source: "nlock-signup-page",
-            accessTier,
-            registrationMode,
-            subscriptionCategory,
-            foundingPublicProfileConsent: false,
-            foundingPublicProfileConsentAt: null,
-            selectedPlan,
-            userId,
-          }),
-        });
-      } catch {}
-
       trackEvent("landing_signup_success", { locale, accessTier, registrationMode });
 
       if (registrationMode === "subscription") {

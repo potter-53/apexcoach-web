@@ -10,8 +10,8 @@ const SUPABASE_SERVICE_ROLE_KEY =
   "";
 const SUPABASE_READ_KEY = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 
-const FOUNDER_SUBSCRIPTION_CATEGORY = "apex_coach_founder";
-const FOUNDER_APPLICATION_CATEGORIES = [FOUNDER_SUBSCRIPTION_CATEGORY, "nlock_founder_annual"];
+const FOUNDER_SUBSCRIPTION_CATEGORIES = ["nlock_founder_annual", "apex_coach_founder"];
+const FOUNDER_APPLICATION_CATEGORIES = FOUNDER_SUBSCRIPTION_CATEGORIES;
 const ACTIVE_SUBSCRIPTION_STATUSES = ["active", "trialing"];
 const PIN_POSITIONS = [
   { x: "47.5%", y: "28%" },
@@ -194,7 +194,7 @@ export async function GET() {
       .from("subscriptions")
       .select("coach_id, status, subscription_category")
       .in("coach_id", coachIds)
-      .eq("subscription_category", FOUNDER_SUBSCRIPTION_CATEGORY)
+      .in("subscription_category", FOUNDER_SUBSCRIPTION_CATEGORIES)
       .in("status", ACTIVE_SUBSCRIPTION_STATUSES);
 
     if (subscriptionError) throw subscriptionError;
