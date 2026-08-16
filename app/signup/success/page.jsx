@@ -29,6 +29,7 @@ export default async function SignupSuccessPage({ searchParams }) {
   const params = await searchParams;
   const checkout = await getCheckoutState(String(params?.session_id || ""));
   const confirmed = checkout?.complete === true;
+  const emailVerified = params?.email_verified === "1";
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--page-gradient)] px-4 py-6 text-[var(--text)] sm:px-6 sm:py-10">
@@ -52,16 +53,25 @@ export default async function SignupSuccessPage({ searchParams }) {
 
           <div className="grid gap-4 p-5 sm:p-8">
             {confirmed && checkout.email ? (
-              <SignupCompletionClient sessionId={String(params?.session_id || "")} email={checkout.email} checkoutMetadata={checkout.metadata} />
+              <SignupCompletionClient
+                sessionId={String(params?.session_id || "")}
+                email={checkout.email}
+                checkoutMetadata={checkout.metadata}
+                emailVerified={emailVerified}
+              />
             ) : null}
             <div className="grid gap-4 sm:grid-cols-2">
-              <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-5">
+              <article className={`rounded-[22px] border p-5 ${emailVerified ? "border-[var(--accent-strong)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}>
                 <div className="flex items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)]"><MailCheck size={20} /></span>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Passo 1</p>
                 </div>
-                <h2 className="mt-5 text-xl font-semibold tracking-[-0.025em]">Valida o teu email</h2>
-                <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Enviámos uma mensagem para o email usado no registo. Abre-a e confirma a tua conta NLOCK.</p>
+                <h2 className="mt-5 text-xl font-semibold tracking-[-0.025em]">{emailVerified ? "Email validado" : "Valida o teu email"}</h2>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
+                  {emailVerified
+                    ? "Confirmação concluída. Já podes entrar na app NLOCK."
+                    : "Enviámos uma mensagem para o email usado no registo. Abre-a e confirma a tua conta NLOCK."}
+                </p>
               </article>
 
               <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-5">

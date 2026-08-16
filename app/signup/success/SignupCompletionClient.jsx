@@ -5,12 +5,15 @@ import { CheckCircle2, LoaderCircle } from "lucide-react";
 
 import { getSupabaseBrowserClient } from "../../../src/lib/supabase-browser";
 
-export default function SignupCompletionClient({ sessionId, email, checkoutMetadata }) {
+export default function SignupCompletionClient({ sessionId, email, checkoutMetadata, emailVerified = false }) {
   const started = useRef(false);
-  const [state, setState] = useState("creating");
-  const [message, setMessage] = useState("A criar a tua conta NLOCK…");
+  const [state, setState] = useState(emailVerified ? "verified" : "creating");
+  const [message, setMessage] = useState(
+    emailVerified ? "Email validado. A tua conta NLOCK está pronta." : "A criar a tua conta NLOCK…",
+  );
 
   useEffect(() => {
+    if (emailVerified) return;
     if (started.current) return;
     started.current = true;
 
@@ -29,7 +32,7 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
           email,
           password: pending.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/?email_verified=1`,
+            emailRedirectTo: `${window.location.origin}/signup/success?session_id=${encodeURIComponent(sessionId)}&email_verified=1`,
             data: {
               full_name: pending.fullName || checkoutMetadata.full_name || "Coach",
               role: "coach",
@@ -71,17 +74,19 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
     }
 
     completeSignup();
-  }, [checkoutMetadata, email, sessionId]);
+  }, [checkoutMetadata, email, emailVerified, sessionId]);
+
+  const ready = state === "complete" || state === "verified";
 
   return (
     <div className="mb-4 flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-4">
       {state === "creating" ? (
         <LoaderCircle className="shrink-0 animate-spin text-[var(--accent-strong)]" size={22} />
       ) : (
-        <CheckCircle2 className={`shrink-0 ${state === "complete" ? "text-[var(--accent-strong)]" : "text-amber-500"}`} size={22} />
+        <CheckCircle2 className={`shrink-0 ${ready ? "text-[var(--accent-strong)]" : "text-amber-500"}`} size={22} />
       )}
       <div>
-        <p className="text-sm font-semibold text-[var(--text)]">{state === "complete" ? "Conta NLOCK pronta" : "Conclusão do registo"}</p>
+        <p className="text-sm font-semibold text-[var(--text)]">{ready ? "Conta NLOCK pronta" : "Conclusão do registo"}</p>
         <p className="mt-1 text-sm text-[var(--text-muted)]">{message}</p>
       </div>
     </div>
