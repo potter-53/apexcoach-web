@@ -188,6 +188,7 @@ Deno.serve(async (request) => {
   const signature = request.headers.get("stripe-signature");
   if (!signature) return json({ ok: false, error: "missing_signature" }, 400);
 
+  let processingStage = "signature_verification";
   try {
     const event = await stripe.webhooks.constructEventAsync(
       await request.text(),
@@ -201,6 +202,7 @@ Deno.serve(async (request) => {
     });
 
     if (event.type === "checkout.session.completed") {
+      processingStage = "checkout_subscription_retrieve";
       const session = event.data.object as Stripe.Checkout.Session;
       const subscriptionId =
         typeof session.subscription === "string"
@@ -210,6 +212,7 @@ Deno.serve(async (request) => {
         const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
           expand: ["default_payment_method"],
         });
+        processingStage = "checkout_subscription_sync";
         await syncSubscription(admin, subscription, session.id);
       }
     } else if (
@@ -217,8 +220,10 @@ Deno.serve(async (request) => {
       event.type === "customer.subscription.updated" ||
       event.type === "customer.subscription.deleted"
     ) {
+      processingStage = "subscription_event_sync";
       await syncSubscription(admin, event.data.object as Stripe.Subscription);
     } else if (event.type === "invoice.paid" || event.type === "invoice.payment_failed") {
+      processingStage = "invoice_status_sync";
       const invoice = event.data.object as Stripe.Invoice;
       const parent = invoice.parent?.subscription_details?.subscription;
       const subscriptionId = typeof parent === "string" ? parent : parent?.id;
@@ -234,6 +239,6 @@ Deno.serve(async (request) => {
     return json({ received: true });
   } catch (error) {
     console.error("Stripe webhook failed", error);
-    return json({ ok: false, error: "webhook_processing_failed" }, 400);
+    return json({ ok: false, error: "webhook_processing_failed", stage: processingStage }, 400);
   }
 });

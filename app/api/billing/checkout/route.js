@@ -64,7 +64,7 @@ export async function POST(request) {
       subscription_data: { metadata },
       allow_promotion_codes: true,
       billing_address_collection: "auto",
-      success_url: `${origin}/signup?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/signup/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/signup?mode=subscription${plan === "founder" ? "&founder=1" : ""}&payment=cancelled`,
     });
 

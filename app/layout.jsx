@@ -16,19 +16,19 @@ const themeBootstrapScript = `
 `;
 
 export const metadata = {
-  metadataBase: new URL("https://apexcoach.pt"),
-  title: "APEX COACH | App for coaches",
+  metadataBase: new URL("https://nlock.pt"),
+  title: "NLOCK | App para coaches",
   description:
-    "APEX COACH is the mobile app for coaches who want faster sessions, clearer client follow-up, and a more professional day-to-day workflow.",
+    "NLOCK é a app para coaches que querem sessões mais rápidas, acompanhamento mais claro e uma operação profissional.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "APEX COACH | App for coaches",
+    title: "NLOCK | App para coaches",
     description:
-      "Apply for APEX COACH access and test a premium operating system for coaches.",
-    url: "https://apexcoach.pt",
-    siteName: "APEX COACH",
+      "Experimenta a NLOCK e gere clientes, sessões, treino e avaliações num único sistema.",
+    url: "https://nlock.pt",
+    siteName: "NLOCK",
     type: "website",
   },
   icons: {
