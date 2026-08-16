@@ -62,7 +62,7 @@ async function ensureFounderApplication(
   const fullName = String(user.user_metadata?.full_name || "Coach").trim();
   const { data: existing } = await admin
     .from("coach_applications")
-    .select("metadata")
+    .select("full_name, coaching_focus, locale, source, status, metadata")
     .eq("email", email)
     .maybeSingle();
 
@@ -81,14 +81,14 @@ async function ensureFounderApplication(
 
   const { error } = await admin.from("coach_applications").upsert({
     auth_user_id: coachId,
-    full_name: fullName,
+    full_name: existing?.full_name || fullName,
     email,
-    coaching_focus: "",
-    locale: String(user.user_metadata?.locale || "pt"),
-    source: "nlock-stripe-checkout",
+    coaching_focus: existing?.coaching_focus || "",
+    locale: existing?.locale || String(user.user_metadata?.locale || "pt"),
+    source: existing?.source || "nlock-stripe-checkout",
     access_tier: "founder",
     subscription_category: category,
-    status: "new",
+    status: existing?.status || "new",
     metadata,
     updated_at: new Date().toISOString(),
   }, { onConflict: "email" });
