@@ -24,7 +24,8 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
         }
 
         const supabase = getSupabaseBrowserClient();
-        const { data, error } = await supabase.auth.signUp({
+        let userId = pending.userId || "";
+        const { data, error } = userId ? { data: null, error: null } : await supabase.auth.signUp({
           email,
           password: pending.password,
           options: {
@@ -47,14 +48,16 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
           },
         });
         if (error) throw error;
-        if (!data?.user?.id || (Array.isArray(data.user.identities) && data.user.identities.length === 0)) {
+        if (!userId && (!data?.user?.id || (Array.isArray(data.user.identities) && data.user.identities.length === 0))) {
           throw new Error("Este email já tem uma conta NLOCK.");
         }
+        userId = userId || data.user.id;
+        window.sessionStorage.setItem("nlock_pending_signup", JSON.stringify({ ...pending, userId }));
 
         const claimResponse = await fetch("/api/billing/claim", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId, userId: data.user.id }),
+          body: JSON.stringify({ sessionId, userId }),
         });
         if (!claimResponse.ok) throw new Error("O pagamento foi confirmado, mas a subscrição ainda está a sincronizar.");
 

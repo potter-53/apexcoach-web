@@ -29,7 +29,15 @@ export async function POST(request) {
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
-    const { data: authResult, error: authError } = await admin.auth.admin.getUserById(userId);
+    let authResult = null;
+    let authError = null;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const result = await admin.auth.admin.getUserById(userId);
+      authResult = result.data;
+      authError = result.error;
+      if (authResult?.user?.email) break;
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
     if (authError || !authResult.user?.email) throw authError || new Error("User not found");
 
     const paidEmail = String(session.customer_details?.email || session.customer_email || "").toLowerCase();
