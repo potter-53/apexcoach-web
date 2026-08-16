@@ -1,10 +1,10 @@
-import LoginClient from "./LoginClient";
+import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Login | APEX COACH",
-  description: "Acesso reservado ao modo PC da APEX COACH para testes internos.",
+  title: "NLOCK",
+  description: "A plataforma NLOCK está disponível na app.",
 };
 
 export default function LoginPage() {
-  return <LoginClient />;
+  redirect("/");
 }

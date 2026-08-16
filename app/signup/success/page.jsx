@@ -1,6 +1,5 @@
-import Link from "next/link";
 import Stripe from "stripe";
-import { ArrowRight, CheckCircle2, Download, MailCheck, ShieldCheck, Smartphone } from "lucide-react";
+import { CheckCircle2, Download, MailCheck, ShieldCheck, Smartphone } from "lucide-react";
 import SignupCompletionClient from "./SignupCompletionClient";
 
 export const metadata = {
@@ -78,10 +77,6 @@ export default async function SignupSuccessPage({ searchParams }) {
             <a href="/download/apk" className="inline-flex min-h-[56px] items-center justify-center gap-2 rounded-2xl [background:var(--brand-gradient)] px-5 py-4 font-semibold text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5">
               <Download size={19} /> Download da app NLOCK
             </a>
-            <Link href="/login" className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-5 py-3.5 font-semibold text-[var(--text)]">
-              Já validei o email · Fazer login <ArrowRight size={18} />
-            </Link>
-
             <div className="flex items-start gap-3 rounded-2xl bg-[var(--surface-muted)] px-4 py-3 text-sm leading-6 text-[var(--text-muted)]">
               <ShieldCheck size={18} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
               <p>O pagamento e a subscrição são geridos com segurança pela Stripe.</p>

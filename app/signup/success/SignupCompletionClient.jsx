@@ -28,7 +28,7 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
           email,
           password: pending.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/login?verified=1`,
+            emailRedirectTo: `${window.location.origin}/?email_verified=1`,
             data: {
               full_name: pending.fullName || checkoutMetadata.full_name || "Coach",
               role: "coach",

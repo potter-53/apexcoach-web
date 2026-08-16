@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
 
 import { trackEvent } from "../../src/lib/analytics";
@@ -53,7 +52,7 @@ const copy = {
     downloadHint: "Prefer to install the app first? Download the current Android APK and create your coach account afterwards.",
     alreadyHaveAccount: "Already have an account? Login",
     modalTitle: "Account created successfully.",
-    modalText: "Start downloading the APK, confirm the email you just received, and then sign in with this account.",
+    modalText: "Download the APK, confirm the email you just received, and then open the NLOCK app.",
     directDownload: "Direct download (.apk)",
     continueLogin: "Continue to login",
   },
@@ -97,7 +96,7 @@ const copy = {
     downloadHint: "Preferes instalar primeiro a app? Faz download da APK Android atual e cria a tua conta coach depois.",
     alreadyHaveAccount: "Já tens conta? Faz login",
     modalTitle: "Conta criada com sucesso.",
-    modalText: "Inicia o download da APK, confirma o email que acabaste de receber e depois faz login com esta conta.",
+    modalText: "Inicia o download da APK, confirma o email que acabaste de receber e depois abre a app NLOCK.",
     directDownload: "Download direto (.apk)",
     continueLogin: "Continuar para login",
   },
@@ -224,7 +223,6 @@ function describeSignupError(error, locale = "en") {
 }
 
 export default function SignupClient() {
-  const router = useRouter();
   const configured = useMemo(() => isSupabaseConfigured(), []);
   const [locale, setLocale] = useState("en");
   const [fullName, setFullName] = useState("");
@@ -365,7 +363,7 @@ export default function SignupClient() {
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login?verified=1`,
+          emailRedirectTo: `${window.location.origin}/?email_verified=1`,
           data: {
             full_name: fullName.trim(),
             role: "coach",
@@ -470,17 +468,6 @@ export default function SignupClient() {
               </button>
             </div>
 
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => {
-                  trackEvent("landing_signup_continue_to_login_click", { locale });
-                  router.push("/login");
-                }}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-2 text-sm font-semibold text-[var(--text)]"
-              >
-                {t.continueLogin}
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -500,14 +487,6 @@ export default function SignupClient() {
 
           <div className="flex items-center gap-1.5 sm:gap-2">
             <ThemeToggle language={locale} className="shrink-0" />
-            <Link
-              href="/login"
-              onClick={() => trackEvent("landing_signup_to_login_click", { locale })}
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-[var(--accent)] px-3 text-sm font-semibold text-[var(--accent-foreground)] sm:px-4"
-            >
-              {t.haveAccount}
-              <ArrowRight size={15} className="hidden sm:block" />
-            </Link>
           </div>
         </header>
 
