@@ -336,6 +336,31 @@ export default function SignupClient() {
           ? selectedPlan === "annual" ? "nlock_coach_annual" : "nlock_coach_monthly"
           : "nlock_coach_trial";
       const supabase = getSupabaseBrowserClient();
+
+      if (registrationMode === "subscription") {
+        const checkoutPlan = founderIntent ? "founder" : selectedPlan;
+        window.sessionStorage.setItem("nlock_pending_signup", JSON.stringify({
+          email: normalizedEmail,
+          password,
+          fullName: fullName.trim(),
+          founderIntent,
+          selectedPlan,
+          registrationMode,
+          accessTier,
+          subscriptionCategory,
+          submittedAt,
+        }));
+        const checkoutResponse = await fetch("/api/billing/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan: checkoutPlan, email: normalizedEmail, fullName: fullName.trim() }),
+        });
+        const checkout = await checkoutResponse.json().catch(() => ({}));
+        if (!checkoutResponse.ok || !checkout.url) throw new Error(locale === "pt" ? "Não foi possível abrir o pagamento. A tua conta não foi criada; tenta novamente." : "Payment could not be opened. Your account was not created; try again.");
+        window.location.assign(checkout.url);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
@@ -363,22 +388,7 @@ export default function SignupClient() {
         setEmailAvailable(false);
         throw new Error(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
       }
-      const userId = data?.user?.id || "";
-
       trackEvent("landing_signup_success", { locale, accessTier, registrationMode });
-
-      if (registrationMode === "subscription") {
-        const checkoutPlan = founderIntent ? "founder" : selectedPlan;
-        const checkoutResponse = await fetch("/api/billing/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: checkoutPlan, email: normalizedEmail, userId }),
-        });
-        const checkout = await checkoutResponse.json().catch(() => ({}));
-        if (!checkoutResponse.ok || !checkout.url) throw new Error(locale === "pt" ? "A conta foi criada, mas não foi possível abrir o pagamento. Contacta a equipa NLOCK." : "The account was created, but payment could not be opened. Contact NLOCK.");
-        window.location.assign(checkout.url);
-        return;
-      }
 
       setSuccessMessage(
         locale === "pt"

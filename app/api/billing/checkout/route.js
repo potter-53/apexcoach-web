@@ -16,7 +16,7 @@ function configured(plan) {
   return Boolean(STRIPE_SECRET_KEY && PRICE_IDS[plan]);
 }
 
-function stripeMetadata(plan, userId) {
+function stripeMetadata(plan, payload) {
   const yearly = plan === "annual" || plan === "founder";
   const subscriptionCategory = plan === "founder"
     ? "nlock_founder_annual"
@@ -25,12 +25,13 @@ function stripeMetadata(plan, userId) {
       : "nlock_coach_monthly";
 
   return {
-    coach_id: userId,
-    nlock_user_id: userId,
     plan: yearly ? "yearly" : "monthly",
     nlock_plan: plan,
     subscription_category: subscriptionCategory,
     access_tier: plan === "founder" ? "founder" : "coach",
+    full_name: String(payload.fullName || "Coach").trim().slice(0, 120),
+    registration_mode: "subscription",
+    accepted_legal_version: "2026-04",
   };
 }
 
@@ -46,12 +47,11 @@ export async function POST(request) {
     return NextResponse.json({ ok: false, error: "checkout_not_configured" }, { status: 503 });
   }
   const email = String(payload.email || "").trim().toLowerCase().slice(0, 254);
-  const userId = String(payload.userId || "").trim().slice(0, 80);
-  if (!email || !userId) {
+  if (!email) {
     return NextResponse.json({ ok: false, error: "missing_checkout_identity" }, { status: 400 });
   }
   const origin = new URL(request.url).origin;
-  const metadata = stripeMetadata(plan, userId);
+  const metadata = stripeMetadata(plan, payload);
 
   try {
     const stripe = new Stripe(STRIPE_SECRET_KEY);
@@ -59,7 +59,6 @@ export async function POST(request) {
       mode: "subscription",
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
       customer_email: email,
-      client_reference_id: userId,
       metadata,
       subscription_data: { metadata },
       allow_promotion_codes: true,

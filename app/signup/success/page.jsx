@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Stripe from "stripe";
 import { ArrowRight, CheckCircle2, Download, MailCheck, ShieldCheck, Smartphone } from "lucide-react";
+import SignupCompletionClient from "./SignupCompletionClient";
 
 export const metadata = {
   title: "Conta criada | NLOCK",
@@ -17,6 +18,8 @@ async function getCheckoutState(sessionId) {
     return {
       complete: session.status === "complete" && session.payment_status === "paid",
       founder: session.metadata?.access_tier === "founder",
+      email: String(session.customer_details?.email || session.customer_email || "").toLowerCase(),
+      metadata: session.metadata || {},
     };
   } catch {
     return null;
@@ -49,6 +52,9 @@ export default async function SignupSuccessPage({ searchParams }) {
           </div>
 
           <div className="grid gap-4 p-5 sm:p-8">
+            {confirmed && checkout.email ? (
+              <SignupCompletionClient sessionId={String(params?.session_id || "")} email={checkout.email} checkoutMetadata={checkout.metadata} />
+            ) : null}
             <div className="grid gap-4 sm:grid-cols-2">
               <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-5">
                 <div className="flex items-center gap-3">

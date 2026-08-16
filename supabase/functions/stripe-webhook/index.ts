@@ -102,7 +102,9 @@ async function syncSubscription(
 ) {
   const metadata = subscription.metadata || {};
   const coachId = metadata.coach_id || metadata.nlock_user_id;
-  if (!coachId) throw new Error("Stripe subscription is missing coach_id.");
+  // Payment-first signups receive their Auth identity after Checkout returns.
+  // The later subscription.updated event carries the claimed coach_id.
+  if (!coachId) return;
 
   const category = normalizeCategory(metadata.subscription_category);
   const item = subscription.items.data[0];
