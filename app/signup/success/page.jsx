@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { CheckCircle2, Download, MailCheck, ShieldCheck, Smartphone } from "lucide-react";
+import { CheckCircle2, Clock3, Download, MailCheck, ShieldCheck, Smartphone } from "lucide-react";
 import SignupCompletionClient from "./SignupCompletionClient";
 
 export const metadata = {
@@ -45,9 +45,7 @@ export default async function SignupSuccessPage({ searchParams }) {
               {confirmed ? "Registo concluído com sucesso." : "Estamos a confirmar o teu registo."}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/65 sm:text-lg">
-              {confirmed
-                ? `${checkout.founder ? "A tua subscrição Coach Fundador está registada." : "A tua subscrição NLOCK está registada."} Faltam apenas dois passos para entrares na app.`
-                : "O pagamento foi recebido e está a ser confirmado. Podes já avançar com os próximos passos."}
+              {confirmed ? "Descarrega a app e desbloqueia o teu potencial." : "Estamos a confirmar o pagamento para desbloquear o teu acesso NLOCK."}
             </p>
           </div>
 
@@ -63,8 +61,14 @@ export default async function SignupSuccessPage({ searchParams }) {
             <div className="grid gap-4 sm:grid-cols-2">
               <article className={`rounded-[22px] border p-5 ${emailVerified ? "border-[var(--accent-strong)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}>
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)]"><MailCheck size={20} /></span>
+                  <span className={`flex h-10 w-10 items-center justify-center rounded-full ${emailVerified ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "bg-amber-500/12 text-amber-500"}`}>
+                    {emailVerified ? <MailCheck size={20} /> : <Clock3 size={20} />}
+                  </span>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Passo 1</p>
+                  <span className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${emailVerified ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "bg-amber-500/12 text-amber-500"}`}>
+                    {emailVerified ? <CheckCircle2 size={13} /> : <Clock3 size={13} />}
+                    {emailVerified ? "Validado" : "Pendente"}
+                  </span>
                 </div>
                 <h2 className="mt-5 text-xl font-semibold tracking-[-0.025em]">{emailVerified ? "Email validado" : "Valida o teu email"}</h2>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">

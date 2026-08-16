@@ -21,8 +21,8 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
       try {
         const pending = JSON.parse(window.sessionStorage.getItem("nlock_pending_signup") || "null");
         if (!pending?.password || pending?.email !== email) {
-          setState("needs_password");
-          setMessage("O pagamento está confirmado. Volta ao registo neste dispositivo para definires a palavra-passe da conta.");
+          setState("pending_email");
+          setMessage("");
           return;
         }
 
@@ -77,6 +77,8 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
   }, [checkoutMetadata, email, emailVerified, sessionId]);
 
   const ready = state === "complete" || state === "verified";
+
+  if (state === "pending_email" || ready) return null;
 
   return (
     <div className="mb-4 flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-4">
