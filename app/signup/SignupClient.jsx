@@ -622,7 +622,7 @@ export default function SignupClient() {
                       <CreditCard size={20} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
                       <div>
                         <p className="font-semibold text-[var(--text)]">{locale === "pt" ? "Escolhe a tua subscrição" : "Choose your subscription"}</p>
-                        <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Depois de criares a conta, continuas para o pagamento seguro." : "After creating the account, you continue to secure payment."}</p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "A conta só é criada depois de o pagamento ficar confirmado." : "Your account is only created after payment is confirmed."}</p>
                       </div>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-2">
@@ -674,7 +674,7 @@ export default function SignupClient() {
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Resumo da subscrição</p>
                         <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">{founderIntent ? "Coach Fundador" : selectedPlan === "annual" ? "NLOCK anual" : "NLOCK mensal"}</h3>
-                        <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Confirma os dados e segue para o checkout seguro. A conta NLOCK é criada quando avançares para o pagamento.</p>
+                        <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Confirma os dados e segue para o checkout seguro. A conta NLOCK só é criada após a confirmação do pagamento.</p>
                       </div>
                     </div>
                     <div className="mt-5 flex items-end justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] p-4">
