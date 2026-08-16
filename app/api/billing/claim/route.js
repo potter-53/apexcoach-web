@@ -7,6 +7,81 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.APEX_SU
 const SUPABASE_SERVICE_ROLE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.APEX_SUPABASE_SERVICE_ROLE_KEY || "";
 
+function normalizeCategory(value) {
+  if (value === "nlock_founder_annual" || value === "apex_coach_founder") return "nlock_founder_annual";
+  if (value === "nlock_coach_annual") return "nlock_coach_annual";
+  return "nlock_coach_monthly";
+}
+
+function mapStatus(status) {
+  if (["trialing", "active", "canceled"].includes(status)) return status;
+  if (status === "incomplete_expired") return "expired";
+  return "past_due";
+}
+
+function iso(seconds) {
+  return seconds ? new Date(seconds * 1000).toISOString() : null;
+}
+
+async function persistSubscription(admin, subscription, sessionId, userId) {
+  const category = normalizeCategory(subscription.metadata?.subscription_category);
+  const item = subscription.items.data[0];
+  const paymentMethod = typeof subscription.default_payment_method === "object"
+    ? subscription.default_payment_method
+    : null;
+  const customerId = typeof subscription.customer === "string"
+    ? subscription.customer
+    : subscription.customer.id;
+  const periodStart = item?.current_period_start ?? subscription.current_period_start;
+  const periodEnd = item?.current_period_end ?? subscription.current_period_end;
+
+  const row = {
+    coach_id: userId,
+    status: mapStatus(subscription.status),
+    plan: category === "nlock_coach_monthly" ? "monthly" : "yearly",
+    trial_ends_at: iso(subscription.trial_end),
+    current_period_starts_at: iso(periodStart),
+    current_period_ends_at: iso(periodEnd),
+    provider: "stripe",
+    provider_customer_id: customerId,
+    provider_subscription_id: subscription.id,
+    billing_provider: "stripe",
+    subscription_category: category,
+    stripe_customer_id: customerId,
+    stripe_subscription_id: subscription.id,
+    stripe_price_id: item?.price?.id || null,
+    payment_method_type: paymentMethod?.type || null,
+    payment_method_last4: paymentMethod?.card?.last4 || paymentMethod?.sepa_debit?.last4 || null,
+    stripe_checkout_session_id: sessionId,
+    cancel_at_period_end: Boolean(subscription.cancel_at_period_end),
+    updated_at: new Date().toISOString(),
+  };
+
+  const byStripe = await admin
+    .from("subscriptions")
+    .update(row)
+    .eq("stripe_subscription_id", subscription.id)
+    .select("id, coach_id, status, subscription_category")
+    .maybeSingle();
+  if (byStripe.error) throw byStripe.error;
+  if (byStripe.data) return byStripe.data;
+
+  const existing = await admin
+    .from("subscriptions")
+    .select("id")
+    .eq("coach_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (existing.error) throw existing.error;
+
+  const write = existing.data
+    ? await admin.from("subscriptions").update(row).eq("id", existing.data.id).select("id, coach_id, status, subscription_category").single()
+    : await admin.from("subscriptions").insert(row).select("id, coach_id, status, subscription_category").single();
+  if (write.error) throw write.error;
+  return write.data;
+}
+
 export async function POST(request) {
   if (!STRIPE_SECRET_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     return NextResponse.json({ ok: false, error: "claim_not_configured" }, { status: 503 });
@@ -51,8 +126,17 @@ export async function POST(request) {
     await stripe.checkout.sessions.update(session.id, { metadata: { ...session.metadata, ...identity } });
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     await stripe.subscriptions.update(subscriptionId, { metadata: { ...subscription.metadata, ...identity } });
+    const claimedSubscription = await stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ["default_payment_method"],
+    });
+    const storedSubscription = await persistSubscription(
+      admin,
+      claimedSubscription,
+      session.id,
+      userId,
+    );
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, subscription: storedSubscription });
   } catch (error) {
     console.error("Stripe subscription claim failed", error);
     return NextResponse.json({ ok: false, error: "claim_failed" }, { status: 502 });
