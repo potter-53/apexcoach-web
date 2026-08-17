@@ -70,7 +70,7 @@ function FounderProgrammePoll() {
           );
         })}
       </div>
-      {poll.selected ? <p className="mt-5 text-xs leading-5 text-white/45">Obrigado pela resposta. Estás a ver o resultado de {poll.total} {poll.total === 1 ? "participação" : "participações"} nesta página.</p> : poll.status === "error" ? <p className="mt-5 text-xs text-white/45">A votação está temporariamente indisponível.</p> : <p className="mt-5 text-xs leading-5 text-white/40">Vota uma vez e vê imediatamente a opinião de quem já participou.</p>}
+      {poll.selected ? <p className="mt-5 text-xs leading-5 text-white/45">Obrigado pela resposta. Já estás a ajudar a melhorar a NLOCK.</p> : poll.status === "error" ? <p className="mt-5 text-xs text-white/45">A votação está temporariamente indisponível.</p> : <p className="mt-5 text-xs leading-5 text-white/40">Vota uma vez e vê imediatamente a opinião de quem já participou.</p>}
     </article>
   );
 }
