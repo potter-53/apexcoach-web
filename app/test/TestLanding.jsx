@@ -374,17 +374,18 @@ export default function TestLanding() {
                 <Sparkles size={170} strokeWidth={0.7} className="pointer-events-none absolute -right-12 -top-12 text-[var(--brand-mint)]/10" />
                 <div className="relative">
                   <div className="flex items-center justify-between gap-4"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--brand-mint)]">Coach Fundador</p><span className="rounded-full bg-[var(--brand-mint)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#03130e]">50 vagas</span></div>
-                  <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">Entra cedo.<br />Cresce connosco.</h3>
+                  <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">Ativa o plano anual.<br />Torna-te Fundador.</h3>
                   <div className="mt-8 flex items-end gap-2"><strong className="text-5xl tracking-[-0.055em]">199,90 €</strong><span className="pb-1 text-white/45">/ano</span></div>
-                  <p className="mt-3 text-sm text-white/40">≈ 16,66 €/mês · preço de Fundador enquanto a subscrição se mantiver ativa</p>
+                  <p className="mt-3 text-sm text-white/45">≈ 16,66 €/mês · Preço de Lançamento enquanto a subscrição se mantiver ativa</p>
+                  <p className="mt-5 max-w-xl text-sm leading-6 text-white/65">Se fores um dos primeiros 50 coaches a iniciar a subscrição anual, recebes automaticamente o estatuto de Fundador. <Link href="/afiliado" className="font-semibold text-[var(--brand-mint)] underline decoration-[var(--brand-mint)]/35 underline-offset-4 transition hover:decoration-[var(--brand-mint)]">Saber mais sobre o programa</Link></p>
                   <ul className="mt-9 grid gap-4 text-sm text-white/65">
                     {["Tudo do plano Coach", "Badge e número exclusivo", "Early access e comunidade privada", "Participação na evolução do produto e suporte prioritário"].map((item) => <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[var(--brand-mint)]" />{item}</li>)}
                   </ul>
-                  <Link href="/signup?mode=subscription&founder=1" className="mt-10 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-6 font-semibold text-[#03130e]">Candidatar-me <ArrowRight size={18} /></Link>
+                  <Link href="/signup?mode=subscription&founder=1" className="group mt-10 flex min-h-[58px] w-full items-center justify-between gap-5 rounded-[18px] bg-[image:var(--brand-gradient)] px-5 py-3.5 text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(57,185,138,0.3)] sm:px-6"><span className="text-left"><strong className="block text-base">Começar como Fundador</strong><span className="mt-0.5 block text-xs font-medium opacity-65">Plano anual · ativação imediata</span></span><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#03130e]/10 transition group-hover:translate-x-1"><ArrowRight size={19} /></span></Link>
                 </div>
               </article>
             </div>
-            <p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-white/35">O estatuto Coach Fundador requer subscrição anual, disponibilidade de vaga e aprovação da candidatura.</p>
+            <p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-white/35">O estatuto é atribuído automaticamente aos primeiros 50 coaches que ativarem uma subscrição anual elegível.</p>
           </div>
         </section>
 

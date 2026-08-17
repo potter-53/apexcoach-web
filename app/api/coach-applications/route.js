@@ -62,12 +62,12 @@ function candidateEmailHtml({ fullName, locale, accessTier, metadata }) {
   const isTrial = metadata?.registration_mode === "trial";
   const nextText = isPt
     ? isFounder
-      ? "Confirma o email. A tua candidatura a Coach Fundador ficou registada e será analisada pela equipa NLOCK."
+      ? "Confirma o email. Se a tua subscrição estiver entre as primeiras 50, o estatuto de Coach Fundador é ativado automaticamente."
       : isTrial
         ? "Confirma o email e inicia os teus 30 dias de trial NLOCK."
         : "Confirma o email para continuares para a escolha e ativação da subscrição NLOCK."
     : isFounder
-      ? "Confirm your email. Your Founding Coach application is now registered for review."
+      ? "Confirm your email. If your subscription is among the first 50, Founding Coach status is activated automatically."
       : isTrial
         ? "Confirm your email and start your 30-day NLOCK trial."
         : "Confirm your email to continue to NLOCK plan selection and activation.";

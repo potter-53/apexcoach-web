@@ -590,7 +590,7 @@ export default function SignupClient() {
                       className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${founderIntent ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
                     >
                       <span className="block font-semibold text-[var(--text)]">Coach Fundador</span>
-                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Candidata-te a uma das 50 vagas Founder." : "Apply for one of 50 Founder places."}</span>
+                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Ativa o plano anual e garante uma das primeiras 50 vagas." : "Activate the annual plan and secure one of the first 50 places."}</span>
                     </button>
                   </div>
                 </fieldset>
@@ -663,7 +663,7 @@ export default function SignupClient() {
                       </div>
                       <p className="pb-1 text-sm text-[var(--text-muted)]">/{founderIntent || selectedPlan === "annual" ? "ano" : "mês"}</p>
                     </div>
-                    {founderIntent ? <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">O preço e o estatuto Coach Fundador mantêm-se enquanto a subscrição anual permanecer ativa, sujeitos à aprovação da candidatura.</p> : null}
+                    {founderIntent ? <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">Se a tua subscrição estiver entre as primeiras 50, o estatuto de Coach Fundador é ativado automaticamente e mantém-se enquanto o plano anual permanecer ativo.</p> : null}
                     <button type="button" onClick={() => { setOnboardingStep(1); setErrorMessage(""); }} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[var(--text-muted)] transition hover:text-[var(--text)]">
                       <ArrowLeft size={15} /> Alterar dados ou modalidade
                     </button>
@@ -741,7 +741,7 @@ export default function SignupClient() {
                       {onboardingStep === 1 && registrationMode === "subscription"
                         ? "Continuar para pagamento"
                         : onboardingStep === 2
-                          ? founderIntent ? "Criar conta e pagar candidatura" : "Criar conta e pagar subscrição"
+                          ? founderIntent ? "Criar conta e ativar plano anual" : "Criar conta e pagar subscrição"
                           : t.createContinue}
                       <ArrowRight size={18} />
                     </>
