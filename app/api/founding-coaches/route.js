@@ -64,6 +64,7 @@ function publicProfileFromApplication(application, index, clientsCount) {
     city: text(metadata.public_location || metadata.location || metadata.city, "Portugal"),
     country: text(metadata.public_country || metadata.country, "Portugal"),
     specialty: text(metadata.public_specialty || metadata.specialty || metadata.coaching_specialty, "Coach"),
+    age: Number(metadata.public_age || metadata.age || 0) || null,
     workplace: text(metadata.public_workplace || metadata.workplace || metadata.gym_name),
     profileUrl: text(metadata.public_profile_url || metadata.profile_url || metadata.website_url),
     bio: text(metadata.public_bio || metadata.bio),
@@ -73,6 +74,10 @@ function publicProfileFromApplication(application, index, clientsCount) {
       ? new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" }).format(new Date(application.created_at))
       : "Active",
     clients: Number.isFinite(clientsCount) ? String(clientsCount) : text(metadata.active_clients, "-"),
+    sessionsRegistered: Number(metadata.public_sessions_registered || metadata.sessions_registered || 0) || null,
+    contribution: text(metadata.public_contribution || metadata.contribution_summary),
+    contributionPoints: Number(metadata.public_contribution_points || metadata.quarterly_contribution_points || metadata.contribution_points || 0) || null,
+    currentContributionRank: Number(metadata.public_contribution_rank || metadata.quarterly_contribution_rank || metadata.contribution_rank || 0) || null,
     quote: text(
       metadata.public_testimonial || metadata.testimonial,
       "Building the first chapter of APEX COACH.",
@@ -105,6 +110,7 @@ async function publicProfileFromRpc(supabase, row, index) {
     city: text(row.public_location, "Portugal"),
     country: text(row.public_country, "Portugal"),
     specialty: text(row.public_specialty, "Coach"),
+    age: Number(row.public_age || row.age || 0) || null,
     workplace: text(row.public_workplace),
     profileUrl: text(row.public_profile_url),
     latitude: coordinates.latitude,
@@ -115,6 +121,10 @@ async function publicProfileFromRpc(supabase, row, index) {
         )
       : "Active",
     clients: "-",
+    sessionsRegistered: Number(row.public_sessions_registered || row.sessions_registered || 0) || null,
+    contribution: text(row.public_contribution || row.contribution_summary),
+    contributionPoints: Number(row.public_contribution_points || row.quarterly_contribution_points || row.contribution_points || 0) || null,
+    currentContributionRank: Number(row.public_contribution_rank || row.quarterly_contribution_rank || row.contribution_rank || 0) || null,
     bio: text(row.public_bio),
     quote: text(row.public_testimonial),
     photoUrl,

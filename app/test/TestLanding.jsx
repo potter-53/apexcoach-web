@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Check, ClipboardCheck, CreditCard, Dumbbell, ExternalLink, MapPin, Menu, Play, Sparkles, TrendingUp, Users, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import ThemeToggle from "../../src/components/ThemeToggle";
 import FounderWorldMap from "./FounderWorldMap";
@@ -124,6 +124,7 @@ export default function TestLanding() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [founders, setFounders] = useState([]);
   const [activeFounderIndex, setActiveFounderIndex] = useState(0);
+  const [featuredRotation, setFeaturedRotation] = useState({ slots: [], next: 3, slot: 2 });
   const [contactFounder, setContactFounder] = useState(null);
   const [leadForm, setLeadForm] = useState({ name: "", email: "", phone: "", message: "", website: "" });
   const [leadState, setLeadState] = useState({ status: "idle", message: "" });
@@ -142,6 +143,22 @@ export default function TestLanding() {
   }, []);
 
   const activeFounder = founders[activeFounderIndex] || founders[0];
+  const orderedFounders = useMemo(() => [...founders].sort((a, b) => Number(String(a.number).replace(/\D/g, "")) - Number(String(b.number).replace(/\D/g, ""))), [founders]);
+  useEffect(() => {
+    setFeaturedRotation({ slots: orderedFounders.slice(0, 3).map((founder) => founder.number), next: 3, slot: 2 });
+  }, [orderedFounders]);
+
+  useEffect(() => {
+    if (orderedFounders.length <= 3) return undefined;
+    const timer = window.setInterval(() => {
+      setFeaturedRotation((current) => {
+        const slots = [...current.slots];
+        slots[current.slot] = orderedFounders[current.next % orderedFounders.length].number;
+        return { slots, next: (current.next + 1) % orderedFounders.length, slot: (current.slot + 2) % 3 };
+      });
+    }, 10000);
+    return () => window.clearInterval(timer);
+  }, [orderedFounders]);
 
   async function submitLead(event) {
     event.preventDefault();
@@ -171,6 +188,7 @@ export default function TestLanding() {
             <a href="#moments" className="transition hover:text-white">Em ação</a>
             <a href="#system" className="transition hover:text-white">O sistema</a>
             <a href="#community" className="transition hover:text-white">Comunidade</a>
+            <Link href="/afiliado" className="transition hover:text-white">Coach Fundador</Link>
             <a href="#pricing" className="transition hover:text-white">Planos</a>
             <a href="#start" className="transition hover:text-white">Começar</a>
           </nav>
@@ -189,6 +207,7 @@ export default function TestLanding() {
             <a href="#moments" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Em ação</a>
             <a href="#system" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">O sistema</a>
             <a href="#community" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Comunidade</a>
+            <Link href="/afiliado" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Coach Fundador</Link>
             <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Planos</a>
             <Link href="/signup?mode=trial" className="rounded-xl bg-[image:var(--brand-gradient)] px-4 py-3 text-center font-semibold text-[#03130e]">Experimentar</Link>
           </nav>
@@ -289,8 +308,9 @@ export default function TestLanding() {
 
             <div className="mt-12 grid overflow-hidden rounded-[28px] border border-white/10 bg-[#0c131d] lg:grid-cols-[1.45fr_0.55fr]">
               <div className="relative min-h-[390px] overflow-hidden border-b border-white/10 sm:min-h-[520px] lg:border-b-0 lg:border-r">
-                <FounderWorldMap founders={founders} activeIndex={activeFounderIndex} onSelect={setActiveFounderIndex} />
-                <div className="pointer-events-none absolute left-4 top-4 z-[500] flex items-center gap-2 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-white/70 backdrop-blur sm:left-7 sm:top-7"><MapPin size={12} /> {founders.length || 0} fundadores públicos</div>
+                <FounderWorldMap founders={founders} activeIndex={activeFounderIndex} featuredNumbers={featuredRotation.slots} onSelect={setActiveFounderIndex} />
+                <div className="pointer-events-none absolute left-4 top-4 z-[500] flex items-center gap-2 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-white/70 backdrop-blur sm:left-7 sm:top-7"><MapPin size={12} /> {founders.length ? `${founders.length} fundadores públicos` : "Limitado a 50 Fundadores"}</div>
+                {orderedFounders.length > 3 ? <div className="pointer-events-none absolute right-4 top-4 z-[500] rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] text-white/60 backdrop-blur sm:right-7 sm:top-7">Destaques atualizam em 10s</div> : null}
                 {!founders.length ? <div className="pointer-events-none absolute inset-x-6 bottom-6 z-[500] rounded-[18px] border border-dashed border-white/15 bg-black/55 p-5 text-center text-white backdrop-blur sm:inset-x-auto sm:bottom-8 sm:left-1/2 sm:w-[420px] sm:-translate-x-1/2"><p className="font-semibold">Os primeiros pontos do mapa começam aqui.</p><p className="mt-2 text-sm text-white/60">Os perfis aparecem quando existirem Coaches Fundadores ativos com consentimento público.</p></div> : null}
               </div>
 
@@ -299,15 +319,19 @@ export default function TestLanding() {
                   <>
                     <div className="flex items-center gap-4">
                       {activeFounder.photoUrl ? <img src={activeFounder.photoUrl} alt={activeFounder.name} className="h-20 w-20 rounded-[22px] object-cover" /> : <div className="flex h-20 w-20 items-center justify-center rounded-[22px] bg-[image:var(--brand-gradient)] text-lg font-bold text-[#03130e]">{activeFounder.number}</div>}
-                      <div><p className="text-xs font-semibold text-[var(--brand-mint)]">FOUNDER {activeFounder.number}</p><h3 className="mt-1 text-2xl font-semibold tracking-[-0.03em]">{activeFounder.name}</h3></div>
+                      <div><p className="text-xs font-semibold text-[var(--brand-mint)]">FUNDADOR {activeFounder.number}</p><h3 className="mt-1 text-2xl font-semibold tracking-[-0.03em]">{activeFounder.name}</h3></div>
                     </div>
                     <div className="mt-8 grid gap-3 border-y border-white/10 py-6 text-sm">
                       <div className="flex items-center justify-between gap-3"><span className="text-white/35">Localização</span><strong className="text-right">{activeFounder.city}{activeFounder.country && activeFounder.country !== activeFounder.city ? `, ${activeFounder.country}` : ""}</strong></div>
                       {activeFounder.workplace ? <div className="flex items-center justify-between gap-3"><span className="text-white/35">Onde treina</span><strong className="text-right">{activeFounder.workplace}</strong></div> : null}
                       <div className="flex items-center justify-between gap-3"><span className="text-white/35">Especialidade</span><strong className="text-right">{activeFounder.specialty || "Coach"}</strong></div>
+                      {activeFounder.age ? <div className="flex items-center justify-between gap-3"><span className="text-white/35">Idade</span><strong>{activeFounder.age} anos</strong></div> : null}
                       <div className="flex items-center justify-between gap-3"><span className="text-white/35">Fundador desde</span><strong>{activeFounder.activeSince}</strong></div>
+                      <div className="flex items-center justify-between gap-3"><span className="text-white/35">Clientes ativos</span><strong>{activeFounder.clients || "—"}</strong></div>
+                      <div className="flex items-center justify-between gap-3"><span className="text-white/35">Sessões registadas</span><strong>{activeFounder.sessionsRegistered ?? "—"}</strong></div>
                     </div>
                     {activeFounder.bio ? <p className="mt-5 text-sm leading-6 text-white/55">{activeFounder.bio}</p> : null}
+                    {activeFounder.contribution || activeFounder.contributionPoints || activeFounder.currentContributionRank ? <div className="mt-5 rounded-[16px] border border-[var(--brand-mint)]/20 bg-[var(--brand-mint)]/8 p-4"><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--brand-mint)]">Contributo para a NLOCK</p>{activeFounder.currentContributionRank || activeFounder.contributionPoints ? <div className="mt-3 flex flex-wrap gap-2">{activeFounder.currentContributionRank ? <span className="rounded-full bg-[var(--brand-mint)] px-3 py-1.5 text-xs font-bold text-[#03130e]">#{activeFounder.currentContributionRank} no ranking atual</span> : null}{activeFounder.contributionPoints ? <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold">{activeFounder.contributionPoints} pontos</span> : null}</div> : null}{activeFounder.contribution ? <p className="mt-3 text-sm leading-6 text-white/55">{activeFounder.contribution}</p> : null}</div> : null}
                     <button type="button" onClick={() => { setContactFounder(activeFounder); setLeadState({ status: "idle", message: "" }); }} className="mt-7 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-5 font-semibold text-[#03130e]">Entrar em contacto <ArrowRight size={16} /></button>
                     {activeFounder.profileUrl ? <a href={activeFounder.profileUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-5 font-semibold">Perfil profissional <ExternalLink size={15} /></a> : null}
                   </>
@@ -322,7 +346,6 @@ export default function TestLanding() {
               </aside>
             </div>
 
-            {founders.length ? <div className="mt-8 flex gap-3 overflow-x-auto pb-3">{founders.map((founder, index) => <button key={`wall-${founder.number}`} type="button" onClick={() => setActiveFounderIndex(index)} className={`flex min-w-[220px] items-center gap-3 rounded-[18px] border p-3 text-left ${activeFounderIndex === index ? "border-[var(--brand-mint)] bg-[var(--brand-mint)]/10" : "border-white/10 bg-white/[0.025]"}`}>{founder.photoUrl ? <img src={founder.photoUrl} alt="" className="h-11 w-11 rounded-xl object-cover" /> : <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[image:var(--brand-gradient)] text-xs font-bold text-[#03130e]">{founder.number}</span>}<span><strong className="block text-sm">{founder.name}</strong><span className="mt-1 block text-xs text-white/40">{founder.city}</span></span></button>)}</div> : null}
           </div>
         </section>
 
@@ -353,7 +376,7 @@ export default function TestLanding() {
                   <div className="flex items-center justify-between gap-4"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--brand-mint)]">Coach Fundador</p><span className="rounded-full bg-[var(--brand-mint)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#03130e]">50 vagas</span></div>
                   <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">Entra cedo.<br />Cresce connosco.</h3>
                   <div className="mt-8 flex items-end gap-2"><strong className="text-5xl tracking-[-0.055em]">199,90 €</strong><span className="pb-1 text-white/45">/ano</span></div>
-                  <p className="mt-3 text-sm text-white/40">≈ 16,66 €/mês · preço Founder enquanto a subscrição se mantiver ativa</p>
+                  <p className="mt-3 text-sm text-white/40">≈ 16,66 €/mês · preço de Fundador enquanto a subscrição se mantiver ativa</p>
                   <ul className="mt-9 grid gap-4 text-sm text-white/65">
                     {["Tudo do plano Coach", "Badge e número exclusivo", "Early access e comunidade privada", "Participação na evolução do produto e suporte prioritário"].map((item) => <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[var(--brand-mint)]" />{item}</li>)}
                   </ul>
@@ -362,6 +385,21 @@ export default function TestLanding() {
               </article>
             </div>
             <p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-white/35">O estatuto Coach Fundador requer subscrição anual, disponibilidade de vaga e aprovação da candidatura.</p>
+          </div>
+        </section>
+
+        <section className="px-[var(--page-gutter)] pb-[var(--section-space)]">
+          <div className="mx-auto max-w-[var(--content-max)]">
+            <article className="nlock-founder-promo relative grid overflow-hidden rounded-[28px] border border-[var(--brand-mint)]/30 bg-[linear-gradient(125deg,rgba(57,185,138,0.16),rgba(12,19,29,1)_52%,rgba(67,144,211,0.12))] p-7 shadow-[var(--shadow-accent)] sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12">
+              <Sparkles size={190} strokeWidth={0.7} className="pointer-events-none absolute -right-12 -top-16 text-[var(--brand-mint)]/12" />
+              <div className="relative max-w-3xl">
+                <span className="inline-flex rounded-full bg-[var(--brand-mint)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#03130e]">As primeiras 50 vagas</span>
+                <h2 className="mt-6 text-[clamp(2.2rem,4.5vw,4.2rem)] font-semibold leading-[0.95] tracking-[-0.055em]">Para quem quer desbloquear<br /><span className="bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">o seu potencial completo.</span></h2>
+                <p className="mt-5 max-w-2xl leading-7 text-white/60">Ser Coach Fundador é fazer parte do início da NLOCK: preço de lançamento, identidade histórica, influência na evolução do produto e reconhecimento pelo teu contributo.</p>
+                <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/70">{["199,90 €/ano", "Fundador #1–#50", "Validação e reconhecimento"].map((item) => <span key={item} className="flex items-center gap-2"><Check size={15} className="text-[var(--brand-mint)]" />{item}</span>)}</div>
+              </div>
+              <Link href="/afiliado" className="relative mt-8 inline-flex min-h-[52px] shrink-0 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-7 font-semibold text-[#03130e] shadow-[var(--shadow-accent)] lg:mt-0">Conhecer as vantagens <ArrowRight size={18} /></Link>
+            </article>
           </div>
         </section>
 
@@ -389,7 +427,7 @@ export default function TestLanding() {
           <div className="max-h-[92svh] w-full max-w-xl overflow-y-auto rounded-[26px] border border-white/12 bg-[#0c131d] p-6 shadow-2xl sm:p-8">
             <div className="flex items-start justify-between gap-5">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-mint)]">Contactar Founder {contactFounder.number}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-mint)]">Contactar Fundador {contactFounder.number}</p>
                 <h3 className="mt-2 text-3xl font-semibold tracking-[-0.04em]">Falar com {contactFounder.name}</h3>
                 <p className="mt-3 text-sm leading-6 text-white/50">O pedido entra diretamente no Coach Hub como uma nova oportunidade de trabalho.</p>
               </div>
