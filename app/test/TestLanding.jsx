@@ -377,7 +377,7 @@ export default function TestLanding() {
                   <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">Ativa o plano anual.<br />Torna-te Fundador.</h3>
                   <div className="mt-8 flex items-end gap-2"><strong className="text-5xl tracking-[-0.055em]">199,90 €</strong><span className="pb-1 text-white/45">/ano</span></div>
                   <p className="mt-3 text-sm text-white/45">≈ 16,66 €/mês · Preço de Lançamento enquanto a subscrição se mantiver ativa</p>
-                  <p className="mt-5 max-w-xl text-sm leading-6 text-white/65">Se fores um dos primeiros 50 coaches a iniciar a subscrição anual, recebes automaticamente o estatuto de Fundador. <Link href="/afiliado" className="font-semibold text-[var(--brand-mint)] underline decoration-[var(--brand-mint)]/35 underline-offset-4 transition hover:decoration-[var(--brand-mint)]">Saber mais sobre o programa</Link></p>
+                  <p className="mt-5 max-w-xl text-sm leading-6 text-white/65">Vagas limitadas às primeiras 50 subscrições anuais. <Link href="/afiliado" className="font-semibold text-[var(--brand-mint)] underline decoration-[var(--brand-mint)]/35 underline-offset-4 transition hover:decoration-[var(--brand-mint)]">Conhece os benefícios de ser Coach Fundador!</Link></p>
                   <ul className="mt-9 grid gap-4 text-sm text-white/65">
                     {["Tudo do plano Coach", "Badge e número exclusivo", "Early access e comunidade privada", "Participação na evolução do produto e suporte prioritário"].map((item) => <li key={item} className="flex items-center gap-3"><Check size={16} className="text-[var(--brand-mint)]" />{item}</li>)}
                   </ul>
