@@ -23,6 +23,21 @@ const pollOptions = [
   { key: "clearer_progress", label: "Acompanhar a evolução dos clients com mais clareza" },
 ];
 
+const mainNavItems = [
+  ["/#moments", "Em ação"],
+  ["/#system", "O sistema"],
+  ["/#community", "Comunidade"],
+  ["/afiliado#top", "Coach Fundador"],
+  ["/#pricing", "Planos"],
+  ["/#start", "Começar"],
+];
+
+const founderNavItems = [
+  ["#advantages", "Vantagens"],
+  ["#influence", "Influência"],
+  ["#conditions", "Condições"],
+];
+
 function FounderProgrammePoll() {
   const [poll, setPoll] = useState({ status: "loading", selected: null, percentages: {}, total: 0 });
 
@@ -77,19 +92,36 @@ function FounderProgrammePoll() {
 
 export default function AffiliateProgrammePage() {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  function handleMainNavClick(event, href) {
+    setMenuOpen(false);
+    if (!href.startsWith("/afiliado")) return;
+    event.preventDefault();
+    window.history.replaceState(null, "", "/afiliado#top");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   return (
     <div className="nlock-test nlock-founder-page min-h-screen bg-[#05090f] text-white">
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#05090f]/80 backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#05090f]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[var(--content-max)] items-center justify-between px-[var(--page-gutter)]">
           <Link href="/"><Brand /></Link>
-          <nav className="hidden items-center gap-8 text-sm text-white/60 lg:flex"><a href="#advantages" className="transition hover:text-white">Vantagens</a><a href="#influence" className="transition hover:text-white">Influência</a><a href="#conditions" className="transition hover:text-white">Condições</a></nav>
+          <nav aria-label="Navegação principal" className="hidden items-center gap-1 text-sm lg:flex">
+            {mainNavItems.map(([href, label]) => <Link key={href} href={href} onClick={(event) => handleMainNavClick(event, href)} aria-current={href.startsWith("/afiliado") ? "page" : undefined} className={`rounded-full px-3 py-2 transition hover:bg-[var(--surface-muted)] hover:text-[var(--text)] ${href.startsWith("/afiliado") ? "bg-[var(--accent-soft)] font-semibold text-[var(--accent-strong)]" : "text-[var(--text-muted)]"}`}>{label}</Link>)}
+          </nav>
           <div className="flex items-center gap-2"><ThemeToggle language="pt" className="!border-white/10 !bg-white/5 !text-white" /><Link href="/signup?mode=subscription&founder=1" className="hidden min-h-11 items-center rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-5 text-sm font-semibold text-[#03130e] sm:inline-flex">Ativar plano anual</Link><button type="button" onClick={() => setMenuOpen((value) => !value)} className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-white/10 lg:hidden" aria-label="Abrir navegação">{menuOpen ? <X size={18} /> : <Menu size={18} />}</button></div>
         </div>
-        {menuOpen ? <nav className="grid gap-2 border-t border-white/10 bg-[#05090f] p-4 lg:hidden">{[["#advantages", "Vantagens"], ["#influence", "Influência"], ["#conditions", "Condições"]].map(([href, label]) => <a key={href} href={href} onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">{label}</a>)}<Link href="/signup?mode=subscription&founder=1" className="rounded-xl bg-[image:var(--brand-gradient)] px-4 py-3 text-center font-semibold text-[#03130e]">Ativar plano anual</Link></nav> : null}
+        {menuOpen ? <nav aria-label="Navegação principal" className="grid gap-1 border-t border-[var(--border)] bg-[var(--surface-solid)] p-4 lg:hidden">{mainNavItems.map(([href, label]) => <Link key={href} href={href} onClick={(event) => handleMainNavClick(event, href)} className={`rounded-xl px-4 py-3 ${href.startsWith("/afiliado") ? "bg-[var(--accent-soft)] font-semibold text-[var(--accent-strong)]" : "text-[var(--text-muted)]"}`}>{label}</Link>)}<Link href="/signup?mode=subscription&founder=1" className="mt-2 rounded-xl bg-[image:var(--brand-gradient)] px-4 py-3 text-center font-semibold text-[#03130e]">Ativar plano anual</Link></nav> : null}
+        <nav aria-label="Programa de Fundadores" className="border-t border-white/10 bg-[#080d14]/95">
+          <div className="mx-auto flex max-w-[var(--content-max)] items-center gap-1 overflow-x-auto px-[var(--page-gutter)] py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <span className="mr-3 hidden shrink-0 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--brand-mint)] sm:inline">Programa de Fundadores</span>
+            {founderNavItems.map(([href, label]) => <a key={href} href={href} className="shrink-0 rounded-full px-4 py-2 text-xs font-medium text-white/60 transition hover:bg-white/5 hover:text-white">{label}</a>)}
+          </div>
+        </nav>
       </header>
 
-      <main>
-        <section className="nlock-founder-hero relative overflow-hidden px-[var(--page-gutter)] pb-24 pt-40 sm:pb-32 sm:pt-48">
+      <main id="top">
+        <section className="nlock-founder-hero relative overflow-hidden px-[var(--page-gutter)] pb-24 pt-48 sm:pb-32 sm:pt-56">
           <div className="absolute left-[12%] top-24 h-[460px] w-[460px] rounded-full bg-[var(--brand-mint)]/12 blur-[130px]" /><div className="absolute right-[8%] top-40 h-[400px] w-[400px] rounded-full bg-[var(--brand-sky)]/10 blur-[140px]" />
           <div className="relative mx-auto grid max-w-[var(--content-max)] gap-12 lg:grid-cols-[1fr_0.52fr] lg:items-center">
             <div><span className="inline-flex rounded-full bg-[var(--brand-mint)] px-4 py-2 text-xs font-bold tracking-[0.18em] text-[#03130e]">APENAS 50 COACHES FUNDADORES</span><h1 className="mt-8 max-w-5xl text-[clamp(3.4rem,7.5vw,7.2rem)] font-semibold leading-[0.88] tracking-[-0.065em]">DESBLOQUEIA O TEU<br /><span className="bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">POTENCIAL COMPLETO.</span></h1><p className="mt-8 max-w-2xl text-lg leading-8 text-white/60 sm:text-xl">Os primeiros 50 coaches que ativarem o plano anual tornam-se Fundadores automaticamente — com identidade histórica, Preço de Lançamento e participação mais próxima na evolução da NLOCK.</p><div className="mt-10 flex flex-col gap-3 sm:flex-row"><Link href="/signup?mode=subscription&founder=1" className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-7 font-semibold text-[#03130e] shadow-[var(--shadow-accent)]">Ativar plano anual <ArrowRight size={18} /></Link><a href="#advantages" className="inline-flex min-h-[54px] items-center justify-center rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-7 font-semibold">Ver vantagens</a></div></div>

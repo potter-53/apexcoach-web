@@ -44,6 +44,7 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
               access_tier: pending.accessTier || checkoutMetadata.access_tier || "coach",
               subscription_category: pending.subscriptionCategory || checkoutMetadata.subscription_category,
               billing_campaign_key: pending.subscriptionCategory || checkoutMetadata.subscription_category,
+              referral_code: pending.referralCode || checkoutMetadata.referral_code || null,
               accepted_terms_at: pending.submittedAt,
               accepted_privacy_at: pending.submittedAt,
               accepted_legal_version: "2026-04",

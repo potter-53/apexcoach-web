@@ -11,6 +11,14 @@ import ThemeToggle from "../../src/components/ThemeToggle";
 
 const APK_DOWNLOAD_URL = "/download/apk";
 
+function normalizeReferralCode(value) {
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9_-]/g, "")
+    .slice(0, 32);
+}
+
 const copy = {
   en: {
     highlights: [
@@ -232,6 +240,10 @@ export default function SignupClient() {
   const [registrationMode, setRegistrationMode] = useState("trial");
   const [founderIntent, setFounderIntent] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("annual");
+  const [referralCode, setReferralCode] = useState("");
+  const [referralFromLink, setReferralFromLink] = useState(false);
+  const [referralChecking, setReferralChecking] = useState(false);
+  const [referralValid, setReferralValid] = useState(null);
   const [emailChecking, setEmailChecking] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState(null);
   const [onboardingStep, setOnboardingStep] = useState(1);
@@ -245,12 +257,46 @@ export default function SignupClient() {
     const nextLocale = getInitialBrowserLocale();
     const params = new URLSearchParams(window.location.search);
     const requestedFounder = params.get("founder") === "1";
+    const requestedReferral = normalizeReferralCode(params.get("ref") || params.get("referral"));
     setRegistrationMode(params.get("mode") === "subscription" || requestedFounder ? "subscription" : "trial");
     setFounderIntent(requestedFounder);
+    setReferralCode(requestedReferral);
+    setReferralFromLink(Boolean(requestedReferral));
     setLocale(nextLocale);
     applyCoachLocale(nextLocale);
     trackEvent("landing_signup_opened", { locale: nextLocale });
   }, []);
+
+  useEffect(() => {
+    if (!referralCode || !configured) {
+      setReferralValid(null);
+      return undefined;
+    }
+    const timer = window.setTimeout(() => validateReferralCode(referralCode), 350);
+    return () => window.clearTimeout(timer);
+  }, [configured, referralCode]);
+
+  async function validateReferralCode(value = referralCode) {
+    const normalized = normalizeReferralCode(value);
+    if (!normalized) {
+      setReferralValid(null);
+      return true;
+    }
+    setReferralChecking(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase.rpc("validate_coach_referral_code", { p_code: normalized });
+      if (error) throw error;
+      const valid = data === true;
+      setReferralValid(valid);
+      return valid;
+    } catch {
+      setReferralValid(null);
+      return false;
+    } finally {
+      setReferralChecking(false);
+    }
+  }
 
   async function checkEmailAvailability(value = email) {
     const normalizedEmail = value.trim().toLowerCase();
@@ -309,6 +355,13 @@ export default function SignupClient() {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
+      if (referralCode) {
+        const validReferral = await validateReferralCode(referralCode);
+        if (!validReferral) {
+          setErrorMessage(locale === "pt" ? "O código de referral não é válido. Confirma o código ou deixa o campo vazio." : "The referral code is not valid. Check the code or leave the field empty.");
+          return;
+        }
+      }
       if (onboardingStep === 1) {
         const available = await checkEmailAvailability(normalizedEmail);
         if (!available) return;
@@ -346,14 +399,18 @@ export default function SignupClient() {
           registrationMode,
           accessTier,
           subscriptionCategory,
+          referralCode: normalizeReferralCode(referralCode),
           submittedAt,
         }));
         const checkoutResponse = await fetch("/api/billing/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: checkoutPlan, email: normalizedEmail, fullName: fullName.trim() }),
+          body: JSON.stringify({ plan: checkoutPlan, email: normalizedEmail, fullName: fullName.trim(), referralCode: normalizeReferralCode(referralCode) }),
         });
         const checkout = await checkoutResponse.json().catch(() => ({}));
+        if (checkout.error === "invalid_referral_code") {
+          throw new Error(locale === "pt" ? "O código de referral deixou de estar disponível. Confirma o código antes de continuar." : "The referral code is no longer available. Check the code before continuing.");
+        }
         if (!checkoutResponse.ok || !checkout.url) throw new Error(locale === "pt" ? "Não foi possível abrir o pagamento. A tua conta não foi criada; tenta novamente." : "Payment could not be opened. Your account was not created; try again.");
         window.location.assign(checkout.url);
         return;
@@ -375,6 +432,7 @@ export default function SignupClient() {
             access_tier: accessTier,
             subscription_category: subscriptionCategory,
             billing_campaign_key: subscriptionCategory,
+            referral_code: normalizeReferralCode(referralCode) || null,
             accepted_terms_at: submittedAt,
             accepted_privacy_at: submittedAt,
             accepted_legal_version: "2026-04",
@@ -643,6 +701,25 @@ export default function SignupClient() {
                     autoComplete="name"
                     required
                   />
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="flex items-center justify-between gap-3 text-sm text-[var(--text-muted)]">
+                    <span>{locale === "pt" ? "Código de referral (opcional)" : "Referral code (optional)"}</span>
+                    {referralFromLink && referralCode ? <span className="font-semibold text-[var(--accent-strong)]">{locale === "pt" ? "Aplicado pelo link" : "Applied from link"}</span> : null}
+                  </span>
+                  <input
+                    type="text"
+                    value={referralCode}
+                    onChange={(event) => { setReferralCode(normalizeReferralCode(event.target.value)); setReferralFromLink(false); setReferralValid(null); setErrorMessage(""); }}
+                    onBlur={(event) => validateReferralCode(event.target.value)}
+                    placeholder={locale === "pt" ? "Ex.: ABCDE" : "E.g. ABCDE"}
+                    className="min-h-[52px] rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 font-mono text-base uppercase tracking-[0.08em] text-[var(--text)] outline-none transition placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
+                    autoComplete="off"
+                    maxLength={32}
+                  />
+                  <span className="text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Se recebeste um link de um coach, o código aparece aqui automaticamente." : "If a coach shared a link with you, the code appears here automatically."}</span>
+                  {referralChecking ? <span className="text-xs text-[var(--text-muted)]">{locale === "pt" ? "A validar o código…" : "Validating code…"}</span> : referralValid === true ? <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--success)]"><CheckCircle2 size={13} /> {locale === "pt" ? "Código válido" : "Valid code"}</span> : referralValid === false ? <span className="inline-flex items-center gap-1 text-xs font-medium text-rose-600"><AlertCircle size={13} /> {locale === "pt" ? "Código não reconhecido" : "Code not recognized"}</span> : null}
                 </label>
                 </> : null}
 
