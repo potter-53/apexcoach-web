@@ -1,6 +1,7 @@
 import Stripe from "stripe";
-import { CheckCircle2, Clock3, Download, MailCheck, ShieldCheck, Smartphone } from "lucide-react";
+import { CheckCircle2, Download, ShieldCheck } from "lucide-react";
 import SignupCompletionClient from "./SignupCompletionClient";
+import SignupStepsStatus from "./SignupStepsStatus";
 
 export const metadata = {
   title: "Conta criada | NLOCK",
@@ -58,35 +59,10 @@ export default async function SignupSuccessPage({ searchParams }) {
                 emailVerified={emailVerified}
               />
             ) : null}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <article className={`rounded-[22px] border p-5 ${emailVerified ? "border-[var(--accent-strong)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}>
-                <div className="flex items-center gap-3">
-                  <span className={`flex h-10 w-10 items-center justify-center rounded-full ${emailVerified ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "bg-amber-500/12 text-amber-500"}`}>
-                    {emailVerified ? <MailCheck size={20} /> : <Clock3 size={20} />}
-                  </span>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Passo 1</p>
-                  <span className={`ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${emailVerified ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "bg-amber-500/12 text-amber-500"}`}>
-                    {emailVerified ? <CheckCircle2 size={13} /> : <Clock3 size={13} />}
-                    {emailVerified ? "Validado" : "Pendente"}
-                  </span>
-                </div>
-                <h2 className="mt-5 text-xl font-semibold tracking-[-0.025em]">{emailVerified ? "Email validado" : "Valida o teu email"}</h2>
-                <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
-                  {emailVerified
-                    ? "Confirmação concluída. Já podes entrar na app NLOCK."
-                    : "Enviámos uma mensagem para o email usado no registo. Abre-a e confirma a tua conta NLOCK."}
-                </p>
-              </article>
-
-              <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-5">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent-strong)]"><Smartphone size={20} /></span>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Passo 2</p>
-                </div>
-                <h2 className="mt-5 text-xl font-semibold tracking-[-0.025em]">Instala a app</h2>
-                <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">Faz download da app NLOCK e usa o mesmo email e palavra-passe para iniciares sessão.</p>
-              </article>
-            </div>
+            <SignupStepsStatus
+              sessionId={String(params?.session_id || "")}
+              emailVerified={emailVerified}
+            />
 
             <a href="/download/apk" className="inline-flex min-h-[56px] items-center justify-center gap-2 rounded-2xl [background:var(--brand-gradient)] px-5 py-4 font-semibold text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5">
               <Download size={19} /> Download da app NLOCK
