@@ -3,10 +3,11 @@
 import { useEffect, useRef } from "react";
 import "leaflet/dist/leaflet.css";
 
-export default function FounderWorldMap({ founders, activeIndex, onSelect }) {
+export default function FounderWorldMap({ founders, activeIndex, featuredNumbers = [], onSelect }) {
   const elementRef = useRef(null);
   const mapRef = useRef(null);
   const onSelectRef = useRef(onSelect);
+  const featuredKey = featuredNumbers.join("|");
 
   useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
 
@@ -18,6 +19,7 @@ export default function FounderWorldMap({ founders, activeIndex, onSelect }) {
       const leafletModule = await import("leaflet");
       if (cancelled || !elementRef.current) return;
       const L = leafletModule.default || leafletModule;
+      const featuredNumberSet = new Set(featuredKey.split("|").filter(Boolean));
 
       map = L.map(elementRef.current, {
         center: [25, 0],
@@ -47,9 +49,26 @@ export default function FounderWorldMap({ founders, activeIndex, onSelect }) {
           iconAnchor: index === activeIndex ? [24, 24] : [20, 20],
           className: `nlock-founder-marker ${index === activeIndex ? "is-active" : ""}`,
         });
-        L.marker([latitude, longitude], { icon, title: founder.name })
+        const marker = L.marker([latitude, longitude], { icon, title: founder.name })
           .addTo(map)
           .on("click", () => onSelectRef.current(index));
+
+        if (featuredNumberSet.has(founder.number)) {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "nlock-founder-map-card";
+          card.addEventListener("click", () => onSelectRef.current(index));
+          const label = document.createElement("span");
+          label.className = "nlock-founder-map-card-number";
+          label.textContent = `Fundador ${founder.number}`;
+          const name = document.createElement("strong");
+          name.textContent = founder.name;
+          const location = document.createElement("span");
+          location.className = "nlock-founder-map-card-location";
+          location.textContent = founder.workplace || founder.city || "Portugal";
+          card.append(label, name, location);
+          marker.bindTooltip(card, { permanent: true, direction: "top", offset: [0, -24], opacity: 1, className: "nlock-founder-map-tooltip", interactive: true });
+        }
       });
 
       if (founders.length === 1) {
@@ -68,7 +87,7 @@ export default function FounderWorldMap({ founders, activeIndex, onSelect }) {
       if (map) map.remove();
       mapRef.current = null;
     };
-  }, [founders, activeIndex]);
+  }, [founders, activeIndex, featuredKey]);
 
   return <div ref={elementRef} className="h-full min-h-[390px] w-full sm:min-h-[520px]" aria-label="Mapa geográfico dos Coaches Fundadores" />;
 }
