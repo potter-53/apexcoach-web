@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Award, Clock3, Crown, Gift, Lightbulb, Menu, MessageSquareText, ShieldCheck, Sparkles, TrendingUp, Users, X } from "lucide-react";
-import { createElement, useState } from "react";
+import { ArrowRight, Award, Check, Crown, Gift, Lightbulb, Menu, MessageSquareText, ShieldCheck, Sparkles, TrendingUp, Users, X } from "lucide-react";
+import { createElement, useEffect, useState } from "react";
 import ThemeToggle from "../../src/components/ThemeToggle";
 
 function Brand() {
@@ -17,6 +17,63 @@ const advantages = [
   { icon: Users, title: "Crescimento partilhado", text: "Por cada três referrals convertidos, recebes 30 dias de NLOCK, até ao máximo de seis meses por ano." },
   { icon: MessageSquareText, title: "Proximidade à equipa", text: "Prioridade em oportunidades de validação e uma ligação mais direta à evolução de uma ferramenta feita para coaches." },
 ];
+
+const pollOptions = [
+  { key: "faster_sessions", label: "Preparar sessões mais depressa" },
+  { key: "clearer_progress", label: "Acompanhar a evolução dos clients com mais clareza" },
+];
+
+function FounderProgrammePoll() {
+  const [poll, setPoll] = useState({ status: "loading", selected: null, percentages: {}, total: 0 });
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/founder-program-poll", { cache: "no-store" })
+      .then((response) => response.json().then((payload) => ({ response, payload })))
+      .then(({ response, payload }) => {
+        if (!active) return;
+        if (!response.ok || !payload.ok) throw new Error("poll_unavailable");
+        setPoll({ status: "ready", selected: payload.selected, percentages: payload.percentages || {}, total: payload.total || 0 });
+      })
+      .catch(() => { if (active) setPoll((current) => ({ ...current, status: "error" })); });
+    return () => { active = false; };
+  }, []);
+
+  async function vote(option) {
+    if (poll.selected || poll.status === "submitting") return;
+    setPoll((current) => ({ ...current, status: "submitting" }));
+    try {
+      const response = await fetch("/api/founder-program-poll", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ option }) });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.ok) throw new Error("poll_vote_failed");
+      setPoll({ status: "ready", selected: payload.selected, percentages: payload.percentages || {}, total: payload.total || 0 });
+    } catch {
+      setPoll((current) => ({ ...current, status: "error" }));
+    }
+  }
+
+  return (
+    <article className="nlock-founder-input rounded-[28px] border border-[var(--brand-mint)]/25 bg-[linear-gradient(145deg,rgba(57,185,138,0.12),rgba(12,19,29,1))] p-7 sm:p-10">
+      <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-mint)]">Ajuda a moldar a NLOCK</p><span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">Pergunta real</span></div>
+      <h3 className="mt-7 text-2xl font-semibold leading-9">Qual destas melhorias teria mais impacto no teu dia de trabalho?</h3>
+      <div className="mt-7 grid gap-3">
+        {pollOptions.map((option) => {
+          const selected = poll.selected === option.key;
+          const percentage = Number(poll.percentages?.[option.key] || 0);
+          return poll.selected ? (
+            <div key={option.key} className={`relative overflow-hidden rounded-[17px] border px-4 py-4 ${selected ? "border-[var(--brand-mint)]/45" : "border-white/10"}`}>
+              <span className="absolute inset-y-0 left-0 bg-[var(--brand-mint)]/12 transition-all duration-700" style={{ width: `${percentage}%` }} />
+              <div className="relative flex items-center justify-between gap-4"><span className="flex items-center gap-2 text-sm font-medium">{selected ? <Check size={16} className="text-[var(--brand-mint)]" /> : null}{option.label}</span><strong className="text-lg text-[var(--brand-mint)]">{percentage}%</strong></div>
+            </div>
+          ) : (
+            <button key={option.key} type="button" disabled={poll.status !== "ready"} onClick={() => vote(option.key)} className="rounded-[17px] border border-white/12 bg-white/5 px-4 py-4 text-left text-sm font-semibold transition hover:border-[var(--brand-mint)]/45 hover:bg-[var(--brand-mint)]/10 disabled:cursor-wait disabled:opacity-55">{option.label}</button>
+          );
+        })}
+      </div>
+      {poll.selected ? <p className="mt-5 text-xs leading-5 text-white/45">Obrigado pela resposta. Estás a ver o resultado de {poll.total} {poll.total === 1 ? "participação" : "participações"} nesta página.</p> : poll.status === "error" ? <p className="mt-5 text-xs text-white/45">A votação está temporariamente indisponível.</p> : <p className="mt-5 text-xs leading-5 text-white/40">Vota uma vez e vê imediatamente a opinião de quem já participou.</p>}
+    </article>
+  );
+}
 
 export default function AffiliateProgrammePage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -42,7 +99,7 @@ export default function AffiliateProgrammePage() {
 
         <section id="advantages" className="border-y border-white/10 bg-[#080d14] px-[var(--page-gutter)] py-[var(--section-space)]"><div className="mx-auto max-w-[var(--content-max)]"><p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand-mint)]">Vantagens de ser Fundador</p><h2 className="mt-5 max-w-4xl text-[clamp(2.7rem,6vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.055em]">Entra no primeiro capítulo.<br /><span className="text-white/38">Leva mais da NLOCK contigo.</span></h2><div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{advantages.map(({ icon, title, text }) => <article key={title} className="nlock-founder-feature rounded-[24px] border border-white/10 bg-[#0c131d] p-7">{createElement(icon, { size: 24, className: "text-[var(--brand-mint)]" })}<h3 className="mt-9 text-xl font-semibold">{title}</h3><p className="mt-3 text-sm leading-7 text-white/50">{text}</p></article>)}</div></div></section>
 
-        <section id="influence" className="px-[var(--page-gutter)] py-[var(--section-space)]"><div className="mx-auto grid max-w-[var(--content-max)] gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-center"><div><Sparkles size={32} className="text-[var(--brand-mint)]" /><h2 className="mt-7 text-[clamp(2.7rem,5vw,5rem)] font-semibold leading-[0.95] tracking-[-0.055em]">Ajuda a moldar a NLOCK.</h2><p className="mt-6 max-w-xl text-lg leading-8 text-white/55">Recebe perguntas estruturadas, valida decisões em contexto real e partilha feedback enquanto o produto evolui. Os Fundadores influenciam a direção — a decisão final permanece com a NLOCK.</p></div><article className="nlock-founder-input rounded-[28px] border border-[var(--brand-mint)]/25 bg-[linear-gradient(145deg,rgba(57,185,138,0.12),rgba(12,19,29,1))] p-7 sm:p-10"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-mint)]">NLOCK INPUT · EXEMPLO</p><p className="mt-7 text-2xl font-semibold leading-9">“Estamos a validar a próxima evolução da preparação de sessões.”</p><div className="mt-9 flex flex-wrap items-center justify-between gap-3"><span className="text-sm text-white/45"><Clock3 size={16} className="mr-2 inline" />Disponível durante 48h</span><span className="rounded-full bg-[var(--brand-mint)] px-4 py-2 text-sm font-semibold text-[#03130e]">Contributo reconhecido</span></div></article></div></section>
+        <section id="influence" className="px-[var(--page-gutter)] py-[var(--section-space)]"><div className="mx-auto grid max-w-[var(--content-max)] gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-center"><div><Sparkles size={32} className="text-[var(--brand-mint)]" /><h2 className="mt-7 text-[clamp(2.7rem,5vw,5rem)] font-semibold leading-[0.95] tracking-[-0.055em]">Ajuda a moldar a NLOCK.</h2><p className="mt-6 max-w-xl text-lg leading-8 text-white/55">A tua experiência no terreno tem valor. Participa nesta pergunta e vê imediatamente como a tua prioridade se compara com a de outros coaches que visitaram esta página.</p></div><FounderProgrammePoll /></div></section>
 
         <section className="border-y border-white/10 bg-[#080d14] px-[var(--page-gutter)] py-[var(--section-space)]"><div className="mx-auto max-w-[var(--content-max)]"><div className="grid gap-5 lg:grid-cols-3"><article className="nlock-founder-feature rounded-[26px] border border-white/10 bg-[#0c131d] p-7"><Gift className="text-[var(--brand-mint)]" /><p className="mt-12 text-xs font-semibold uppercase tracking-[0.18em] text-white/35">Referrals convertidos</p><h3 className="mt-3 text-3xl font-semibold">3 referrals<br /><span className="text-[var(--brand-mint)]">+30 dias</span></h3><p className="mt-5 leading-7 text-white/50">Máximo de seis meses de subscrição por ano.</p></article><article className="nlock-founder-feature rounded-[26px] border border-white/10 bg-[#0c131d] p-7"><TrendingUp className="text-[var(--brand-mint)]" /><p className="mt-12 text-xs font-semibold uppercase tracking-[0.18em] text-white/35">Participação ativa</p><h3 className="mt-3 text-3xl font-semibold">Mais contributo.<br /><span className="text-[var(--brand-mint)]">Mais vantagens.</span></h3><p className="mt-5 leading-7 text-white/50">Quanto mais ajudas a NLOCK, mais reconhecimento e oportunidades podes receber dentro do programa.</p></article><article className="nlock-founder-feature rounded-[26px] border border-white/10 bg-[#0c131d] p-7"><Award className="text-[var(--brand-mint)]" /><p className="mt-12 text-xs font-semibold uppercase tracking-[0.18em] text-white/35">Mural de Fundadores</p><h3 className="mt-3 text-3xl font-semibold">Mais visibilidade.<br /><span className="text-[var(--brand-mint)]">Potenciais leads.</span></h3><p className="mt-5 leading-7 text-white/50">Visitantes podem descobrir o teu perfil e enviar um pedido de contacto diretamente através do mural.</p></article></div></div></section>
 

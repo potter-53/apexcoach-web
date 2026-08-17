@@ -23,7 +23,7 @@ export default function CookiesPage() {
       <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
         <h2 className="text-base font-semibold text-[var(--text)]">2. Categorias</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5">
-          <li><strong>Essenciais:</strong> sessão, autenticação, idioma, segurança e persistência mínima do funcionamento do site.</li>
+          <li><strong>Essenciais e funcionais:</strong> sessão, autenticação, idioma, segurança e memória de participação em perguntas interativas iniciadas pelo utilizador.</li>
           <li><strong>Analytics:</strong> medição de navegação e desempenho, apenas se houver consentimento.</li>
         </ul>
       </section>
@@ -33,6 +33,7 @@ export default function CookiesPage() {
         <ul className="mt-3 list-disc space-y-2 pl-5">
           <li>Preferência de cookies: {LEGAL_CONFIG.cookieRetention.consent}</li>
           <li>Idioma/preferências funcionais: {LEGAL_CONFIG.cookieRetention.language}</li>
+          <li>Memória de participação em perguntas públicas: {LEGAL_CONFIG.cookieRetention.publicPoll}</li>
           <li>Analytics, se ativado: {LEGAL_CONFIG.cookieRetention.analytics}</li>
         </ul>
       </section>
