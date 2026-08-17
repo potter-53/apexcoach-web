@@ -15,6 +15,7 @@ export const LEGAL_CONFIG = {
   cookieRetention: {
     consent: "6 meses",
     language: "12 meses",
+    publicPoll: "12 meses após a participação",
     analytics: "até 13 meses, se ativados",
   },
 };
