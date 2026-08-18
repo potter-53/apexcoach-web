@@ -4,10 +4,10 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 
 async function resolveBundledApk(request) {
-  const bundledApkPath = path.join(process.cwd(), "public", "downloads", "apex-coach-latest.apk");
+  const bundledApkPath = path.join(process.cwd(), "public", "downloads", "nlock-latest.apk");
   try {
     await access(bundledApkPath);
-    return new URL("/downloads/apex-coach-latest.apk", request.url).toString();
+    return new URL("/downloads/nlock-latest.apk", request.url).toString();
   } catch {
     return null;
   }
