@@ -246,43 +246,60 @@ const copy = {
     pricingTag: "Planos",
     pricingTitle: "Escolhe como queres entrar na APEX COACH.",
     pricingText:
-      "Dois caminhos simples: usar a app como Coach ou entrar como Coach Fundador e participar mais de perto na construção do projeto.",
+      "Escolhe a subscrição Coach ou junta-te aos primeiros 50 coaches que vão ajudar a validar e evoluir a NLOCK.",
     foundationLabel: "Coach Fundador",
-    foundationTitle: "50 vagas para os coaches que querem crescer com a APEX COACH",
-    founderSpotsBadge: "50 vagas",
+    foundationTitle: "Ajuda a moldar a NLOCK desde o início",
+    founderSpotsBadge: "Limitado a 50",
     monthlyLabel: "Mensal",
     yearlyLabel: "Anual",
     equivalentLabel: "Equivalência",
     foundationMonthly: "≈ 16,66 EUR/mês",
     foundationYearly: "199,90 EUR/ano",
-    foundationSaving: "Poupa 100 EUR todos os anos face ao plano anual Coach.",
-    foundationNote: "Disponível apenas através do plano anual. Não existe subscrição mensal para Coach Fundador.",
+    foundationSaving: "Preço de Lançamento · menos 100 EUR face ao plano anual Coach.",
+    foundationNote: "Oportunidade única para os primeiros 50 subscritores anuais elegíveis. Pagamento anual.",
     foundationBenefits: [
       "Badge e número exclusivo de Coach Fundador",
-      "Preço Founder vitalício: 199,90 EUR/ano",
-      "Early access, comunidade privada e suporte prioritário",
-      "Influência no roadmap e certificado digital",
-      "Referral Premium: trial de 21 dias para coaches convidados",
+      "Preço de Lançamento: 199,90 EUR/ano",
+      "Feedback estruturado e validação prioritária de produto",
+      "Reconhecimento no Founder Wall",
+      "3 referrals convertidos = 30 dias de subscrição",
     ],
     regularLabel: "Coach",
     regularTitle: "Subscrição normal da APEX COACH",
     regularMonthly: "29,90 EUR/mês",
     regularYearly: "299,90 EUR/ano",
     regularAnnualNote: "Equivale a pagar apenas 10 meses em vez de 12.",
-    regularNote: "Pode aderir a Coach Fundador se escolher o plano anual e ainda houver vagas disponíveis. O referral está disponível para todos os coaches.",
+    regularNote: "O plano anual equivale a 24,99 EUR/mês. Referrals estão disponíveis para todos os coaches.",
     regularBenefits: [
       "Acesso completo à app mobile",
       "Plano mensal ou anual",
       "Clients ilimitados e ferramentas de sessão",
-      "Possibilidade de entrar como Fundador se cumprir os requisitos",
+      "Pode contribuir e desbloquear o percurso Affiliate",
     ],
     pricingBullets: [],
     founderCardRequirements: "Requer plano anual e subscrição ativa. Limitado a apenas 50 Coaches Fundadores.",
-    founderCardWaitlist: "Quando as 50 vagas estiverem preenchidas, novas candidaturas entram em waitlist e são avaliadas pela contribuição para o ecossistema APEX COACH.",
-    founderCardApproval: "Referrals ajudam, mas o estatuto Founder nunca é automático: cada candidatura requer aprovação.",
+    founderCardWaitlist: "Depois do Founder #50, coaches selecionados poderão candidatar-se ao estatuto Affiliate Coach.",
+    founderCardApproval: "Founder #01–#50 é uma identidade histórica e nunca existirá Founder #51.",
+    programmeTag: "NLOCK Affiliate Programme",
+    programmeTitle: "Contribui. Desbloqueia o teu percurso. Candidata-te a NLOCK Affiliate.",
+    programmeText: "Todos os coaches podem indicar profissionais e contribuir para a evolução da NLOCK. Founders pertencem automaticamente ao programa; futuras admissões Affiliate serão abertas por fases.",
+    programmeFlow: ["Coach", "Contribuir", "Desbloquear percurso Affiliate", "Candidatura", "Aprovação NLOCK", "Affiliate Coach"],
+    influenceTitle: "AJUDA A MOLDAR A NLOCK.",
+    influenceText: "Founding Coaches ajudam a validar ideias, fluxos e futuras funcionalidades através de feedback direto e estruturado. A sua participação informa a direção do produto; as decisões finais permanecem sempre com a NLOCK.",
+    inputLabel: "NLOCK INPUT · EXEMPLO",
+    inputQuestion: "Estamos a validar a próxima evolução da preparação de sessões.",
+    inputWindow: "Disponível durante 48h",
+    inputPoints: "+20 Contribution Points",
+    contributionTitle: "Contributo reconhecido, sem atalhos artificiais",
+    contributionText: "Feedback de produto, testes, tarefas estruturadas e referrals convertidos podem gerar pontos. O ranking trimestral reinicia; o contributo total permanece acumulado.",
+    referralTitle: "Referrals para todos. Recompensas para membros do programa.",
+    referralText: "Um referral só é válido quando o coach convidado se torna cliente pagante: Convidado → Registado → Trial → Convertido → Ativo.",
+    referralReward: "3 referrals válidos = +30 dias de NLOCK · máximo de 6 meses por ano",
+    approvalNote: "Cumprir os critérios apenas desbloqueia a candidatura. O estatuto Affiliate está sempre sujeito à aprovação da NLOCK.",
+    reputationNote: "Os estatutos Founder e Affiliate reconhecem participação no ecossistema NLOCK. Não constituem certificação, avaliação profissional, endorsement ou recomendação dos serviços do coach pela NLOCK.",
     foundingProgramTag: "Programa Founder",
     foundingProgramTitle: "Become one of the 50 Founding Coaches.",
-    foundingProgramSubtitle: "Help build the future of coaching while unlocking exclusive lifetime benefits.",
+    foundingProgramSubtitle: "Ajuda a construir o futuro do coaching com participação e reconhecimento exclusivos.",
     foundingProgramText:
       "Ser Coach Fundador não é comprar a app com desconto. É entrar no primeiro capítulo da APEX COACH, ter reconhecimento público dentro da comunidade e participar mais de perto na evolução de uma ferramenta criada para o trabalho real do coach.",
     foundingScarcity: "Limited to only 50 Founding Coaches.",
@@ -294,15 +311,15 @@ const copy = {
     foundingBenefitsTitle: "Benefícios Founder",
     foundingBenefitsDetailed: [
       "Badge exclusivo e número de Coach Fundador.",
-      "Preço Founder vitalício de 199,90 EUR/ano.",
+      "Preço de Lançamento de 199,90 EUR/ano.",
       "Acesso antecipado a novas funcionalidades.",
       "Comunidade privada, suporte prioritário e influência no roadmap.",
-      "Referral Premium: coaches convidados recebem 21 dias de trial.",
+      "Recompensa por referrals convertidos para membros do programa.",
       "Certificado digital de Coach Fundador.",
     ],
     foundingWaitlistTitle: "Quando as 50 vagas estiverem preenchidas",
     foundingWaitlistText:
-      "Os coaches podem entrar na Founding Waitlist. O estatuto Founder poderá ser atribuído mais tarde após análise da contribuição para o ecossistema APEX COACH.",
+      "Após o Founder #50, coaches elegíveis poderão candidatar-se ao estatuto Affiliate Coach.",
     foundingWaitlistExamples: [
       "Referrals bem-sucedidos",
       "Feedback de produto com valor",
@@ -316,7 +333,7 @@ const copy = {
     referralNormalLabel: "Coach",
     referralNormalTrial: "30 dias de trial",
     referralFounderLabel: "Coach Fundador",
-    referralFounderTrial: "21 dias de trial",
+    referralFounderTrial: "3 conversões = +30 dias",
     foundingWallTag: "Founding Coach Wall",
     foundingWallTitle: "Reconhecimento público para quem ajuda a construir a primeira fase.",
     foundingWallText:
@@ -361,9 +378,10 @@ const copy = {
     faqItems: [
       { title: "Que modalidades existem?", text: "Existem duas modalidades em vigor: Coach e Coach Fundador. O plano Coach pode ser mensal ou anual. O Coach Fundador é limitado a 50 vagas, requer subscrição anual e inclui vantagens exclusivas associadas ao crescimento da APEX COACH." },
       { title: "O que é o Coach Fundador e como funciona?", text: "Coach Fundador é a modalidade limitada para os primeiros 50 coaches. Requer subscrição anual de 199,90 EUR, equivalente a 16,66 EUR por mês, e mantém as condições enquanto a conta e a subscrição estiverem ativas." },
-      { title: "Que vantagens tem o Coach Fundador?", text: "O Coach Fundador recebe badge exclusivo, número Founder, preço vitalício de 199,90 EUR/ano, acesso antecipado a funcionalidades, comunidade privada, suporte prioritário, influência no roadmap, certificado digital e referral premium com trial de 21 dias para coaches convidados." },
+      { title: "Que vantagens tem o Coach Fundador?", text: "O Coach Fundador recebe badge e número histórico exclusivo, Preço de Lançamento de 199,90 EUR/ano, oportunidades prioritárias de validação de produto, reconhecimento no Founder Wall e acesso às recompensas do Affiliate Programme enquanto mantiver a elegibilidade." },
       { title: "Porque é que ser Fundador é relevante para o crescimento do coach?", text: "Porque o coach deixa de ser apenas utilizador e passa a estar mais próximo da construção da app. Isto dá contexto, voz, prioridade nos updates e uma ligação mais forte a uma comunidade de coaches focados em melhorar a forma como trabalham." },
-      { title: "Um Coach normal pode tornar-se Coach Fundador?", text: "Sim, se escolher a subscrição anual e ainda existirem vagas disponíveis. Quando as 50 vagas estiverem preenchidas, pode entrar na Founding Waitlist. Referrals, feedback e contributo para a comunidade podem ser analisados, mas o estatuto Founder nunca é automático e requer aprovação." },
+      { title: "Um Coach normal pode tornar-se Coach Fundador?", text: "Apenas enquanto existirem lugares entre Founder #01 e #50. Depois do Founder #50 não haverá novos Founders; um Coach poderá contribuir, desbloquear uma candidatura e, mediante aprovação da NLOCK, tornar-se Affiliate Coach." },
+      { title: "O que acontece se um Founder cancelar?", text: "Mantém o seu número Founder histórico, que nunca será reatribuído, mas perde o badge ativo, o Preço de Lançamento, a visibilidade no Founder Wall, as recompensas, o ranking ativo e os restantes privilégios do programa. Para regressar, terá de reiniciar o processo de elegibilidade e candidatura." },
       { title: "Para que perfil de coach foi pensada a APEX COACH?", text: "A app foi pensada para coaches que precisam de operar com mais critério técnico, mais velocidade de execução e maior consistência no acompanhamento dos seus clients, quer trabalhem com performance, saúde, recomposição corporal ou acompanhamento híbrido." },
       { title: "Posso trabalhar com clients ilimitados?", text: "Sim. A estrutura da app foi desenhada para acompanhar a operação do coach sem impor limites artificiais ao número de clients, permitindo crescer a carteira de acompanhamento sem perder organização nem contexto." },
       { title: "A app permite acompanhar atividades externas do client?", text: "Sim. O coach pode registar contexto adicional e atividades realizadas fora da sessão principal, o que melhora a leitura da carga global, da recuperação, do volume acumulado e da continuidade do processo." },
@@ -622,44 +640,60 @@ const copy = {
     ],
     pricingTag: "Pricing",
     pricingTitle: "Choose how you want to join APEX COACH.",
-    pricingText:
-      "Two simple paths: use the app as a Coach or join as a Founder Coach and take part more closely in building the project.",
+    pricingText: "Choose a Coach subscription or join the first 50 coaches helping validate and evolve NLOCK.",
     foundationLabel: "Founder Coach",
-    foundationTitle: "50 spots for coaches who want to grow with APEX COACH",
-    founderSpotsBadge: "50 spots",
+    foundationTitle: "Help shape NLOCK from the beginning",
+    founderSpotsBadge: "Limited to 50",
     monthlyLabel: "Monthly",
     yearlyLabel: "Yearly",
     equivalentLabel: "Equivalent",
     foundationMonthly: "≈ EUR 16.66/month",
     foundationYearly: "EUR 199.90/year",
-    foundationSaving: "Save EUR 100 every year compared with the regular annual Coach plan.",
-    foundationNote: "Available only through the annual plan. There is no monthly subscription for Founder Coaches.",
+    foundationSaving: "Launch Price · EUR 100 less than the annual Coach plan.",
+    foundationNote: "A one-time opportunity for the first 50 eligible annual subscribers. Annual payment only.",
     foundationBenefits: [
       "Exclusive Founder Coach badge and number",
-      "Lifetime Founder pricing: EUR 199.90/year",
-      "Early access, private community, and priority support",
-      "Roadmap influence and digital certificate",
-      "Referral Premium: 21-day trial for invited coaches",
+      "Launch Price: EUR 199.90/year",
+      "Structured feedback and priority product validation",
+      "Recognition on the Founder Wall",
+      "3 converted referrals = 30 subscription days",
     ],
     regularLabel: "Coach",
     regularTitle: "Regular APEX COACH subscription",
     regularMonthly: "EUR 29.90/month",
     regularYearly: "EUR 299.90/year",
     regularAnnualNote: "Equivalent to paying only 10 months instead of 12.",
-    regularNote: "Can join Founder Coach by choosing the annual plan if spots are still available. Referrals are available to every coach.",
+    regularNote: "The annual plan is equivalent to EUR 24.99/month. Referrals are available to every coach.",
     regularBenefits: [
       "Full access to the mobile app",
       "Monthly or annual plan",
       "Unlimited clients and session tools",
-      "Possibility to join Founder if requirements are met",
+      "Contribute and unlock the Affiliate path",
     ],
     pricingBullets: [],
     founderCardRequirements: "Requires the annual plan and an active subscription. Limited to only 50 Founder Coaches.",
-    founderCardWaitlist: "Once the 50 spots are filled, new applications join the waitlist and are reviewed based on contribution to the APEX COACH ecosystem.",
-    founderCardApproval: "Referrals help, but Founder status is never automatic: every application requires approval.",
+    founderCardWaitlist: "After Founder #50, selected coaches may apply for Affiliate Coach status.",
+    founderCardApproval: "Founder #01–#50 is a historic identity. There will never be a Founder #51.",
+    programmeTag: "NLOCK Affiliate Programme",
+    programmeTitle: "Contribute. Unlock your path. Apply to become a NLOCK Affiliate.",
+    programmeText: "Every coach can refer professionals and contribute to NLOCK's evolution. Founders automatically belong to the programme; future Affiliate admissions will open in batches.",
+    programmeFlow: ["Coach", "Contribute", "Unlock Affiliate path", "Application", "NLOCK approval", "Affiliate Coach"],
+    influenceTitle: "HELP SHAPE NLOCK.",
+    influenceText: "Founding Coaches help validate ideas, workflows, and future functionality through direct, structured feedback. Their participation informs product direction; final decisions always remain with NLOCK.",
+    inputLabel: "NLOCK INPUT · EXAMPLE",
+    inputQuestion: "We're validating the next evolution of session preparation.",
+    inputWindow: "Available for 48h",
+    inputPoints: "+20 Contribution Points",
+    contributionTitle: "Recognised contribution, without artificial shortcuts",
+    contributionText: "Product feedback, testing, structured tasks, and converted referrals may generate points. The quarterly ranking resets; lifetime contribution remains cumulative.",
+    referralTitle: "Referrals for all. Rewards for programme members.",
+    referralText: "A referral becomes valid only when the invited coach becomes a paying customer: Invited → Signed up → Trial → Converted → Active.",
+    referralReward: "3 valid referrals = +30 NLOCK days · maximum 6 months per year",
+    approvalNote: "Meeting the criteria only unlocks the application. Affiliate status always remains subject to NLOCK approval.",
+    reputationNote: "Founder and Affiliate status recognise participation in the NLOCK ecosystem. They do not constitute certification, professional evaluation, endorsement, or recommendation of a coach's services by NLOCK.",
     foundingProgramTag: "Founder Program",
     foundingProgramTitle: "Become one of the 50 Founding Coaches.",
-    foundingProgramSubtitle: "Help build the future of coaching while unlocking exclusive lifetime benefits.",
+    foundingProgramSubtitle: "Help build the future of coaching with exclusive participation and recognition.",
     foundingProgramText:
       "Being a Founder Coach is not about buying the app with a discount. It is about joining the first chapter of APEX COACH, gaining public recognition inside the community, and taking part more closely in the evolution of a tool built for real coaching work.",
     foundingScarcity: "Limited to only 50 Founding Coaches.",
@@ -674,12 +708,12 @@ const copy = {
       "Lifetime Founder pricing at EUR 199.90/year.",
       "Early access to new features.",
       "Private community, priority support, and roadmap influence.",
-      "Referral Premium: invited coaches receive a 21-day trial.",
+      "Converted-referral rewards for programme members.",
       "Digital Founder Coach Certificate.",
     ],
     foundingWaitlistTitle: "When the first 50 spots are filled",
     foundingWaitlistText:
-      "Coaches can join the Founding Waitlist. Founder status may later be awarded after reviewing their contribution to the APEX COACH ecosystem.",
+      "After Founder #50, eligible coaches may apply for Affiliate Coach status.",
     foundingWaitlistExamples: [
       "Successful coach referrals",
       "Valuable product feedback",
@@ -693,7 +727,7 @@ const copy = {
     referralNormalLabel: "Coach",
     referralNormalTrial: "30-day trial",
     referralFounderLabel: "Founder Coach",
-    referralFounderTrial: "21-day trial",
+    referralFounderTrial: "3 conversions = +30 days",
     foundingWallTag: "Founding Coach Wall",
     foundingWallTitle: "Public recognition for coaches who help build the first phase.",
     foundingWallText:
@@ -738,9 +772,10 @@ const copy = {
     faqItems: [
       { title: "Which modalities are available?", text: "There are two active modalities: Coach and Founder Coach. The Coach plan can be monthly or annual. Founder Coach is limited to 50 spots, requires an annual subscription, and includes exclusive benefits connected to the growth of APEX COACH." },
       { title: "What is Founder Coach and how does it work?", text: "Founder Coach is the limited modality for the first 50 coaches. It requires a EUR 199.90 annual subscription, equivalent to EUR 16.66 per month, and keeps its conditions while the account and subscription remain active." },
-      { title: "What benefits does Founder Coach include?", text: "Founder Coach includes an exclusive badge, Founder number, lifetime pricing at EUR 199.90/year, early feature access, private community, priority support, roadmap influence, digital certificate, and referral premium with a 21-day trial for invited coaches." },
+      { title: "What benefits does Founder Coach include?", text: "Founder Coach includes an exclusive historic badge and number, a EUR 199.90/year Launch Price, priority product-validation opportunities, Founder Wall recognition, and Affiliate Programme rewards while eligibility remains active." },
       { title: "Why does Founder status matter for coach growth?", text: "Because the coach is not just using the app; they are closer to its construction. This gives context, voice, update priority, and a stronger link to a community of coaches focused on improving how they work." },
-      { title: "Can a regular Coach become Founder Coach?", text: "Yes, by choosing the annual subscription if spots are still available. Once the 50 spots are filled, coaches can join the Founding Waitlist. Referrals, feedback, and community contribution may be reviewed, but Founder status is never automatic and requires approval." },
+      { title: "Can a regular Coach become Founder Coach?", text: "Only while a place between Founder #01 and #50 remains. After Founder #50 there will be no new Founders; a Coach may contribute, unlock an application, and become an Affiliate Coach subject to NLOCK approval." },
+      { title: "What happens if a Founder cancels?", text: "They keep their historic Founder number, which is never reassigned, but lose the active badge, Launch Price, Founder Wall visibility, rewards, active ranking eligibility, and other programme privileges. Returning requires restarting the eligibility and application process." },
       { title: "Who is APEX COACH built for?", text: "The app was built for coaches who need stronger technical structure, faster execution, and greater consistency in client follow-up, whether they work in performance, health, body composition, or hybrid coaching environments." },
       { title: "Can I work with unlimited clients?", text: "Yes. The app structure was designed to support the coach's operation without artificial limits on the number of clients, allowing the business to grow without losing clarity or control." },
       { title: "Can the app track external client activities?", text: "Yes. The coach can log relevant activity performed outside the main session, creating stronger context for load management, recovery interpretation, accumulated volume, and decision-making." },
@@ -1062,6 +1097,55 @@ function FounderMiniWall({ t }) {
       </div>
       <p className="mt-3 text-[11px] leading-5 text-[var(--text-muted)]">{t.foundingWallConsent}</p>
     </div>
+  );
+}
+
+function AffiliateProgramme({ t }) {
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
+      <SectionLabel>{t.programmeTag}</SectionLabel>
+      <div className="mt-4 grid gap-6 sm:mt-5 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
+        <div>
+          <h2 className="max-w-3xl text-2xl font-semibold leading-tight text-[var(--text)] sm:text-4xl lg:text-5xl">{t.programmeTitle}</h2>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--text-muted)] sm:mt-6 sm:text-lg sm:leading-8">{t.programmeText}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            {t.programmeFlow.map((step, index) => (
+              <div key={step} className="flex items-center gap-2">
+                <span className={`rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] ${index === t.programmeFlow.length - 1 ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] bg-white text-[var(--text-muted)]"}`}>{step}</span>
+                {index < t.programmeFlow.length - 1 ? <ArrowRight size={14} className="text-[var(--text-muted)]" /> : null}
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-xs leading-6 text-[var(--text-muted)]">{t.approvalNote}</p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <article className="rounded-[22px] border border-[var(--accent)]/25 bg-[var(--accent-soft)] p-5 sm:p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Founder #01–#50</p>
+            <h3 className="mt-3 text-xl font-semibold text-[var(--text)] sm:text-2xl">{t.influenceTitle}</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{t.influenceText}</p>
+          </article>
+          <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">{t.inputLabel}</p>
+            <p className="mt-3 text-base font-semibold leading-6 text-[var(--text)]">“{t.inputQuestion}”</p>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="text-[var(--text-muted)]">{t.inputWindow}</span>
+              <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1.5 font-semibold text-[var(--accent-strong)]">{t.inputPoints}</span>
+            </div>
+          </article>
+          <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+            <h3 className="text-lg font-semibold text-[var(--text)]">{t.contributionTitle}</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{t.contributionText}</p>
+          </article>
+          <article className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-solid)] p-5 shadow-[var(--shadow-soft)] sm:p-6">
+            <h3 className="text-lg font-semibold text-[var(--text)]">{t.referralTitle}</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{t.referralText}</p>
+            <p className="mt-4 rounded-[14px] bg-[var(--surface-muted)] px-3 py-3 text-xs font-semibold leading-5 text-[var(--text)]">{t.referralReward}</p>
+          </article>
+        </div>
+      </div>
+      <p className="mt-8 border-t border-[var(--border)] pt-4 text-[11px] leading-5 text-[var(--text-muted)]">{t.reputationNote}</p>
+    </section>
   );
 }
 
@@ -1632,6 +1716,8 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        <AffiliateProgramme t={t} />
 
         <section id="product" className="mx-auto max-w-7xl px-4 py-8 sm:px-5 sm:py-20 lg:px-8">
           <SectionLabel>{t.sectionProduct}</SectionLabel>

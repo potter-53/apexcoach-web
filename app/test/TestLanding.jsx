@@ -123,6 +123,7 @@ function AppActionVideo({ src, alt, className = "", delay = 480 }) {
 export default function TestLanding() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [founders, setFounders] = useState([]);
+  const [founderRemaining, setFounderRemaining] = useState(null);
   const [activeFounderIndex, setActiveFounderIndex] = useState(0);
   const [featuredRotation, setFeaturedRotation] = useState({ slots: [], next: 3, slot: 2 });
   const [contactFounder, setContactFounder] = useState(null);
@@ -141,6 +142,27 @@ export default function TestLanding() {
       });
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    const loadAvailability = () => {
+      fetch("/api/billing/checkout?plan=founder", { cache: "no-store" })
+        .then((response) => response.json())
+        .then((payload) => {
+          if (active && Number.isInteger(payload?.remaining)) setFounderRemaining(payload.remaining);
+        })
+        .catch(() => {});
+    };
+    loadAvailability();
+    const timer = window.setInterval(loadAvailability, 30_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, []);
+
+  const founderScarcityLabel = founderRemaining === 0
+    ? "Vagas esgotadas"
+    : founderRemaining !== null && founderRemaining <= 10
+      ? `Restam ${founderRemaining} ${founderRemaining === 1 ? "vaga" : "vagas"}`
+      : "50 vagas";
 
   const activeFounder = founders[activeFounderIndex] || founders[0];
   const orderedFounders = useMemo(() => [...founders].sort((a, b) => Number(String(a.number).replace(/\D/g, "")) - Number(String(b.number).replace(/\D/g, ""))), [founders]);
@@ -373,7 +395,7 @@ export default function TestLanding() {
               <article className="nlock-founder-plan relative flex flex-col overflow-hidden rounded-[28px] border border-[var(--brand-mint)]/40 bg-[linear-gradient(145deg,rgba(53,211,138,0.14),rgba(12,19,29,0.98)_42%)] p-7 text-white shadow-[var(--shadow-accent)] sm:p-10">
                 <Sparkles size={170} strokeWidth={0.7} className="pointer-events-none absolute -right-12 -top-12 text-[var(--brand-mint)]/10" />
                 <div className="relative">
-                  <div className="flex items-center justify-between gap-4"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--brand-mint)]">Coach Fundador</p><span className="rounded-full bg-[var(--brand-mint)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#03130e]">50 vagas</span></div>
+                  <div className="flex items-center justify-between gap-4"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--brand-mint)]">Coach Fundador</p><span className="rounded-full bg-[var(--brand-mint)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#03130e]">{founderScarcityLabel}</span></div>
                   <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">Ativa o plano anual.<br />Torna-te Fundador.</h3>
                   <div className="mt-8 flex items-end gap-2"><strong className="text-5xl tracking-[-0.055em]">199,90 €</strong><span className="pb-1 text-white/45">/ano</span></div>
                   <p className="mt-3 text-sm text-white/45">≈ 16,66 €/mês · Preço de Lançamento enquanto a subscrição se mantiver ativa</p>
@@ -394,7 +416,7 @@ export default function TestLanding() {
             <article className="nlock-founder-promo relative grid overflow-hidden rounded-[28px] border border-[var(--brand-mint)]/30 bg-[linear-gradient(125deg,rgba(57,185,138,0.16),rgba(12,19,29,1)_52%,rgba(67,144,211,0.12))] p-7 shadow-[var(--shadow-accent)] sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12">
               <Sparkles size={190} strokeWidth={0.7} className="pointer-events-none absolute -right-12 -top-16 text-[var(--brand-mint)]/12" />
               <div className="relative max-w-3xl">
-                <span className="inline-flex rounded-full bg-[var(--brand-mint)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#03130e]">As primeiras 50 vagas</span>
+                <span className="inline-flex rounded-full bg-[var(--brand-mint)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#03130e]">{founderScarcityLabel}</span>
                 <h2 className="mt-6 text-[clamp(2.2rem,4.5vw,4.2rem)] font-semibold leading-[0.95] tracking-[-0.055em]">Para quem quer desbloquear<br /><span className="bg-[image:var(--brand-gradient)] bg-clip-text text-transparent">o seu potencial completo.</span></h2>
                 <p className="mt-5 max-w-2xl leading-7 text-white/60">Ser Coach Fundador é fazer parte do início da NLOCK: preço de lançamento, identidade histórica, influência na evolução do produto e reconhecimento pelo teu contributo.</p>
                 <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/70">{["199,90 €/ano", "Fundador #1–#50", "Visibilidade e potenciais leads"].map((item) => <span key={item} className="flex items-center gap-2"><Check size={15} className="text-[var(--brand-mint)]" />{item}</span>)}</div>

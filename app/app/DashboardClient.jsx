@@ -1402,7 +1402,7 @@ function ClientAvatar({ studentId, name, colorHex, size = 40 }) {
   );
 }
 
-function AttentionRow({ conversation, selected, copy, onClick }) {
+function AttentionRow({ conversation, selected, onClick }) {
   return (
     <button onClick={onClick} className={`flex w-full items-center justify-between gap-2.5 rounded-[14px] border px-2.5 py-2 text-left transition hover:border-[var(--accent)] ${selected ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-white"}`}>
       <div className="flex min-w-0 items-center gap-2.5">
@@ -1510,7 +1510,6 @@ function CoachHubCard({ copy, attentionItems, locale }) {
                   key={conversation.id}
                   conversation={conversation}
                   selected={conversation.id === selectedConversationId}
-                  copy={copy}
                   onClick={() => setSelectedConversationId(conversation.id)}
                 />
               ))

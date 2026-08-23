@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', '.next', 'node_modules']),
+  globalIgnores(['dist', '.next', 'node_modules', '**/* 2.*']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -24,7 +24,7 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^[A-Z_]' }],
       'no-empty': 'off',
       'react-hooks/set-state-in-effect': 'off',
     },

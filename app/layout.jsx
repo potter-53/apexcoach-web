@@ -32,15 +32,15 @@ export const metadata = {
     type: "website",
   },
   icons: {
-    icon: "/favicon-logo.png",
-    shortcut: "/favicon-logo.png",
-    apple: "/favicon-logo.png",
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/favicon.svg",
+    apple: "/nlock-icon.png",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-PT" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
       </head>

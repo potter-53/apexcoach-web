@@ -99,6 +99,7 @@ async function syncSubscription(
   admin: ReturnType<typeof createClient>,
   subscription: Stripe.Subscription,
   checkoutSessionId?: string | null,
+  paidAt?: string | null,
 ) {
   const metadata = subscription.metadata || {};
   const coachId = metadata.coach_id || metadata.nlock_user_id;
@@ -114,10 +115,6 @@ async function syncSubscription(
   const periodEnd =
     (item as Stripe.SubscriptionItem & { current_period_end?: number }).current_period_end ??
     (subscription as Stripe.Subscription & { current_period_end?: number }).current_period_end;
-  const paymentMethod =
-    typeof subscription.default_payment_method === "string"
-      ? null
-      : subscription.default_payment_method;
   const stripeCustomerId =
     typeof subscription.customer === "string"
       ? subscription.customer
@@ -141,13 +138,7 @@ async function syncSubscription(
     stripe_discount_id:
       (subscription as Stripe.Subscription & { discount?: { coupon?: { id?: string } } }).discount
         ?.coupon?.id || null,
-    payment_method_type: paymentMethod?.type || null,
-    payment_method_last4:
-      paymentMethod?.type === "card"
-        ? paymentMethod.card?.last4 || null
-        : paymentMethod?.type === "sepa_debit"
-          ? paymentMethod.sepa_debit?.last4 || null
-          : null,
+    ...(paidAt ? { last_payment_at: paidAt } : {}),
     stripe_checkout_session_id: checkoutSessionId || null,
     cancel_at_period_end: Boolean(subscription.cancel_at_period_end),
     updated_at: new Date().toISOString(),
@@ -211,11 +202,9 @@ Deno.serve(async (request) => {
           ? session.subscription
           : session.subscription?.id;
       if (subscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-          expand: ["default_payment_method"],
-        });
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
         processingStage = "checkout_subscription_sync";
-        await syncSubscription(admin, subscription, session.id);
+        await syncSubscription(admin, subscription, session.id, iso(session.created));
       }
     } else if (
       event.type === "customer.subscription.created" ||
@@ -232,7 +221,12 @@ Deno.serve(async (request) => {
       if (subscriptionId) {
         const { error } = await admin
           .from("subscriptions")
-          .update({ status: event.type === "invoice.paid" ? "active" : "past_due" })
+          .update({
+            status: event.type === "invoice.paid" ? "active" : "past_due",
+            ...(event.type === "invoice.paid"
+              ? { last_payment_at: iso(invoice.status_transitions?.paid_at ?? event.created) }
+              : {}),
+          })
           .eq("stripe_subscription_id", subscriptionId);
         if (error) throw error;
       }

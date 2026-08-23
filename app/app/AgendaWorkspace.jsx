@@ -186,13 +186,6 @@ function statusLabel(value) {
   return (value || "scheduled").replace(/_/g, " ");
 }
 
-function groupWeekItems(items, locale) {
-  return items.slice(0, 4).map((item) => ({
-    ...item,
-    timeLabel: formatTime(item.scheduledAt, locale),
-  }));
-}
-
 function inputDateValue(date) {
   const value = new Date(date);
   return `${value.getFullYear()}-${`${value.getMonth() + 1}`.padStart(2, "0")}-${`${value.getDate()}`.padStart(2, "0")}`;
@@ -309,18 +302,6 @@ export default function AgendaWorkspace({ currentUser, compact = false, onOpenCr
     }
     return days;
   }, [anchorDate, mode]);
-
-  const weekOverview = useMemo(() => {
-    if (mode !== "week") return [];
-    return weekDays.map((day) => {
-      const dayItems = items.filter((item) => item.scheduledAt.toDateString() === day.toDateString());
-      return {
-        day,
-        count: dayItems.length,
-        items: groupWeekItems(dayItems, locale),
-      };
-    });
-  }, [items, locale, mode, weekDays]);
 
   const compactNowHour = now.getHours() + now.getMinutes() / 60;
   const showCompactNow = compact && mode === "week" && now >= range.start && now < range.end && compactNowHour >= COMPACT_DAY_START_HOUR && compactNowHour <= COMPACT_DAY_END_HOUR;

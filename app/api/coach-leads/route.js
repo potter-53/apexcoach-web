@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+import { PayloadTooLargeError, readJsonBody } from "../../../src/lib/http-json";
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const COACH_LEADS_API_SECRET = process.env.COACH_LEADS_API_SECRET || "";
@@ -31,7 +33,15 @@ export async function POST(request) {
     return NextResponse.json({ ok: false, error: "Contact service unavailable." }, { status: 503 });
   }
 
-  const payload = await request.json().catch(() => ({}));
+  let payload;
+  try {
+    payload = await readJsonBody(request, 8 * 1024);
+  } catch (error) {
+    if (error instanceof PayloadTooLargeError) {
+      return NextResponse.json({ ok: false, error: "Pedido demasiado grande." }, { status: 413 });
+    }
+    throw error;
+  }
   const founderNumber = cleanText(payload.founderNumber, 12);
   const name = cleanText(payload.name, 120);
   const email = cleanEmail(payload.email);

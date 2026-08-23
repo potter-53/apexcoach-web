@@ -2,6 +2,8 @@ import { createHash, randomUUID } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+import { PayloadTooLargeError, readJsonBody } from "../../../src/lib/http-json";
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.APEX_SUPABASE_URL || "";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.APEX_SUPABASE_SERVICE_ROLE_KEY || "";
 const POLL_KEY = "founder_program_product_value_v1";
@@ -51,7 +53,7 @@ export async function POST(request) {
   const admin = adminClient();
   if (!admin) return NextResponse.json({ ok: false, error: "poll_unavailable" }, { status: 503 });
   try {
-    const payload = await request.json().catch(() => ({}));
+    const payload = await readJsonBody(request, 1024);
     const option = String(payload.option || "");
     if (!OPTIONS.includes(option)) return NextResponse.json({ ok: false, error: "invalid_option" }, { status: 400 });
 
@@ -69,6 +71,9 @@ export async function POST(request) {
     if (!existingToken) response.cookies.set(COOKIE_NAME, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 365 });
     return response;
   } catch (error) {
+    if (error instanceof PayloadTooLargeError) {
+      return NextResponse.json({ ok: false, error: "payload_too_large" }, { status: 413 });
+    }
     console.error("Founder poll vote failed", error);
     return NextResponse.json({ ok: false, error: "poll_vote_failed" }, { status: 500 });
   }

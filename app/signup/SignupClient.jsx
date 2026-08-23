@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
 
@@ -239,13 +239,12 @@ export default function SignupClient() {
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [registrationMode, setRegistrationMode] = useState("trial");
   const [founderIntent, setFounderIntent] = useState(false);
+  const [founderRemaining, setFounderRemaining] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState("annual");
   const [referralCode, setReferralCode] = useState("");
   const [referralFromLink, setReferralFromLink] = useState(false);
   const [referralChecking, setReferralChecking] = useState(false);
   const [referralValid, setReferralValid] = useState(null);
-  const [emailChecking, setEmailChecking] = useState(false);
-  const [emailAvailable, setEmailAvailable] = useState(null);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -268,15 +267,21 @@ export default function SignupClient() {
   }, []);
 
   useEffect(() => {
-    if (!referralCode || !configured) {
-      setReferralValid(null);
-      return undefined;
-    }
-    const timer = window.setTimeout(() => validateReferralCode(referralCode), 350);
-    return () => window.clearTimeout(timer);
-  }, [configured, referralCode]);
+    let active = true;
+    const loadAvailability = () => {
+      fetch("/api/billing/checkout?plan=founder", { cache: "no-store" })
+        .then((response) => response.json())
+        .then((payload) => {
+          if (active && Number.isInteger(payload?.remaining)) setFounderRemaining(payload.remaining);
+        })
+        .catch(() => {});
+    };
+    loadAvailability();
+    const timer = window.setInterval(loadAvailability, 30_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, []);
 
-  async function validateReferralCode(value = referralCode) {
+  const validateReferralCode = useCallback(async (value = referralCode) => {
     const normalized = normalizeReferralCode(value);
     if (!normalized) {
       setReferralValid(null);
@@ -296,43 +301,16 @@ export default function SignupClient() {
     } finally {
       setReferralChecking(false);
     }
-  }
+  }, [referralCode]);
 
-  async function checkEmailAvailability(value = email) {
-    const normalizedEmail = value.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setEmailAvailable(null);
-      return false;
+  useEffect(() => {
+    if (!referralCode || !configured) {
+      setReferralValid(null);
+      return undefined;
     }
-
-    setEmailChecking(true);
-    try {
-      const response = await fetch("/api/auth/check-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: normalizedEmail }),
-      });
-      const result = await response.json().catch(() => ({}));
-      if (response.status === 503 && result.error === "email_check_unavailable") {
-        setEmailAvailable(null);
-        return true;
-      }
-      if (!response.ok || !result.ok) throw new Error("email_check_failed");
-      setEmailAvailable(!result.exists);
-      if (result.exists) {
-        setErrorMessage(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
-        return false;
-      }
-      setErrorMessage("");
-      return true;
-    } catch {
-      setEmailAvailable(null);
-      setErrorMessage(locale === "pt" ? "Não foi possível validar o email agora. Tenta novamente." : "We could not validate this email right now. Try again.");
-      return false;
-    } finally {
-      setEmailChecking(false);
-    }
-  }
+    const timer = window.setTimeout(() => validateReferralCode(referralCode), 350);
+    return () => window.clearTimeout(timer);
+  }, [configured, referralCode, validateReferralCode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -362,15 +340,13 @@ export default function SignupClient() {
           return;
         }
       }
-      if (onboardingStep === 1) {
-        const available = await checkEmailAvailability(normalizedEmail);
-        if (!available) return;
-      }
-
       if (onboardingStep === 1 && registrationMode === "subscription") {
         const checkoutPlan = founderIntent ? "founder" : selectedPlan;
         const checkoutStatus = await fetch(`/api/billing/checkout?plan=${checkoutPlan}`, { cache: "no-store" });
         const checkoutConfig = await checkoutStatus.json().catch(() => ({}));
+        if (checkoutConfig.error === "founder_sold_out" || checkoutConfig.available === false && checkoutPlan === "founder") {
+          throw new Error(locale === "pt" ? "As 50 vagas de Coach Fundador já foram preenchidas. Podes continuar com o plano Coach anual." : "All 50 Founder Coach places have been filled. You can continue with the annual Coach plan.");
+        }
         if (!checkoutConfig.configured) {
           throw new Error(locale === "pt" ? "O pagamento online está a ser configurado. A tua conta ainda não foi criada; tenta novamente em breve." : "Online payment is being configured. Your account has not been created yet; try again shortly.");
         }
@@ -390,7 +366,7 @@ export default function SignupClient() {
 
       if (registrationMode === "subscription") {
         const checkoutPlan = founderIntent ? "founder" : selectedPlan;
-        window.sessionStorage.setItem("nlock_pending_signup", JSON.stringify({
+        const pendingSignup = {
           email: normalizedEmail,
           password,
           fullName: fullName.trim(),
@@ -401,17 +377,22 @@ export default function SignupClient() {
           subscriptionCategory,
           referralCode: normalizeReferralCode(referralCode),
           submittedAt,
-        }));
+        };
+        window.sessionStorage.setItem("nlock_pending_signup", JSON.stringify(pendingSignup));
         const checkoutResponse = await fetch("/api/billing/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ plan: checkoutPlan, email: normalizedEmail, fullName: fullName.trim(), referralCode: normalizeReferralCode(referralCode) }),
         });
         const checkout = await checkoutResponse.json().catch(() => ({}));
+        if (checkout.error === "founder_sold_out") {
+          throw new Error(locale === "pt" ? "As 50 vagas de Coach Fundador já foram preenchidas. Nenhum pagamento foi iniciado." : "All 50 Founder Coach places have been filled. No payment was started.");
+        }
         if (checkout.error === "invalid_referral_code") {
           throw new Error(locale === "pt" ? "O código de referral deixou de estar disponível. Confirma o código antes de continuar." : "The referral code is no longer available. Check the code before continuing.");
         }
-        if (!checkoutResponse.ok || !checkout.url) throw new Error(locale === "pt" ? "Não foi possível abrir o pagamento. A tua conta não foi criada; tenta novamente." : "Payment could not be opened. Your account was not created; try again.");
+        if (!checkoutResponse.ok || !checkout.url || !checkout.claimToken) throw new Error(locale === "pt" ? "Não foi possível abrir o pagamento. A tua conta não foi criada; tenta novamente." : "Payment could not be opened. Your account was not created; try again.");
+        window.sessionStorage.setItem("nlock_pending_signup", JSON.stringify({ ...pendingSignup, claimToken: checkout.claimToken }));
         window.location.assign(checkout.url);
         return;
       }
@@ -441,7 +422,6 @@ export default function SignupClient() {
       });
       if (error) throw error;
       if (Array.isArray(data?.user?.identities) && data.user.identities.length === 0) {
-        setEmailAvailable(false);
         throw new Error(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
       }
       trackEvent("landing_signup_success", { locale, accessTier, registrationMode });
@@ -644,11 +624,12 @@ export default function SignupClient() {
                     </button>
                     <button
                       type="button"
+                      disabled={founderRemaining === 0}
                       onClick={() => { setRegistrationMode("subscription"); setFounderIntent(true); setSelectedPlan("annual"); setErrorMessage(""); }}
-                      className={`min-h-[104px] rounded-[18px] border p-3 text-left transition sm:rounded-[20px] sm:p-4 ${founderIntent ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
+                      className={`min-h-[104px] rounded-[18px] border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-55 sm:rounded-[20px] sm:p-4 ${founderIntent ? "border-[var(--accent)] bg-[var(--accent-soft)] shadow-[var(--shadow-soft)]" : "border-[var(--border)] bg-[var(--surface-solid)]"}`}
                     >
                       <span className="block font-semibold text-[var(--text)]">Coach Fundador</span>
-                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{locale === "pt" ? "Ativa o plano anual e garante uma das primeiras 50 vagas." : "Activate the annual plan and secure one of the first 50 places."}</span>
+                      <span className="mt-2 block text-xs leading-5 text-[var(--text-muted)]">{founderRemaining === 0 ? (locale === "pt" ? "As vagas Founder estão esgotadas." : "Founder places are sold out.") : founderRemaining !== null && founderRemaining <= 10 ? (locale === "pt" ? `Restam ${founderRemaining} ${founderRemaining === 1 ? "vaga" : "vagas"}.` : `${founderRemaining} ${founderRemaining === 1 ? "place remains" : "places remain"}.`) : (locale === "pt" ? "Ativa o plano anual e garante uma das primeiras 50 vagas." : "Activate the annual plan and secure one of the first 50 places.")}</span>
                     </button>
                   </div>
                 </fieldset>
@@ -680,7 +661,7 @@ export default function SignupClient() {
                   <div className="mb-2 rounded-[22px] border border-[var(--accent)] bg-[linear-gradient(135deg,var(--accent-soft),transparent)] p-4 sm:p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Coach Fundador · 50 vagas</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Coach Fundador · {founderRemaining !== null && founderRemaining <= 10 ? `${founderRemaining} ${founderRemaining === 1 ? "vaga restante" : "vagas restantes"}` : "50 vagas"}</p>
                         <p className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[var(--text)]">199,90 €<small className="ml-1 text-sm font-normal tracking-normal text-[var(--text-muted)]">/ano</small></p>
                       </div>
                       <CheckCircle2 size={22} className="mt-1 shrink-0 text-[var(--accent-strong)]" />
@@ -753,14 +734,12 @@ export default function SignupClient() {
                   <input
                     type="email"
                     value={email}
-                    onChange={(event) => { setEmail(event.target.value); setEmailAvailable(null); setErrorMessage(""); }}
-                    onBlur={(event) => checkEmailAvailability(event.target.value)}
+                    onChange={(event) => { setEmail(event.target.value); setErrorMessage(""); }}
                     placeholder="coach@nlock.pt"
                     className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-base text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)] focus:bg-[var(--surface-solid)]"
                     autoComplete="email"
                     required
                   />
-                  {emailChecking ? <span className="text-xs text-[var(--text-muted)]">A verificar o email…</span> : emailAvailable === true ? <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--success)]"><CheckCircle2 size={13} /> Email disponível</span> : null}
                 </label>
 
                 <label className="grid gap-2">

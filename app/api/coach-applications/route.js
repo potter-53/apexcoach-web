@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+import { PayloadTooLargeError, readJsonBody } from "../../../src/lib/http-json";
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const SUPABASE_SERVICE_ROLE_KEY =
@@ -198,27 +200,9 @@ async function storeApplication(application) {
   return { skipped: false };
 }
 
-async function markFounderSubscription(application) {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !application.userId) {
-    return { skipped: true, reason: "missing_service_role_or_user" };
-  }
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  const { error } = await supabase
-    .from("subscriptions")
-    .update({ subscription_category: FOUNDER_SUBSCRIPTION_CATEGORY })
-    .eq("coach_id", application.userId);
-
-  if (error) throw error;
-  return { skipped: false };
-}
-
 export async function POST(request) {
   try {
-    const payload = await request.json().catch(() => ({}));
+    const payload = await readJsonBody(request, 16 * 1024);
     const submittedAt = new Date().toISOString();
     const foundingPublicProfileConsent = Boolean(payload.foundingPublicProfileConsent);
     const accessTier = payload.accessTier === FOUNDER_ACCESS_TIER ? FOUNDER_ACCESS_TIER : "coach";
@@ -236,7 +220,10 @@ export async function POST(request) {
       focus: cleanText(payload.focus, 1000),
       locale: cleanText(payload.locale, 8) || "pt",
       source: cleanText(payload.source, 80) || "coach-application",
-      userId: cleanText(payload.userId, 80),
+      // A public application must never bind itself to an auth identity supplied
+      // by the browser. Identity linking happens only in authenticated/payment
+      // flows on the server.
+      userId: "",
       workplace: cleanText(payload.workplace, 160),
       city: cleanText(payload.city, 100),
       country: cleanText(payload.country, 100),
@@ -282,16 +269,6 @@ export async function POST(request) {
       storeResult = { skipped: true, reason: "storage_failed" };
     }
 
-    let founderSubscription;
-    try {
-      founderSubscription = application.accessTier === FOUNDER_ACCESS_TIER
-        ? await markFounderSubscription(application)
-        : { skipped: true, reason: "not_founder_application" };
-    } catch (subscriptionError) {
-      console.error("founder subscription update failed", subscriptionError);
-      founderSubscription = { skipped: true, reason: "subscription_update_failed" };
-    }
-
     let candidateEmail;
     try {
       candidateEmail = await sendEmail({
@@ -322,11 +299,13 @@ export async function POST(request) {
     return NextResponse.json({
       ok: true,
       stored: storeResult,
-      founderSubscription,
       candidateEmail,
       internalEmail,
     });
   } catch (error) {
+    if (error instanceof PayloadTooLargeError) {
+      return NextResponse.json({ ok: false, error: "Application payload is too large." }, { status: 413 });
+    }
     console.error("coach application failed", error);
     return NextResponse.json(
       { ok: false, error: "Unable to process application." },

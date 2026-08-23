@@ -20,7 +20,7 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
     async function completeSignup() {
       try {
         const pending = JSON.parse(window.sessionStorage.getItem("nlock_pending_signup") || "null");
-        if (!pending?.password || pending?.email !== email) {
+        if ((!pending?.password && !pending?.existingUser) || pending?.email !== email) {
           setState("pending_email");
           setMessage("");
           return;
@@ -61,7 +61,7 @@ export default function SignupCompletionClient({ sessionId, email, checkoutMetad
         const claimResponse = await fetch("/api/billing/claim", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId, userId }),
+          body: JSON.stringify({ sessionId, userId, claimToken: pending.claimToken }),
         });
         if (!claimResponse.ok) throw new Error("O pagamento foi confirmado, mas a subscrição ainda está a sincronizar.");
 

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
+import { verifyClaimToken } from "../../../../src/lib/stripe-claim-token";
+import { PayloadTooLargeError, readJsonBody } from "../../../../src/lib/http-json";
+
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.APEX_SUPABASE_URL || "";
 const SUPABASE_SERVICE_ROLE_KEY =
@@ -23,12 +26,14 @@ function iso(seconds) {
   return seconds ? new Date(seconds * 1000).toISOString() : null;
 }
 
-async function persistSubscription(admin, subscription, sessionId, userId) {
+function validClaimToken(session, claimToken) {
+  const expectedHash = String(session.metadata?.claim_token_hash || "");
+  return verifyClaimToken(expectedHash, claimToken);
+}
+
+async function persistSubscription(admin, subscription, sessionId, userId, paidAt) {
   const category = normalizeCategory(subscription.metadata?.subscription_category);
   const item = subscription.items.data[0];
-  const paymentMethod = typeof subscription.default_payment_method === "object"
-    ? subscription.default_payment_method
-    : null;
   const customerId = typeof subscription.customer === "string"
     ? subscription.customer
     : subscription.customer.id;
@@ -50,8 +55,7 @@ async function persistSubscription(admin, subscription, sessionId, userId) {
     stripe_customer_id: customerId,
     stripe_subscription_id: subscription.id,
     stripe_price_id: item?.price?.id || null,
-    payment_method_type: paymentMethod?.type || null,
-    payment_method_last4: paymentMethod?.card?.last4 || paymentMethod?.sepa_debit?.last4 || null,
+    last_payment_at: paidAt,
     stripe_checkout_session_id: sessionId,
     cancel_at_period_end: Boolean(subscription.cancel_at_period_end),
     updated_at: new Date().toISOString(),
@@ -87,16 +91,28 @@ export async function POST(request) {
     return NextResponse.json({ ok: false, error: "claim_not_configured" }, { status: 503 });
   }
 
-  const payload = await request.json().catch(() => ({}));
+  let payload;
+  try {
+    payload = await readJsonBody(request, 4 * 1024);
+  } catch (error) {
+    if (error instanceof PayloadTooLargeError) {
+      return NextResponse.json({ ok: false, error: "payload_too_large" }, { status: 413 });
+    }
+    throw error;
+  }
   const sessionId = String(payload.sessionId || "");
   const userId = String(payload.userId || "");
-  if (!sessionId.startsWith("cs_") || !userId) {
+  const claimToken = String(payload.claimToken || "");
+  if (!sessionId.startsWith("cs_") || !userId || claimToken.length < 32 || claimToken.length > 128) {
     return NextResponse.json({ ok: false, error: "invalid_claim" }, { status: 400 });
   }
 
   try {
     const stripe = new Stripe(STRIPE_SECRET_KEY);
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!validClaimToken(session, claimToken)) {
+      return NextResponse.json({ ok: false, error: "invalid_claim_token" }, { status: 403 });
+    }
     if (session.status !== "complete" || session.payment_status !== "paid") {
       return NextResponse.json({ ok: false, error: "payment_not_confirmed" }, { status: 409 });
     }
@@ -126,14 +142,13 @@ export async function POST(request) {
     await stripe.checkout.sessions.update(session.id, { metadata: { ...session.metadata, ...identity } });
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     await stripe.subscriptions.update(subscriptionId, { metadata: { ...subscription.metadata, ...identity } });
-    const claimedSubscription = await stripe.subscriptions.retrieve(subscriptionId, {
-      expand: ["default_payment_method"],
-    });
+    const claimedSubscription = await stripe.subscriptions.retrieve(subscriptionId);
     const storedSubscription = await persistSubscription(
       admin,
       claimedSubscription,
       session.id,
       userId,
+      iso(session.created),
     );
 
     return NextResponse.json({ ok: true, subscription: storedSubscription });

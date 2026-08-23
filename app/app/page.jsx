@@ -1,10 +1,10 @@
-import DashboardClient from "./DashboardClient";
+import NlockDashboard from "./NlockDashboard";
 
 export const metadata = {
-  title: "Coach Dashboard | NLOCK",
-  description: "Workspace NLOCK para gestão diária do coach.",
+  title: "Dashboard | NLOCK",
+  description: "O centro de trabalho NLOCK para coaches.",
 };
 
-export default function CoachDashboardPage() {
-  return <DashboardClient />;
+export default function NlockDashboardPage() {
+  return <NlockDashboard />;
 }

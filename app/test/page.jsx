@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import TestLanding from "./TestLanding";
 
 export const metadata = {
@@ -7,5 +8,6 @@ export const metadata = {
 };
 
 export default function TestPage() {
+  if (process.env.NODE_ENV !== "development") notFound();
   return <TestLanding />;
 }
