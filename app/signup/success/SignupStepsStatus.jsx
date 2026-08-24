@@ -155,8 +155,8 @@ export default function SignupStepsStatus({ sessionId, emailVerified = false, tr
           validated={status.appValidated}
           icon={Smartphone}
           title={status.appValidated ? "App validada" : "Entra na app"}
-          pendingCopy="Faz download da app NLOCK e inicia sessão com o mesmo email e palavra-passe. Esta página atualiza automaticamente."
-          validatedCopy="Primeiro login concluído. A tua app NLOCK está ativa."
+          pendingCopy="Inicia sessão na NLOCK com o mesmo email e palavra-passe. Esta página atualiza automaticamente."
+          validatedCopy="Primeiro login concluído. A tua conta NLOCK está ativa."
         />
       </div>
     </div>

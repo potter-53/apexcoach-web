@@ -28,18 +28,18 @@ function verifyStatusToken(token) {
   return timingSafeEqual(providedBuffer, expectedBuffer) ? userId : "";
 }
 
-async function getCoachStatus(admin, userId, emailConfirmedAt = null) {
+async function getCoachStatus(admin, user) {
   const { data: activation, error: activationError } = await admin
     .from("coach_app_activations")
     .select("first_app_login_at")
-    .eq("coach_id", userId)
+    .eq("coach_id", user.id)
     .maybeSingle();
   if (activationError) throw activationError;
 
   return {
     ok: true,
-    emailValidated: Boolean(emailConfirmedAt),
-    appValidated: Boolean(activation?.first_app_login_at),
+    emailValidated: Boolean(user.email_confirmed_at),
+    appValidated: Boolean(user.last_sign_in_at || activation?.first_app_login_at),
   };
 }
 
@@ -61,7 +61,7 @@ export async function GET(request) {
       if (error || !data.user) {
         return NextResponse.json({ ok: false, error: "tracked_user_not_found" }, { status: 404 });
       }
-      const status = await getCoachStatus(admin, data.user.id, data.user.email_confirmed_at);
+      const status = await getCoachStatus(admin, data.user);
       return NextResponse.json(status, { headers: { "Cache-Control": "no-store" } });
     }
 
@@ -73,7 +73,7 @@ export async function GET(request) {
         return NextResponse.json({ ok: false, error: "invalid_access_token" }, { status: 401 });
       }
 
-      const status = await getCoachStatus(admin, data.user.id, data.user.email_confirmed_at);
+      const status = await getCoachStatus(admin, data.user);
       return NextResponse.json(status, { headers: { "Cache-Control": "no-store" } });
     }
 
@@ -108,7 +108,7 @@ export async function GET(request) {
 
     const { data: authData, error: authError } = await admin.auth.admin.getUserById(userId);
     if (authError) throw authError;
-    const status = await getCoachStatus(admin, userId, authData.user?.email_confirmed_at);
+    const status = await getCoachStatus(admin, authData.user);
     return NextResponse.json(status, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Signup status lookup failed", error);
