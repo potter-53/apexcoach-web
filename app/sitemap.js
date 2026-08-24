@@ -1,4 +1,4 @@
-const routes = ["", "/signup", "/login", "/affiliate", "/afiliado", "/apply", "/beta", "/legal/privacy", "/legal/terms", "/legal/cookies", "/legal/consumer"];
+const routes = ["", "/signup", "/affiliate", "/afiliado", "/apply", "/beta", "/legal/privacy", "/legal/terms", "/legal/cookies", "/legal/consumer"];
 
 export default function sitemap() {
   const lastModified = new Date();

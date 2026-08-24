@@ -5,6 +5,23 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const CLIENT_KEY = "__nlockSupabaseBrowserClient";
 const USER_REQUEST_KEY = "__nlockSupabaseVerifiedUserRequest";
+const authLockQueue = new Map();
+
+async function nlockBrowserLock(name, _acquireTimeout, operation) {
+  const previous = authLockQueue.get(name) || Promise.resolve();
+  let release;
+  const current = new Promise((resolve) => { release = resolve; });
+  const queued = previous.catch(() => {}).then(() => current);
+  authLockQueue.set(name, queued);
+
+  await previous.catch(() => {});
+  try {
+    return await operation();
+  } finally {
+    release();
+    if (authLockQueue.get(name) === queued) authLockQueue.delete(name);
+  }
+}
 
 export function isSupabaseConfigured() {
   return Boolean(
@@ -13,6 +30,17 @@ export function isSupabaseConfigured() {
       supabaseUrl !== "YOUR_SUPABASE_URL" &&
       supabaseAnonKey !== "YOUR_SUPABASE_ANON_KEY",
   );
+}
+
+export function clearStoredSupabaseSession() {
+  if (typeof window === "undefined" || !supabaseUrl) return;
+  try {
+    const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
+    window.localStorage.removeItem(`sb-${projectRef}-auth-token`);
+  } catch {
+    // A página de login continua funcional mesmo sem storage disponível.
+  }
+  globalThis[USER_REQUEST_KEY] = null;
 }
 
 export function getSupabaseBrowserClient() {
@@ -26,6 +54,7 @@ export function getSupabaseBrowserClient() {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
+        lock: nlockBrowserLock,
       },
     });
   }

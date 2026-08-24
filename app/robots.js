@@ -3,7 +3,7 @@ export default function robots() {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/app", "/app/", "/api/", "/signup/success", "/test"],
+      disallow: ["/workspace", "/workspace/", "/app", "/app/", "/api/", "/signup/success", "/test"],
     },
     sitemap: "https://nlock.pt/sitemap.xml",
     host: "https://nlock.pt",

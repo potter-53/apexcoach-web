@@ -1,11 +1,11 @@
-import NlockLogin from "./NlockLogin";
+import NlockLogin from "../../app/login/NlockLogin";
 
 export const metadata = {
-  title: "Entrar | NLOCK",
+  title: "Entrar no Workspace | NLOCK",
   description: "Entra no teu workspace NLOCK.",
   robots: { index: false, follow: false },
 };
 
-export default function NlockLoginPage() {
+export default function WorkspaceLoginPage() {
   return <NlockLogin />;
 }

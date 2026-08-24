@@ -14,6 +14,7 @@ import {
   Dumbbell,
   ExternalLink,
   LayoutDashboard,
+  LoaderCircle,
   Menu,
   MoreHorizontal,
   Plus,
@@ -31,9 +32,8 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import ThemeToggle from "../../src/components/ThemeToggle";
-import { getSupabaseBrowserClient, getVerifiedSupabaseUser, isSupabaseConfigured } from "../../src/lib/supabase-browser";
+import { clearStoredSupabaseSession, getSupabaseBrowserClient, getVerifiedSupabaseUser, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import NlockLogo from "./NlockLogo";
 
 const nav = [
@@ -44,6 +44,10 @@ const nav = [
   { id: "assessments", label: "Avaliações", icon: ClipboardCheck },
   { id: "billing", label: "Contabilização", icon: ReceiptEuro },
 ];
+
+const WORKSPACE_ACTIVITY_KEY = "nlock-workspace-last-activity";
+const WORKSPACE_INACTIVITY_MS = 8 * 60 * 60 * 1000;
+const ACTIVITY_WRITE_INTERVAL_MS = 30 * 1000;
 
 const PERIOD_OPTIONS = [
   { id: "month", label: "Mês" },
@@ -150,20 +154,26 @@ function Card({ children, className = "" }) {
   return <article className={`rounded-[20px] border border-[var(--border)] bg-[var(--surface-solid)] shadow-[var(--shadow-soft)] ${className}`}>{children}</article>;
 }
 
+function WorkspaceHero({ eyebrow, title, subtitle, avatar, badge, description, metrics = [], compact = false }) {
+  return <Card className="overflow-hidden">
+    <div className={`${compact ? "h-10" : "h-20 sm:h-24"} relative bg-[image:var(--brand-gradient)]`}><div className="absolute inset-0 bg-white/10" /><div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/5 to-transparent" /></div>
+    <div className={`${compact ? "-mt-5 px-4 pb-3" : "-mt-8 px-5 pb-6 sm:px-7"} relative`}>
+      <div className={`flex min-w-0 flex-wrap items-end ${compact ? "gap-3" : "gap-4"}`}><div className="shrink-0">{avatar}</div><div className="min-w-0 flex-1 pb-1"><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">{eyebrow}</p><h2 className={`${compact ? "text-xl" : "text-2xl sm:text-3xl"} mt-1 truncate font-semibold tracking-[-0.035em]`}>{title}</h2>{subtitle ? <p className="mt-1 truncate text-[10px] font-semibold text-[var(--text-muted)]">{subtitle}</p> : null}</div>{badge ? <div className="mb-1 ml-auto">{badge}</div> : null}</div>
+      {description ? <p className="mt-5 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{description}</p> : null}
+      {metrics.length ? <div className={`${compact ? "mt-3" : "mt-5"} grid gap-2 sm:grid-cols-3`}>{metrics.map((metric) => <div key={metric.label} className={`min-w-0 border ${compact ? "rounded-xl px-3 py-2" : "rounded-2xl p-3"} ${metric.highlighted ? "border-[var(--accent)]/30 bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}><p className="text-[9px] text-[var(--text-subtle)]">{metric.label}</p><p className="mt-1 truncate text-xs font-bold" title={metric.value}>{metric.value}</p></div>)}</div> : null}
+    </div>
+  </Card>;
+}
+
 function Sidebar({ expanded, toggle, collapse, active, setActive, coachName, coachEmail, coachAvatarUrl, openCoachProfile, onSignOut }) {
   return (
     <>
       {expanded ? <button aria-label="Recolher menu" onClick={collapse} className="fixed inset-0 z-40 bg-black/35 backdrop-blur-sm lg:hidden" /> : null}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col overflow-hidden border-r border-[var(--border)] bg-[var(--app-sidebar)] py-5 transition-[width,padding] duration-300 ${expanded ? "w-[268px] px-5 lg:w-[238px]" : "w-[76px] px-3"}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col overflow-hidden border-r border-[var(--border)] bg-[var(--app-sidebar)] pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))] transition-[width,padding] duration-300 ${expanded ? "w-[268px] px-5 lg:w-[238px]" : "w-[76px] px-3"}`}>
         <div className={`flex items-center ${expanded ? "justify-between" : "flex-col gap-3"}`}>
           <NlockLogo compact={!expanded} />
           <button onClick={toggle} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-[var(--text-muted)] transition hover:bg-[var(--surface-muted)] hover:text-[var(--text)]" aria-label={expanded ? "Recolher menu" : "Expandir menu"} title={expanded ? "Recolher menu" : "Expandir menu"}>{expanded ? <X size={18} /> : <Menu size={18} />}</button>
         </div>
-
-        <button type="button" onClick={openCoachProfile} className={`mt-8 flex w-full items-center rounded-2xl border text-left transition ${active === "profile" ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--accent)]"} ${expanded ? "gap-3 p-3" : "justify-center p-1.5"}`} title={!expanded ? `${coachName}${coachEmail ? ` · ${coachEmail}` : ""}` : undefined} aria-label={`Abrir perfil de ${coachName}`}>
-          <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#0d1715] text-xs font-bold text-white">{coachAvatarUrl ? <img src={coachAvatarUrl} alt="" className="h-full w-full object-cover" /> : initials(coachName)}</span>
-          {expanded ? <><div className="min-w-0"><p className="truncate text-sm font-semibold text-[var(--text)]">{coachName}</p><p className="mt-1 truncate text-[10px] font-medium text-[var(--text-muted)]">{coachEmail || "Coach NLOCK"}</p></div><MoreHorizontal size={16} className="ml-auto shrink-0 text-[var(--text-subtle)]" /></> : null}
-        </button>
 
         {expanded ? <p className="mb-2 mt-8 px-3 text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-subtle)]">Workspace</p> : <div className="mt-8" />}
         <nav className="grid gap-1">
@@ -174,6 +184,10 @@ function Sidebar({ expanded, toggle, collapse, active, setActive, coachName, coa
         </nav>
 
         <div className="mt-auto border-t border-[var(--border)] pt-4">
+          <button type="button" onClick={openCoachProfile} className={`mb-2 flex w-full items-center rounded-2xl border text-left transition ${active === "profile" ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)] hover:border-[var(--accent)]"} ${expanded ? "gap-3 p-3" : "justify-center p-1.5"}`} title={!expanded ? `${coachName}${coachEmail ? ` · ${coachEmail}` : ""}` : undefined} aria-label={`Abrir perfil de ${coachName}`}>
+            <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#0d1715] text-xs font-bold text-white">{coachAvatarUrl ? <img src={coachAvatarUrl} alt="" className="h-full w-full object-cover" /> : initials(coachName)}</span>
+            {expanded ? <><div className="min-w-0"><p className="truncate text-sm font-semibold text-[var(--text)]">{coachName}</p><p className="mt-1 truncate text-[10px] font-medium text-[var(--text-muted)]">{coachEmail || "Coach NLOCK"}</p></div><MoreHorizontal size={16} className="ml-auto shrink-0 text-[var(--text-subtle)]" /></> : null}
+          </button>
           <button title={!expanded ? "Definições" : undefined} aria-label="Definições" className={`flex min-h-11 w-full items-center rounded-xl text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text)] ${expanded ? "gap-3 px-3" : "justify-center"}`}><Settings size={18} />{expanded ? <span>Definições</span> : null}</button>
           <button title={!expanded ? "Terminar sessão" : undefined} aria-label="Terminar sessão" onClick={onSignOut} className={`flex min-h-11 w-full items-center rounded-xl text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text)] ${expanded ? "gap-3 px-3" : "justify-center"}`}><LogOut size={18} />{expanded ? <span className="whitespace-nowrap">Terminar sessão</span> : null}</button>
           {expanded ? <p className="mt-4 whitespace-nowrap px-3 text-[8px] font-semibold uppercase tracking-[0.19em] text-[var(--text-subtle)]">Less time wasted.</p> : null}
@@ -183,8 +197,8 @@ function Sidebar({ expanded, toggle, collapse, active, setActive, coachName, coa
   );
 }
 
-function Metric({ label, value, detail, icon: Icon, onClick }) {
-  return <button type="button" onClick={onClick} className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-solid)] p-4 text-left shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-card-hover)] sm:p-5"><div className="flex items-start justify-between"><p className="text-xs font-medium text-[var(--text-muted)]">{label}</p><span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--accent-soft)] text-[var(--accent-strong)]"><Icon size={16} /></span></div><p className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-[var(--text)]">{value}</p><div className="mt-2 flex items-center justify-between gap-2"><p className="text-[11px] font-semibold text-[var(--accent-strong)]">{detail}</p><ChevronRight size={14} className="text-[var(--text-subtle)]" /></div></button>;
+function Metric({ label, value, detail, icon: Icon, onClick, active = false, loading = false }) {
+  return <button type="button" onClick={onClick} aria-pressed={active} className={`relative overflow-hidden rounded-[20px] border bg-[var(--surface-solid)] p-4 text-left shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[var(--shadow-card-hover)] sm:p-5 ${active ? "border-[var(--accent)]/55 shadow-[0_10px_28px_rgba(13,23,21,0.08)]" : "border-[var(--border)]"}`}>{active ? <span className="absolute inset-x-5 top-0 h-[3px] rounded-b-full bg-[image:var(--brand-gradient)]" /> : null}<div className="flex items-start justify-between"><p className={`text-xs font-medium ${active ? "text-[var(--text)]" : "text-[var(--text-muted)]"}`}>{label}</p><span className={`grid h-9 w-9 place-items-center rounded-xl text-[var(--accent-strong)] ${active ? "border border-[var(--accent)]/20 bg-[var(--accent-soft)]" : "bg-[var(--accent-soft)]"}`}><Icon size={16} /></span></div>{loading ? <><span className="mt-5 block h-8 w-14 animate-pulse rounded-lg bg-[var(--surface-muted)]" /><span className="mt-2 block h-3 w-24 animate-pulse rounded bg-[var(--surface-muted)]" /></> : <><p className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-[var(--text)]">{value}</p><div className="mt-2 flex items-center justify-between gap-2"><p className={`text-[11px] font-semibold ${active ? "text-[var(--text)]" : "text-[var(--accent-strong)]"}`}>{detail}</p><ChevronRight size={14} className={active ? "text-[var(--accent-strong)]" : "text-[var(--text-subtle)]"} /></div></>}</button>;
 }
 
 function DashboardHome({ data, majorLoading, backgroundLoading, error, onRetry, onNavigate, period, onPeriodChange }) {
@@ -244,15 +258,16 @@ function clientPlanLabel(plan) {
   return `${plan.sessions_per_week || "—"} × ${suffix} / semana`;
 }
 
-function ClientDetailPane({ student, agenda, assessments, billing, plan, protocol }) {
-  if (!student) return <Card className="grid min-h-[620px] place-items-center p-8 text-center"><div><span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[var(--surface-muted)] text-[var(--text-subtle)]"><UserRound size={23} /></span><h2 className="mt-5 text-lg font-semibold">Nenhum cliente selecionado</h2><p className="mt-2 text-xs text-[var(--text-muted)]">Seleciona um cliente na listagem para consultar a sua ficha.</p></div></Card>;
+function ClientDetailPane({ student, agenda, assessments, billing, plan, protocol, loading, enriching }) {
+  if (loading) return <Card className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden"><div className="border-b border-[var(--border)] p-4"><div className="flex items-center gap-3"><span className="h-12 w-12 animate-pulse rounded-2xl bg-[var(--surface-muted)]" /><div className="flex-1"><span className="block h-3 w-20 animate-pulse rounded bg-[var(--surface-muted)]" /><span className="mt-2 block h-6 w-40 animate-pulse rounded bg-[var(--surface-muted)]" /></div></div><div className="mt-3 grid grid-cols-3 gap-2">{Array.from({ length: 3 }, (_, index) => <span key={index} className="h-12 animate-pulse rounded-xl bg-[var(--surface-muted)]" />)}</div></div><div className="grid content-start gap-4 overflow-hidden p-4">{Array.from({ length: 3 }, (_, index) => <span key={index} className={`animate-pulse rounded-[20px] bg-[var(--surface-muted)] ${index === 1 ? "h-40" : "h-24"}`} />)}</div></Card>;
+  if (!student) return <Card className="grid h-full min-h-0 place-items-center overflow-hidden p-8 text-center"><div><span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[var(--surface-muted)] text-[var(--text-subtle)]"><UserRound size={23} /></span><h2 className="mt-5 text-lg font-semibold">Nenhum cliente selecionado</h2><p className="mt-2 text-xs text-[var(--text-muted)]">Seleciona um cliente na listagem para consultar a sua ficha.</p></div></Card>;
   const upcoming = agenda.filter((item) => item.student_id === student.id && !isCanceled(item.status)).slice(0, 4);
   const recentAssessments = assessments.filter((item) => item.student_id === student.id).slice(0, 4);
   const age = clientAge(student.birth_date);
   const sex = String(student.sex || "").toLowerCase().startsWith("m") ? "Masculino" : String(student.sex || "").toLowerCase().startsWith("f") ? "Feminino" : "Não definido";
   return <div className="grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4">
-    <Card className="overflow-hidden"><div className="h-24 bg-[image:var(--brand-gradient)] opacity-85" /><div className="-mt-8 px-5 pb-6"><div className="flex items-end gap-4"><span className="grid h-16 w-16 shrink-0 place-items-center rounded-[20px] border-4 border-[var(--surface-solid)] text-sm font-bold text-white" style={{ backgroundColor: student.client_color_hex || "#0d1715" }}>{initials(student.full_name)}</span><div className="min-w-0 pb-1"><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Cliente NLOCK</p><h2 className="mt-1 truncate text-2xl font-semibold">{student.full_name || "Cliente"}</h2><p className="mt-1 text-[10px] font-semibold text-[var(--text-muted)]">{sex} · {age == null ? "Idade N/D" : `${age} anos`} · {student.height_cm ? `${student.height_cm} cm` : "Altura N/D"}</p></div></div><div className="mt-5 grid grid-cols-3 gap-2">{[["Estado", student.is_active === false ? "Cliente inativo" : "Cliente ativo"],["Plano", clientPlanLabel(plan)],["Pagamento", clientBillingLabel(billing)]].map(([label,value], index) => <div key={label} className={`min-w-0 rounded-2xl border p-3 ${index === 0 && student.is_active !== false ? "border-[var(--accent)]/25 bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--surface-muted)]"}`}><p className="text-[9px] text-[var(--text-subtle)]">{label}</p><p className="mt-1 truncate text-xs font-bold">{value}</p></div>)}</div></div></Card>
-    <div className="grid min-h-0 content-start gap-4 overflow-y-auto pr-1">
+    <WorkspaceHero compact eyebrow="Cliente NLOCK" title={student.full_name || "Cliente"} subtitle={`${sex} · ${age == null ? "Idade N/D" : `${age} anos`} · ${student.height_cm ? `${student.height_cm} cm` : "Altura N/D"}`} avatar={<span className="grid h-12 w-12 place-items-center rounded-2xl border-[3px] border-[var(--surface-solid)] text-xs font-bold text-white shadow-[var(--shadow-soft)]" style={{ backgroundColor: student.client_color_hex || "#0d1715" }}>{initials(student.full_name)}</span>} badge={<span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[9px] font-bold ${student.is_active === false ? "border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)]" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-600"}`}>{enriching ? <LoaderCircle size={12} className="animate-spin" /> : <CheckCircle2 size={12} />}{enriching ? "A sincronizar" : student.is_active === false ? "Inativo" : "Ativo"}</span>} metrics={[{ label: "Plano", value: enriching ? "A sincronizar…" : clientPlanLabel(plan) }, { label: "Pagamento", value: enriching ? "A sincronizar…" : clientBillingLabel(billing) }, { label: "Próxima sessão", value: enriching ? "A sincronizar…" : upcoming[0] ? `${readableDate(upcoming[0].scheduled_at)} · ${timeLabel(upcoming[0].scheduled_at)}` : "Sem marcação" }]} />
+    <div className="grid min-h-0 content-start gap-4 overflow-y-auto overscroll-contain pb-2 pr-1 [scrollbar-gutter:stable] touch-pan-y">
     <section className="grid gap-4 xl:grid-cols-2"><Card className="p-5"><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Informação principal</p><div className="mt-4 grid gap-3 text-sm"><p><span className="text-[var(--text-subtle)]">Email · </span>{student.email || "Não definido"}</p><p><span className="text-[var(--text-subtle)]">Objetivo · </span>{student.main_goal || "Sem objetivo principal definido"}</p></div></Card><Card className="p-5"><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Atividade</p><div className="mt-4 grid grid-cols-2 gap-3"><div><p className="text-[10px] text-[var(--text-subtle)]">Próxima sessão</p><p className="mt-1 text-xs font-semibold">{upcoming[0] ? `${readableDate(upcoming[0].scheduled_at)} · ${timeLabel(upcoming[0].scheduled_at)}` : "Sem marcação"}</p></div><div><p className="text-[10px] text-[var(--text-subtle)]">Última avaliação</p><p className="mt-1 text-xs font-semibold">{recentAssessments[0] ? readableDate(recentAssessments[0].assessment_date) : "Sem avaliação"}</p></div></div></Card></section>
     <Card className="p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Periodização</p><h3 className="mt-2 text-base font-semibold">{protocol?.protocol_label || "Sem protocolo ativo"}</h3></div><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--accent-soft)] text-[var(--accent-strong)]"><Dumbbell size={17} /></span></div>{protocol ? <><div className="mt-4 grid grid-cols-3 gap-2"><div className="rounded-xl bg-[var(--surface-muted)] p-3"><p className="text-[9px] text-[var(--text-subtle)]">Semana atual</p><p className="mt-1 text-sm font-bold">{protocol.protocol_current_week || "—"}</p></div><div className="rounded-xl bg-[var(--surface-muted)] p-3"><p className="text-[9px] text-[var(--text-subtle)]">Semanas restantes</p><p className="mt-1 text-sm font-bold">{protocol.protocol_weeks_remaining || "—"}</p></div><div className="rounded-xl bg-[var(--surface-muted)] p-3"><p className="text-[9px] text-[var(--text-subtle)]">Semanas planeadas</p><p className="mt-1 text-sm font-bold">{protocol.protocol_weeks_planned || "—"}</p></div></div><p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">{protocol.protocol_objective || "Sem objetivo de protocolo definido."}</p></> : <p className="mt-3 text-xs text-[var(--text-muted)]">Ainda não existe um protocolo planeado para este cliente.</p>}</Card>
     <section className="grid gap-4 xl:grid-cols-2"><Card className="p-5"><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Próximas sessões</p><div className="mt-4 grid gap-2">{upcoming.length ? upcoming.map((item) => <div key={item.id} className="rounded-xl bg-[var(--surface-muted)] p-3"><p className="text-xs font-semibold">{item.booking_types?.name || "Sessão"}</p><p className="mt-1 text-[10px] text-[var(--text-muted)]">{readableDate(item.scheduled_at)} · {timeLabel(item.scheduled_at)}</p></div>) : <p className="text-xs text-[var(--text-muted)]">Sem sessões agendadas.</p>}</div></Card><Card className="p-5"><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Acompanhamento</p><div className="mt-4 grid gap-3"><div><p className="text-[10px] text-[var(--text-subtle)]">Avaliações recentes</p><p className="mt-1 text-xl font-semibold">{recentAssessments.length}</p></div><div><p className="text-[10px] text-[var(--text-subtle)]">Ciclo de cobrança</p><p className="mt-1 text-sm font-semibold">{billing?.billing_cycle || "Não configurado"}</p></div></div></Card></section>
@@ -281,11 +296,25 @@ function ClientsWorkspace({ coachId, search, filters, setFilters, filterOpen, se
         supabase.from("client_training_plans").select("student_id, plan_mode, sessions_per_week, pack_sessions_count, session_duration_minutes"),
         supabase.from("training_sessions").select("id, student_id, session_date, protocol_label, protocol_objective, protocol_current_week, protocol_weeks_remaining, protocol_weeks_planned").eq("coach_id", coachId).order("session_date", { ascending: false }).limit(500),
       ]);
-      if (mounted) setState((currentState) => ({ ...currentState, enriching: false, agenda: agendaResult.data || [], assessments: assessmentsResult.data || [], billing: billingResult.data || [], plans: plansResult.data || [], protocols: protocolsResult.data || [] }));
+      if (mounted) {
+        const enrichmentError = [agendaResult, assessmentsResult, billingResult, plansResult, protocolsResult].find((result) => result.error)?.error;
+        setState((currentState) => ({ ...currentState, enriching: false, error: enrichmentError ? "Alguns dados complementares não ficaram disponíveis." : "", agenda: agendaResult.data || [], assessments: assessmentsResult.data || [], billing: billingResult.data || [], plans: plansResult.data || [], protocols: protocolsResult.data || [] }));
+      }
     }
     loadClients();
     return () => { mounted = false; };
   }, [coachId]);
+  useEffect(() => {
+    if (!window.matchMedia("(min-width: 1024px)").matches) return undefined;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, []);
   const activeCount = state.students.filter((student) => student.is_active !== false).length;
   const inactiveCount = state.students.length - activeCount;
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -298,6 +327,7 @@ function ClientsWorkspace({ coachId, search, filters, setFilters, filterOpen, se
     const age = clientAge(student.birth_date);
     if (filters.ages.length && !filters.ages.some((range) => range === "under18" ? age != null && age < 18 : range === "18to29" ? age >= 18 && age <= 29 : range === "30to39" ? age >= 30 && age <= 39 : range === "40to49" ? age >= 40 && age <= 49 : age >= 50)) return false;
     if (filters.tags.length && !filters.tags.some((tag) => (student.tags || []).includes(tag))) return false;
+    if (filters.newOnly && new Date(student.created_at) < monthStart) return false;
     const query = search.trim().toLowerCase();
     return !query || [student.full_name, student.email, student.main_goal].some((value) => String(value || "").toLowerCase().includes(query));
   });
@@ -307,15 +337,20 @@ function ClientsWorkspace({ coachId, search, filters, setFilters, filterOpen, se
   const selectedBilling = selectedStudent ? state.billing.find((item) => item.student_id === selectedStudent.id) : null;
   const selectedPlan = selectedStudent ? state.plans.find((item) => item.student_id === selectedStudent.id) : null;
   const selectedProtocol = selectedStudent ? state.protocols.find((item) => item.student_id === selectedStudent.id && (item.protocol_label || item.protocol_objective)) : null;
-  return <div className="grid h-full min-h-0 gap-4 lg:grid-rows-[auto_minmax(0,1fr)] lg:overflow-hidden">
-    <section className="grid grid-cols-2 gap-3 lg:grid-cols-4"><Metric label="Clientes totais" value={state.loading ? "—" : state.students.length} detail="Carteira completa" icon={Users} onClick={() => setFilters({ activity: [], sex: [], ages: [], tags: [] })} /><Metric label="Ativos" value={state.loading ? "—" : activeCount} detail="Em acompanhamento" icon={CheckCircle2} onClick={() => setFilters((currentFilters) => ({ ...currentFilters, activity: ["active"] }))} /><Metric label="Inativos" value={state.loading ? "—" : inactiveCount} detail="Fora de acompanhamento" icon={UserRound} onClick={() => setFilters((currentFilters) => ({ ...currentFilters, activity: ["inactive"] }))} /><Metric label="Novos clientes" value={state.loading ? "—" : newCount} detail="Este mês" icon={Plus} onClick={() => setFilters({ activity: [], sex: [], ages: [], tags: [] })} /></section>
-    {state.error ? <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-xs text-red-600">Não foi possível carregar os clientes.</div> : null}
-    <section className="grid min-h-0 min-w-0 gap-4 lg:grid-cols-[minmax(290px,38%)_minmax(0,1fr)] lg:overflow-hidden">
-      <Card className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden"><div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-4"><div><p className="text-sm font-semibold">Lista de clientes</p><p className="mt-1 text-[10px] text-[var(--text-muted)]">{visible.length} cliente{visible.length === 1 ? "" : "s"}</p></div><Users size={17} className="text-[var(--accent-strong)]" /></div><div className="min-h-0 overflow-y-auto overscroll-contain p-2">{state.loading ? Array.from({ length: 6 }, (_, index) => <div key={index} className="mb-2 h-20 animate-pulse rounded-2xl bg-[var(--surface-muted)]" />) : visible.length ? visible.map((student) => { const nextSession = state.agenda.find((item) => item.student_id === student.id && !isCanceled(item.status)); const activeRow = selectedStudent?.id === student.id; return <button key={student.id} type="button" onClick={() => setSelected(student)} className={`mb-1.5 flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition ${activeRow ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-transparent hover:border-[var(--border)] hover:bg-[var(--surface-muted)]"}`}><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-[11px] font-bold text-white" style={{ backgroundColor: student.client_color_hex || "#0d1715" }}>{initials(student.full_name)}</span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="truncate text-sm font-semibold">{student.full_name || "Cliente"}</p><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${student.is_active === false ? "bg-[var(--text-subtle)]" : "bg-emerald-500"}`} /></div><p className="mt-1 truncate text-[10px] text-[var(--text-muted)]">{nextSession ? `Próxima · ${readableDate(nextSession.scheduled_at)} · ${timeLabel(nextSession.scheduled_at)}` : "Sem sessão marcada"}</p></div><ChevronRight size={15} className={activeRow ? "text-[var(--accent-strong)]" : "text-[var(--text-subtle)]"} /></button>; }) : <div className="px-4 py-12 text-center"><Users size={21} className="mx-auto text-[var(--text-subtle)]" /><p className="mt-3 text-sm font-semibold">Nenhum cliente encontrado</p><p className="mt-1 text-xs text-[var(--text-muted)]">Ajusta a pesquisa ou os filtros.</p></div>}</div></Card>
-      <ClientDetailPane student={selectedStudent} agenda={state.agenda} assessments={state.assessments} billing={selectedBilling} plan={selectedPlan} protocol={selectedProtocol} />
+  const onlyActivity = (value) => filters.activity.length === 1 && filters.activity[0] === value && !filters.newOnly;
+  const noSummaryFilter = filters.activity.length === 0 && !filters.newOnly && !filters.sex.length && !filters.ages.length && !filters.tags.length;
+  const defaultFilters = { activity: [], sex: [], ages: [], tags: [], newOnly: false };
+  const toggleSummaryActivity = (value) => setFilters((currentFilters) => onlyActivity(value) ? { ...currentFilters, activity: [] } : { ...currentFilters, activity: [value], newOnly: false });
+  return <div className="grid h-full min-h-0 gap-4 lg:grid-rows-[auto_minmax(0,1fr)] lg:overflow-hidden lg:pb-2">
+    <div className="grid gap-3">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4"><Metric label="Clientes totais" value={state.students.length} detail="Carteira completa" icon={Users} loading={state.loading} active={noSummaryFilter} onClick={() => setFilters(noSummaryFilter ? defaultFilters : { activity: [], sex: [], ages: [], tags: [], newOnly: false })} /><Metric label="Ativos" value={activeCount} detail="Em acompanhamento" icon={CheckCircle2} loading={state.loading} active={onlyActivity("active")} onClick={() => toggleSummaryActivity("active")} /><Metric label="Inativos" value={inactiveCount} detail="Fora de acompanhamento" icon={UserRound} loading={state.loading} active={onlyActivity("inactive")} onClick={() => toggleSummaryActivity("inactive")} /><Metric label="Novos clientes" value={newCount} detail="Este mês" icon={Plus} loading={state.loading} active={Boolean(filters.newOnly)} onClick={() => setFilters((currentFilters) => currentFilters.newOnly ? { ...currentFilters, newOnly: false } : { ...currentFilters, activity: [], newOnly: true })} /></section>
+      {state.error ? <div role="status" className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-[11px] text-amber-700">{state.students.length ? state.error : "Não foi possível carregar os clientes."}</div> : null}
+    </div>
+    <section className="grid h-full min-h-0 min-w-0 gap-4 lg:grid-cols-[minmax(290px,38%)_minmax(0,1fr)] lg:overflow-hidden">
+      <Card className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden"><div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-4"><div><p className="text-sm font-semibold">Lista de clientes</p><p className="mt-1 text-[10px] text-[var(--text-muted)]">{state.loading ? "A carregar carteira…" : `${visible.length} cliente${visible.length === 1 ? "" : "s"}`}</p></div>{state.loading || state.enriching ? <LoaderCircle size={17} className="animate-spin text-[var(--accent-strong)]" /> : <Users size={17} className="text-[var(--accent-strong)]" />}</div><div className="min-h-0 overflow-y-auto overscroll-contain p-2 [scrollbar-gutter:stable] touch-pan-y">{state.loading ? Array.from({ length: 6 }, (_, index) => <div key={index} className="mb-2 flex h-20 animate-pulse items-center gap-3 rounded-2xl bg-[var(--surface-muted)] p-3"><span className="h-11 w-11 rounded-xl bg-[var(--border)]" /><div className="flex-1"><span className="block h-3 w-2/5 rounded bg-[var(--border)]" /><span className="mt-3 block h-2.5 w-3/4 rounded bg-[var(--border)]" /></div></div>) : visible.length ? visible.map((student) => { const nextSession = state.agenda.find((item) => item.student_id === student.id && !isCanceled(item.status)); const activeRow = selectedStudent?.id === student.id; const isNew = new Date(student.created_at) >= monthStart; return <button key={student.id} type="button" onClick={() => setSelected(student)} className={`mb-1.5 flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition ${activeRow ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-transparent hover:border-[var(--border)] hover:bg-[var(--surface-muted)]"}`}><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-[11px] font-bold text-white" style={{ backgroundColor: student.client_color_hex || "#0d1715" }}>{initials(student.full_name)}</span><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="truncate text-sm font-semibold">{student.full_name || "Cliente"}</p>{isNew ? <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--accent-soft)] px-2 py-1 text-[8px] font-bold uppercase tracking-[0.08em] text-[var(--accent-strong)]"><Plus size={9} />Novo</span> : <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${student.is_active === false ? "bg-[var(--text-subtle)]" : "bg-emerald-500"}`} />}</div><p className="mt-1 truncate text-[10px] text-[var(--text-muted)]">{state.enriching ? "A sincronizar agenda…" : nextSession ? `Próxima · ${readableDate(nextSession.scheduled_at)} · ${timeLabel(nextSession.scheduled_at)}` : "Sem sessão marcada"}</p></div><ChevronRight size={15} className={activeRow ? "text-[var(--accent-strong)]" : "text-[var(--text-subtle)]"} /></button>; }) : <div className="px-4 py-12 text-center"><Users size={21} className="mx-auto text-[var(--text-subtle)]" /><p className="mt-3 text-sm font-semibold">Nenhum cliente encontrado</p><p className="mt-1 text-xs text-[var(--text-muted)]">Ajusta a pesquisa ou os filtros.</p></div>}</div></Card>
+      <ClientDetailPane student={selectedStudent} agenda={state.agenda} assessments={state.assessments} billing={selectedBilling} plan={selectedPlan} protocol={selectedProtocol} loading={state.loading} enriching={state.enriching} />
     </section>
-    {state.enriching && !state.loading ? <p className="text-center text-[10px] text-[var(--text-subtle)]">A sincronizar agenda, avaliações, plano e cobrança…</p> : null}
-    {filterOpen ? <div className="fixed inset-0 z-[70] grid place-items-center bg-black/45 p-4 backdrop-blur-sm"><div className="w-full max-w-lg rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Clientes</p><h3 className="mt-2 text-xl font-semibold">Filtrar carteira</h3></div><button type="button" onClick={() => setFilterOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)]"><X size={16} /></button></div><div className="mt-6 grid gap-5">{[["activity","Estado",[["active","Ativo"],["pending","Pendente"],["inactive","Inativo"]]],["sex","Sexo",[["male","Masculino"],["female","Feminino"]]],["ages","Faixa etária",[["under18","Menos de 18"],["18to29","18–29"],["30to39","30–39"],["40to49","40–49"],["50plus","50+"]]]].map(([group,label,options]) => <fieldset key={group}><legend className="text-xs font-semibold">{label}</legend><div className="mt-2 flex flex-wrap gap-2">{options.map(([value,textLabel]) => <button key={value} type="button" onClick={() => toggleFilter(group,value)} className={`rounded-xl border px-3 py-2 text-xs font-semibold ${filters[group].includes(value) ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] text-[var(--text-muted)]"}`}>{textLabel}</button>)}</div></fieldset>)}{tags.length ? <fieldset><legend className="text-xs font-semibold">Tags</legend><div className="mt-2 flex flex-wrap gap-2">{tags.map((tag) => <button key={tag} type="button" onClick={() => toggleFilter("tags",tag)} className={`rounded-xl border px-3 py-2 text-xs font-semibold ${filters.tags.includes(tag) ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] text-[var(--text-muted)]"}`}>{tag}</button>)}</div></fieldset> : null}</div><div className="mt-6 grid grid-cols-2 gap-3"><button type="button" onClick={() => setFilters({ activity: ["active","pending"], sex: [], ages: [], tags: [] })} className="h-11 rounded-xl border border-[var(--border)] text-xs font-semibold">Limpar</button><button type="button" onClick={() => setFilterOpen(false)} className="h-11 rounded-xl bg-[var(--accent)] text-xs font-bold text-[var(--accent-foreground)]">Ver {visible.length} clientes</button></div></div></div> : null}
+    {filterOpen ? <div className="fixed inset-0 z-[70] grid place-items-center bg-black/45 p-4 backdrop-blur-sm"><div className="w-full max-w-lg rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Clientes</p><h3 className="mt-2 text-xl font-semibold">Filtrar carteira</h3></div><button type="button" onClick={() => setFilterOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)]"><X size={16} /></button></div><div className="mt-6 grid gap-5">{[["activity","Estado",[["active","Ativo"],["pending","Pendente"],["inactive","Inativo"]]],["sex","Sexo",[["male","Masculino"],["female","Feminino"]]],["ages","Faixa etária",[["under18","Menos de 18"],["18to29","18–29"],["30to39","30–39"],["40to49","40–49"],["50plus","50+"]]]].map(([group,label,options]) => <fieldset key={group}><legend className="text-xs font-semibold">{label}</legend><div className="mt-2 flex flex-wrap gap-2">{options.map(([value,textLabel]) => <button key={value} type="button" onClick={() => toggleFilter(group,value)} className={`rounded-xl border px-3 py-2 text-xs font-semibold ${filters[group].includes(value) ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] text-[var(--text-muted)]"}`}>{textLabel}</button>)}</div></fieldset>)}{tags.length ? <fieldset><legend className="text-xs font-semibold">Tags</legend><div className="mt-2 flex flex-wrap gap-2">{tags.map((tag) => <button key={tag} type="button" onClick={() => toggleFilter("tags",tag)} className={`rounded-xl border px-3 py-2 text-xs font-semibold ${filters.tags.includes(tag) ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]" : "border-[var(--border)] text-[var(--text-muted)]"}`}>{tag}</button>)}</div></fieldset> : null}</div><div className="mt-6 grid grid-cols-2 gap-3"><button type="button" onClick={() => setFilters(defaultFilters)} className="h-11 rounded-xl border border-[var(--border)] text-xs font-semibold">Limpar</button><button type="button" onClick={() => setFilterOpen(false)} className="h-11 rounded-xl bg-[var(--accent)] text-xs font-bold text-[var(--accent-foreground)]">Ver {visible.length} clientes</button></div></div></div> : null}
   </div>;
 }
 
@@ -437,16 +472,7 @@ function CoachProfile({ coach, onAvatarChange }) {
     setMuralBusy(false);
   }
   return <div className="grid gap-4">
-    <Card className="overflow-hidden">
-      <div className="h-24 bg-[image:var(--brand-gradient)] opacity-85 sm:h-32" />
-      <div className="px-5 pb-6 sm:px-7 sm:pb-8">
-        <div className="-mt-10 flex flex-col gap-4 sm:-mt-12 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex min-w-0 items-end gap-4"><label className="group relative grid h-20 w-20 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-[24px] border-4 border-[var(--surface-solid)] bg-[#0d1715] text-xl font-bold text-white sm:h-24 sm:w-24" title="Alterar fotografia">{avatarUrl ? <img src={avatarUrl} alt={`Fotografia de ${coach.fullName}`} className="h-full w-full object-cover" /> : initials(coach.fullName)}<span className="absolute inset-0 grid place-items-center bg-black/45 opacity-0 transition group-hover:opacity-100"><Camera size={20} /></span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={avatarBusy} onChange={uploadAvatar} className="sr-only" /></label><div className="min-w-0 pb-1"><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[var(--accent-strong)]">Identidade profissional NLOCK</p><h2 className="mt-2 truncate text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">{coach.fullName}</h2>{avatarBusy ? <p className="mt-1 text-[10px] text-[var(--text-muted)]">A atualizar fotografia…</p> : null}</div></div>
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-600"><Crown size={15} />{subscription.type}</span>
-        </div>
-        <p className="mt-6 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{coach.bio || "Ainda não foi adicionada uma apresentação profissional ao perfil."}</p>
-      </div>
-    </Card>
+    <WorkspaceHero eyebrow="Identidade profissional NLOCK" title={coach.fullName} subtitle={avatarBusy ? "A atualizar fotografia…" : `${sex} · ${coach.licenseNumber ? `Cédula ${coach.licenseNumber}` : "Cédula não definida"}`} avatar={<label className="group relative grid h-20 w-20 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-[24px] border-4 border-[var(--surface-solid)] bg-[#0d1715] text-xl font-bold text-white shadow-[var(--shadow-soft)] sm:h-24 sm:w-24" title="Alterar fotografia">{avatarUrl ? <img src={avatarUrl} alt={`Fotografia de ${coach.fullName}`} className="h-full w-full object-cover" /> : initials(coach.fullName)}<span className="absolute inset-0 grid place-items-center bg-black/45 opacity-0 transition group-hover:opacity-100"><Camera size={20} /></span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={avatarBusy} onChange={uploadAvatar} className="sr-only" /></label>} badge={<span className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-600"><Crown size={15} />{subscription.type}</span>} description={coach.bio || "Ainda não foi adicionada uma apresentação profissional ao perfil."} metrics={[{ label: "Estado", value: subscription.status, highlighted: coach.subscription?.status === "active" || coach.subscription?.status === "trialing" }, { label: "Subscrição", value: subscription.title }, { label: "Membro desde", value: readableDate(coach.createdAt) }]} />
     <Card className="p-5 sm:p-6"><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Dados pessoais e profissionais</p><div className="mt-5 grid gap-3 sm:grid-cols-2">{details.map(({ label, value, icon: Icon }) => <div key={label} className="flex min-w-0 items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--surface-solid)] text-[var(--accent-strong)]"><Icon size={17} /></span><div className="min-w-0"><p className="text-[10px] font-medium text-[var(--text-subtle)]">{label}</p><p className="mt-1 truncate text-sm font-semibold" title={value}>{value}</p></div></div>)}</div></Card>
     <Card className="p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Conta NLOCK</p><h3 className="mt-2 text-xl font-semibold">Adesão e subscrição</h3></div><div className="flex items-center gap-2"><span className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[11px] font-bold ${coach.subscription?.status === "active" || coach.subscription?.status === "trialing" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600" : "border-amber-500/20 bg-amber-500/10 text-amber-600"}`}><ShieldCheck size={14} />{subscription.status}</span><button type="button" onClick={() => setSubscriptionOpen(true)} className="min-h-9 rounded-xl bg-[var(--accent)] px-3 text-[11px] font-bold text-[var(--accent-foreground)]">Subscrever</button></div></div>
@@ -473,22 +499,21 @@ function CoachProfile({ coach, onAvatarChange }) {
 }
 
 export default function NlockDashboard() {
-  const router = useRouter();
   const [active, setActive] = useState("dashboard");
   const [period, setPeriod] = useState("month");
   const [menuOpen, setMenuOpen] = useState(false);
   const [sessionOpen, setSessionOpen] = useState(false);
   const [clientSearch, setClientSearch] = useState("");
   const [clientFilterOpen, setClientFilterOpen] = useState(false);
-  const [clientFilters, setClientFilters] = useState({ activity: ["active", "pending"], sex: [], ages: [], tags: [] });
+  const [clientFilters, setClientFilters] = useState({ activity: ["active"], sex: [], ages: [], tags: [], newOnly: false });
   const [authState, setAuthState] = useState({ loading: true, coachId: "", coachName: "Coach", coach: null });
   const [dashboardState, setDashboardState] = useState({ majorLoading: true, backgroundLoading: true, error: "", data: EMPTY_DASHBOARD });
   const current = active === "profile" ? { id: "profile", label: "Perfil do coach", icon: UserRound } : nav.find((item) => item.id === active) || nav[0];
-  const clientFilterCount = (clientFilters.activity.length === 2 && clientFilters.activity.includes("active") && clientFilters.activity.includes("pending") ? 0 : 1) + (clientFilters.sex.length ? 1 : 0) + clientFilters.ages.length + clientFilters.tags.length;
+  const clientFilterCount = (clientFilters.activity.length ? 1 : 0) + (clientFilters.sex.length ? 1 : 0) + clientFilters.ages.length + clientFilters.tags.length + (clientFilters.newOnly ? 1 : 0);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
-      router.replace("/app/login");
+      redirectToLogin();
       return;
     }
 
@@ -499,7 +524,7 @@ export default function NlockDashboard() {
       try {
         const { data: userResult, error: userError } = await getVerifiedSupabaseUser();
         if (userError || !userResult?.user) {
-          if (activeRequest) router.replace("/app/login");
+          if (activeRequest) redirectToLogin();
           return;
         }
 
@@ -511,7 +536,7 @@ export default function NlockDashboard() {
 
         if (profileError || profile?.role !== "coach") {
           await supabase.auth.signOut({ scope: "local" });
-          if (activeRequest) router.replace("/app/login");
+          if (activeRequest) redirectToLogin();
           return;
         }
 
@@ -537,25 +562,85 @@ export default function NlockDashboard() {
         }
       } catch (authError) {
         console.error("NLOCK session validation failed", authError);
-        if (activeRequest) setAuthState((currentState) => ({ ...currentState, loading: false }));
+        if (activeRequest) redirectToLogin();
       }
     }
 
     validateCoach();
     const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT" && activeRequest) router.replace("/app/login");
+      if (event === "SIGNED_OUT" && activeRequest) redirectToLogin();
     });
 
     return () => {
       activeRequest = false;
       listener.subscription.unsubscribe();
     };
-  }, [period, router]);
+  }, [period]);
+
+  useEffect(() => {
+    if (!authState.coachId) return undefined;
+    let expiring = false;
+    let lastWrite = 0;
+    const supabase = getSupabaseBrowserClient();
+
+    async function expireInactiveSession() {
+      if (expiring) return;
+      expiring = true;
+      window.localStorage.removeItem(WORKSPACE_ACTIVITY_KEY);
+      clearStoredSupabaseSession();
+      await Promise.race([
+        supabase.auth.signOut({ scope: "local" }),
+        new Promise((resolve) => window.setTimeout(resolve, 1500)),
+      ]).catch(() => {});
+      window.location.replace("/workspace/login?reason=inactive");
+    }
+
+    function isExpired(now = Date.now()) {
+      const stored = Number(window.localStorage.getItem(WORKSPACE_ACTIVITY_KEY) || 0);
+      return stored > 0 && now - stored >= WORKSPACE_INACTIVITY_MS;
+    }
+
+    function recordActivity() {
+      const now = Date.now();
+      if (isExpired(now)) {
+        void expireInactiveSession();
+        return;
+      }
+      if (now - lastWrite < ACTIVITY_WRITE_INTERVAL_MS) return;
+      lastWrite = now;
+      window.localStorage.setItem(WORKSPACE_ACTIVITY_KEY, String(now));
+    }
+
+    function checkActivity() {
+      if (isExpired()) void expireInactiveSession();
+    }
+
+    if (isExpired()) {
+      void expireInactiveSession();
+      return undefined;
+    }
+    recordActivity();
+    const activityEvents = ["pointerdown", "keydown", "touchstart", "scroll"];
+    activityEvents.forEach((eventName) => window.addEventListener(eventName, recordActivity, { passive: true, capture: true }));
+    const checkTimer = window.setInterval(checkActivity, 60 * 1000);
+    const onStorage = (event) => {
+      if (event.key === WORKSPACE_ACTIVITY_KEY && event.newValue === null) void expireInactiveSession();
+    };
+    window.addEventListener("storage", onStorage);
+    document.addEventListener("visibilitychange", checkActivity);
+
+    return () => {
+      activityEvents.forEach((eventName) => window.removeEventListener(eventName, recordActivity, { capture: true }));
+      window.clearInterval(checkTimer);
+      window.removeEventListener("storage", onStorage);
+      document.removeEventListener("visibilitychange", checkActivity);
+    };
+  }, [authState.coachId]);
 
   async function signOut() {
+    window.localStorage.removeItem(WORKSPACE_ACTIVITY_KEY);
     await getSupabaseBrowserClient().auth.signOut({ scope: "local" });
-    router.replace("/app/login");
-    router.refresh();
+    redirectToLogin();
   }
 
   async function refreshDashboard() {
@@ -578,25 +663,30 @@ export default function NlockDashboard() {
     setPeriod(nextPeriod);
   }
 
-  if (authState.loading) {
+  if (authState.loading || !authState.coachId || !authState.coach) {
     return <main className="grid min-h-screen place-items-center bg-[var(--app-canvas)] text-[var(--text)]"><div className="text-center"><NlockLogo /><p className="mt-5 text-xs text-[var(--text-muted)]">A validar sessão…</p></div></main>;
   }
 
   return (
-    <main className="nlock-app min-h-screen bg-[var(--app-canvas)] text-[var(--text)]">
+    <main className="nlock-app h-[100dvh] overflow-hidden bg-[var(--app-canvas)] text-[var(--text)]">
       <div className="pointer-events-none fixed inset-0 -z-10 bg-[image:var(--app-background)]" />
-      <div className="mx-auto flex min-h-screen max-w-[1600px]">
+      <div className="mx-auto flex h-full max-w-[1600px] overflow-hidden">
         <Sidebar expanded={menuOpen} toggle={() => setMenuOpen((currentOpen) => !currentOpen)} collapse={() => setMenuOpen(false)} active={active} setActive={setActive} coachName={authState.coachName} coachEmail={authState.coach?.email || ""} coachAvatarUrl={authState.coach?.avatarUrl || ""} openCoachProfile={() => { setActive("profile"); if (window.innerWidth < 1024) setMenuOpen(false); }} onSignOut={signOut} />
-        <section className={`min-w-0 flex-1 px-3 pb-8 transition-[margin] duration-300 sm:px-5 lg:px-7 ${menuOpen ? "ml-[76px] lg:ml-[238px]" : "ml-[76px]"}`}>
-          <header className="sticky top-0 z-30 -mx-3 flex min-h-[76px] items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--app-header)] px-3 backdrop-blur-xl sm:-mx-5 sm:px-5 lg:-mx-7 lg:px-7">
+        <section className={`flex h-full min-w-0 flex-1 flex-col overflow-hidden px-3 transition-[margin] duration-300 sm:px-5 lg:px-7 ${menuOpen ? "ml-[76px] lg:ml-[238px]" : "ml-[76px]"}`}>
+          <header className="z-30 -mx-3 flex min-h-[calc(76px+env(safe-area-inset-top))] shrink-0 items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--app-header)] px-3 pt-[env(safe-area-inset-top)] backdrop-blur-xl sm:-mx-5 sm:px-5 lg:-mx-7 lg:px-7">
             <div className="flex min-w-0 items-center gap-3"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-subtle)]">{current.label}</p><h1 className="mt-1 truncate text-lg font-semibold sm:text-xl">{active === "dashboard" ? `Bom dia, ${authState.coachName.split(" ")[0]}` : current.label}</h1></div></div>
             <div className="flex items-center gap-2"><label className="hidden h-11 w-[min(32vw,300px)] items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] px-3 text-xs text-[var(--text-muted)] sm:flex"><Search size={15} className="shrink-0" /><input value={active === "clients" ? clientSearch : ""} onChange={(event) => { if (active === "clients") setClientSearch(event.target.value); }} placeholder={active === "clients" ? "Pesquisar clientes" : "Pesquisar"} className="min-w-0 flex-1 bg-transparent outline-none" /></label><button type="button" disabled={active !== "clients"} onClick={() => { if (active === "clients") setClientFilterOpen(true); }} className={`relative grid h-11 w-11 place-items-center rounded-xl border bg-[var(--surface-solid)] ${active === "clients" && clientFilterCount ? "border-[var(--accent)] text-[var(--accent-strong)]" : "border-[var(--border)] text-[var(--text-muted)]"} disabled:opacity-55`} aria-label={`Filtrar ${current.label.toLowerCase()}`}><SlidersHorizontal size={16} />{active === "clients" && clientFilterCount ? <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[var(--accent)] px-1 text-[9px] font-bold text-[var(--accent-foreground)]">{clientFilterCount}</span> : null}</button><button className="relative grid h-11 w-11 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)]"><Bell size={16} /><span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-[var(--accent)]" /></button><ThemeToggle language="pt" className="rounded-xl" /><button onClick={() => setSessionOpen(true)} className="inline-flex h-11 items-center gap-2 rounded-xl bg-[var(--accent)] px-3 text-xs font-bold text-[var(--accent-foreground)] shadow-[var(--shadow-accent)] sm:px-4"><Plus size={16} /><span className="hidden sm:inline">Nova sessão</span></button></div>
           </header>
-          <div className={`pt-5 ${active === "clients" ? "lg:h-[calc(100vh-76px)] lg:overflow-hidden lg:pb-8" : ""}`}>{active === "dashboard" ? <DashboardHome data={dashboardState.data} majorLoading={dashboardState.majorLoading} backgroundLoading={dashboardState.backgroundLoading} error={dashboardState.error} onRetry={refreshDashboard} onNavigate={setActive} period={period} onPeriodChange={changePeriod} /> : active === "profile" && authState.coach ? <CoachProfile coach={authState.coach} onAvatarChange={(avatarUrl) => setAuthState((currentState) => ({ ...currentState, coach: { ...currentState.coach, avatarUrl } }))} /> : active === "clients" ? <ClientsWorkspace coachId={authState.coachId} search={clientSearch} filters={clientFilters} setFilters={setClientFilters} filterOpen={clientFilterOpen} setFilterOpen={setClientFilterOpen} /> : <ComingSoon active={active} />}</div>
+          <div className={`min-h-0 flex-1 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 ${active === "clients" ? "overflow-y-auto overscroll-contain touch-pan-y lg:overflow-hidden" : "overflow-y-auto overscroll-contain [scrollbar-gutter:stable] touch-pan-y"}`}>{active === "dashboard" ? <DashboardHome data={dashboardState.data} majorLoading={dashboardState.majorLoading} backgroundLoading={dashboardState.backgroundLoading} error={dashboardState.error} onRetry={refreshDashboard} onNavigate={setActive} period={period} onPeriodChange={changePeriod} /> : active === "profile" && authState.coach ? <CoachProfile coach={authState.coach} onAvatarChange={(avatarUrl) => setAuthState((currentState) => ({ ...currentState, coach: { ...currentState.coach, avatarUrl } }))} /> : active === "clients" ? <ClientsWorkspace coachId={authState.coachId} search={clientSearch} filters={clientFilters} setFilters={setClientFilters} filterOpen={clientFilterOpen} setFilterOpen={setClientFilterOpen} /> : <ComingSoon active={active} />}</div>
         </section>
       </div>
 
       {sessionOpen ? <div className="fixed inset-0 z-[60] grid place-items-center bg-black/45 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Agenda</p><h2 className="mt-2 text-xl font-semibold">Nova sessão</h2></div><button onClick={() => setSessionOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)]"><X size={16} /></button></div><div className="mt-6 grid gap-4"><label className="grid gap-2 text-xs font-semibold">Cliente<input className="h-12 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 outline-none" placeholder="Pesquisar cliente" /></label><div className="grid grid-cols-2 gap-3"><label className="grid gap-2 text-xs font-semibold">Data<input type="date" className="h-12 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 outline-none" /></label><label className="grid gap-2 text-xs font-semibold">Hora<input type="time" className="h-12 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-3 outline-none" /></label></div><button onClick={() => setSessionOpen(false)} className="mt-2 h-12 rounded-xl bg-[var(--accent)] text-sm font-bold text-[var(--accent-foreground)]">Criar sessão</button></div></div></div> : null}
     </main>
   );
+}
+
+function redirectToLogin() {
+  if (typeof window === "undefined") return;
+  window.location.replace("/workspace/login?next=%2Fworkspace");
 }
