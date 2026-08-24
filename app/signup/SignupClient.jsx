@@ -2,14 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, ShieldCheck, Smartphone, UserPlus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, LoaderCircle, ShieldCheck, UserPlus } from "lucide-react";
 
 import { trackEvent } from "../../src/lib/analytics";
 import { applyCoachLocale, getInitialBrowserLocale } from "../../src/lib/coach-locale";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../src/lib/supabase-browser";
 import ThemeToggle from "../../src/components/ThemeToggle";
-
-const APK_DOWNLOAD_URL = "/download/apk";
 
 function normalizeReferralCode(value) {
   return String(value || "")
@@ -231,6 +230,7 @@ function describeSignupError(error, locale = "en") {
 }
 
 export default function SignupClient() {
+  const router = useRouter();
   const configured = useMemo(() => isSupabaseConfigured(), []);
   const [locale, setLocale] = useState("en");
   const [fullName, setFullName] = useState("");
@@ -248,8 +248,6 @@ export default function SignupClient() {
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const t = copy[locale] || copy.en;
 
   useEffect(() => {
@@ -329,7 +327,6 @@ export default function SignupClient() {
 
     setSubmitting(true);
     setErrorMessage("");
-    setSuccessMessage("");
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
@@ -401,7 +398,7 @@ export default function SignupClient() {
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/?email_verified=1`,
+          emailRedirectTo: `${window.location.origin}/signup/success?mode=trial&email_verified=1`,
           data: {
             full_name: fullName.trim(),
             role: "coach",
@@ -425,17 +422,22 @@ export default function SignupClient() {
         throw new Error(locale === "pt" ? "Este email já tem uma conta NLOCK. Faz login ou recupera a palavra-passe." : "This email already has a NLOCK account. Sign in or recover your password.");
       }
       trackEvent("landing_signup_success", { locale, accessTier, registrationMode });
-
-      setSuccessMessage(
-        locale === "pt"
-          ? "Conta NLOCK criada. Enviámos um email de validação. Confirma o email antes de iniciares sessão."
-          : locale === "es"
-            ? "Cuenta NLOCK creada. Enviamos un email de validación. Confirma tu email antes de iniciar sesión."
-            : locale === "fr"
-              ? "Compte NLOCK créé. Nous avons envoyé un email de validation. Confirme ton email avant de te connecter."
-              : "NLOCK account created. We sent a verification email. Confirm it before signing in.",
-      );
-      setDownloadModalOpen(true);
+      if (data.user?.id) {
+        try {
+          const statusResponse = await fetch("/api/signup/status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: data.user.id, email: normalizedEmail }),
+          });
+          const statusPayload = await statusResponse.json().catch(() => ({}));
+          if (statusResponse.ok && statusPayload.statusToken) {
+            window.sessionStorage.setItem("nlock_signup_status_token", statusPayload.statusToken);
+          }
+        } catch {
+          // O registo continua válido; a sessão autenticada serve de fallback para o estado.
+        }
+      }
+      router.replace("/signup/success?mode=trial");
     } catch (error) {
       const message = describeSignupError(error, locale);
       setErrorMessage(message);
@@ -447,68 +449,6 @@ export default function SignupClient() {
 
   return (
     <main className="min-h-screen bg-[var(--page-gradient)] text-[var(--text)]">
-      {downloadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4 py-6 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-[28px] border border-[var(--border-strong)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">NLOCK</p>
-                <h3 className="mt-2 text-2xl font-semibold text-[var(--text)]">
-                  {t.modalTitle}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
-                  {t.modalText}
-                </p>
-              </div>
-              <button
-                onClick={() => setDownloadModalOpen(false)}
-                className="rounded-full border border-[var(--border)] p-2 text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
-                aria-label="Close"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="mt-5 grid gap-3">
-              <a
-                href={APK_DOWNLOAD_URL}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => {
-                  trackEvent("landing_signup_download_apk_click", { locale });
-                }}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)]"
-              >
-                <Smartphone size={16} />
-                {t.directDownload}
-              </a>
-              <button
-                type="button"
-                onClick={() => trackEvent("landing_signup_play_store_coming_soon_click", { locale })}
-                className="inline-flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Smartphone size={16} />
-                  Google Play
-                </span>
-                <span className="text-xs uppercase tracking-[0.12em]">Coming soon</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => trackEvent("landing_signup_app_store_coming_soon_click", { locale })}
-                className="inline-flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Smartphone size={16} />
-                  App Store
-                </span>
-                <span className="text-xs uppercase tracking-[0.12em]">Coming soon</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_12%_5%,rgba(8,185,197,0.11),transparent_26%),radial-gradient(circle_at_92%_90%,rgba(185,237,40,0.08),transparent_25%)]" />
 
       <div className="relative mx-auto flex min-h-screen max-w-[1440px] flex-col px-4 pb-6 pt-4 sm:px-6 sm:pb-8 sm:pt-6 lg:px-8">
@@ -589,13 +529,6 @@ export default function SignupClient() {
                 <div className="mb-5 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4 text-rose-700">
                   <AlertCircle size={18} className="mt-0.5 shrink-0" />
                   <p className="text-sm leading-7">{errorMessage}</p>
-                </div>
-              )}
-
-              {successMessage && (
-                <div className="mb-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-emerald-700">
-                  <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
-                  <p className="text-sm leading-7">{successMessage}</p>
                 </div>
               )}
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, Clock3, MailCheck, Smartphone } from "lucide-react";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "../../../src/lib/supabase-browser";
 
 function StatusBadge({ validated }) {
   return (
@@ -50,7 +51,7 @@ function StepCard({ step, validated, icon: Icon, title, pendingCopy, validatedCo
   );
 }
 
-export default function SignupStepsStatus({ sessionId, emailVerified = false }) {
+export default function SignupStepsStatus({ sessionId, emailVerified = false, trialSignup = false }) {
   const [status, setStatus] = useState({
     emailValidated: emailVerified,
     appValidated: false,
@@ -59,12 +60,40 @@ export default function SignupStepsStatus({ sessionId, emailVerified = false }) 
   useEffect(() => {
     let cancelled = false;
     let timer;
+    let authSubscription;
 
     async function refresh() {
       try {
+        let url = `/api/signup/status?session_id=${encodeURIComponent(sessionId)}`;
+        const headers = {};
+
+        if (trialSignup) {
+          url = "/api/signup/status";
+          const queryToken = new URLSearchParams(window.location.search).get("status_token");
+          if (queryToken) {
+            window.sessionStorage.setItem("nlock_signup_status_token", queryToken);
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete("status_token");
+            window.history.replaceState({}, "", cleanUrl);
+          }
+          const statusToken = queryToken || window.sessionStorage.getItem("nlock_signup_status_token");
+          if (statusToken) {
+            headers["X-Signup-Status-Token"] = statusToken;
+          } else {
+            if (!isSupabaseConfigured()) return;
+            const supabase = getSupabaseBrowserClient();
+            const { data } = await supabase.auth.getSession();
+            const accessToken = data.session?.access_token;
+            if (!accessToken) return;
+            headers.Authorization = `Bearer ${accessToken}`;
+          }
+        } else if (!sessionId) {
+          return;
+        }
+
         const response = await fetch(
-          `/api/signup/status?session_id=${encodeURIComponent(sessionId)}`,
-          { cache: "no-store" },
+          url,
+          { cache: "no-store", headers },
         );
         if (!response.ok) return;
         const next = await response.json();
@@ -81,30 +110,55 @@ export default function SignupStepsStatus({ sessionId, emailVerified = false }) 
 
     refresh();
     timer = window.setInterval(refresh, 5000);
+
+    if (trialSignup && isSupabaseConfigured()) {
+      const supabase = getSupabaseBrowserClient();
+      const { data } = supabase.auth.onAuthStateChange(() => {
+        window.setTimeout(refresh, 0);
+      });
+      authSubscription = data.subscription;
+    }
+
     return () => {
       cancelled = true;
       clearInterval(timer);
+      authSubscription?.unsubscribe();
     };
-  }, [sessionId]);
+  }, [sessionId, trialSignup]);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <StepCard
-        step="1"
-        validated={status.emailValidated}
-        icon={MailCheck}
-        title={status.emailValidated ? "Email validado" : "Valida o teu email"}
-        pendingCopy="Enviámos uma mensagem para o email usado no registo. Abre-a e confirma a tua conta NLOCK."
-        validatedCopy="Confirmação concluída. O teu email NLOCK está validado."
-      />
-      <StepCard
-        step="2"
-        validated={status.appValidated}
-        icon={Smartphone}
-        title={status.appValidated ? "App validada" : "Entra na app"}
-        pendingCopy="Faz download da app NLOCK e inicia sessão com o mesmo email e palavra-passe."
-        validatedCopy="Primeiro login concluído. A tua app NLOCK está ativa."
-      />
+    <div className="grid gap-4">
+      {status.emailValidated && status.appValidated ? (
+        <div className="flex items-start gap-4 rounded-[22px] border border-[var(--accent-strong)] bg-[var(--accent-soft)] p-5 text-[var(--text)]">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full [background:var(--brand-gradient)] text-[#03130e]">
+            <CheckCircle2 size={23} />
+          </span>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-strong)]">Tudo pronto</p>
+            <h2 className="mt-1 text-xl font-semibold tracking-[-0.025em]">Bem-vindo à NLOCK!</h2>
+            <p className="mt-1 text-sm leading-6 text-[var(--text-muted)]">Email confirmado e primeiro login concluído. A tua conta coach está ativa.</p>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <StepCard
+          step="1"
+          validated={status.emailValidated}
+          icon={MailCheck}
+          title={status.emailValidated ? "Email validado" : "Valida o teu email"}
+          pendingCopy="Enviámos uma mensagem para o email usado no registo. Abre-a e confirma a tua conta NLOCK."
+          validatedCopy="Confirmação concluída. O teu email NLOCK está validado."
+        />
+        <StepCard
+          step="2"
+          validated={status.appValidated}
+          icon={Smartphone}
+          title={status.appValidated ? "App validada" : "Entra na app"}
+          pendingCopy="Faz download da app NLOCK e inicia sessão com o mesmo email e palavra-passe. Esta página atualiza automaticamente."
+          validatedCopy="Primeiro login concluído. A tua app NLOCK está ativa."
+        />
+      </div>
     </div>
   );
 }

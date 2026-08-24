@@ -31,6 +31,22 @@ export default async function SignupSuccessPage({ searchParams }) {
   const checkout = await getCheckoutState(String(params?.session_id || ""));
   const confirmed = checkout?.complete === true;
   const emailVerified = params?.email_verified === "1";
+  const trialSignup = params?.mode === "trial";
+
+  const heading = trialSignup
+    ? emailVerified
+      ? "Email confirmado. A tua conta está pronta."
+      : "Conta criada com sucesso."
+    : confirmed
+      ? "Registo concluído com sucesso."
+      : "Estamos a confirmar o teu registo.";
+  const supportingCopy = trialSignup
+    ? emailVerified
+      ? "Já podes descarregar a app e iniciar sessão com a tua conta NLOCK."
+      : "Enviámos-te um email de validação. Confirma-o e prepara os teus próximos passos."
+    : confirmed
+      ? "Descarrega a app e desbloqueia o teu potencial."
+      : "Estamos a confirmar o pagamento para desbloquear o teu acesso NLOCK.";
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--page-gradient)] px-4 py-6 text-[var(--text)] sm:px-6 sm:py-10">
@@ -43,10 +59,10 @@ export default async function SignupSuccessPage({ searchParams }) {
             </div>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#53e4cb]">NLOCK</p>
             <h1 className="mt-3 max-w-2xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl">
-              {confirmed ? "Registo concluído com sucesso." : "Estamos a confirmar o teu registo."}
+              {heading}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-white/65 sm:text-lg">
-              {confirmed ? "Descarrega a app e desbloqueia o teu potencial." : "Estamos a confirmar o pagamento para desbloquear o teu acesso NLOCK."}
+              {supportingCopy}
             </p>
           </div>
 
@@ -62,6 +78,7 @@ export default async function SignupSuccessPage({ searchParams }) {
             <SignupStepsStatus
               sessionId={String(params?.session_id || "")}
               emailVerified={emailVerified}
+              trialSignup={trialSignup}
             />
 
             <a href="/download/apk" className="inline-flex min-h-[56px] items-center justify-center gap-2 rounded-2xl [background:var(--brand-gradient)] px-5 py-4 font-semibold text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5">
@@ -69,7 +86,11 @@ export default async function SignupSuccessPage({ searchParams }) {
             </a>
             <div className="flex items-start gap-3 rounded-2xl bg-[var(--surface-muted)] px-4 py-3 text-sm leading-6 text-[var(--text-muted)]">
               <ShieldCheck size={18} className="mt-0.5 shrink-0 text-[var(--accent-strong)]" />
-              <p>O pagamento e a subscrição são geridos com segurança pela Stripe.</p>
+              <p>
+                {trialSignup
+                  ? "O teu trial começa na app. Usa o mesmo email e palavra-passe que escolheste no registo."
+                  : "O pagamento e a subscrição são geridos com segurança pela Stripe."}
+              </p>
             </div>
           </div>
         </section>
