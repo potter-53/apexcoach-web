@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Check, ClipboardCheck, CreditCard, Dumbbell, ExternalLink, MapPin, Menu, Play, Sparkles, TrendingUp, Users, X } from "lucide-react";
+import { ArrowRight, CalendarDays, Check, ClipboardCheck, CreditCard, Download, Dumbbell, ExternalLink, MapPin, Menu, Play, Smartphone, Sparkles, TrendingUp, Users, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import ThemeToggle from "../../src/components/ThemeToggle";
@@ -65,6 +65,24 @@ const moments = [
   },
 ];
 
+const HERO_METRIC_SETS = [
+  [
+    { value: "24", label: "clientes ativos", detail: "carteira acompanhada" },
+    { value: "15", label: "sessões", detail: "organizadas esta semana" },
+    { value: "6", label: "avaliações", detail: "registadas este mês" },
+  ],
+  [
+    { value: "91%", label: "adesão média", detail: "últimos 30 dias" },
+    { value: "8,4h", label: "recuperadas", detail: "menos trabalho administrativo" },
+    { value: "3", label: "alertas resolvidos", detail: "hoje" },
+  ],
+  [
+    { value: "128", label: "sessões concluídas", detail: "este trimestre" },
+    { value: "42", label: "planos ativos", detail: "em acompanhamento" },
+    { value: "+18%", label: "evolução média", detail: "nas avaliações" },
+  ],
+];
+
 function NlockBrand({ compact = false }) {
   return (
     <span className="inline-flex items-center gap-2.5" aria-label="NLOCK">
@@ -74,7 +92,7 @@ function NlockBrand({ compact = false }) {
   );
 }
 
-function AppActionVideo({ src, alt, className = "", delay = 480 }) {
+function AppActionVideo({ src, poster, alt, className = "", delay = 480 }) {
   const [videoReady, setVideoReady] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const containerRef = useRef(null);
@@ -109,19 +127,79 @@ function AppActionVideo({ src, alt, className = "", delay = 480 }) {
   if (!videoReady) return null;
 
   return (
-    <div ref={containerRef} className={`overflow-hidden rounded-[18px] transition-opacity duration-300 ${isPlaying ? "opacity-100 shadow-[0_30px_80px_rgba(0,0,0,0.42)]" : "pointer-events-none opacity-0"} ${className}`}>
-      <video ref={videoRef} loop muted playsInline preload="metadata" aria-label={alt} onPlaying={() => setIsPlaying(true)} onError={() => setVideoReady(false)} className="block aspect-[921/2048] h-auto w-full object-contain">
-        <source src={src} type="video/mp4" />
-      </video>
-      <span className="pointer-events-none absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/65 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/75 backdrop-blur">
-        <Play size={11} fill="currentColor" /> App em ação
-      </span>
+    <div ref={containerRef} className={`transition-all duration-300 ${isPlaying ? "opacity-100 drop-shadow-[0_30px_42px_rgba(0,0,0,0.58)]" : "pointer-events-none translate-y-3 opacity-0"} ${className}`}>
+      <div className="relative rounded-[30px] border border-white/25 bg-[linear-gradient(145deg,#36404a_0%,#080b0f_18%,#020304_78%,#29323a_100%)] p-[5px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.9),inset_0_0_0_2px_rgba(255,255,255,0.06)]">
+        <span aria-hidden="true" className="absolute -left-[3px] top-[21%] h-[11%] w-[3px] rounded-l-full bg-[#151b21]" />
+        <span aria-hidden="true" className="absolute -left-[3px] top-[35%] h-[17%] w-[3px] rounded-l-full bg-[#151b21]" />
+        <span aria-hidden="true" className="absolute -right-[3px] top-[29%] h-[19%] w-[3px] rounded-r-full bg-[#151b21]" />
+        <div className="relative overflow-hidden rounded-[25px] bg-black ring-1 ring-black">
+          <video ref={videoRef} poster={poster} loop muted playsInline preload="metadata" aria-label={alt} onPlaying={() => setIsPlaying(true)} onError={() => setVideoReady(false)} className="block aspect-[921/2048] h-auto w-full object-cover">
+            <source src={src} type="video/mp4" />
+          </video>
+          <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[7px] h-[10px] w-[34%] -translate-x-1/2 rounded-full border border-white/5 bg-black/95 shadow-[0_1px_4px_rgba(0,0,0,0.8)]" />
+          <span className="pointer-events-none absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-black/70 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/75 backdrop-blur">
+            <Play size={10} fill="currentColor" /> NLOCK em ação
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DownloadAppModal({ open, onClose }) {
+  useEffect(() => {
+    if (!open) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [onClose, open]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[1100] flex items-end justify-center bg-black/75 p-3 backdrop-blur-md sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="download-app-title" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div className="w-full max-w-lg overflow-hidden rounded-[28px] border border-white/12 bg-[#0c131d] shadow-[0_30px_100px_rgba(0,0,0,0.55)]">
+        <div className="relative border-b border-white/10 p-6 sm:p-8">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_5%,rgba(53,211,138,0.17),transparent_45%)]" />
+          <div className="relative flex items-start justify-between gap-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--brand-mint)]">NLOCK no teu bolso</p>
+              <h2 id="download-app-title" className="mt-3 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Como queres instalar?</h2>
+              <p className="mt-3 max-w-md text-sm leading-6 text-white/50">Escolhe a opção disponível para o teu dispositivo. As lojas oficiais chegam brevemente.</p>
+            </div>
+            <button type="button" onClick={onClose} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white" aria-label="Fechar opções de download"><X size={18} /></button>
+          </div>
+        </div>
+
+        <div className="grid gap-3 p-5 sm:p-7">
+          <a href="/download/apk" onClick={() => onClose()} className="group flex min-h-[76px] items-center gap-4 rounded-[20px] bg-[image:var(--brand-gradient)] p-4 text-[#03130e] shadow-[var(--shadow-accent)] transition hover:-translate-y-0.5">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] bg-[#03130e]/10"><Download size={22} /></span>
+            <span className="min-w-0 flex-1"><strong className="block text-base">Download direto Android</strong><span className="mt-0.5 block text-xs font-medium opacity-65">Ficheiro .apk disponível agora</span></span>
+            <ArrowRight size={19} className="transition group-hover:translate-x-1" />
+          </a>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="flex min-h-[92px] items-center gap-3 rounded-[20px] border border-white/10 bg-white/[0.035] p-4 text-white/45" aria-disabled="true">
+              <Smartphone size={22} className="shrink-0" />
+              <span><strong className="block text-sm text-white/65">Google Play</strong><span className="mt-1 block text-xs">Brevemente</span></span>
+            </div>
+            <div className="flex min-h-[92px] items-center gap-3 rounded-[20px] border border-white/10 bg-white/[0.035] p-4 text-white/45" aria-disabled="true">
+              <Smartphone size={22} className="shrink-0" />
+              <span><strong className="block text-sm text-white/65">App Store</strong><span className="mt-1 block text-xs">Brevemente</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function TestLanding() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [downloadOpen, setDownloadOpen] = useState(false);
+  const [heroMetricSet, setHeroMetricSet] = useState(0);
+  const [heroMetricsVisible, setHeroMetricsVisible] = useState(true);
   const [founders, setFounders] = useState([]);
   const [founderRemaining, setFounderRemaining] = useState(null);
   const [activeFounderIndex, setActiveFounderIndex] = useState(0);
@@ -141,6 +219,22 @@ export default function TestLanding() {
         if (active) setFounders([]);
       });
     return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    let transitionTimer;
+    const rotationTimer = window.setInterval(() => {
+      setHeroMetricsVisible(false);
+      transitionTimer = window.setTimeout(() => {
+        setHeroMetricSet((current) => (current + 1) % HERO_METRIC_SETS.length);
+        setHeroMetricsVisible(true);
+      }, 240);
+    }, 3600);
+    return () => {
+      window.clearInterval(rotationTimer);
+      window.clearTimeout(transitionTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -203,6 +297,7 @@ export default function TestLanding() {
 
   return (
     <div className="nlock-test min-h-screen bg-[#05090f] text-white">
+      <DownloadAppModal open={downloadOpen} onClose={() => setDownloadOpen(false)} />
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#05090f]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[var(--content-max)] items-center justify-between px-[var(--page-gutter)]">
           <a href="#top"><NlockBrand compact /></a>
@@ -216,6 +311,9 @@ export default function TestLanding() {
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle language="pt" className="!border-white/10 !bg-white/5 !text-white" />
+            <button type="button" onClick={() => setDownloadOpen(true)} className="hidden min-h-11 items-center gap-2 rounded-[var(--radius-md)] border border-white/12 bg-white/5 px-4 text-sm font-semibold text-white transition hover:bg-white/10 sm:inline-flex">
+              <Download size={16} /> Descarregar app
+            </button>
             <Link href="/signup?mode=trial" className="hidden min-h-11 items-center rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-5 text-sm font-semibold text-[#03130e] sm:inline-flex">
               Experimentar
             </Link>
@@ -231,6 +329,7 @@ export default function TestLanding() {
             <a href="#community" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Comunidade</a>
             <Link href="/afiliado" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Coach Fundador</Link>
             <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-white/70">Planos</a>
+            <button type="button" onClick={() => { setMenuOpen(false); setDownloadOpen(true); }} className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center font-semibold text-white">Descarregar app</button>
             <Link href="/signup?mode=trial" className="rounded-xl bg-[image:var(--brand-gradient)] px-4 py-3 text-center font-semibold text-[#03130e]">Experimentar</Link>
           </nav>
         ) : null}
@@ -242,26 +341,46 @@ export default function TestLanding() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,9,15,0.98)_0%,rgba(5,9,15,0.84)_42%,rgba(5,9,15,0.18)_76%,rgba(5,9,15,0.35)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,#05090f_100%)]" />
 
-          <div className="relative mx-auto grid min-h-[calc(100svh-72px)] max-w-[var(--content-max)] items-center gap-10 px-[var(--page-gutter)] py-16 lg:grid-cols-[1fr_0.72fr]">
+          <div className="relative mx-auto grid min-h-[calc(100svh-72px)] max-w-[var(--content-max)] items-center gap-8 px-[var(--page-gutter)] py-8 lg:grid-cols-[1fr_0.72fr] lg:py-10">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--brand-mint)]">Built for the work that happens now</p>
-              <h1 className="mt-6 text-[clamp(3.25rem,8.5vw,7.75rem)] font-semibold leading-[0.88] tracking-[-0.065em]">
-                UNLOCK YOUR<br />FULL POTENTIAL
+              <h1 className="mt-4 text-[clamp(3rem,7vw,6.6rem)] font-semibold leading-[0.88] tracking-[-0.065em]">
+                NLOCK YOUR<br />FULL POTENTIAL
               </h1>
-              <p className="mt-5 bg-[image:var(--brand-gradient)] bg-clip-text text-[clamp(1.5rem,3vw,2.75rem)] font-semibold tracking-[-0.04em] text-transparent">AND YOUR CLIENTS’</p>
-              <p className="mt-8 max-w-xl text-lg leading-8 text-white/65">A ferramenta que acompanha o coach antes, durante e depois de cada sessão.</p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <p className="mt-3 bg-[image:var(--brand-gradient)] bg-clip-text text-[clamp(1.4rem,2.5vw,2.35rem)] font-semibold tracking-[-0.04em] text-transparent">AND YOUR CLIENTS’</p>
+              <p className="mt-4 max-w-xl text-base leading-7 text-white/65 sm:text-lg">A ferramenta que acompanha o coach antes, durante e depois de cada sessão.</p>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <Link href="/signup?mode=trial" className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-6 font-semibold text-[#03130e] shadow-[var(--shadow-accent)]">
                   Começar agora <ArrowRight size={18} />
                 </Link>
                 <a href="#moments" className="inline-flex min-h-[52px] items-center justify-center rounded-[var(--radius-md)] border border-white/15 bg-white/5 px-6 font-semibold text-white backdrop-blur">Ver em ação</a>
               </div>
             </div>
-            <div className="relative hidden h-[620px] lg:block">
-              <AppActionVideo src="/videos/nlock-01-agenda.mp4" poster="/screenshot_1.jpeg" alt="Agenda NLOCK em ação" className="absolute right-8 top-1/2 w-[230px] -translate-y-1/2 rotate-[2deg]" />
-              <div className="nlock-hero-status absolute bottom-20 left-0 rounded-[var(--radius-lg)] border border-white/10 bg-[#0c131d]/88 p-5 text-white backdrop-blur-xl">
-                <p className="text-xs uppercase tracking-[0.2em] text-white/45">Próxima sessão</p>
-                <p className="mt-2 font-semibold">Contexto pronto. Foco no client.</p>
+            <div className="relative hidden h-[520px] items-end lg:flex lg:pb-8">
+              <div className="w-full rounded-[24px] border border-white/12 bg-[#071019]/82 p-5 text-white shadow-[0_30px_80px_rgba(0,0,0,0.34)] backdrop-blur-xl">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--brand-mint)]">Impacto no trabalho real</p>
+                    <p className="mt-1 text-xs text-white/38">Exemplo de uma visão NLOCK</p>
+                  </div>
+                  <TrendingUp size={20} className="text-[var(--brand-mint)]" />
+                </div>
+                <div aria-live="polite" className="mt-5 grid grid-cols-3 gap-3">
+                  {HERO_METRIC_SETS[heroMetricSet].map((metric, index) => (
+                    <div key={`${heroMetricSet}-${metric.label}`} className="relative min-h-[132px] overflow-hidden rounded-[18px] border border-white/10 bg-white/[0.045] p-4">
+                      <span className="absolute right-4 top-4 h-1.5 w-1.5 rounded-full bg-[var(--brand-mint)] shadow-[0_0_14px_rgba(53,211,138,0.75)]" />
+                      <div className={`transition-all duration-300 ease-out ${heroMetricsVisible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`} style={{ transitionDelay: `${index * 45}ms` }}>
+                        <p className="text-2xl font-semibold tracking-[-0.04em]">{metric.value}</p>
+                        <p className="mt-3 text-[9px] font-semibold uppercase tracking-[0.15em] text-white/60">{metric.label}</p>
+                        <p className="mt-2 text-[9px] leading-4 text-white/30">{metric.detail}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex items-center gap-1.5" aria-hidden="true">
+                  {HERO_METRIC_SETS.map((_, index) => <span key={index} className={`h-1 rounded-full transition-all duration-300 ${index === heroMetricSet ? "w-6 bg-[var(--brand-mint)]" : "w-1.5 bg-white/20"}`} />)}
+                  <span className="ml-2 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/25">Visão NLOCK</span>
+                </div>
               </div>
             </div>
           </div>
@@ -430,7 +549,7 @@ export default function TestLanding() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_70%,rgba(53,211,138,0.15),transparent_40%)]" />
           <div className="relative mx-auto max-w-5xl px-[var(--page-gutter)]">
             <NlockBrand />
-            <h2 className="mt-10 text-[clamp(3rem,8vw,7rem)] font-semibold leading-[0.9] tracking-[-0.065em]">UNLOCK YOUR<br />FULL POTENTIAL.</h2>
+            <h2 className="mt-10 text-[clamp(3rem,8vw,7rem)] font-semibold leading-[0.9] tracking-[-0.065em]">NLOCK YOUR<br />FULL POTENTIAL.</h2>
             <p className="mt-5 bg-[image:var(--brand-gradient)] bg-clip-text text-2xl font-semibold text-transparent sm:text-4xl">AND YOUR CLIENTS’.</p>
             <Link href="/signup?mode=trial" className="mt-10 inline-flex min-h-[54px] items-center gap-2 rounded-[var(--radius-md)] bg-[image:var(--brand-gradient)] px-7 font-semibold text-[#03130e] shadow-[var(--shadow-accent)]">Experimentar NLOCK <ArrowRight size={18} /></Link>
           </div>
@@ -438,10 +557,16 @@ export default function TestLanding() {
       </main>
 
       <footer className="border-t border-white/10 px-[var(--page-gutter)] py-8 text-sm text-white/40">
-        <div className="mx-auto flex max-w-[var(--content-max)] flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-[var(--content-max)] flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <NlockBrand compact />
-          <p>UNLOCK YOUR FULL POTENTIAL · AND YOUR CLIENTS’</p>
-          <Link href="/" className="hover:text-white">Landing atual</Link>
+          <p>© {new Date().getFullYear()} VERTEX LABS, UNIPESSOAL LDA · NIPC 519599195</p>
+          <nav aria-label="Informação legal" className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link href="/legal/privacy" className="hover:text-white">Privacidade</Link>
+            <Link href="/legal/cookies" className="hover:text-white">Cookies</Link>
+            <Link href="/legal/terms" className="hover:text-white">Termos</Link>
+            <Link href="/legal/consumer" className="hover:text-white">Consumidor</Link>
+            <a href="mailto:nlock@nlock.pt" className="hover:text-white">Apoio</a>
+          </nav>
         </div>
       </footer>
 

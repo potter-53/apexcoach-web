@@ -6,7 +6,7 @@ export default function CookieSettingsButton({ className = "", children = "Cooki
       type="button"
       onClick={() => {
         if (typeof window !== "undefined") {
-          window.dispatchEvent(new Event("apexcoach:open-cookie-settings"));
+          window.dispatchEvent(new Event("nlock:open-cookie-settings"));
         }
       }}
       className={className}

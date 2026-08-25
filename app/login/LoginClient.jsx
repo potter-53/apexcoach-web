@@ -374,7 +374,7 @@ export default function LoginClient() {
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="coach@apexcoach.pt"
+                    placeholder="coach@nlock.pt"
                     className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3.5 text-[var(--text)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]/40 focus:bg-white"
                     autoComplete="email"
                     required

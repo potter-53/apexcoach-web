@@ -14,9 +14,9 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
 const APPLICATIONS_EMAIL =
   process.env.APEX_APPLICATIONS_EMAIL ||
   process.env.APEX_SUPPORT_EMAIL ||
-  "hello@apexcoach.pt";
+  "nlock@nlock.pt";
 const FROM_EMAIL =
-  process.env.APEX_FROM_EMAIL || "APEX COACH <hello@apexcoach.pt>";
+  process.env.APEX_FROM_EMAIL || "NLOCK <nlock@nlock.pt>";
 const FOUNDER_SUBSCRIPTION_CATEGORY = "nlock_founder_annual";
 const FOUNDER_ACCESS_TIER = "founder";
 

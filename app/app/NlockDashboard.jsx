@@ -27,6 +27,7 @@ import {
   LogOut,
   Mail,
   ShieldCheck,
+  Trash2,
   UserRound,
   Users,
   X,
@@ -422,6 +423,29 @@ function CoachProfile({ coach, onAvatarChange }) {
   const [muralProfile, setMuralProfile] = useState(coach.founderProgramme?.profile || { publicName: "", location: "", licenseNumber: "", bio: "", professionalUrl: "", testimonial: "", publicationConsent: false });
   const [muralBusy, setMuralBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [deletionOpen, setDeletionOpen] = useState(false);
+  const [deletionRequest, setDeletionRequest] = useState(null);
+  const [deletionLoading, setDeletionLoading] = useState(true);
+  const [deletionBusy, setDeletionBusy] = useState(false);
+  const [deletionPassword, setDeletionPassword] = useState("");
+  const [deletionConfirmation, setDeletionConfirmation] = useState("");
+
+  useEffect(() => {
+    let current = true;
+    getSupabaseBrowserClient()
+      .from("account_deletion_requests")
+      .select("id, status, requested_at, cooling_off_until, cancelled_at")
+      .eq("user_id", coach.id)
+      .order("requested_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (!current) return;
+        if (!error) setDeletionRequest(data || null);
+        setDeletionLoading(false);
+      });
+    return () => { current = false; };
+  }, [coach.id]);
   const sex = String(coach.sex || "").toUpperCase() === "M" ? "Masculino" : String(coach.sex || "").toUpperCase() === "F" ? "Feminino" : "Não definido";
   const details = [
     { label: "Email", value: coach.email || "Não definido", icon: Mail },
@@ -471,6 +495,42 @@ function CoachProfile({ coach, onAvatarChange }) {
     if (error) setFeedback("Não foi possível guardar o perfil do Mural."); else { setFeedback("Perfil do Mural atualizado."); setMuralOpen(false); }
     setMuralBusy(false);
   }
+  async function requestAccountDeletion(event) {
+    event.preventDefault();
+    if (deletionConfirmation !== "ELIMINAR CONTA") { setFeedback("Escreve ELIMINAR CONTA para confirmar o pedido."); return; }
+    if (!deletionPassword) { setFeedback("Introduz a tua palavra-passe para confirmar a identidade."); return; }
+    setDeletionBusy(true); setFeedback("");
+    const supabase = getSupabaseBrowserClient();
+    const { error: identityError } = await supabase.auth.signInWithPassword({ email: coach.email, password: deletionPassword });
+    if (identityError) { setDeletionBusy(false); setFeedback("A palavra-passe não está correta. Nenhum pedido foi criado."); return; }
+    const { data, error } = await supabase
+      .from("account_deletion_requests")
+      .insert({ user_id: coach.id, status: "cooling_off", confirmation_version: "account-deletion-2026-08-25-v1", request_source: "coach_workspace" })
+      .select("id, status, requested_at, cooling_off_until, cancelled_at")
+      .single();
+    setDeletionBusy(false);
+    if (error) {
+      setFeedback(error.code === "23505" ? "Já existe um pedido de eliminação ativo para esta conta." : "Não foi possível registar o pedido. Nenhum dado foi eliminado.");
+      return;
+    }
+    setDeletionRequest(data); setDeletionOpen(false); setDeletionPassword(""); setDeletionConfirmation("");
+    setFeedback("Pedido registado. A conta e todos os dados continuam preservados durante o período de segurança.");
+  }
+  async function cancelAccountDeletion() {
+    if (!deletionRequest?.id || deletionRequest.status !== "cooling_off") return;
+    setDeletionBusy(true); setFeedback("");
+    const now = new Date().toISOString();
+    const { data, error } = await getSupabaseBrowserClient()
+      .from("account_deletion_requests")
+      .update({ status: "cancelled", cancelled_at: now, updated_at: now })
+      .eq("id", deletionRequest.id)
+      .eq("status", "cooling_off")
+      .select("id, status, requested_at, cooling_off_until, cancelled_at")
+      .single();
+    setDeletionBusy(false);
+    if (error) { setFeedback("Não foi possível cancelar o pedido. Contacta nlock@nlock.pt."); return; }
+    setDeletionRequest(data); setFeedback("Pedido cancelado. A conta permanece ativa e todos os dados foram preservados.");
+  }
   return <div className="grid gap-4">
     <WorkspaceHero eyebrow="Identidade profissional NLOCK" title={coach.fullName} subtitle={avatarBusy ? "A atualizar fotografia…" : `${sex} · ${coach.licenseNumber ? `Cédula ${coach.licenseNumber}` : "Cédula não definida"}`} avatar={<label className="group relative grid h-20 w-20 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-[24px] border-4 border-[var(--surface-solid)] bg-[#0d1715] text-xl font-bold text-white shadow-[var(--shadow-soft)] sm:h-24 sm:w-24" title="Alterar fotografia">{avatarUrl ? <img src={avatarUrl} alt={`Fotografia de ${coach.fullName}`} className="h-full w-full object-cover" /> : initials(coach.fullName)}<span className="absolute inset-0 grid place-items-center bg-black/45 opacity-0 transition group-hover:opacity-100"><Camera size={20} /></span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={avatarBusy} onChange={uploadAvatar} className="sr-only" /></label>} badge={<span className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-600"><Crown size={15} />{subscription.type}</span>} description={coach.bio || "Ainda não foi adicionada uma apresentação profissional ao perfil."} metrics={[{ label: "Estado", value: subscription.status, highlighted: coach.subscription?.status === "active" || coach.subscription?.status === "trialing" }, { label: "Subscrição", value: subscription.title }, { label: "Membro desde", value: readableDate(coach.createdAt) }]} />
     <Card className="p-5 sm:p-6"><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Dados pessoais e profissionais</p><div className="mt-5 grid gap-3 sm:grid-cols-2">{details.map(({ label, value, icon: Icon }) => <div key={label} className="flex min-w-0 items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--surface-solid)] text-[var(--accent-strong)]"><Icon size={17} /></span><div className="min-w-0"><p className="text-[10px] font-medium text-[var(--text-subtle)]">{label}</p><p className="mt-1 truncate text-sm font-semibold" title={value}>{value}</p></div></div>)}</div></Card>
@@ -478,6 +538,13 @@ function CoachProfile({ coach, onAvatarChange }) {
       <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Conta NLOCK</p><h3 className="mt-2 text-xl font-semibold">Adesão e subscrição</h3></div><div className="flex items-center gap-2"><span className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[11px] font-bold ${coach.subscription?.status === "active" || coach.subscription?.status === "trialing" ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-600" : "border-amber-500/20 bg-amber-500/10 text-amber-600"}`}><ShieldCheck size={14} />{subscription.status}</span><button type="button" onClick={() => setSubscriptionOpen(true)} className="min-h-9 rounded-xl bg-[var(--accent)] px-3 text-[11px] font-bold text-[var(--accent-foreground)]">Subscrever</button></div></div>
       {coach.subscriptionError ? <p className="mt-5 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-xs text-amber-700">Não foi possível carregar o estado da subscrição.</p> : <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"><div className="rounded-2xl bg-[var(--surface-muted)] p-4"><p className="text-[10px] text-[var(--text-subtle)]">Data de adesão</p><p className="mt-2 text-sm font-semibold">{readableDate(coach.createdAt)}</p></div><div className="rounded-2xl bg-[var(--surface-muted)] p-4"><p className="text-[10px] text-[var(--text-subtle)]">Tipo de coach</p><p className="mt-2 text-sm font-semibold">{subscription.type}</p></div><div className="rounded-2xl bg-[var(--surface-muted)] p-4"><p className="text-[10px] text-[var(--text-subtle)]">Ciclo da subscrição</p><p className="mt-2 text-sm font-semibold">{subscription.renewal}</p></div><div className="rounded-2xl bg-[var(--surface-muted)] p-4"><p className="text-[10px] text-[var(--text-subtle)]">Último pagamento</p><p className="mt-2 text-sm font-semibold">{subscription.paidAt}</p></div></div>}
       <div className="mt-5 flex flex-col gap-2 border-t border-[var(--border)] pt-4 text-xs sm:flex-row sm:items-center sm:justify-between"><span className="inline-flex items-center gap-2 font-semibold text-[var(--accent-strong)]"><ShieldCheck size={15} />Identidade validada pelo login</span><span className="truncate font-mono text-[10px] text-[var(--text-subtle)]" title={coach.id}>{coach.id}</span></div>
+    </Card>
+    <Card className="p-5 sm:p-6">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Dados e privacidade</p><h3 className="mt-2 text-xl font-semibold">Controlo da conta</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">Um estado de subscrição nunca elimina a conta. A eliminação só pode começar através de um pedido confirmado pelo próprio coach.</p></div>
+        {deletionLoading ? <span className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)]"><LoaderCircle size={14} className="animate-spin" />A validar</span> : deletionRequest?.status === "cooling_off" ? <button type="button" onClick={cancelAccountDeletion} disabled={deletionBusy} className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 text-xs font-bold disabled:opacity-50">Cancelar pedido</button> : <button type="button" onClick={() => setDeletionOpen(true)} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/8 px-4 text-xs font-bold text-rose-600"><Trash2 size={15} />Eliminar conta</button>}
+      </div>
+      {deletionRequest?.status === "cooling_off" ? <div className="mt-5 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4"><p className="text-sm font-semibold text-amber-700">Pedido em período de segurança</p><p className="mt-1 text-xs leading-5 text-amber-700/80">Nenhum dado foi eliminado. Podes cancelar o pedido até {new Date(deletionRequest.cooling_off_until).toLocaleString("pt-PT")}.</p></div> : deletionRequest?.status === "cancelled" ? <p className="mt-4 text-xs text-[var(--text-muted)]">O último pedido foi cancelado. A conta e os dados permanecem preservados.</p> : null}
     </Card>
     <Card className="relative overflow-hidden p-5 sm:p-6">
       <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-[var(--accent-soft)] blur-3xl" />
@@ -495,6 +562,7 @@ function CoachProfile({ coach, onAvatarChange }) {
     {feedback ? <div role="status" className="fixed bottom-5 right-5 z-[80] rounded-2xl border border-[var(--border)] bg-[var(--surface-solid)] px-4 py-3 text-xs font-semibold shadow-[var(--shadow-panel)]">{feedback}</div> : null}
     {subscriptionOpen ? <div className="fixed inset-0 z-[70] grid place-items-center bg-black/45 p-4 backdrop-blur-sm"><div className="w-full max-w-xl rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Subscrição NLOCK</p><h3 className="mt-2 text-xl font-semibold">Escolher modalidade</h3></div><button type="button" onClick={() => setSubscriptionOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)]"><X size={16} /></button></div><div className="mt-6 grid gap-3">{(coach.subscription?.founderNumber ? [{ id: "founder", title: "Founder anual", price: "199,90 € / ano", note: "Mantém o estatuto e preço Founder." }] : [{ id: "monthly", title: "Mensal", price: "29,90 € / mês", note: "Flexibilidade mensal." }, { id: "annual", title: "Anual", price: "299,90 € / ano", note: "Melhor valor anual." }]).map((plan) => <button key={plan.id} type="button" disabled={Boolean(checkoutBusy)} onClick={() => startCheckout(plan.id)} className="flex items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-4 text-left transition hover:border-[var(--accent)] disabled:opacity-50"><div><p className="text-sm font-semibold">{plan.title}</p><p className="mt-1 text-xs text-[var(--text-muted)]">{plan.note}</p></div><div className="text-right"><p className="text-sm font-bold">{plan.price}</p><p className="mt-1 text-[10px] text-[var(--accent-strong)]">{checkoutBusy === plan.id ? "A abrir Stripe…" : "Selecionar"}</p></div></button>)}</div></div></div> : null}
     {muralOpen ? <div className="fixed inset-0 z-[70] grid place-items-center overflow-y-auto bg-black/45 p-4 backdrop-blur-sm"><form onSubmit={saveMural} className="my-6 w-full max-w-2xl rounded-[24px] border border-[var(--border)] bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--accent-strong)]">Mural de Fundadores</p><h3 className="mt-2 text-xl font-semibold">Editar perfil público</h3></div><button type="button" onClick={() => setMuralOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)]"><X size={16} /></button></div><div className="mt-6 grid gap-4 sm:grid-cols-2">{[["publicName","Nome público"],["location","Localização"],["licenseNumber","Cédula profissional"],["professionalUrl","Website ou perfil profissional"]].map(([key,label]) => <label key={key} className="grid gap-2 text-xs font-semibold">{label}<input value={muralProfile[key]} onChange={(event) => setMuralProfile((currentProfile) => ({ ...currentProfile, [key]: event.target.value }))} className="h-12 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 outline-none focus:border-[var(--accent)]" /></label>)}<label className="grid gap-2 text-xs font-semibold sm:col-span-2">Bio<textarea rows={3} value={muralProfile.bio} onChange={(event) => setMuralProfile((currentProfile) => ({ ...currentProfile, bio: event.target.value }))} className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-4 outline-none focus:border-[var(--accent)]" /></label><label className="grid gap-2 text-xs font-semibold sm:col-span-2">Testemunho<textarea rows={3} value={muralProfile.testimonial} onChange={(event) => setMuralProfile((currentProfile) => ({ ...currentProfile, testimonial: event.target.value }))} className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-4 outline-none focus:border-[var(--accent)]" /></label><label className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] p-4 text-xs leading-5 sm:col-span-2"><input type="checkbox" checked={muralProfile.publicationConsent} onChange={(event) => setMuralProfile((currentProfile) => ({ ...currentProfile, publicationConsent: event.target.checked }))} className="mt-1" /><span>Autorizo a publicação destes dados, fotografia e testemunho no Mural de Fundadores público. <a href="/legal/privacy#mural-fundadores" target="_blank" className="inline-flex items-center gap-1 font-semibold text-[var(--accent-strong)]">Privacidade <ExternalLink size={11} /></a></span></label></div><button disabled={muralBusy} className="mt-5 h-12 w-full rounded-xl bg-[var(--accent)] text-sm font-bold text-[var(--accent-foreground)] disabled:opacity-50">{muralBusy ? "A guardar…" : "Guardar perfil do Mural"}</button></form></div> : null}
+    {deletionOpen ? <div className="fixed inset-0 z-[90] grid place-items-center overflow-y-auto bg-black/55 p-4 backdrop-blur-sm"><form onSubmit={requestAccountDeletion} className="my-6 w-full max-w-xl rounded-[24px] border border-rose-500/20 bg-[var(--surface-solid)] p-6 shadow-[var(--shadow-panel)]"><div className="flex items-start justify-between gap-4"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-rose-600">Ação sensível</p><h3 className="mt-2 text-2xl font-semibold">Pedir eliminação da conta</h3></div><button type="button" onClick={() => setDeletionOpen(false)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--border)]"><X size={16} /></button></div><div className="mt-5 rounded-2xl bg-[var(--surface-muted)] p-4 text-xs leading-5 text-[var(--text-muted)]"><p className="font-semibold text-[var(--text)]">Este pedido não elimina nada imediatamente.</p><p className="mt-2">A conta entra num período de segurança de 7 dias. Estados como ativa, suspensa, cancelada ou expirada nunca iniciam este processo automaticamente.</p></div><label className="mt-5 grid gap-2 text-xs font-semibold">Palavra-passe atual<input type="password" required autoComplete="current-password" value={deletionPassword} onChange={(event) => setDeletionPassword(event.target.value)} className="h-12 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 outline-none focus:border-rose-500" /></label><label className="mt-4 grid gap-2 text-xs font-semibold">Escreve ELIMINAR CONTA<input required value={deletionConfirmation} onChange={(event) => setDeletionConfirmation(event.target.value)} className="h-12 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 outline-none focus:border-rose-500" /></label><button disabled={deletionBusy || deletionConfirmation !== "ELIMINAR CONTA"} className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">{deletionBusy ? <LoaderCircle size={16} className="animate-spin" /> : <Trash2 size={16} />}{deletionBusy ? "A validar…" : "Registar pedido"}</button></form></div> : null}
   </div>;
 }
 

@@ -13,6 +13,7 @@ export default function LegalPageShell({ title, subtitle, children }) {
               <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--accent)]">{LEGAL_CONFIG.brandName}</p>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text)] sm:text-4xl">{title}</h1>
               {subtitle ? <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--text-muted)]">{subtitle}</p> : null}
+              <p className="mt-2 text-xs text-[var(--text-muted)]">Última atualização: {LEGAL_CONFIG.legalLastUpdated}</p>
             </div>
             <Link href="/" className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-2 text-sm font-medium text-[var(--text)]">
               Voltar ao site

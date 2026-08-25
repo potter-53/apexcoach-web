@@ -2,20 +2,20 @@ import LegalPageShell from "../../../src/components/LegalPageShell";
 import { LEGAL_CONFIG } from "../../../src/lib/legal-config";
 
 export const metadata = {
-  title: "Termos e Condições | APEX COACH",
-  description: "Termos de utilização da plataforma APEX COACH.",
+  title: "Termos e Condições | NLOCK",
+  description: "Termos de utilização da plataforma NLOCK.",
 };
 
 export default function TermsPage() {
   return (
     <LegalPageShell
       title="Termos e Condições"
-      subtitle="Estrutura base para coaches e utilização da plataforma. Deve ser revista com as regras comerciais, subscrições, cancelamento e responsabilidades clínicas efetivamente adotadas."
+      subtitle="Condições aplicáveis ao acesso e utilização do website e da plataforma NLOCK."
     >
       <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
         <h2 className="text-base font-semibold text-[var(--text)]">1. Objeto</h2>
         <p className="mt-3">
-          A {LEGAL_CONFIG.brandName} disponibiliza uma plataforma digital para apoio à gestão de clientes, agenda, treinos, avaliações e operação de coaches.
+          A {LEGAL_CONFIG.brandName}, disponibilizada por <strong>{LEGAL_CONFIG.companyName}</strong>, oferece uma plataforma digital de apoio à gestão de clientes, agenda, treinos, avaliações e operação de coaches.
         </p>
       </section>
 
@@ -36,19 +36,29 @@ export default function TermsPage() {
       <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
         <h2 className="text-base font-semibold text-[var(--text)]">4. Planos, pagamentos e cancelamento</h2>
         <p className="mt-3">
-          As condições comerciais, preço, renovação, período experimental, faturação, cancelamento e reembolso devem ser apresentadas de forma clara antes da contratação. Se existir contratação à distância com consumidores, confirma também o regime do direito de livre resolução e respetivas exceções.
+          O plano, preço, periodicidade e condições de renovação são apresentados antes da contratação. Os pagamentos são processados pela Stripe. As subscrições pagas renovam-se segundo a periodicidade escolhida, salvo cancelamento antes da data de renovação.
         </p>
-      </section>
-
-      <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
-        <h2 className="text-base font-semibold text-[var(--text)]">5. Propriedade intelectual</h2>
         <p className="mt-3">
-          O software, design, base documental, nome e identidade da plataforma permanecem protegidos por direitos de propriedade intelectual, salvo quando expressamente indicado em contrário.
+          A subscrição pode ser cancelada a qualquer momento. Após o cancelamento, o acesso mantém-se até ao final do período já pago e não são efetuadas novas renovações. O cancelamento não dá origem a reembolso proporcional do período em curso, sem prejuízo dos casos em que o reembolso seja legalmente obrigatório.
         </p>
       </section>
 
       <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
-        <h2 className="text-base font-semibold text-[var(--text)]">6. Contactos</h2>
+        <h2 className="text-base font-semibold text-[var(--text)]">5. Período experimental</h2>
+        <p className="mt-3">
+          O trial disponibilizado pela NLOCK tem a duração anunciada de 30 dias. No final do período experimental não é iniciada qualquer cobrança automática. Para continuar num plano pago, o utilizador terá de escolher expressamente o plano e concluir o respetivo pagamento.
+        </p>
+      </section>
+
+      <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
+        <h2 className="text-base font-semibold text-[var(--text)]">6. Propriedade intelectual</h2>
+        <p className="mt-3">
+          O software, design, conteúdos, documentação, nome e identidade da plataforma pertencem à {LEGAL_CONFIG.companyName} ou aos seus licenciantes e encontram-se protegidos por direitos de propriedade intelectual, salvo indicação expressa em contrário.
+        </p>
+      </section>
+
+      <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
+        <h2 className="text-base font-semibold text-[var(--text)]">7. Contactos</h2>
         <p className="mt-3">
           Para assuntos legais ou contratuais:{" "}
           <a href={`mailto:${LEGAL_CONFIG.legalEmail}`} className="text-[var(--accent-strong)] underline">

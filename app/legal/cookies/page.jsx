@@ -3,28 +3,29 @@ import LegalPageShell from "../../../src/components/LegalPageShell";
 import { LEGAL_CONFIG } from "../../../src/lib/legal-config";
 
 export const metadata = {
-  title: "Política de Cookies | APEX COACH",
-  description: "Informação sobre cookies e tecnologias semelhantes no website APEX COACH.",
+  title: "Política de Cookies | NLOCK",
+  description: "Informação sobre cookies e tecnologias semelhantes no website e plataforma NLOCK.",
 };
 
 export default function CookiesPage() {
   return (
     <LegalPageShell
       title="Política de Cookies"
-      subtitle="Política de cookies orientada para operação na UE e em Portugal. Ajusta as categorias e os prazos à stack real usada em produção."
+      subtitle="Informação sobre cookies, armazenamento local e tecnologias necessárias ao funcionamento da NLOCK."
     >
       <section className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-muted)] p-5">
         <h2 className="text-base font-semibold text-[var(--text)]">1. O que usamos</h2>
         <p className="mt-3">
-          O site pode utilizar cookies e tecnologias semelhantes para autenticação, segurança, idioma, preferências do utilizador e analytics. Os cookies não essenciais só devem ser ativados após consentimento.
+          A NLOCK utiliza cookies e armazenamento local do browser para autenticação, segurança, idioma, tema, preferências e memória de interações iniciadas pelo utilizador. Neste momento não está ativo qualquer fornecedor externo de analytics ou publicidade no website.
         </p>
       </section>
 
       <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
         <h2 className="text-base font-semibold text-[var(--text)]">2. Categorias</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5">
-          <li><strong>Essenciais e funcionais:</strong> sessão, autenticação, idioma, segurança e memória de participação em perguntas interativas iniciadas pelo utilizador.</li>
-          <li><strong>Analytics:</strong> medição de navegação e desempenho, apenas se houver consentimento.</li>
+          <li><strong>Autenticação e segurança:</strong> dados locais de sessão necessários para entrar e permanecer autenticado através do Supabase.</li>
+          <li><strong>Preferências:</strong> idioma, tema visual, opção de manter a sessão iniciada e escolha relativa a cookies.</li>
+          <li><strong>Interações públicas:</strong> o cookie <code>nlock_founder_poll_v1</code> evita respostas repetidas à pergunta do Programa de Fundadores e apresenta o resultado já registado.</li>
         </ul>
       </section>
 
@@ -34,18 +35,18 @@ export default function CookiesPage() {
           <li>Preferência de cookies: {LEGAL_CONFIG.cookieRetention.consent}</li>
           <li>Idioma/preferências funcionais: {LEGAL_CONFIG.cookieRetention.language}</li>
           <li>Memória de participação em perguntas públicas: {LEGAL_CONFIG.cookieRetention.publicPoll}</li>
-          <li>Analytics, se ativado: {LEGAL_CONFIG.cookieRetention.analytics}</li>
+          <li>Sessão e autenticação: {LEGAL_CONFIG.cookieRetention.session}</li>
         </ul>
       </section>
 
       <section className="rounded-[22px] border border-[var(--border)] bg-white p-5">
         <h2 className="text-base font-semibold text-[var(--text)]">4. Gestão de preferências</h2>
         <p className="mt-3">
-          Podes manter apenas cookies essenciais ou aceitar analytics. A preferência pode ser alterada a qualquer momento.
+          Podes rever a informação guardada e voltar a abrir este aviso a qualquer momento. Também podes apagar cookies e armazenamento local nas definições do browser; ao fazê-lo, poderás terminar a sessão ou perder preferências guardadas.
         </p>
         <div className="mt-4">
           <CookieSettingsButton className="rounded-2xl bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)]">
-            Abrir preferências de cookies
+            Reabrir aviso de cookies
           </CookieSettingsButton>
         </div>
       </section>
